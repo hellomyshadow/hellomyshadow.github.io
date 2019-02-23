@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="select模型，文件描述符，epoll模型，协程,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="并发服务器1. setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)：允许重复使用绑定信息；     如果TCP-Server因为某些情况先调用close() 关闭与TCP-Client的链接，TCP-Server会等待     2MSL的时间；在这段时间之内，如果Server程序重启，会导致无法绑定端口。 2. 多进程和多线程实现并发服务器时，因为多进程占用的资源相对较">
+<meta name="keywords" content="select模型，文件描述符，epoll模型，协程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单任务并发服务器与协程">
+<meta property="og:url" content="http://yoursite.com/2017/08/03/单任务并发服务器与协程/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="并发服务器1. setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)：允许重复使用绑定信息；     如果TCP-Server因为某些情况先调用close() 关闭与TCP-Client的链接，TCP-Server会等待     2MSL的时间；在这段时间之内，如果Server程序重启，会导致无法绑定端口。 2. 多进程和多线程实现并发服务器时，因为多进程占用的资源相对较">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/8cBPkWW.jpg">
+<meta property="og:image" content="http://i.imgur.com/L8Ce2P2.jpg">
+<meta property="og:image" content="http://i.imgur.com/DGN1lV6.jpg">
+<meta property="og:image" content="http://i.imgur.com/qAL0zMK.jpg">
+<meta property="og:image" content="http://i.imgur.com/B291aQa.jpg">
+<meta property="og:image" content="http://i.imgur.com/DDh6GOx.jpg">
+<meta property="og:image" content="http://i.imgur.com/SuviMQw.jpg">
+<meta property="og:updated_time" content="2018-02-28T13:26:37.479Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="单任务并发服务器与协程">
+<meta name="twitter:description" content="并发服务器1. setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)：允许重复使用绑定信息；     如果TCP-Server因为某些情况先调用close() 关闭与TCP-Client的链接，TCP-Server会等待     2MSL的时间；在这段时间之内，如果Server程序重启，会导致无法绑定端口。 2. 多进程和多线程实现并发服务器时，因为多进程占用的资源相对较">
+<meta name="twitter:image" content="http://i.imgur.com/8cBPkWW.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/03/单任务并发服务器与协程/">
+
+
+
+
+
+  <title>单任务并发服务器与协程 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/03/单任务并发服务器与协程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">单任务并发服务器与协程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-03T00:00:00+08:00">
+                2017-08-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="并发服务器"><a href="#并发服务器" class="headerlink" title="并发服务器"></a>并发服务器</h2><pre><code>1. setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)：允许重复使用绑定信息；
+    如果TCP-Server因为某些情况先调用close() 关闭与TCP-Client的链接，TCP-Server会等待
+    2MSL的时间；在这段时间之内，如果Server程序重启，会导致无法绑定端口。
+2. 多进程和多线程实现并发服务器时，因为多进程占用的资源相对较高，如果服务器的配置比较一般，
+   尽量使用多线程实现。
+</code></pre><h3 id="单任务并发服务器"><a href="#单任务并发服务器" class="headerlink" title="单任务并发服务器"></a>单任务并发服务器</h3><pre><code>单进程、单线程、非阻塞的并发服务器
+1. setblocking(False)：将TCP Socket变为非阻塞的，即accpet()、recv() 变为非阻塞；
+2. 在执行accept()/recv()时，如果恰巧没有客户端链接/没有收到数据，会抛出异常；
+3. try-except-else：没有异常时才会执行else语句；
+</code></pre><p><img src="http://i.imgur.com/8cBPkWW.jpg" alt></p>
+<pre><code>如果客户端较多，单任务并发服务器的效率会明显小于多任务并发服务器。
+</code></pre><h3 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h3><pre><code>1. 多路复用：单个线程通过记录跟踪每一个I/O流的状态，来同时管理多个I/O流；
+2. 多路复用也是为了在单任务模式下，尽可能多的提高服务器的吞吐量；
+3. 常用的多路复用模型：select模型和epoll模型。
+</code></pre><h4 id="select-单任务并发服务器"><a href="#select-单任务并发服务器" class="headerlink" title="select 单任务并发服务器"></a>select 单任务并发服务器</h4><pre><code>select 可以检测套接字，它是系统提供的接口，执行效率更高，而且select是跨平台的。
+Python的select模块对原始的select做了更高级的封装：select.select()
+select(rlist, wlist, xlist, [timeout])：
+    1. rlist：读-套接字列表，检测rlist中，哪些套接字接收到了数据；
+    2. wlist：写-套接字列表，检测wlist中，哪些套接字要发送数据；
+    3. xlist：套接字列表，检测xlist中，哪些套接字产生了异常。
+    4. select() 是阻塞的，以轮询的方式遍历检测每个列表中的套接字，一旦rlist中有套接字接收
+        到了数据，或者wlist中有套接字要发送数据，或者xlist中有套接字产生了异常，select()
+        就停止阻塞，返回一个元组(rl, wl, xl)：rl、wl、xl也是列表，分别是存储对列表rlist、
+        wlist、xlist的检测结果。
+    5. timeout：设置超时时间；
+</code></pre><p><img src="http://i.imgur.com/L8Ce2P2.jpg" alt></p>
+<pre><code>FD：文件描述符
+    1. 在Linux中，一切皆可以看成文件，文件又分为：普通文件、目录文件、链接文件和设备文件；
+    2. FD是系统内核为了高效管理已被打开的文件所创建的索引，是一个非负整数(通常是小整数)，
+       用来代指被打开的文件，所有执行I/O操作的系统调用都通过文件描述符。
+    3. f = open(&quot;x.py&quot;, &quot;w&quot;) --&gt; f.fileno()：获取x.py对应的文件描述符；
+    4. 网络通信也被Unix/Linux系统抽象为文件的读写，一个socket对应一个FD；
+    5. socket.fileno()：获取socket对象对应的文件描述符。
+import sys
+    1. sys.stdin：标准输入 --&gt; 键盘；  sys.stdin.fileno()：FD为 0；
+    2. sys.stdout：标准输出 --&gt; 屏幕；  sys.stdout.fileno()：FD为 1；
+    3. sys.stderr：标准错误 --&gt; 屏幕；  sys.stdout.fileno()：FD为 2。
+select 的缺点：
+    1. 在32位系统中，单进程能够监视的最大FD的数量为1024，也即：除了Server socket，只能
+       接受1023个客户端同时访问；64位系统默认的最大FD数量为2048；
+    2. select检测socket时，采用的是轮询的方式，效率低下。
+poll模型：与select的区别是，解决了监听套接字的上限问题。
+</code></pre><h4 id="epoll-单任务并发服务器"><a href="#epoll-单任务并发服务器" class="headerlink" title="epoll 单任务并发服务器"></a>epoll 单任务并发服务器</h4><pre><code>epoll模型：与select的区别，没有监听套接字的上限限制，检测方式使用的是事件通知机制，不会因为
+    套接字的增多而降低效率。
+1. 创建epoll对象
+    epoll = select.epoll()
+2. 对socket FD注册事件(重复注册会报异常)：register(FD, events)
+    epoll.register(socket FD, select.EPOLLIN|select.EPOLLET)
+    1. select.EPOLLIN：events的读事件，表示检测socket是否接收到了数据；
+    2. select.EPOLLOUT：events的写事件，表示检测socket是否要发送数据；
+    3. select.EPOLLET：注册socket FD为ET模式；
+    epoll对文件描述符操作的两种模式：
+        1. LT模式：默认模式，当epoll检测到FD事件发生、并将事件通知应用程序时，应用程序可以
+            不立即处理该事件，下次调用poll()时，会再次响应、并通知此事件；
+        2. ET模式：应用程序必须立即处理该事件，如果不处理，下次再调用poll()时，不会再通知。
+3. epoll.poll()：阻塞方法，等价于select()，区别是：接收到数据的套接字、要发送数据的套接字、
+    发生异常的套接字，是以事件通知的方式响应给poll()，以元组(FD, events)的形式存入列表，
+    并返回列表[(FD, events), ...]；
+4. 对FD取消注册
+    epoll.unregister(FD)
+</code></pre><p><img src="http://i.imgur.com/DGN1lV6.jpg" alt></p>
+<h2 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h2><pre><code>协程：微线程，纤程，是比线程更小的执行单元
+1. 进程是资源分配的单位，线程是CPU调度的单位，协程是线程中的一个执行单位。
+2. CPU在切换线程时，会用一块内存存储当前线程的状态，以便于再次执行时，能恢复上次的执行状态，
+   即恢复CPU上下文；
+3. 存储和恢复线程的上下文都是消耗时间的，而协程自带CPU上下文，不需要切换，只要当前线程正在被
+   CPU执行，那么线程中的函数就可以在任何地方保存运行的状态，然后切换到另一个函数；所以，在完
+   成特定的多任务时，协程的执行效率要大于线程和进程。
+4. 计算密集型与IO密集型
+    1. 计算密集型：比如执行多层for循环，占用大量的CPU资源；所以，计算密集型更适合使用多进程，
+            因为Python中的多线程是由GIL控制的，同一时刻，只能有一个CPU在执行，而多进程可以
+        有效利用多核CPU；
+    2. IO密集型：网络通信中，其实大量的时间都在等待接收网络数据，也即，CPU在等待IO操作；
+                所以，IO密集型更适合使用占用资源较少的多线程和协程。
+    3. yield 实现一个协程：
+</code></pre><p><img src="http://i.imgur.com/qAL0zMK.jpg" alt></p>
+<h3 id="greenlet"><a href="#greenlet" class="headerlink" title="greenlet"></a>greenlet</h3><pre><code>greenlet模块需要手动安装：sudo pip/pip3 install greenlet
+1. greenlet是实现协程的一种方式，使用的是C语言，底层调用的也是yield；
+2. 多进程和多线程是根据操作系统的调度算法，切换要执行进程/线程，而greenlet协程，可以手动切换
+   要执行的任务(函数)；
+</code></pre><p><img src="http://i.imgur.com/B291aQa.jpg" alt></p>
+<h3 id="gevent"><a href="#gevent" class="headerlink" title="gevent"></a>gevent</h3><pre><code>gevent模块安装：sudo pip/pip3 install gevent
+1. gevent相当于对greenlet做了再次封装，功能更加强大，可以自动切换要执行的任务(函数)；
+2. gevent的原理：当一个greenlet遇到耗时操作时，比如访问网络、等待接收数据时，就会自动切换到
+        其他的greenlet，等到IO操作完成后，再适时切换回来，保证总有greenlet在执行，而不是
+        让CPU等待IO操作完成。
+3. 如果没有遇到耗时操作(sleep，IO操作等)，gevent不会切换。
+</code></pre><p><img src="http://i.imgur.com/DDh6GOx.jpg" alt></p>
+<h4 id="gevent-单任务并发服务器"><a href="#gevent-单任务并发服务器" class="headerlink" title="gevent 单任务并发服务器"></a>gevent 单任务并发服务器</h4><pre><code>gevent模块封装IO操作，在实现网络通信时，不能使用socket模块，否则gevent无法识别；
+from gevent import socket, monkey
+1. monkey.patch_all()：必须在程序的第一行调用，下面的代码会按照gevent的方式编译；
+2. socket.socket()：创建一个TCP socket对象，操作方式和socket模块相同；
+</code></pre><p><img src="http://i.imgur.com/SuviMQw.jpg" alt></p>
+<pre><code>1. accept() 第一次执行时，还没有TCP-Client子协程；等到TCP-Client链接时，gevent.spawn()
+   开启一个Client的子协程，用于接收TCP-Client发来的数据；
+2. 有多少个TCP-Client链接，就会创建多少个Client子协程，每个协程中都有耗时IO操作，保证协程
+   之间不断地切换。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/select模型，文件描述符，epoll模型，协程/" rel="tag"># select模型，文件描述符，epoll模型，协程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/02/TCP与网络通信过程/" rel="next" title="TCP与网络通信过程">
+                <i class="fa fa-chevron-left"></i> TCP与网络通信过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/04/python正则表达式/" rel="prev" title="python正则表达式">
+                python正则表达式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#并发服务器"><span class="nav-number">1.</span> <span class="nav-text">并发服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单任务并发服务器"><span class="nav-number">1.1.</span> <span class="nav-text">单任务并发服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多路复用"><span class="nav-number">1.2.</span> <span class="nav-text">多路复用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#select-单任务并发服务器"><span class="nav-number">1.2.1.</span> <span class="nav-text">select 单任务并发服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll-单任务并发服务器"><span class="nav-number">1.2.2.</span> <span class="nav-text">epoll 单任务并发服务器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程"><span class="nav-number">2.</span> <span class="nav-text">协程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#greenlet"><span class="nav-number">2.1.</span> <span class="nav-text">greenlet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gevent"><span class="nav-number">2.2.</span> <span class="nav-text">gevent</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#gevent-单任务并发服务器"><span class="nav-number">2.2.1.</span> <span class="nav-text">gevent 单任务并发服务器</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

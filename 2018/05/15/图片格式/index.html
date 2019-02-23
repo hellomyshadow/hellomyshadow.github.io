@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="picture，PhotoShop,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="psd1. photoshop的专用格式，用作效果图，不压缩，保留了图层、透明、半透明等图片信息； 2. 保存了图片的原始数据，方便对图片的修改，相对地，psd图片的容量也很大； 3. 前端工程师使用psd格式的效果图进行切图，制作网页，而不是在网页中直接使用psd图片。 jpg1. 一种有损压缩格式，压缩效率高，容量小，网络传输速度快； 2. 不能保存为透明背景，在网页中应用广泛。 gif1.">
+<meta name="keywords" content="picture，PhotoShop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图片格式">
+<meta property="og:url" content="http://yoursite.com/2018/05/15/图片格式/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="psd1. photoshop的专用格式，用作效果图，不压缩，保留了图层、透明、半透明等图片信息； 2. 保存了图片的原始数据，方便对图片的修改，相对地，psd图片的容量也很大； 3. 前端工程师使用psd格式的效果图进行切图，制作网页，而不是在网页中直接使用psd图片。 jpg1. 一种有损压缩格式，压缩效率高，容量小，网络传输速度快； 2. 不能保存为透明背景，在网页中应用广泛。 gif1.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-29T22:42:20.595Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="图片格式">
+<meta name="twitter:description" content="psd1. photoshop的专用格式，用作效果图，不压缩，保留了图层、透明、半透明等图片信息； 2. 保存了图片的原始数据，方便对图片的修改，相对地，psd图片的容量也很大； 3. 前端工程师使用psd格式的效果图进行切图，制作网页，而不是在网页中直接使用psd图片。 jpg1. 一种有损压缩格式，压缩效率高，容量小，网络传输速度快； 2. 不能保存为透明背景，在网页中应用广泛。 gif1.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/15/图片格式/">
+
+
+
+
+
+  <title>图片格式 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/15/图片格式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">图片格式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-15T00:00:00+08:00">
+                2018-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="psd"><a href="#psd" class="headerlink" title="psd"></a>psd</h2><pre><code>1. photoshop的专用格式，用作效果图，不压缩，保留了图层、透明、半透明等图片信息；
+2. 保存了图片的原始数据，方便对图片的修改，相对地，psd图片的容量也很大；
+3. 前端工程师使用psd格式的效果图进行切图，制作网页，而不是在网页中直接使用psd图片。
+</code></pre><h2 id="jpg"><a href="#jpg" class="headerlink" title="jpg"></a>jpg</h2><pre><code>1. 一种有损压缩格式，压缩效率高，容量小，网络传输速度快；
+2. 不能保存为透明背景，在网页中应用广泛。
+</code></pre><h2 id="gif"><a href="#gif" class="headerlink" title="gif"></a>gif</h2><pre><code>1. 一种无损压缩格式，最多只有256种颜色，对于颜色丰富的图片转化为gif格式会失真；
+2. 背景可以透明，但不能是半透明；
+3. 对于透明背景中的图像，如果边缘轮廓使曲线，会产生锯齿；
+4. 还可以保存为动画格式。
+</code></pre><h2 id="png"><a href="#png" class="headerlink" title="png"></a>png</h2><pre><code>1. 无损压缩格式，用于替代gif；
+2. 背景可以是透明或半透明，且透明背景中的图像边缘光滑，没有锯齿；
+3. png也是firework的专用格式，可以包含图层信息，firework也是一款图像处理软件。
+</code></pre><h2 id="webp"><a href="#webp" class="headerlink" title="webp"></a>webp</h2><pre><code>1. 谷歌于2010年推出的新一代图片格式；
+2. 在压缩方面比jpg格式更优越，在质量相同的情况下，webp图像的体积比jpg的小40%；
+3. 尚未得到浏览器的广泛支持，只在Chrome和Opera上有效。
+</code></pre><h2 id="位图和矢量图"><a href="#位图和矢量图" class="headerlink" title="位图和矢量图"></a>位图和矢量图</h2><pre><code>1. 位图：也称为点阵图，由一个个的方形像素点排列拼接而成，放大时会失真；
+2. psd、jpg、gif、png、webp都是位图；
+3. 矢量图：与位图的原理不同，其图像轮廓是由函数曲线生成的；
+4. 放大矢量图时，其原理就是将曲线乘以一个倍数，不会出现锯齿。
+</code></pre><h2 id="svg"><a href="#svg" class="headerlink" title="svg"></a>svg</h2><pre><code>1. 一种矢量二维图片格式，基于xml标记语言描述的，可以通过任何文本编辑器创建；
+2. 文件容量小，放大不会失真，背景可以是透明的，很适合做高质量、单色调的图标；
+3. 目前，网页图标/地图大量使用svg格式，这种矢量图在不同终端屏幕上的显示效果都很好。
+</code></pre><h2 id="flash"><a href="#flash" class="headerlink" title="flash"></a>flash</h2><pre><code>1. 一种适量动画文件格式，很多优秀特性都可以用HTML5取代，如今已逐渐退出历史的舞台；
+2. 既可以是静态图片，也可以是多媒体动画，还可以加入用户交互和数据；
+3. 格式名为swf，flash是对它的统称，swf文件中衍生出一种流媒体视频格式flv；
+4. flv格式的容量小，可以边下载、边观看，广泛应用于视频网站。
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><pre><code>1. 网页制作中，不透明背景的图片就使用jpg，透明或者半透明背景的图片就使用png；
+2. 制作网页图标
+    1. 多颜色的图标使用gif/png格式；
+    2. 单色且对显示效果要求高的图标使用svg格式；
+    3. 动画图标使用gif格式。
+3. 雪碧图/精灵图：HTML网页中的图片需要网络请求，为了减少网络请求的次数，将装饰性图片
+   按照一定的距离，排列在一张透明背景的图片上，这样只需要做一次网络请求即可；
+   HTML在使用时，通过CSS的定位取出对应图片的位置。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/picture，PhotoShop/" rel="tag"># picture，PhotoShop</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/13/HTML5-2/" rel="next" title="HTML5-2">
+                <i class="fa fa-chevron-left"></i> HTML5-2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/19/移动端开发/" rel="prev" title="移动端开发">
+                移动端开发 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#psd"><span class="nav-number">1.</span> <span class="nav-text">psd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jpg"><span class="nav-number">2.</span> <span class="nav-text">jpg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gif"><span class="nav-number">3.</span> <span class="nav-text">gif</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#png"><span class="nav-number">4.</span> <span class="nav-text">png</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webp"><span class="nav-number">5.</span> <span class="nav-text">webp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#位图和矢量图"><span class="nav-number">6.</span> <span class="nav-text">位图和矢量图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#svg"><span class="nav-number">7.</span> <span class="nav-text">svg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flash"><span class="nav-number">8.</span> <span class="nav-text">flash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

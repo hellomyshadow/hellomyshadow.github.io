@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CSS3,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="新增布局1. table布局是CSS2中唯一为布局为生的，专门为做布局而生的一套属性；     1. display:table; 可以将一个元素转为table     2. 但是，table布局并不是流式的，而div布局是流式的；     3. 网络数据是以流的形式进行传输，对于流式布局，浏览器接收到一段数据，就可以开始渲染；     4. table布局则不然，必须等到接受完所有数据，浏览器才">
+<meta name="keywords" content="CSS3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS3-3">
+<meta property="og:url" content="http://yoursite.com/2018/05/09/CSS3-3/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="新增布局1. table布局是CSS2中唯一为布局为生的，专门为做布局而生的一套属性；     1. display:table; 可以将一个元素转为table     2. 但是，table布局并不是流式的，而div布局是流式的；     3. 网络数据是以流的形式进行传输，对于流式布局，浏览器接收到一段数据，就可以开始渲染；     4. table布局则不然，必须等到接受完所有数据，浏览器才">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-09-24T23:11:40.007Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSS3-3">
+<meta name="twitter:description" content="新增布局1. table布局是CSS2中唯一为布局为生的，专门为做布局而生的一套属性；     1. display:table; 可以将一个元素转为table     2. 但是，table布局并不是流式的，而div布局是流式的；     3. 网络数据是以流的形式进行传输，对于流式布局，浏览器接收到一段数据，就可以开始渲染；     4. table布局则不然，必须等到接受完所有数据，浏览器才">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/09/CSS3-3/">
+
+
+
+
+
+  <title>CSS3-3 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/09/CSS3-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSS3-3</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-09T00:00:00+08:00">
+                2018-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="新增布局"><a href="#新增布局" class="headerlink" title="新增布局"></a>新增布局</h2><pre><code>1. table布局是CSS2中唯一为布局为生的，专门为做布局而生的一套属性；
+    1. display:table; 可以将一个元素转为table
+    2. 但是，table布局并不是流式的，而div布局是流式的；
+    3. 网络数据是以流的形式进行传输，对于流式布局，浏览器接收到一段数据，就可以开始渲染；
+    4. table布局则不然，必须等到接受完所有数据，浏览器才能开始渲染，性能极其低下；
+    4. 而且，更改table布局中的任何一部分数据，整个table都要重新开始渲染。
+2. CSS3为布局而生的扩展：flex布局，响应式布局，多列布局(分栏布局)
+</code></pre><h2 id="flex布局"><a href="#flex布局" class="headerlink" title="flex布局"></a>flex布局</h2><pre><code>1. 弹性盒子/布局：使页面布局适应不同的屏幕尺寸和不同的显示设备，所以常用于移动端布局；
+    1. 弹性盒子模型提供了对块盒子模型的改进，因为它不使用浮动；
+    2. flex容器的边缘也不会与其内容的边缘发生折叠。
+2. flex布局经历了2个版本：老版本display:box; 新版本display:flex;
+    1. Android4.4之前只支持老版本，4.4开始支持新版flex；
+    2. Less、Sass和Stylus是CSS预处理器，使CSS可以工程化开发；
+    3. PostCSS是CSS后处理器，但它像是一种插件系统，用于处理CSS的兼容性问题；
+    4. Autoprefixer就是PostCSS的一个非常受欢迎的插件。
+3. flex布局在容器上声明，作用于容器中的子元素，且新版与老版的布局效果是不同的；
+    &lt;div id=&quot;box&quot;&gt; ---&gt; 容器
+        &lt;div class=&quot;item&quot;&gt;1&lt;/div&gt; ---&gt; 项目
+        &lt;div class=&quot;item&quot;&gt;2&lt;/div&gt;
+        ......
+    &lt;/div&gt;
+    #box {
+        display: -webkit-box;  --&gt; 老版
+        display: flex; --&gt; 新版
+    }
+    1. 容器内管理的子元素称为项目，容器与项目上分别使用不同的flex属性；
+    2. flex布局中存在两条坐标轴：主轴、侧轴，由flex-direction/-webkit-box-orient控制
+    3. 当指定X轴为主轴时，Y轴为侧轴，反之亦然！项目永远排列在主轴的正方向上！
+4. 富裕空间：容器box的宽高为(400px,400px)，每个项目的宽高为(50px,50px)，共用4个项目；
+    1. 假设项目的margin都是0px，X轴为主轴，那么主轴的富裕空间为(400-50*4=200px, 50px)
+    2. 侧轴的富裕空间为(width:400px, height:400-50=350px)
+</code></pre><h3 id="了解老版本的容器"><a href="#了解老版本的容器" class="headerlink" title="了解老版本的容器"></a>了解老版本的容器</h3><pre><code>1. 尽管PostCSS的插件系统可以处理大部分CSS3的兼容性问题，但仍需要了解以下老版flex布局；
+2. 容器中的布局方向：-webkit-box-orient
+    1. -webkit-box-orient的本质是确定X轴和Y轴中的哪一根为主轴，默认是X轴；
+    2. -webkit-box-orient: horizontal(X轴)/vertical(Y轴);
+    3. 项目排列在主轴上，主轴改变了，项目的排列位置也随之改变！
+3. 容器中的排列方向：-webkit-box-direction，用于控制主轴的正方向
+    1. -webkit-box-direction: normal/reverse(反向);
+    2. 项目沿着主轴的正方向排列，主轴的正方向改变了，项目的排列方式也随之改变。
+4. 富裕空间管理：-webkit-box-pack(主轴)，-webkit-box-align(侧轴)
+    1. 它们不会给项目去分配任何空间，只是用于确定富裕空间的位置；
+    2. 老版本管理富裕空间的位置与主轴/侧轴的正方向无关，造成新老版本的项目排列位置不同。
+5. -webkit-box-pack: start/end/center/justify; --&gt; 管理主轴的富裕空间
+    1. X轴是主轴：在主轴的右边(start)/左边(end)/两边(center)/项目之间(justify)
+    2. Y轴是主轴：在主轴的下面(start)/上面(end)/两边(center)/项目之间(justify)
+6. -webkit-box-align: start/end/center; --&gt; 管理侧轴的富裕空间
+    1. X轴是侧轴：在侧轴的右边(start)/左边(end)/两边(center)
+    2. Y轴是侧轴：在侧轴的下面(start)/上面(end)/两边(center)
+</code></pre><h3 id="新版本的容器"><a href="#新版本的容器" class="headerlink" title="新版本的容器"></a>新版本的容器</h3><pre><code>1. 容器中的布局方向和排列方向：flex-direction
+    1. flex-direction: row/column/row-reverse/column-reverse;
+    2. row、row-reverse：主轴为x轴，正方向分别是从左往右、从右往左
+    3. column、column-reverse：主轴为y轴，正方向分别是从上往下、从下往上
+2. 富裕空间管理：justify-content，align-items
+    1. justify-content、align-items分别管理主轴、侧轴的富裕空间；
+    2. 富裕空间的位置与主轴/侧轴的正方向有关。
+3. justify-content：管理主轴的富裕空间
+    1. flex-start/flex-end：富裕空间在主轴的正方向上/反方向上；
+    2. center：在主轴的两边，即项目会在主轴上居中显示；
+    4. space-between：在项目之间，第一个和最后一个分别只有一边有富裕空间；
+    5. space-around：富裕空间在项目两边，每个项目的两边都有富裕空间；
+4. align-items：管理单行/列项目时侧轴的富裕空间
+    1. flex-start/flex-end/center：富裕空间在侧轴的正方向/反方向/两边；
+    2. baseline：按基线对齐，基线是line-height的相关概念；
+    3. stretch：默认值，等高布局，如果项目没有设置高度，则把它们拉伸到相同的高度。
+5. flex-wrap：当容器的主轴空间不足时，控制项目是否换行；
+    1. nowrap：默认值，不换行，压缩项目的宽度/高度，不让它们超出容器；
+    2. wrap/wrap-reverse：换行，以行为单位、沿着侧轴的正/反方向排列；
+    3. 换行时，默认会等分侧轴的富裕空间，此时由align-content属性管理侧轴的富裕空间。
+6. align-content：管理多行/列项目时的侧轴富裕空间，只有一行/列则无效；
+    1. 属性值：flex-start/flex-end/center/space-between/space-around/stretch
+    2. 只有在设置了flex-wrap:wrap/wrap-reverse; 设置的align-content才有效。
+7. flex-flow：flex-direction和flex-wrap的简写形式，默认值row nowrap
+</code></pre><h3 id="项目"><a href="#项目" class="headerlink" title="项目"></a>项目</h3><pre><code>1. order：默认值为0，数值越大，项目越靠后排列，精确控制每个项目的排列顺序，如order:5;
+2. align-self：管理单个项目的侧轴富裕空间
+    1. 属性值：auto/flex-start/flex-end/center/baseline/stretch
+    2. auto：默认使用容器上的align-items属性值，如果容器上没有设置，则使用stretch
+    3. 多行项目时，align-self相对于当前行的侧轴富裕空间，且优先级小于align-content
+    4. 单行时，align-self的优先级大于align-items
+</code></pre><h4 id="弹性空间管理"><a href="#弹性空间管理" class="headerlink" title="弹性空间管理"></a>弹性空间管理</h4><pre><code>1. flex-grow、flex-shrink、flex-basis
+2. flex-grow：定义弹性盒子(项目)的拉伸因子，默认值为0
+    flex-grow: 1; --&gt;对应的老版本：-webkit-box-flex: 1;
+    1. 把主轴上的富裕空间按比例分配到每个项目的width(X轴)/height(Y轴)上；
+    2. 属性值为弹性因子，也就是分配富裕空间时所占的权重、比例，弹性因子越大，分配越多。
+3. flex-shrink：收缩因子，容器空间不足时，指定项目被压缩的比例(项目不能换行)，默认值为1
+4. flex-basis：项目在主轴的方向的初始大小，也就是伸缩的基准值
+    1. 默认值是auto，但在flex简写属性中，默认值为0
+    2. X轴为主轴时，如果没有设置项目的flex-basis，那么flex-basis的值为项目的width
+5. flex-grow的拉伸规则(X轴为主轴)
+    1. 可用空间 = 容器大小 - 所有相邻项目flex-basis的总和
+    2. 可扩展空间 = 可用空间 / 所有相邻项目flex-grow的总和
+    3. 每个项目伸缩后的真实大小 = flex-basis + 可扩展空间 x flex-grow
+    &lt;div id=&quot;box&quot;&gt; ---------&gt; #box{ width:400px; height:300px; display:flex; }
+        &lt;div&gt;11&lt;/div&gt; &lt;div&gt;22&lt;/div&gt; &lt;div&gt;33&lt;/div&gt; &lt;div&gt;44&lt;/div&gt; &lt;div&gt;55&lt;/div&gt;
+    &lt;/div&gt; --------------&gt; #box &gt; div{ width:50px; height:50px; flex-grow:1; }
+    #box &gt; div:nth-child(1){ flex-grow:4; }
+    1. 可用空间 = 400 - 5*50 = 150px
+    2. 可扩展空间 = 150/(1*4+4) = 18.75px
+    3. 第1项伸缩后的width：50 + 18.75 * 4 = 125px
+    4. 第2/3/4/5项伸缩后的width：50 + 18.75 * 1 = 68.75px
+6. flex-shrink的收缩规则(X轴为主轴)
+    1. 计算收缩因子与基准值乘的总和 = 所有项目的(flex-basis x flex-shrink)之和
+    2. 计算收缩因数 = 项目的收缩因子 x 项目flex-basis / 收缩因子与基准值乘的总和
+    3. 每个项目需要减去的大小 = 收缩因数 x 项目溢出容器的大小
+    #box{ width:100px; height:300px; display:flex; }
+    #box &gt; div{ width:50px; height:50px; flex-shrink:1; }
+    #box &gt; div:nth-child(1){ width:200px; }
+    1. 收缩因子与基准值乘的总和 = 200*1 + 50*1*4 = 400
+    2. 第1项的收缩因数 = 1*200/400 = 1/2，第2/3/4/5项的收缩因数 = 1*50/400 = 1/8
+    3. 第1项需要减去的大小 = 1/2 * (200 + 50*4 - 100) = 150px
+    4. 第2/3/4/5项需要减去的大小 = 1/8 * (200 + 50*4 - 100) = 37.5px
+    5. 第1项收缩后的width = 200 - 150 = 50px
+    6. 第2/3/4/5项收缩后的width = 50 - 37.5 = 12.5px
+7. flex-shrink收缩规则的前提(X轴为主轴)
+    1. flex-shrink不会把项目的width缩减为0，flex布局会考虑项目的内容；
+    2. 如果项目中的内容宽度大于最终收缩后的项目宽度，那么项目的实际宽度就是内容所占的宽度，
+    至于多占用的宽度，会让其他项目一起承担；
+    3. 所以，在设计flex布局时，需要精确考虑项目中的内容，不能太多；
+    4. 老版本并没有这些专用控制伸缩的属性，在老版本上有可能把项目收缩为0
+8. flex的简写属性
+    1. flex: 1; --&gt; flex-grow:1; flex-shrink:1; flex-basis:0%;
+    2. flex: 1; 实现等分布局，每个项目在主轴上的width/height是相同的；
+    2. flex实现有规律的布局极其简单，如等比例、等分、居中... ，所以在移动端大行其道。
+</code></pre><h2 id="响应式布局"><a href="#响应式布局" class="headerlink" title="响应式布局"></a>响应式布局</h2><pre><code>1. CSS3的媒体查询是响应式布局方案的核心技术，媒体查询选择器以 @media 开头；
+2. 媒体查询选择器不会对CSS的特殊性有任何贡献，即不会影响选择器的优先级。
+</code></pre><h3 id="媒体类型"><a href="#媒体类型" class="headerlink" title="媒体类型"></a>媒体类型</h3><pre><code>1. all(所有媒体，默认)，screen(彩色屏幕)，print(打印预览)
+2. projection(手持设备)，tv(电视)，braille，embossed，speech，tty...
+3. PC端、移动端都是彩色屏幕，属于screen的范围
+    @media screen { --&gt;定义彩色屏幕上的选择器样式，类似于if-else条件表达式
+        #wrap{ background:red; } --&gt;在彩色屏幕上，id选择器wrap上的背景色为red
+    }
+</code></pre><h3 id="媒体属性"><a href="#媒体属性" class="headerlink" title="媒体属性"></a>媒体属性</h3><pre><code>1. width、height：浏览器窗口的宽度、高度，可以加max、min前缀，height很少使用
+    @media screen and (min-width:800px) {
+        #wrap{ background:red; } --&gt;彩色屏幕且浏览器窗口的宽度&gt;=800px时，样式生效
+    }
+2. device-width：设备宽度，屏幕分辨率，如1280X720，可以加max、min前缀
+    @media screen and (min-device-width:1280px) { ... }
+    1. 彩色屏幕且设备分辨率的宽度&gt;=1280px时，样式生效
+3. device-pixel-ratio：像素比，DPR，必须加webkit前缀，也可以加max、min前缀
+    @media screen and (-webkit-min-device-pixel-ratio:1) { ... }
+    1. 彩色屏幕且DPR&gt;=1时，样式生效
+4. orientation：portrait(竖屏width=&lt;height)，landscape(横屏width&gt;height)
+    @media screen and (orientation:landscape) { ... }
+    1. 彩色屏幕且浏览器窗口为横屏时，样式生效
+</code></pre><h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><pre><code>操作符/关键字：only，and，or，not
+1. and、or、not：连接媒体类型与媒体属性，分别表示与、或、非；其中，or用&quot;,&quot;表示
+    @media screen and (max-width:800px), (orientation:landscape) { ... }
+    1. 彩色屏幕且浏览器窗口的宽度&lt;=800px时生效，亦或者屏幕为横屏时生效；
+    2. or(,)后面只有媒体属性，没有声明媒体类型，则默认媒体类型为all
+2. only：与浏览器的兼容性有关，老版本浏览器只支持媒体类型，不支持带有媒体属性的选择器
+    @media screen and (min-width:800px){ ... }
+    1. 老版本浏览器会解析为：@media screen { ... } --&gt;在老版本浏览器中，不管浏览器窗口
+    的宽度是否&gt;=800px，样式始终生效
+    2. 老版本浏览器只识别到 @media 后的第一个标识符，如果该标识符不属于媒体类型，则忽略
+    @media only screen and (width:800px){ } --&gt;老版本浏览器解析为：@media only { }
+    3. only不属于媒体类型，该媒体查询会被老版本浏览器忽略，该媒体查询选择器不会生效；
+    4. 防止老旧浏览器不支持带媒体属性的查询，所以建议在媒体查询时都加上only
+3. not
+    @media not screen and (width:800px), (orientation:landscape) { ... }
+    1. 生效条件：(不是彩色屏幕 || 浏览器尺寸!=800px) || (屏幕为横屏)
+    2. 老版浏览器会解析成 @media not{ }，而not不属于媒体类型，所以该媒体查询选择器也不会
+    生效，也就不需要再加only
+</code></pre><h2 id="多列布局"><a href="#多列布局" class="headerlink" title="多列布局"></a>多列布局</h2><pre><code>&lt;div id=&quot;box&quot;&gt;多列布局······分栏布局······多列布局······分栏布局&lt;/div&gt;
+#box{ width:600px; border:1px solid #000000; }
+1. 栏目宽度：column-width，指定每一列的宽度
+    1. column-width: 100px; --&gt;每一列的宽度为100px
+    2. 尽管指定了每一列的宽度，但很难均分容器的width，最后分出来的列数可能只有5列
+2. 栏目列数：column-count，指定需要分成多少列
+    1. column-count:3; --&gt;把容器的内容分为3列
+    2. 比column-width更友好、更强大，只需要指定列数，每一列的宽度会自动配分
+3. 列与列的间距：column-gap，列与列之间的距离
+4. 列与列的分割线：column-rule，列与列之间添加分割线，并设置分割线的样式
+    column-rule: 1px solid red;
+</code></pre><h2 id="CSS3的兼容性前缀"><a href="#CSS3的兼容性前缀" class="headerlink" title="CSS3的兼容性前缀"></a>CSS3的兼容性前缀</h2><pre><code>1. -ms-：兼容IE
+2. -moz-：兼容firefox
+3. -o-：兼容opera
+4. -webkit-：兼容chrome和safari
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CSS3/" rel="tag"># CSS3</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/08/CSS3-2/" rel="next" title="CSS3-2">
+                <i class="fa fa-chevron-left"></i> CSS3-2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/12/HTML5-1/" rel="prev" title="HTML5-1">
+                HTML5-1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#新增布局"><span class="nav-number">1.</span> <span class="nav-text">新增布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flex布局"><span class="nav-number">2.</span> <span class="nav-text">flex布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#了解老版本的容器"><span class="nav-number">2.1.</span> <span class="nav-text">了解老版本的容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新版本的容器"><span class="nav-number">2.2.</span> <span class="nav-text">新版本的容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目"><span class="nav-number">2.3.</span> <span class="nav-text">项目</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#弹性空间管理"><span class="nav-number">2.3.1.</span> <span class="nav-text">弹性空间管理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应式布局"><span class="nav-number">3.</span> <span class="nav-text">响应式布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#媒体类型"><span class="nav-number">3.1.</span> <span class="nav-text">媒体类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#媒体属性"><span class="nav-number">3.2.</span> <span class="nav-text">媒体属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作符"><span class="nav-number">3.3.</span> <span class="nav-text">操作符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多列布局"><span class="nav-number">4.</span> <span class="nav-text">多列布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS3的兼容性前缀"><span class="nav-number">5.</span> <span class="nav-text">CSS3的兼容性前缀</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

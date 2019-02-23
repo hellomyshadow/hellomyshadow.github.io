@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法性能，时间复杂度，线性表,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="算法例：a + b + c = 1000，a**2 + b**2 = c**2 1. 最直观的解决方式：  这种方式的计算，消耗了超过4分钟的时间，效率极其低下； 2. 改进版：  只消耗了1秒左右的时间，大大提高了效率！ 时间复杂度1. 计算机的配置不同，执行相同的代码所消耗的时间也就不同，但执行基本运算的数量是相同的；    所以，通过对比执行基本运算的数量，就可以看出两种算法的优劣； 2.">
+<meta name="keywords" content="算法性能，时间复杂度，线性表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构与算法1">
+<meta property="og:url" content="http://yoursite.com/2017/08/06/数据结构与算法1/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="算法例：a + b + c = 1000，a**2 + b**2 = c**2 1. 最直观的解决方式：  这种方式的计算，消耗了超过4分钟的时间，效率极其低下； 2. 改进版：  只消耗了1秒左右的时间，大大提高了效率！ 时间复杂度1. 计算机的配置不同，执行相同的代码所消耗的时间也就不同，但执行基本运算的数量是相同的；    所以，通过对比执行基本运算的数量，就可以看出两种算法的优劣； 2.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/a8NVFqV.jpg">
+<meta property="og:image" content="http://i.imgur.com/UB7DEN1.jpg">
+<meta property="og:image" content="http://i.imgur.com/RWZzjk3.jpg">
+<meta property="og:image" content="http://i.imgur.com/ZI7yOww.jpg">
+<meta property="og:image" content="http://i.imgur.com/csOu5lo.jpg">
+<meta property="og:image" content="http://i.imgur.com/blQf5zl.jpg">
+<meta property="og:image" content="http://i.imgur.com/TwUnFOS.jpg">
+<meta property="og:image" content="https://i.imgur.com/qFWwe2p.jpg">
+<meta property="og:image" content="https://i.imgur.com/2C7UTHH.jpg">
+<meta property="og:image" content="https://i.imgur.com/tG8Nqbo.jpg">
+<meta property="og:image" content="https://i.imgur.com/ZkKuEoX.jpg">
+<meta property="og:image" content="https://i.imgur.com/JVWbZhg.jpg">
+<meta property="og:image" content="https://i.imgur.com/NmNwfwj.jpg">
+<meta property="og:updated_time" content="2018-02-28T13:23:18.448Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构与算法1">
+<meta name="twitter:description" content="算法例：a + b + c = 1000，a**2 + b**2 = c**2 1. 最直观的解决方式：  这种方式的计算，消耗了超过4分钟的时间，效率极其低下； 2. 改进版：  只消耗了1秒左右的时间，大大提高了效率！ 时间复杂度1. 计算机的配置不同，执行相同的代码所消耗的时间也就不同，但执行基本运算的数量是相同的；    所以，通过对比执行基本运算的数量，就可以看出两种算法的优劣； 2.">
+<meta name="twitter:image" content="http://i.imgur.com/a8NVFqV.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/06/数据结构与算法1/">
+
+
+
+
+
+  <title>数据结构与算法1 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/06/数据结构与算法1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构与算法1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-06T00:00:00+08:00">
+                2017-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><pre><code>例：a + b + c = 1000，a**2 + b**2 = c**2
+1. 最直观的解决方式：
+</code></pre><p><img src="http://i.imgur.com/a8NVFqV.jpg" alt></p>
+<pre><code>这种方式的计算，消耗了超过4分钟的时间，效率极其低下；
+2. 改进版：
+</code></pre><p><img src="http://i.imgur.com/UB7DEN1.jpg" alt></p>
+<pre><code>只消耗了1秒左右的时间，大大提高了效率！
+</code></pre><h3 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h3><pre><code>1. 计算机的配置不同，执行相同的代码所消耗的时间也就不同，但执行基本运算的数量是相同的；
+   所以，通过对比执行基本运算的数量，就可以看出两种算法的优劣；
+2. 时间复杂度
+    1. 执行基本运算的数量，就是时间复杂度，表示方法：大&quot;O&quot;表示法
+    2. 最优/最坏时间复杂度：算法完成工作最少/最多需要多少基本运算
+    3. 时间复杂度的计算原则：
+        1. 基本语句，即只有常数项，时间复杂度为 O(1)；
+        2. 顺序结构，时间复杂度按加法计算；
+        3. 循环结构，时间复杂度按乘法计算；
+        4. 分支结构，时间复杂度取最大值；
+        5. 判断一个算法的效率，通常只关注运算数量的最高次项，其他次要项和常数项可以忽略；
+        6. 没有特殊说明时，分析一个算法的时间复杂度，指的都是最坏时间复杂度。
+3. 方式1和方式2的时间复杂度：
+    1. T1 = 1000 * 1000 * 1000 * 2 ---&gt; T(n^3) * 2 ---&gt; O(n^3)
+    2. T2 = 1000 * 1000 * 3 ---&gt; T(n^2) * 3 ---&gt; O(n^2)
+    3. O(n^3)是O(n^2)的n倍，所以方式2的效率更高。
+4. 常见的时间复杂度
+</code></pre><p><img src="http://i.imgur.com/RWZzjk3.jpg" alt></p>
+<h3 id="Python内置性能分析"><a href="#Python内置性能分析" class="headerlink" title="Python内置性能分析"></a>Python内置性能分析</h3><pre><code>timeit模块：用来测试一小段python代码的执行速度；
+1. class timeit.Timer(stmt=&quot;&quot;, setup=&quot;&quot;, timer=&lt;timer function&gt;)
+    1. stmt：要测试的代码语句，比如一个函数；
+    2. setup：运行代码时需要的设置，比如导入被测试的函数，即使测试的是当前模块的函数，也是
+            需要导入的，因为timeit的测试其实是在一个独立的模块内进行的；
+    3. timer：可选参数，是一个定时器函数，与系统平台有关；
+2. Timer().timeit(number=1000000)：执行测试，number设置的是测试次数，默认值为1000000，
+    返回的是平均耗时；
+3. 列表、字典、元组、集合，其实是python封装后的工具，测试列表操作的时间复杂度：
+</code></pre><p><img src="http://i.imgur.com/ZI7yOww.jpg" alt></p>
+<pre><code>从测试结果可以看出：
+    1. &quot;+&quot; 的效率是极低的，而 &quot;+=&quot; 是优化后的运算符，效率很高，所以尽量避免使用&quot;+&quot;；
+    2. 函数并不是基本运算，函数体的数据结构，决定了函数效率的高低，比如：append() 的效率要
+       比insert()高很多，是因为append() 的时间复杂度为 O(1)，insert()的时间复杂度为O(n)
+</code></pre><h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><pre><code>1. 数据结构是指数据元素之间的关系，是数据的组织方式，比如python中内置的列表、字典；
+2. 算法是为了解决实际问题而设计的，数据结构是算法需要处理问题的载体；
+3. 程序 = 数据结构 + 算法
+4. 抽象数据类型(ADT)：指一个数学模型以及定义在此模型上的一组操作，也就是把数据类型和数据运算
+   进行封装；
+5. 常见的数据运算：插入、删除、修改、查找、排序。
+</code></pre><h3 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h3><pre><code>内存：是一个连续的存储单元，以字节为基本单位，1字节对应8个比特位，每个字节又对应一个十六进制
+    的地址编号；计算机在读取数据时，是先找到数据对应的内存地址，再按照字节读取数据；
+类型本质：
+    1. 任何数据在内存中都是以二进制形式存储的，类型决定了一个数据在内存中占多少个字节；
+    2. 计算机从内存中读取到二进制数据时，该怎么转换，然后输出到屏幕上。
+所有的高级数据结构都是由基本的数据类型构成的，python中的列表、字典等都是封装后的高级数据结构。
+</code></pre><h3 id="线性表"><a href="#线性表" class="headerlink" title="线性表"></a>线性表</h3><pre><code>1. 在程序中，经常需要将一组数据元素作为整体管理和使用，这样一组数据元素可以看作是一个序列，
+用元素在序列中的位置和顺序，表示数据之间的某种关系，这样的数据组织形式，就可以抽象为线性表；
+2. 线性表是最基本的一种数据结构，根据线性表的实际存储方式，又可以分为顺序表和链表；
+</code></pre><h3 id="顺序表"><a href="#顺序表" class="headerlink" title="顺序表"></a>顺序表</h3><pre><code>顺序表：将元素有序地存放在一块连续的存储区里，元素间的顺序关系由它们的存储顺序表示。
+</code></pre><h4 id="顺序表的基本形式"><a href="#顺序表的基本形式" class="headerlink" title="顺序表的基本形式"></a>顺序表的基本形式</h4><pre><code>1. 基本形式之一：
+    1. 用顺序表存储一组整型数据：Li = [2, 390, 78, 1212]，在32位机上，一个整型占4个字节，
+       1字节占8个比特位，也即一个整型占32位；
+    2. 存储4个整型，需要向操作系统申请16Byte，操作系统会一次性返回一段连续的存储空间；
+    假定起始地址是0x23，那么存储每个整数的起始地址为：0x23 --&gt; 0x27 --&gt; 0x31 --&gt; 0x35
+    3. 顺序表的引用Li，指向的就是存储空间的起始地址：0x23； Li[0]获取元素时，先查看Li指向的
+    内存地址0x23，角标表示内存地址的偏移量，角标为0 表示取值的内存地址为0x23+0*4Byte=0x23；
+    同理，Li[3]取值的内存地址为0x23+3*4Byte=0x35；
+2. 基本形式之二：元素外置的顺序表
+    顺序表在存储不同数据类型的数据时，元素的地址是随机的，所以连续的存储空间存放的不再是元素，
+    而是元素的地址；
+    1. 用顺序表存储一组不同数据类型的数据：Li = [12, &quot;ab&quot;, 1.11]，虽然不同的数据类型占用的
+    字节是不同的，但是内存地址占用的字节是一定的，32位机上的内存地址占用4个字节；
+    2. 假定元素12、&quot;ab&quot;、1.11在内存中的起始地址分别为 0x100、0x200、0x53，那么，在顺序表向
+    操作系统申请的连续存储区里，所存储的数据就是：0x100，0x200，0x53；
+    3. 假定连续存储区的起始地址是0x23，那么存储每个元素地址的起始地址依次为：0x23 --&gt; 0x27
+    ---&gt; 0x31； Li指向连续存储区的起始地址：0x23； Li[0]的指向：0x23 --&gt; 0x100 --&gt; 12
+</code></pre><h4 id="顺序表的结构"><a href="#顺序表的结构" class="headerlink" title="顺序表的结构"></a>顺序表的结构</h4><pre><code>1. 一个完整的顺序表包括两部分：表头，数据区；
+    1. 表头用于记录关闭顺序表的整体信息，主要包括顺序表的总容量和当前的元素个数；
+    2. 数据区也就是存储元素的部分；
+2. 顺序表的两种基本结构：一体式结构、分离式结构
+</code></pre><p><img src="http://i.imgur.com/csOu5lo.jpg" alt></p>
+<pre><code>1. 一体式结构的整体性更强，易于管理；缺点在于，顺序表一旦创建，元素存储区就固定了，假定顺序表
+   的最大容量是5，如果要继续存入第6个元素，就需要重新申请数据区，又因为表头和数据区在一段连续
+   的存储区，就只能搬迁整个顺序表，表头的内存地址也随之变化；
+2. 分离式结构的顺序表，数据区在另一个独立的存储空间里，表头信息除了总容量和元素个数，还存储了
+   数据区的起始地址；对于总容量为5的顺序表，继续存储第6个元素时，只需要搬迁数据区、修改表头中
+   的起始地址即可，不必搬迁表头；所以，分离式结构的顺序表又称为动态顺序表。
+3. 动态顺序表的扩充策略：
+    1. 线性增长：每次重新申请数据区时，固定扩充一定的数目，比如每次都是在原来的基础上申请10个
+       元素位置；这种方式虽然节省空间，但扩充操作频繁；
+    2. 倍数增长：每次扩充都是加倍，空间换时间：虽然浪费了空间，但避免了频繁扩充，节省了时间。
+</code></pre><h4 id="顺序表的操作"><a href="#顺序表的操作" class="headerlink" title="顺序表的操作"></a>顺序表的操作</h4><pre><code>1. 增加元素
+</code></pre><p><img src="http://i.imgur.com/blQf5zl.jpg" alt></p>
+<pre><code>    时间复杂度依次为O(1)、O(1)、O(n)，非保序的并不常见；
+2. 删除元素
+</code></pre><p><img src="http://i.imgur.com/TwUnFOS.jpg" alt></p>
+<pre><code>时间复杂度依次为O(1)、O(1)、O(n)
+</code></pre><h4 id="Python中的顺序表"><a href="#Python中的顺序表" class="headerlink" title="Python中的顺序表"></a>Python中的顺序表</h4><pre><code>1. Python中的列表和元组，采用的都是顺序表技术实现的，而且都是保序的；
+2. 元组是不可变类型，虽然不支持改变其内部的任何操作，但其他方面与列表类似；
+2. 列表是一种采用分离式结构实现的动态顺序表，所以append()的效率比insert()要高，pop()的效率
+   比pop(index)的效率要高；
+3. 列表采用的策略：
+    1. 在创建一个空列表或者很小的一个列表时，系统会分配一块能容纳8个元素的存储区；
+    2. 在执行append()/insert()时，如果存储区已满，则重新申请一块4倍大的存储区；
+    3. 如果列表的容量已经很大了，则采用1倍大的策略进行申请，避免出现过多空闲的存储位置。
+</code></pre><h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><pre><code>1. 链表的存储区不是连续的，也不会因为扩充存储区而搬迁数据；
+2. 每增加一个元素，就创建一个节点，节点其实就一块存储区；
+3. 链表可分为单链表和双链表。
+</code></pre><h4 id="单链表"><a href="#单链表" class="headerlink" title="单链表"></a>单链表</h4><pre><code>单链表节点的构成：数据区和链接区，分别存储数据元素和下一个元素的内存地址；
+1. 在python中，引用的本质就是，保存值的内存地址，比如 a=10，内存a 保存的是10 的内存地址；
+2. 链接区就相当于是一个引用，指向下一个节点；
+3. 当前节点指向的下一个节点，称为后继节点；
+</code></pre><p><img src="https://i.imgur.com/qFWwe2p.jpg" alt></p>
+<pre><code>变量p 指向链表的头节点，从p 出发，能找到链表的任意节点；
+
+1. 节点的实现：
+</code></pre><p><img src="https://i.imgur.com/2C7UTHH.jpg" alt></p>
+<pre><code>2. 单链表的实现：
+</code></pre><p><img src="https://i.imgur.com/tG8Nqbo.jpg" alt></p>
+<pre><code>3. 链表与顺序表
+    1. 链表失去了顺序表随机读取的有点，同时链表的节点指针域cursor也增加了空间开销，但链表
+       对存储空间的使用相对灵活；
+    2. 时间复杂度
+</code></pre><p><img src="https://i.imgur.com/ZkKuEoX.jpg" alt></p>
+<pre><code>    1. 链表和顺序表在插入/删除时，虽然时间复杂度都是O(n)，但其原理是完全不同的；
+    2. 链表的主要耗时操作是遍历查找，插入/删除操作的时间复杂度为O(1)；
+    3. 顺序表查找快，主要耗时操作是插入/删除时的拷贝覆盖。
+
+单向循环链表
+    1. 对于一个单链表，让其尾节点的链接区指向头节点，称之为单向循环链表；
+    2. 如果只有一个节点，其链接区指向自身。
+</code></pre><h4 id="双链表"><a href="#双链表" class="headerlink" title="双链表"></a>双链表</h4><pre><code>双链表节点的构成：前驱链接区(指向前一个节点)，数据区，后继链接区(指向下一个节点)
+1. 当前节点指向的前一个节点，称为前驱节点，指向的下一个节点，称为后继节点；
+2. 与单链表的操作相比，在插入和删除时，双链表还需要修改前驱链接区。
+</code></pre><h3 id="栈与队列"><a href="#栈与队列" class="headerlink" title="栈与队列"></a>栈与队列</h3><pre><code>栈和队列都是一种数据结构，可以使用顺序表/链表实现；
+</code></pre><h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><pre><code>栈：LIFO，后进先出，只允许在容器的一端(栈顶)进行操作，确定了一种默认的访问顺序；
+使用Python中已有的顺序表：列表，实现栈结构：
+</code></pre><p><img src="https://i.imgur.com/JVWbZhg.jpg" alt></p>
+<h4 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h4><pre><code>队列：FIFO，先进先出，只允许在一端(队尾)进行插入，在另一端(队头)进行删除；
+使用列表实现队列结构：
+</code></pre><p><img src="https://i.imgur.com/NmNwfwj.jpg" alt></p>
+<pre><code>1. append() 和 pop() 的时间复杂度是O(1)，而insert() 和 pop(index) 的时间复杂度是O(n)，
+   也即，出队和入队总有一个操作的时间复杂度是O(n)；
+2. 如果入队的操作大于出队，则选择 append() 和 pop(index) 的组合；反之，则选择 insert() 和
+   pop() 的组合。
+
+双端队列：同时具有队列和栈的特性，队头和队尾都能入队和出队。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法性能，时间复杂度，线性表/" rel="tag"># 算法性能，时间复杂度，线性表</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/05/Web服务器/" rel="next" title="Web服务器">
+                <i class="fa fa-chevron-left"></i> Web服务器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/07/数据结构与算法2/" rel="prev" title="数据结构与算法2">
+                数据结构与算法2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#算法"><span class="nav-number">1.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间复杂度"><span class="nav-number">1.1.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python内置性能分析"><span class="nav-number">1.2.</span> <span class="nav-text">Python内置性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构"><span class="nav-number">2.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据存储"><span class="nav-number">2.1.</span> <span class="nav-text">数据存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线性表"><span class="nav-number">2.2.</span> <span class="nav-text">线性表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#顺序表"><span class="nav-number">2.3.</span> <span class="nav-text">顺序表</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#顺序表的基本形式"><span class="nav-number">2.3.1.</span> <span class="nav-text">顺序表的基本形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#顺序表的结构"><span class="nav-number">2.3.2.</span> <span class="nav-text">顺序表的结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#顺序表的操作"><span class="nav-number">2.3.3.</span> <span class="nav-text">顺序表的操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python中的顺序表"><span class="nav-number">2.3.4.</span> <span class="nav-text">Python中的顺序表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链表"><span class="nav-number">2.4.</span> <span class="nav-text">链表</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单链表"><span class="nav-number">2.4.1.</span> <span class="nav-text">单链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#双链表"><span class="nav-number">2.4.2.</span> <span class="nav-text">双链表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#栈与队列"><span class="nav-number">2.5.</span> <span class="nav-text">栈与队列</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#栈"><span class="nav-number">2.5.1.</span> <span class="nav-text">栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#队列"><span class="nav-number">2.5.2.</span> <span class="nav-text">队列</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

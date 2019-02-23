@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Redis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Redis简介Redis是一种key-value型的NoSQL数据库，配置文件的所在路径：/etc/redis/redis.conf 1. redis.conf的说明：     1. port 6379：默认端口为6379     2. daemonize yes：表示以守护线程运行，不会再命令行阻塞，类似于服务；     3. databases 16：默认16个数据库，编号为0-15，默认使用">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis">
+<meta property="og:url" content="http://yoursite.com/2017/08/10/Redis/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Redis简介Redis是一种key-value型的NoSQL数据库，配置文件的所在路径：/etc/redis/redis.conf 1. redis.conf的说明：     1. port 6379：默认端口为6379     2. daemonize yes：表示以守护线程运行，不会再命令行阻塞，类似于服务；     3. databases 16：默认16个数据库，编号为0-15，默认使用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/nVUC452.jpg">
+<meta property="og:image" content="https://i.imgur.com/vggtGkf.jpg">
+<meta property="og:updated_time" content="2018-02-28T13:25:25.380Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis">
+<meta name="twitter:description" content="Redis简介Redis是一种key-value型的NoSQL数据库，配置文件的所在路径：/etc/redis/redis.conf 1. redis.conf的说明：     1. port 6379：默认端口为6379     2. daemonize yes：表示以守护线程运行，不会再命令行阻塞，类似于服务；     3. databases 16：默认16个数据库，编号为0-15，默认使用">
+<meta name="twitter:image" content="https://i.imgur.com/nVUC452.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/10/Redis/">
+
+
+
+
+
+  <title>Redis | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/10/Redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T00:00:00+08:00">
+                2017-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Redis简介"><a href="#Redis简介" class="headerlink" title="Redis简介"></a>Redis简介</h2><pre><code>Redis是一种key-value型的NoSQL数据库，配置文件的所在路径：/etc/redis/redis.conf
+1. redis.conf的说明：
+    1. port 6379：默认端口为6379
+    2. daemonize yes：表示以守护线程运行，不会再命令行阻塞，类似于服务；
+    3. databases 16：默认16个数据库，编号为0-15，默认使用的是0号数据库；
+    4. dbfilename dump.rdb：数据文件；
+    5. dir /var/lib/redis：数据文件的存储路径，默认路径为./
+2. 启动Redis
+    1. 查看Redis是否启动：ps ajx|grep redis
+</code></pre><p><img src="https://i.imgur.com/nVUC452.jpg" alt></p>
+<pre><code>    2. 配置文件的方式启动
+        1. redis-server命令直接启动Redis，会阻塞当前终端；
+        2. 如果配置文件所在路径为/usr/local/redis/redis.conf，则拷贝到/etc/redis
+        目录下：sudo cp /usr/local/redis/redis.conf /etc/redis/
+        3. 指定配置文件启动：sudo redis-server /etc/redis/redis.conf
+    3. sudo service redis start/stop/restart：后台启动/停止/重启Redis服务。
+3. 连接Redis服务：redis-cli，默认连接本机的Redis
+4. 切换数据库：select 编号，默认使用的是0号数据库。
+</code></pre><h2 id="数据操作"><a href="#数据操作" class="headerlink" title="数据操作"></a>数据操作</h2><pre><code>Redis是key-value类型的数据，所以每个数据都是一个键-值对；
+1. 键的类型为字符串；
+2. 值的类型有5种：字符串string、哈希hash、列表list、集合set、有序集合zset
+</code></pre><h3 id="字符串操作"><a href="#字符串操作" class="headerlink" title="字符串操作"></a>字符串操作</h3><pre><code>string是Redis最基本的类型，最大存储512MB的数据；
+string类型是二进制安全的，即可以为任何数据，包括数字、图片、序列化对象等；
+1. 设置
+    1. set key value：设置键-值，比如set name &apos;python&apos;；
+    2. SETEX key seconds value：设置键值及过期时间，以秒为单位，过期之后会被删除；
+    3. 设置多个键-值：MSET key value key value ...
+2. 获取
+    1. GET key：根据键获取值，如果不存在，则返回nil；
+    2. MGET key key ...：根据多个键获取多个值。
+3. 运算
+    1. 运算的前提：值必须是数字；
+    2. INCR/DECR key：将key对应的value加/减1；
+    3. INCRBY/DECRBY key number：对value加/减整数，number可以是正数/负数；
+    4. 追加值：APPEND key value，相当于拼接字符串；
+    5. STRLEN key：获取值的长度/字符个数。
+</code></pre><h3 id="键操作"><a href="#键操作" class="headerlink" title="键操作"></a>键操作</h3><pre><code>1. KEYS pattern：查找键，参数pattern支持正则表达式，比如KEYS *，查找所有键；
+2. EXISTS key key ...：判断某个/某些键是否存在，返回存在的个数，都不存在则返回0；
+3. TYPE key：查看key对应的value的类型，虽然返回string，但并不一定代表的是字符串；
+4. DEL key key ...：删除键-值；
+5. EXPIRE key seconds：重新对键-值设置过期时间；
+6. TTL key：查看有效时间，已过期/不存在的键-值返回-2，永久存在的键-值返回-1。
+</code></pre><h3 id="hash操作"><a href="#hash操作" class="headerlink" title="hash操作"></a>hash操作</h3><pre><code>hash用于存储对象，对象的格式为键值对；
+1. 设置
+    1. 单个属性：HSET key field value，比如 HSET py name &apos;Mike&apos;
+    2. 多个属性：HMSET key field value field value ...
+    3. type key：hash
+2. 获取
+    1. 一个属性值：HGET key field
+    2. 多个属性值：HMGET key field field ...
+    3. 获取所有的属性和属性值：HGETALL key，比如 HGETALL py --&gt; &apos;name&apos;，&apos;Mike&apos;
+    4. 获取所有属性：HKEYS key
+    5. 获取所有属性值：HVALS key
+    6. 获取属性的个数：HLEN key
+3. 判断属性是否存在：HEXISTS key field，存在则返回1，不存在则返回0；
+4. 删除属性及值：HDEL key field field ...
+5. 获取属性值的长度：HSTRLEN key field
+</code></pre><h3 id="list操作"><a href="#list操作" class="headerlink" title="list操作"></a>list操作</h3><pre><code>列表的元素类型为string，按照插入顺序排序，在列表的头部或尾部添加元素；
+一个key对应一个列表，列表为空时，key也会被删除；
+1. 设置
+    1. 在头/尾部插入一个元素：LPUSH/RPUSH key value value ...
+    插入多个元素时，其实也是一个个元素依次插入的，所以最后一元素会排列在头/尾部
+    2. 在一个元素的前/后插入新元素：LINSERT key BEFORE/AFTER ref_value value
+    3. LSET key index value：指定索引位置插入一个新元素；
+        1. index是元素的索引，从 0 开始，索引不能越界；
+        2. 索引可以是负数，-1表示列表的最后一个元素。
+2. 获取
+    1. LPOP/RPOP key：移除并返回列表key的第一个/最后一个元素，空列表则返回nil；
+    2. LRANGE key start end：获取索引start到索引end的所有元素；
+        1. start和end可以是任意大小，而不会角标越界；
+        2. start和end可以是负数，-1表示最后一个元素。
+3. LTRIM key start end：裁剪列表，只保留索引start到索引end的元素；
+4. LLEN key：返回列表的长度；
+5. LINDEX key index：返回索引index对应的元素。
+</code></pre><h3 id="set操作"><a href="#set操作" class="headerlink" title="set操作"></a>set操作</h3><pre><code>set是无序集合，元素是string类型，元素具有唯一性，不重复；
+1. 添加元素：SADD key member member ...
+2. 获取元素：SMEMBERS key
+3. SCARD key：返回元素个数；
+4. SINTER key key ...：求集合的交集；
+5. SDIFF key key ...：求某集合与其它集合的差集；
+6. SUNION key key ...：求集合的并集；
+7. SISMEMBER key member：判断元素member是否在集合中，存在则返回1，不存在则返回0
+</code></pre><h3 id="zset操作"><a href="#zset操作" class="headerlink" title="zset操作"></a>zset操作</h3><pre><code>zset是有序集合，元素是string类型，元素具有唯一性，不重复；
+每个元素都会关联一个double类型的score，表示权重，通过权重将元素从小到大排序；
+元素的权重score是自定义的，也即可以指定元素的顺序，score可以相同；
+1. 添加：ZADD key score member score member ...
+2. ZRANGE key start end：返回指定范围内的元素；
+3. ZCARD key：返回元素个数；
+4. ZCOUNT key min max：返回score在min和max之间的元素个数；
+5. ZSCORE key member：返回元素member对应的score，不存在则返回nil；
+</code></pre><h2 id="发布订阅"><a href="#发布订阅" class="headerlink" title="发布订阅"></a>发布订阅</h2><pre><code>发布者不关心订阅者/接收者的类型，只是将消息发布到不同的频道，会自动推送给订阅者；
+订阅者不需要主动请求/获取数据，只需要订阅频道，频道的消息内容就会被推送过来；
+发布者和订阅者是解耦和的一种模式，使网络拓扑的扩展性更强、更加动态。
+1. 消息的格式包含三个部分：
+    1. 第一部分表示消息的类型：
+        1. subscribe，表示订阅成功；
+        2. unsubscribe，表示取消订阅成功；
+        3. message，表示其它终端发布消息。
+    2. 当第一部分为subscribe时，则第二部分表示频道，第三部分表示当前订阅频道的数量；
+    3. 当第一部分为unsubscribe时，则第二部分表示频道，第三部分表示当前订阅的频道数，
+       如果为0，则表示当前没有订阅任何频道；
+    4. 当第一部分为message时，则第二部分表示来源频道的名称，第三部分表示消息的内容。
+2. 订阅：SUBSCRIBE 频道名称 频道名称 ...
+3. 取消订阅：UNSUBSCRIBE 频道名称 频道名称 ... 如果不加参数，则取消所有订阅；
+4. 发布：PUBLISH 频道 消息
+</code></pre><p><img src="https://i.imgur.com/vggtGkf.jpg" alt></p>
+<h2 id="主从配置"><a href="#主从配置" class="headerlink" title="主从配置"></a>主从配置</h2><pre><code>一个主节点可以拥有多个从节点，一个从节点又可以拥有多个从节点，从而形成强大的多级服务器
+集群架构；
+比如：将Ip为192.168.1.10的机器作为主服务器，将Ip为192.168.1.11的机器作为从服务器
+1. 修改主服务器的配置文件：bind 127.0.0.1 --&gt; bind 192.168.1.10
+2. 设置从服务器的配置文件：
+    1. bind 127.0.0.1 --&gt; bind 192.168.1.11
+    2. 换行，再加上：slaveof 192.168.1.10 6379
+3. 修改了配置文件之后，必须重启Redis服务；
+4. redis-cli命令默认使用的Ip是127.0.0.1，修改了绑定的Ip之后，再次登录主/从服务器时，
+   必须指定Ip：redis-cli -h Ip
+5. 测试：在主服务器上操作数据库，可以在从服务器上获取到相同的数据。
+</code></pre><h2 id="Redis与Python"><a href="#Redis与Python" class="headerlink" title="Redis与Python"></a>Redis与Python</h2><pre><code>1. 安装redis模块
+    1. 联网安装：sudo pip3 install redis
+    2. 源码安装：
+        1. unzip redis-py-master.zip
+        2. cd redis-py-master
+        3. sudo python setup.py install
+2. 导入redis模块：import redis
+3. 连接Redis，获取客户端对象：r=redis.StrictRedis(host=&apos;Ip&apos;, port=6379)
+4. Windows上的PyCharm编写连接Ubuntu上的Redis的代码时，Redis的配置文件中所绑定的Ip
+   不能使用默认的127.0.0.1，而必须配置为Ubuntu的Ip，否则会连接失败。
+</code></pre><h3 id="Python操作Redis的方式"><a href="#Python操作Redis的方式" class="headerlink" title="Python操作Redis的方式"></a>Python操作Redis的方式</h3><pre><code>1. 直接操作：读写方法会被立即执行；
+    1. r.set(&apos;name&apos;, &apos;Hello Redis&apos;)：写入数据；
+    2. r.get(&apos;name&apos;)：获取数据。
+2. 管道操作：在内存中会维护读写操作，在调用管道的 execute() 之后，才会作用于数据库；
+    1. pipe = r.pipeline()
+    2. pipe.set(&apos;name&apos;, &apos;Hello Redis&apos;)：在管道中做写入操作；
+    3. pipe.get(&apos;name&apos;)：在管道中做读取操作；
+    4. pip.execute()：将管道中的所有读写操作一次性作用于数据库。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/09/MongoDB/" rel="next" title="MongoDB">
+                <i class="fa fa-chevron-left"></i> MongoDB
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/01/Django/" rel="prev" title="Django">
+                Django <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis简介"><span class="nav-number">1.</span> <span class="nav-text">Redis简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据操作"><span class="nav-number">2.</span> <span class="nav-text">数据操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串操作"><span class="nav-number">2.1.</span> <span class="nav-text">字符串操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#键操作"><span class="nav-number">2.2.</span> <span class="nav-text">键操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hash操作"><span class="nav-number">2.3.</span> <span class="nav-text">hash操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list操作"><span class="nav-number">2.4.</span> <span class="nav-text">list操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set操作"><span class="nav-number">2.5.</span> <span class="nav-text">set操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#zset操作"><span class="nav-number">2.6.</span> <span class="nav-text">zset操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布订阅"><span class="nav-number">3.</span> <span class="nav-text">发布订阅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主从配置"><span class="nav-number">4.</span> <span class="nav-text">主从配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis与Python"><span class="nav-number">5.</span> <span class="nav-text">Redis与Python</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Python操作Redis的方式"><span class="nav-number">5.1.</span> <span class="nav-text">Python操作Redis的方式</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

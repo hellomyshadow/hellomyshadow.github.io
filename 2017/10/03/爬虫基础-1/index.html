@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="爬虫,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="爬虫概述1. 网页的三大特征：     1. 网页都有自己的唯一的URL进行定位；     2. 网页都使用HTML来描述页面信息；     3. 网页都使用HTTP/HTTPS协议传输HTML数据。 2. 爬虫的设计思路：     1. 首先确定需要爬去的网页URL；     2. 通过HTTP/HTTPS协议来获取对应的HTML页面；     3. 提取HTML页面里有用的数据，如果页面中还有">
+<meta name="keywords" content="爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="爬虫基础-1">
+<meta property="og:url" content="http://yoursite.com/2017/10/03/爬虫基础-1/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="爬虫概述1. 网页的三大特征：     1. 网页都有自己的唯一的URL进行定位；     2. 网页都使用HTML来描述页面信息；     3. 网页都使用HTTP/HTTPS协议传输HTML数据。 2. 爬虫的设计思路：     1. 首先确定需要爬去的网页URL；     2. 通过HTTP/HTTPS协议来获取对应的HTML页面；     3. 提取HTML页面里有用的数据，如果页面中还有">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-12T11:23:29.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="爬虫基础-1">
+<meta name="twitter:description" content="爬虫概述1. 网页的三大特征：     1. 网页都有自己的唯一的URL进行定位；     2. 网页都使用HTML来描述页面信息；     3. 网页都使用HTTP/HTTPS协议传输HTML数据。 2. 爬虫的设计思路：     1. 首先确定需要爬去的网页URL；     2. 通过HTTP/HTTPS协议来获取对应的HTML页面；     3. 提取HTML页面里有用的数据，如果页面中还有">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/03/爬虫基础-1/">
+
+
+
+
+
+  <title>爬虫基础-1 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/03/爬虫基础-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">爬虫基础-1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-03T00:00:00+08:00">
+                2017-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="爬虫概述"><a href="#爬虫概述" class="headerlink" title="爬虫概述"></a>爬虫概述</h2><pre><code>1. 网页的三大特征：
+    1. 网页都有自己的唯一的URL进行定位；
+    2. 网页都使用HTML来描述页面信息；
+    3. 网页都使用HTTP/HTTPS协议传输HTML数据。
+2. 爬虫的设计思路：
+    1. 首先确定需要爬去的网页URL；
+    2. 通过HTTP/HTTPS协议来获取对应的HTML页面；
+    3. 提取HTML页面里有用的数据，如果页面中还有其他URL，则继续执行第二步。
+</code></pre><h3 id="爬虫分类"><a href="#爬虫分类" class="headerlink" title="爬虫分类"></a>爬虫分类</h3><pre><code>1. 通用爬虫： 搜索引擎用的爬虫系统
+    1. 目标：尽可能把互联网上的所有网页下载到本地服务器，形成备份，再对这些网页做相关
+    处理(提取关键字、去广告)，最后提供一个用户检索接口；
+    2. 抓取流程：选取一部分的种子URL，放到待爬取队列 --&gt; 从队列中取出这些URL，解析DNS
+    得到主机IP --&gt; 到IP对应的服务器里下载HTML页面，保存到搜索引擎的本地服务器 --&gt;
+    将这些URL放进已爬去队列 --&gt; 分析这些网页内容，找出网页里的其他URL，继续爬取，直至
+    爬取条件结束。
+    3. 搜索引擎获取一个新网站URL的方式：
+        1. 主动向搜索引擎提交网址；
+        2. 在其他网站设置外链，比如友情链接，搜索引擎在爬取时，会保存新的URL；
+        3. 搜索引擎会和DNS服务商进行合作，可以快速收录新的网站。
+    4. Robots协议：指明通用爬虫可以爬取网页的权限，一般只有大型搜索引擎的爬虫才会遵守；
+    淘宝网的robots协议：https://www.taobao.com/robots.txt
+    5. 工作流程：爬取网页 --&gt; 存储数据 --&gt; 内容处理 --&gt; 提供检索/排名服务
+    6. 通用爬虫的缺点：
+        1. 只能提供和文本相关的内容(HTML、Word、PDF...)，不能提供多媒体文件(音乐、图片、
+        视频)和二进制文件(程序、脚本...)
+        2. 提供的结果千篇一律，不能针对不同背景/领域的人提供不同的搜索结果；
+        3. 不能理解人类的语义，只能提供关键字的检索。
+2. 聚焦爬虫：爬虫程序员编写的针对某种内容的爬虫，弥补了通用爬虫的缺点。
+    面向主题/需求爬虫，会针对某种特定的内容去爬取信息，而且会保证信息和需求尽可能相关。
+</code></pre><h2 id="HTTP和HTTPS"><a href="#HTTP和HTTPS" class="headerlink" title="HTTP和HTTPS"></a>HTTP和HTTPS</h2><pre><code>1. HTTP协议：超文本传输协议，是一种发布与接收HTML页面的方法，默认端口号80；
+2. HTTPS协议：HTTP的安全版，在HTTP下加入SSL层，默认端口号443；
+    1. SSL：安全套接层，主要用于Web的安全传输协议，在传输层对网络连接进行加密；
+    2. 浏览器的主要功能是向服务器发送请求，HTTP是一套计算机通过网络进行通信的规则；
+    3. 网络爬虫抓取过程可以理解为：模拟浏览器操作的过程。
+3. HTTP通信由两部分组成：客户端请求消息、服务器响应消息；
+4. 浏览器分析Response中的HTML，发现其中还引用了其他文件，如图片、CSS文件、JS文件，
+    浏览器会自动继续发送Request去获取这些资源文件。
+5. URL：统一资源定位符，用于完整地描述Internet上网页和其他资源地址的一种标识方法；
+    1. 格式：scheme://host[:port#]/path/.../[?query-string][#anchor]
+    2. path：访问资源的路径；    query-string：参数，发送给HTTP服务器的数据；
+    3. anchor：锚点，http://item.jd.com/11936.html#product-detail
+    4. URL只是标识资源的位置，HTTP才是用来提交和获取资源。
+</code></pre><h3 id="HTTP请求"><a href="#HTTP请求" class="headerlink" title="HTTP请求"></a>HTTP请求</h3><pre><code>请求消息的格式：请求行、请求头、空行、请求体
+一个典型的HTTP请求：
+    GET https://www.baidu.com/ HTTP/1.1
+    Host: www.baidu.com
+    Connection: keep-alive
+    Upgrade-Insecure-Requests: 1
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit......
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,......
+    Referer: http://www.baidu.com/
+    Accept-Encoding: gzip, deflate, sdch, br
+    Accept-Language: zh-CN,zh;q=0.8,en;q=0.6
+    Cookie: BAIDUID=04E4001F34EA74AD4601512DD3C41A7B:FG=1; BIDUPSID=......
+1. 请求行：GET https://www.baidu.com/ HTTP/1.1
+    1. GET：请求方法，常用GET和POST；
+    2. https://www.baidu.com/：请求的URL；
+    3. HTTP/1.1：HTTP协议和版本，0.9只有GET，1.0增加了POST和HEAD，1.1又新增了5种；
+2. 请求头
+    1. Host：指定请求资源的主机和端口号，通常属于URL的一部分；
+    2. Connection：表示客户端与服务器链接的类型，HTTP1.1默认值为keep-alive
+        1. 如果Server支持keep-alive，则回复一个包含Connection:keep-alive的响应，
+        不关闭链接；否则回复一个包含Connection:close的响应，关闭链接；
+        2. keep-alive在很多情况下能够重用连接，减少资源消耗，缩短响应时间。
+    3. Upgrade-Insecure-Requests：升级不安全的请求，会在加载Http资源时自动替换成
+        Https请求，让浏览器不再显示Https页面中的Http请求警报；
+        HTTPS是以安全为目标的HTTP通道，所以在HTTPS承载的页面上不允许出现HTTP请求，
+        一旦出现就会提示或报错。
+    4. User-Agent：客户浏览器的名称，对爬虫而言，是最重要的参数，用于伪装请求者；
+    5. Accept：client可以接受的MIME文件类型，Server根据它判断并返回适当的文件格式；
+        1. Accept: */* --&gt; 表示什么都可以接收；
+        2. Accept: image/gif --&gt; 客户端希望接受GIF图像格式的资源；
+        3. Accept: text/html --&gt; 客户端希望接受html文本；
+        4. Accept: text/html, application/xhtml+xml;q=0.9, image/*;q=0.8
+        表示浏览器支持的MIME类型分别是html文本、xhtml和xml文档、所有的图像格式资源。
+        5. q：权重系数，范围0-1，值越大，请求越倾向于获得其“;”之前的类型表示的内容。
+        若没有指定q值，则默认为1，按从左到右排序顺序；若被赋值为0，则表示浏览器不接受
+        此内容类型。
+        6. text：用于标准化地表示的文本信息，文本消息可以是多种字符集/多种格式的；
+        7. application：用于传输应用程序数据/二进制数据。
+    6. Referer：表明产生请求的网页来自于哪个URL，它可以用来跟踪Web请求来自哪个页面、
+        是从什么网站来的等等；
+        有时候遇到下载某网站图片，需要对应的Referer，否则无法下载图片，是因为他们做了
+        防盗链，原理就是根据Referer去判断是否是本网站的地址，如果不是，则拒绝。
+    7. Accept-Encoding：文件的编解码格式，若不指定，Server不会压缩，仍响应原始数据；
+        1. 编码方式不同于文件格式，它是为了压缩文件、以加速文件传输；
+        2. 浏览器接收到Response后，先解码，再检查文件格式。
+    8. Accept-Language：client支持的语言，en/en-us表示英语，zh/zh-cn表示中文；
+    9. Accept-Charset：字符编码，如果不指定，则默认client支持所有字符集；
+        1. ISO8859-1：通常叫做Latin-1，英文浏览器的默认值是ISO-8859-1
+        2. gb2312：标准简体中文字符集；
+        3. utf-8：可以解决多种语言文本显示问题，从而实现应用国际化和本地化。
+    10. Content-Type：POST请求中的数据类型；
+        1. Text/XML; charset=gb2312 --&gt; 请求体中包含的是纯文件的XML类型的数据，
+        字符编码是gb2312；
+        2. application/x-www-form-urlencoded --&gt; 表单数据会按照 n1=v1&amp;n2=v2
+        的形式进行编码，存储在请求体中。
+3. 请求体：与请求头隔一个空行，存储提交的数据/参数。
+</code></pre><h3 id="HTTP响应"><a href="#HTTP响应" class="headerlink" title="HTTP响应"></a>HTTP响应</h3><pre><code>响应的格式：状态行、响应头、空行、响应体
+    HTTP/1.1 200 OK
+    Server: Tengine
+    Connection: keep-alive
+    Date: Wed, 30 Nov 2016 07:58:21 GMT
+    Cache-Control: no-cache
+    Content-Type: text/html;charset=UTF-8
+    Keep-Alive: timeout=20
+    Vary: Accept-Encoding
+    Pragma: no-cache
+    X-NWS-LOG-UUID: bd27210a-24e5-4740-8f6c-25dbafa9c395
+    Content-Length: 180945
+
+    &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; ....
+1. Cache-Control: must-revalidate, no-cache, private
+    1. Server不希望client缓存资源，在下次请求资源时，必须要重新请求Server，不能从
+    缓存副本中获取资源；
+    2. 当请求头中包含Cache-Control: max-age=0，明确表示不会缓存Server资源时，
+    响应头中的Cache-Control通常为no-cache；
+    3. 当请求头中没有Cache-Control时，Server往往会根据不同的资源执行不同的缓存策略，
+    比如说oschina在缓存图片资源的策略就是Cache-Control：max-age=86400，即在86400s
+    的时间内，client可以直接从缓存副本中读取资源，不需要再请求Server；
+2. Connection: keep-alive --&gt; 告诉client，Server的TCP也是一个长链接；
+3. Content-Encoding：响应资源所采用的编码格式，client应采用该编码进行解码；
+4. Content-Type: text/html;charset=UTF-8 --&gt; 响应资源文件的类型及字符编码
+    1. client通过utf-8对资源进行解码，然后对资源进行html解析；
+    2. 如果网站乱码，往往是Server没有返回正确的编码。
+5. Date：Server发送资源时的Server时间，GMT是格林尼治所在地的标准时间；
+    HTTP协议的发送时间都是GMT，主要解决不同时区在互相请求资源时的时间混乱问题；
+6. Expires: Sun, 1 Jan 2000 01:00:00 GMT --&gt; 也跟缓存有关，考虑到client和Server
+    的时间不一定相同，Expires不如Cache-Control准确。
+7. Pragma: no-cache --&gt; 与Cache-Control等同；
+8. Server: Tengine/1.4.6 --&gt; 服务器和版本；
+9. Transfer-Encoding: chunked --&gt; 告诉client，Server是分块发送资源的；
+    1. 一般分块发送的资源都是Server动态生成的，再发送时还不确定资源的大小；
+    2. 每一块都是独立的，都能标识自己的长度，当client读到长度为0的块时，则传输完毕。
+10. Vary: Accept-Encoding --&gt; 告诉代理服务器缓存两种版本的资源：压缩和非压缩；
+    因为现代浏览器都支持压缩，这个字段的用处并不大。
+</code></pre><h4 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h4><pre><code>响应状态码：由3位数字组成，第一个数字表示响应的类别；
+1. 100~199：Server成功接收部分请求，要求client继续提交其余请求才能完成整个处理过程；
+2. 200~299：Server成功接收请求并已完成整个处理过程，常用200 OK 请求成功；
+3. 300~399：为完成请求，client需要进一步细化请求，如：请求的资源已经移动一个新地址，
+    常用302(所请求的页面已经临时转移至新的url)、307和304(使用缓存资源)；
+4. 400~499：client的请求有错误；
+    常用404(服务器找不到请求的页面)、403(服务器拒绝访问，权限不够)；
+5. 500~599：Server出现错误，常用500(请求未完成，Server遇到不可预知的情况)。
+</code></pre><h2 id="urllib2"><a href="#urllib2" class="headerlink" title="urllib2"></a>urllib2</h2><pre><code>urllib2是python2.7自带的模块，是很多网络爬虫的基础库，python3改名为urllib.request；
+urllib2默认只支持HTTP/HTTPS的GET和POST；
+1. 所谓的网页爬取，就是把URL地址中指定的网络资源从网络流中读取出来，保存到本地；
+2. urllib2爬取百度首页
+    1. res = urllib2.urlopen(&quot;http://www.baidu.com/&quot;)
+    2. html = res.read() --&gt; 读取网络流中的资源；
+    3. 如果中文乱码，可以使用html.decode(&apos;gbk&apos;)解码。
+3. 对于缺省的请求头，urllib2会自动添加，但并不是模拟浏览器的header；
+    1. 默认的User-Agent: Python-urllib/sys.version[0:3]
+    2. import sys --&gt; sys.version[0:3] --&gt; 获取python的版本号
+4. urllib2.Request()：构建请求头，模拟真实的client
+    1. ua_headers = {&apos;User-Agent&apos;: &apos;Mozilla/5.0 (Windows......&apos;}
+    2. request = urllib2.Request(&apos;http://www.baidu.com/&apos;, headers=ua_headers)
+    3. res = urllib2.urlopen(request) --&gt; res.read()
+    4. Request(url, data=None, headers={})：data是url提交的数据，如post的提交，
+    同时HTTP请求将从GET改为POST。
+    5. res.getcode() --&gt; HTTP响应码；
+    6. res.geturl() --&gt; 实际响应数据的URL，防止重定向问题；
+    7. res.info() --&gt; 响应的HTTP报文头。
+5. User-Agent：用于决定用户的浏览器，为了获取更好的HTML页面效果；
+    1. 除了Opera，其他浏览器都在间接或直接在Firefox的内核上披了一层外衣；
+    2. Google:Chrome(like webkit) -&gt; Apple:Webkit(like KHTML) -&gt; Linux:KHTML
+    (like Gecko) -&gt; Mozilla:Firefox(Gecko)，IE:Trident，Opera:Presto
+    3. 构建一个User-Agent的列表，列表元素是浏览器真实的User-Agent信息：
+    ua_list = [&apos;Mozilla/5.0 (Windows NT 10.0; Win64; x64) ...&apos;, ......]
+    4. import random --&gt; ua = random.choice(ua_list) --&gt; 随机选择一个元素；
+    5. request.add_header(&apos;User-Agent&apos;, ua) --&gt; 动态添加请求头User-Agent；
+    6. request.get_header(&apos;User-agent&apos;)：获取指定的请求头(注：只有首字母大写)；
+6. URL的中文编码：import urllib
+    1. URL包含中文在时，浏览器发起请求时会自动编码，比如北京：%E5%8C%97%E4%BA%AC
+    每3个作为一组，表示一个中文；空格会被编码成&quot;+&quot;；
+    2. urllib.urlencode(dict) --&gt; 编码的结果：&quot;key1=value1&amp;key2=value2&quot;
+    3. 解码：urllib.unquote(&quot;wd=%E5%8C%97%E4%BA%AC&quot;) --&gt; wd=北京
+    4. 一般HTTP请求提交数据，需要编码成URL编码格式，然后作为url的一部分，或者作为
+    参数传到Request对象中。
+7. urllib、urllib2：都是接受URL请求的相关模块，最显著的不同在于：
+    1. urllib只可以接受URL，不能创建设置了headers的Request的实例对象；
+    2. urllib可以用于URL的编码与解码：urlencode(dict)，unquote(str)
+</code></pre><h3 id="GET与POST"><a href="#GET与POST" class="headerlink" title="GET与POST"></a>GET与POST</h3><pre><code>1. GET请求的参数拼接在URL上，比如百度贴吧的必要参数：kw、pn
+    1. page = int(raw_input(&apos;请输入页码: &apos;))，pn = str((page-1)*50)
+    2. params = urllib.urlencode({&apos;kw&apos;:&apos;平顶山学院&apos;, &apos;pn&apos;:pn})
+    3. url = &apos;http://tieba.baidu.com/f?&apos; + params
+2. POST的请求参数在请求体中，参数必须与爬取网站提交的参数完全一致；
+    1. data = urllib.urlencode({&apos;k1&apos;:&apos;v1&apos;, &apos;k2&apos;:&apos;v2&apos;})
+    2. request = urllib2.Request(url, data=data, headers)
+    3. url并不是浏览器地址栏显示的，而是通过抓包工具获取的、表单提交的URL。
+3. 在headers中加入client保存的Cookie，可以模拟用户的登录，爬取登录后才展示的数据；
+4. headers中不要添加Accept-Encoding: gzip，否则爬取的数据会显示乱码，因为Server
+   传输的是压缩数据；
+5. 有时候POST也能在URL内看到数据，是因为Form表单没有指定method=&apos;post&apos;，默认get。
+</code></pre><h3 id="AJAX"><a href="#AJAX" class="headerlink" title="AJAX"></a>AJAX</h3><pre><code>1. AJAX是动态加载数据的，所以做爬虫最需要关注的不是页面显示的信息，而是信息的来源；
+2. AJAX方式加载的页面，数据来源一定是JSON，爬取到JSON，也就得到了数据；
+3. 通过抓包工具，获取动态数据的URL及其参数，对URL进行POST/GET获取数据。
+</code></pre><h3 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h3><pre><code>1. HTTPS请求需要通过SSL证书验证，如果网站的SSL证书是经过CA认证的，则能正常访问；
+    1. 如果SSL证书验证不通过，浏览器会警告用户证书不受信任，如12306网站；
+    2. urllib2在爬取&apos;https://www.12306.cn/mormhweb/&apos;时，会报出SSLError。
+2. import ssl：SSL处理模块
+    1. context = ssl._create_unverified_context() --&gt; 忽略未经允许的SSL证书
+    2. response = urllib2.urlopen(request, context = context)
+3. 除了电子交易等对安全要求比较高的网站必须使用HTTPS请求之外，一般支持HTTPS请求的URL，
+   都支持HTTP请求，所以爬取的URL使用HTTP即可。
+</code></pre><h2 id="Handler与Opener"><a href="#Handler与Opener" class="headerlink" title="Handler与Opener"></a>Handler与Opener</h2><pre><code>urllib2.urlopen()的实现过程：
+    1. 默认创建的Handler处理器是HTTPSHandler，build_opener(handler)构建Opener实例；
+    2. 由Opener的open()发送请求。
+1. urllib2提供了很多Handler处理器，比如：使用HTTPHandler，自定义Opener
+    handler = urllib2.HTTPHandler()
+    opener = urllib2.build_opener(handler)
+    request = urllib2.Request(&apos;http://www.baidu.com/&apos;)
+    html = opener.open(request).read()
+2. build_opener(handler1, handler2, ...)：可以同时添加多个处理器；
+3. opener.addheaders = [(&apos;k1&apos;,&apos;v1&apos;), (&apos;k2&apos;,&apos;v2&apos;), ...]：也能为Opener添加请求头；
+4. Handler支持调试：Handler(debuglevel=1)，会打印收包和发包的报头信息；
+5. 提升自定义Opener为全局的：urllib2.install_opener(opener)，之后所有的urlopen()
+   都将使用自定义Opener发送请求。
+</code></pre><h3 id="ProxyHandler"><a href="#ProxyHandler" class="headerlink" title="ProxyHandler"></a>ProxyHandler</h3><pre><code>很多网站会检测某段时间内同一个IP的访问次数(流量统计、系统日志等)，禁止访问次数异常的IP；
+所以，设置一些代理服务器，每隔一段时间换一个代理，即便IP被禁止，依然可以更换IP继续爬取。
+1. ProxyHandler：代理处理器，使用代理IP，通常是最好用的爬虫/反爬虫机制；
+2. ProxyHandler({&apos;代理类型&apos;: &apos;代理服务器的Ip:Port&apos;})：如果是空字典，表示不使用代理；
+    1. http_proxy = ProxyHandler({&apos;http&apos;: &apos;124.88.67.54:80&apos;})
+    2. 主机和代理服务器支持的编码可能不一致，而资源服务器是以代理服务器的编码为准，
+    所以本机接收到代理服务器转发的数据之后，需要按照代理服务器的编码进行decode()解码。
+3. 私密代理需要账号密码授权：ProxyHandler({&apos;代理类型&apos;: &apos;用户名:密码@Ip:Port&apos;})
+    1. 用户名/密码错误，会报HTTP Error 407: Proxy Authentication Required
+    2. 代理信息通常不会明文写在代码中，比如放在系统环境变量的配置文件中：
+        proxyuser=&quot;用户名&quot;
+        export proxyuser
+        1. 执行命令：source 文件名 --&gt; 让新的配置信息生效
+        2. import os --&gt; 用于操作系统相关的模块
+        3. name = os.environ.get(&apos;proxyuser&apos;)
+</code></pre><h3 id="授权验证处理器"><a href="#授权验证处理器" class="headerlink" title="授权验证处理器"></a>授权验证处理器</h3><pre><code>HTTPPasswordMgrWithDefaultRealm：密码管理对象，用于保存HTTP请求相关的用户名/密码；
+主要应用：
+    1. 私密代理授权验证的用户名和密码，对应处理器：ProxyBasicAuthHandler
+    2. 验证Web Client的用户名和密码，对应处理器：HTTPBasicAuthHandler
+1. ProxyBasicAuthHandler：可以处理代理身份验证的处理器，ProxyHandler的升级；
+    1. 构建密码管理对象：mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    2. 添加账户信息：mgr.add_password(None, &apos;代理服务器Ip:Port&apos;, &apos;用户名&apos;, &apos;密码&apos;)
+    第一个参数是与远程服务器相关的域信息，一般为None；
+    3. 构建处理身份验证的代理处理器：handler = urllib2.ProxyBasicAuthHandler(mgr)
+    4. 因为这种方式比较复杂，通常还是直接使用ProxyHandler()实现私密验证。
+2. HTTPBasicAuthHandler
+    1. 有些WebServer访问时，需要进行用户身份验证，爬虫直接访问时会报HTTP 401
+    2. 构建密码管理对象：mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    3. 添加账户信息：mgr.add_password(None, &apos;服务器地址&apos;, &apos;用户名&apos;, &apos;密码&apos;)
+    4. 构建WebClient授权验证的处理器：handler = urllib2.HTTPBasicAuthHandler(mgr)
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/爬虫/" rel="tag"># 爬虫</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/01/Django/" rel="next" title="Django">
+                <i class="fa fa-chevron-left"></i> Django
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/05/爬虫基础-2/" rel="prev" title="爬虫基础-2">
+                爬虫基础-2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#爬虫概述"><span class="nav-number">1.</span> <span class="nav-text">爬虫概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#爬虫分类"><span class="nav-number">1.1.</span> <span class="nav-text">爬虫分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP和HTTPS"><span class="nav-number">2.</span> <span class="nav-text">HTTP和HTTPS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP请求"><span class="nav-number">2.1.</span> <span class="nav-text">HTTP请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP响应"><span class="nav-number">2.2.</span> <span class="nav-text">HTTP响应</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#响应状态码"><span class="nav-number">2.2.1.</span> <span class="nav-text">响应状态码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#urllib2"><span class="nav-number">3.</span> <span class="nav-text">urllib2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET与POST"><span class="nav-number">3.1.</span> <span class="nav-text">GET与POST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AJAX"><span class="nav-number">3.2.</span> <span class="nav-text">AJAX</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS"><span class="nav-number">3.3.</span> <span class="nav-text">HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Handler与Opener"><span class="nav-number">4.</span> <span class="nav-text">Handler与Opener</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ProxyHandler"><span class="nav-number">4.1.</span> <span class="nav-text">ProxyHandler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权验证处理器"><span class="nav-number">4.2.</span> <span class="nav-text">授权验证处理器</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

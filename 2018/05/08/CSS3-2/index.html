@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CSS3,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="过渡1. transition：过渡动画     1. CSS的效率极高，速度极快，为此，CSS transition提供了一种在更改CSS属性时，控制动画     速度的方法，它让属性变化持续一段时间，而不是立即生效；     2. 比如，改变一个元素的颜色时，可以用transition逐渐从原色变为目标色；     3. 对于transition作用的属性，不管以哪种方式发生了变化，即使是JS">
+<meta name="keywords" content="CSS3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS3-2">
+<meta property="og:url" content="http://yoursite.com/2018/05/08/CSS3-2/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="过渡1. transition：过渡动画     1. CSS的效率极高，速度极快，为此，CSS transition提供了一种在更改CSS属性时，控制动画     速度的方法，它让属性变化持续一段时间，而不是立即生效；     2. 比如，改变一个元素的颜色时，可以用transition逐渐从原色变为目标色；     3. 对于transition作用的属性，不管以哪种方式发生了变化，即使是JS">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-12-19T10:58:55.795Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSS3-2">
+<meta name="twitter:description" content="过渡1. transition：过渡动画     1. CSS的效率极高，速度极快，为此，CSS transition提供了一种在更改CSS属性时，控制动画     速度的方法，它让属性变化持续一段时间，而不是立即生效；     2. 比如，改变一个元素的颜色时，可以用transition逐渐从原色变为目标色；     3. 对于transition作用的属性，不管以哪种方式发生了变化，即使是JS">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/08/CSS3-2/">
+
+
+
+
+
+  <title>CSS3-2 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/08/CSS3-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSS3-2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-08T00:00:00+08:00">
+                2018-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="过渡"><a href="#过渡" class="headerlink" title="过渡"></a>过渡</h2><pre><code>1. transition：过渡动画
+    1. CSS的效率极高，速度极快，为此，CSS transition提供了一种在更改CSS属性时，控制动画
+    速度的方法，它让属性变化持续一段时间，而不是立即生效；
+    2. 比如，改变一个元素的颜色时，可以用transition逐渐从原色变为目标色；
+    3. 对于transition作用的属性，不管以哪种方式发生了变化，即使是JS操作，也会执行；
+    4. 但是，并不是所有的属性变化都支持transition，比如display:none;
+    5. transition只关心元素的初始状态和结束状态，无法定制过渡动画中的每一帧状态。
+2. transition-property：指定使用过渡的属性，可指定多个，默认为all(所有变化的属性)
+3. transition-duration：动画执行的时间，必须以秒(s)和毫秒(ms)为单位，默认值为0s
+    &lt;div id=&quot;wrap&quot;&gt; &lt;div id=&quot;inner&quot;&gt;&lt;/div&gt; &lt;/div&gt;
+    #wrap { width:600px; height:600px; border:1px solid red; }
+    #inner { width:200px; height:200px; background:red; }
+    1. 鼠标悬浮在wrap上时，让inner的宽高变小
+    #wrap:hover #inner{ width:100px; height:100px; background:green; }
+    2. 让wrap的宽度变化有过渡动画，且动画时间为5s
+    #inner{ transition-property:width; transition-duration:5s; }
+    3. 动画会执行两次，分别是悬停在wrap上(hover事件)、移出wrap(恢复初始状态)
+    4. -duration的复制原理：当指定的属性列表大于时间列表时，时间列表会拷贝一份
+    transition-property: width,height,background;
+    transition-duration: 5s,2s; --&gt; 5s,2s,5s,2s --&gt; 最后一个2s会被裁剪
+    5. 时间列表中有任何一个值不加单位，整个动画机制都会失效。
+4. transition-timing-function：变化的过程，变化速率的曲线，默认ease(加速然后减速)
+    1. 如果速率列表小于属性列表，缺少的速率会被设置为默认值ease，反之会被裁剪；
+    2. liear(匀速)、ease-in(加速)、ease-out(减速)、ease-in-out(加速然后减速)
+    3. cubic-bezier(贝塞尔曲线)、step-start、step-end、steps(number, ...)
+    4. step-start、step-end分别等同于steps(1,start)、steps(1,end)
+    5. steps(start, end)：第一个参数必须是正整数，表示函数的步数，第二个值表示每一步发生
+    变化的时间点，默认值end
+5. transition-delay：动画执行的延迟时间，复制原理与-duration相同；
+6. 过渡动画的完成事件
+    1. 标准浏览器下的完成事件是transitionend，而webkit下是webkitTransitionEnd
+    2. 每一个拥有过渡动画的属性，在完成动画时都会分别触发一次transitionend事件；
+    3. 在过渡动画完成之前，设置display:none; 不会再触发transitionend事件。
+7. transition的天然缺陷
+    1. 缺陷一：动画是浏览器的渲染机制进行渲染的，其渲染速度要小于CSS、JS的解析速度
+    #inner { transition-property:width; transition-duration:2s; }
+    #wrap:hover #inner{ transition-property:height; --&gt;修改过渡动画作用的属性
+        width:100px; height:100px; }
+    2. hover事件迅速修改了transition作用的属性，等到浏览器的渲染机制执行动画时，发现使用
+    过渡动画的属性是height，所以对height执行transition动画；
+    3. 鼠标移出wrap时，transition作用的属性又恢复为width，所以渲染机制对width执行动画。
+    2. 缺陷二：transition在元素首次渲染还没有结束的情况下，是不会被执行的；
+    let inner = document.querySelector(&quot;#inner&quot;)
+    inner.style[&apos;width&apos;] = &apos;100px&apos; --&gt;虽然放在&lt;body&gt;之后执行，但也不会触发动画
+    3. JS要触发transition，必须在window.onload的回调函数中执行，等待页面渲染完成。
+8. transition的简写：transition: property,duration,timing-function,delay
+    1. 同时设置多个属性：transition: 2s 3s width, 3s height;
+    2. 第一个时间被解析为动画执行的时间，第二个时间被解析为动画的延迟时间；
+    3. width的动画时间为2s，延迟时间为3s，height的执行时间为3s，延迟时间为0s
+</code></pre><h2 id="变形"><a href="#变形" class="headerlink" title="变形"></a>变形</h2><pre><code>1. transform：变形，2D变换，只对块级元素有效；
+2. transform是静态效果，并不会有过渡动画，需要配合transition属性；
+3. 旋转：transform: rotate(360deg);
+4. 平移
+    1. 水平移动：transform: translateX(200px); --&gt; 向右平移200px
+    2. 垂直移动：transform: translateY(400px); --&gt; 向下平移400px
+    3. 指定坐标点的移动：transform: translate(100px,100px); --&gt;坐标(100,100)
+    4. 设置为负值表示反向移动，translate()只设置一个值时，表示Y轴为0px
+    5. translate(x,y)使用百分比时，分别参照自身的width和height
+5. 斜切：skewX(45deg)、skewY(45deg)、skew(45deg, 45deg)
+    transform: skewX(45deg); --&gt;沿X轴斜切45°，支持负值
+6. 缩放：scale()、scaleX()、scaleY()
+    1. 缩小的范围为0-1，放大的范围则大于1，负值有旋转效果，不推荐使用；
+    transform: scaleX(.5); --&gt; 0.5, 缩小一倍
+    2. scale(x, y)：只设置一个值时，表示x与y相等。
+7. 基点的变换：transform-origin，改变元素变形的基点
+    1. 支持关键字：left、right、top、bottom、center
+    #inner{ transition:2s; transform-origin:left top; } -&gt;以盒子左上角为基点
+    2. 也支持px值和百分比，以盒子的左上角为原点(0, 0)
+    #inner{ transition:2s; transform-origin:10px 10px; } -&gt;基点(10,10)
+    3. 旋转、斜切、缩放的基点默认都是盒子的中心点(50%,50%)
+8. transform不会影响文档流，盒子的位移、缩放等不会改变相邻盒子的位置，性能更高。
+</code></pre><h3 id="变换组合"><a href="#变换组合" class="headerlink" title="变换组合"></a>变换组合</h3><pre><code>1. 所有2D变换的底层实现都是依靠矩阵：transform: matrix(a,b,c,d,e,f);
+    1. 平移对应的矩阵：transform: matrix(1,0,0,1,X,Y);
+    2. transform: matrix(1,0,0,1,300,0); --&gt;平移300px
+2. 变换组合的底层渲染就是矩阵计算，且矩阵计算的方向是从右向左
+    transform: translateX(100px) scale(0.5); --&gt;平移与缩放的组合
+    1. 原理：先计算缩放的矩阵，再计算位移的矩阵，且矩阵的运算是不可逆的；
+    2. 组合变换的位置不同，矩阵的计算结果也不同，展现的过程和结果也不相同。
+3. 在切换组合变换的样式时，必须保证组合变换的个数、位置相同，否则可能不会执行过渡；
+    if(flag) {
+        box.style.transform = &apos;rotate(-720deg) scale(1)&apos;
+    } else {
+        box.style.transform = &apos;rotate(0deg) scale(1)&apos;
+    }
+4. 扇形导航：定位、transform、勾股定理、三角函数、角度与弧度的转化
+5. 时钟：通过JS批量处理HTML节点与style样式，transform-origin改变元素变换的基点
+</code></pre><h2 id="3D变换"><a href="#3D变换" class="headerlink" title="3D变换"></a>3D变换</h2><pre><code>1. 3D变换：3D缩放、3D旋转、3D平移
+2. 3D旋转
+    1. transform: rotate(360deg); 默认就是按照Z轴旋转，等同于rotateZ(360deg);
+    2. rotateX(360deg); rotateY(360deg); 分别按照X轴、Y轴旋转
+    3. rotate3d(x,y,z,deg)：(x,y,z)表示3D空间的一个点，坐标原点到(x,y,z)形成一条射线，
+    元素按照这条射线旋转。
+3. 3D平移
+    1. transform: translateZ(100px); Z轴不支持百分比，只有X轴和Y轴支持；
+    2. translate3d(x,y,z);
+4. 3D缩放：transform: scaleZ(2);
+</code></pre><h3 id="景深"><a href="#景深" class="headerlink" title="景深"></a>景深</h3><pre><code>1. 景深：激活3D空间，元素会有近大远小的效果，营造立体空间感
+    1. 简单讲，景深就是肉眼距离显示器的距离，景深越大，元素离眼睛越远，反之越近；
+    2. 景深是不可继承属性，但其所有的后代元素都会受影响，应用景深的元素称为舞台元素。
+2. 两种使用方式：transform:perspective(depth);  perspective:depth;
+    1. transform:perspective(depth); 直接作用的当前元素本身，且必须放在transform的
+    第一个位置，否则会被忽略；
+    2. perspective:depth; 作用在子元素上，使用该属性的元素只是作为一个包裹器；
+    3. depth的默认值为none，可以设置一个px值，表示沿着Z轴到坐标原点的距离。
+3. 原理：景深越大，灭点越远，元素变形越小，反之亦然；
+    1. 灭点：元素变形后，一直向远处的方向，会有一个交叉点，称之为灭点
+    2. 以火车铁轨为例，一直沿着铁轨向远处眺望，会发现两条铁轨逐渐靠近，最终交叉成一个点。
+4. perspictive-origin：控制景深的基点，默认值是盒模型宽高的(50% 50%)
+5. 景深叠加
+    1. 如果当前元素已经使用了景深，其后代元素也应用了景深，效果会叠加，而不是覆盖；
+    2. 每款浏览器的景深叠加是不同的，所以尽量避免景深叠加，后代元素不要再使用景深。
+</code></pre><h3 id="3d舞台"><a href="#3d舞台" class="headerlink" title="3d舞台"></a>3d舞台</h3><pre><code>1. 3D舞台：只有近大远小的效果是不够的，需要营造具有层级的3d舞台；
+2. transform-style：3D舞台，不可继承，作用于子元素，而不是元素自身；
+    transform-style: preserve-3d;
+3. backface-visibility：是否显示元素的背面，默认值visible(显示)，hidden(隐藏)
+    1. 对于立体的元素，设置了透明度后，可以看到其他位面，此属性可以隐藏其他位面；
+    2. 以立方体为例，隐藏其他位面之后，只保留正向的位面。
+</code></pre><h4 id="transition旧版"><a href="#transition旧版" class="headerlink" title="transition旧版"></a>transition旧版</h4><pre><code>待整理
+1. transition-property：设置过度的属性，比如width、height、background-color；
+2. transition-duration：设置过度的时间，比如 1s，500ms；
+3. transition-timing-function：设置过度的运动方式；
+    1. linear 匀速；ease 开始和结束慢速；ease-in/ease-out 开始/结束是慢速；
+    2. ease-in-out 开始和结束时慢速；cubic-bezier(n,n,n,n) 设置曲线；
+4. transition-delay：设置动画的延迟；
+5. 复合属性的设置：transition:property duration timing-function delay;
+6. 动画播放：
+    1. 为盒子添加hover事件，当鼠标悬停在盒子上时，开始播放动画；
+    1. width、height、background-color、border-radius的播放顺序与排列顺序有关；
+    2. 每种动画同时播放：transition:all 500ms ease;
+    3. 曲线设置的网站：https://matthewlein.com/tools/ceaser
+</code></pre><h4 id="transform旧版"><a href="#transform旧版" class="headerlink" title="transform旧版"></a>transform旧版</h4><pre><code>待整理
+1. translate(x, y)：盒子位移到(x, y)的像素坐标点，单位是px；
+    1. 三维移动：translateX(10px)、translateY(10px)、translateZ(10px)
+2. scale(x, y)：盒子缩放，x=y=1，表示原始大小，x=y=0.5，表示盒子大小的一半；
+3. rotate(x)：盒子旋转，x表示角度，单位是deg，支持正负值，默认是Z轴旋转；
+    1. 三维旋转：rotateX(30deg)、rotateY(30deg)、rotateZ(30deg)
+4. skew(x, y)：斜切，x、y表示X轴和Y轴斜切的角度，单位是deg；
+5. perspective(x)：设置透视距离，单位是px；
+    1. 三维操作需要配合透视距离才能显现效果，特征：近大远小；
+    2. 通常设置为800px，更容易欺骗眼睛。
+6. transform-style：盒子是否按3D空间显示，flat/perserve-3d；
+8. backface-visibility：设置盒子背面是否可见，默认可见visible，hidden表示不可见；
+    1. rotateY(180deg)：盒子沿Y轴旋转180度，若设置背面不可见，盒子会隐藏；
+</code></pre><h2 id="动画"><a href="#动画" class="headerlink" title="动画"></a>动画</h2><pre><code>1. animation：动画，作用的元素一旦加载就会执行动画，不会等待页面完全渲染；
+    1. 人类具有视觉暂留的特性，人的眼睛在看到一幅画或一个物体后，在0.34s内不会消失；
+    2. 动画的原理：把人物的表情、动作、变化等分解后，画成许多动作瞬间的画幅，利用视觉暂留的
+    特性，在一幅画消失之前，播放下一幅画，就会给人造成一种流畅的视觉变化效果。
+    3. CSS3动画：将元素从一个样式逐渐过渡到另一种样式的效果。
+2. @keyfrmes 关键帧(动画的标识) { from{ //动画的初始状态 }  to{ //动画的结束状态 } }
+</code></pre><h3 id="动画属性"><a href="#动画属性" class="headerlink" title="动画属性"></a>动画属性</h3><pre><code>1. animation-name：关键帧的名称，none表示无关键帧；
+2. animation-duration：动画的时间，默认值为0s，表示无动画，单位为s、ms
+    &lt;div id=&quot;box&quot;&gt;&lt;/div&gt; --&gt;div{ width:100px; height:100px; }
+    #box{ animation-name:move; animation-duration:3s; }
+    @keyframes move { ---&gt; 旋转360°的动画关键帧
+        from{ transform: rotate(0deg); }
+        to{ transform: rotate(360deg); }
+    }
+3. animation-timing-function：动画的执行函数，默认是由慢变快再变慢
+    1. linear：线性过渡，等同于贝塞尔曲线(0, 0, 1, 1)
+    2. ease：平滑过渡，等同于贝塞尔曲线(0.25, 0.1, 0.25, 1.0)
+    3. ease-in：慢-&gt;快，等同于贝塞尔曲线(0.42, 0, 1, 1)
+    4. ease-out：快-&gt;慢，等同于贝塞尔曲线(0, 0, 0.58, 1)
+    5. ease-in-out：慢-&gt;快-&gt;慢，等同于贝塞尔曲线(0.42, 0, 0.58, 1)
+    6. steps(n, start|end)：第一个参数表示把动画分成n等分，第二个参数默认为end
+4. animation-delay：动画执行的延迟时间，属于动画外的范畴；
+5. animation-iteration-count：动画的执行次数，重复执行的是关键帧，from-&gt;to
+    1. 与name、duration、function都是属于表示动画内的范畴；
+    2. 动画的执行时间为1s，执行次数为3，延迟时间为1s，那么动画只会在开始时延迟1次，重复时
+    不会再延迟；
+    3. infinite：无限循环。
+6. animation-direction：动画执行的方向，默认值normal，reverse表示反向
+    1. reverse反向的是关键帧和执行函数，关键帧：to-&gt;from，ease-in：快-&gt;慢
+    2. alternate：执行次数大于1时，让动画连续执行，from-&gt;to-&gt;from-&gt;to-&gt;from-&gt;...
+    3. alternate-reverse：to-&gt;from-&gt;to-&gt;from-&gt;to-&gt;...
+7. animation-fill-mode：元素在动画外的状态，默认情况下，动画执行完还会回到元素的初始状态
+    1. backwards：元素的初始状态与from中定义的状态保持一致；
+    2. forwards：动画执行结束后，元素的状态与to中定义的状态保持一致；
+    3. both：元素的初始状态和结束状态分别与from、to中定义的状态保持一致。
+8. animation-play-state：动画的执行与暂停，paused(暂停)，running(执行)
+    #box:hover { animation-play-state:parsed; } --&gt;鼠标悬停在box上时，动画暂停
+9. 简写属性：animation: name duration function delay count direction mode state;
+    1. 第一个time会分配给duration，第二个time会分配给delay
+    2. animation: 2s 3s; --&gt; 动画执行时间为2s，延迟时间为3s
+</code></pre><h3 id="关键帧"><a href="#关键帧" class="headerlink" title="关键帧"></a>关键帧</h3><pre><code>1. 关键帧：@keyframes
+    @keyframes name {
+        keyframes-selector { css声明; }
+    }
+    1. name：动画的名称，必选项；
+    2. keyframes-selector：动画持续时间的百分比，from相当于0%，to相当于100%
+    @keyframes move {
+        0% { transform: translateY(-100px); } --&gt;动画的初始状态
+        50% { transform: translateY(-50px); } --&gt;动画时间执行50%时的状态
+        100% { transform: translateY(100px); } --&gt;动画时间执行结束时的状态
+    }
+    1. animation-timing-function作用于一个动画周期，而非整个动画周期；
+    2. 0% -&gt; 50%，50% -&gt; 100% 表示两个动画周期
+2. animation-timing-function: steps(n, start|end);
+    @keyframes move {
+        0%{ transform: translateY(-100px); }
+        25%{ transform: translateY(-90px); }
+        50%{ transform: translateY(0px); }
+        75%{ transform: translateY(90px); }
+        100%{ transform: translateY(100px); }
+    }
+    animation: move 4s both running 3 alternate steps(1, end);
+    1. n：表示把一个动画周期分成n步执行，1 表示一步执行完，跳变执行，没有过渡动画；
+    2. 执行时间为4s，执行次数为3，那么总的动画执行时间为3*4s=12s
+1. steps(1, end)的执行过程：
+    0% 等待1s -&gt; 25% 等待1s -&gt; 50% 等待1s -&gt; 75% 等待1s =&gt; 动画执行1次=&gt; 75% 等待1s
+    -&gt; 50% 等待1s -&gt; 25% 等待1s -&gt; 0% 等待1s =&gt; 执行2次=&gt; 0% 等待1s -&gt; 25% 等待1s-
+    -&gt; 50% 等待1s -&gt; 75% 等待1s =&gt; 执行3次=&gt; 100% =&gt; 动画结束
+    1. 动画执行1次结束、开始执行第2次时，还会在75%的状态等待1s，相当于在75%等待了2s
+    2. 同理，第2次执行结束、开始执行第3次时，也会在0%再等待1s
+    3. 其实，第3次执行结束后，动画已经结束了，但因为animation-fill-mode:both; 所以元素
+    最后的状态必须处在最后一帧，即100%的状态；
+    4. 综上所述，end是看不到最后一帧的，也就是100%时的状态。
+2. steps(1, start)的执行过程：
+    25% 等待1s -&gt; 50% 等待1s -&gt; 75% 等待1s -&gt; 100% 等待1s =&gt; 执行1次 =&gt; 100% 等待1s
+    -&gt; 75% 等待1s -&gt; 50% 等待1s -&gt; 25% 等待1s =&gt; 执行2次=&gt; 25% 等待1s -&gt; 50% 等待1s
+    -&gt; 75% 等待1s -&gt; 100% 等待1s =&gt; 动画结束
+    1. 动画开始执行时，已经从0%跳变到25%，所以在这个动画的执行过程中，都没有0%的状态；
+    2. 所以，start是看不到第一帧的，也就是0%时的状态。
+3.steps()的跳变动画，可用于实现连环画的效果，比如GIF表情包
+    1. 以微信的兔斯基表情为例，一张连续动作的静态图片，假设一共12个动作，加上最后一张空白
+    2. 把图片设置为background-image的属性值，再通过animation修改background-position
+    @keyframes move { from{} to{}}
+    3. steps(12, end)：把 from-&gt;to 的一个周期划分为12步，即12帧，再设置次数为infinite
+    4. end看不到最后一帧，但动作表情是12个，第13个是空白，用于占位，所以刚好看不到第13帧
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CSS3/" rel="tag"># CSS3</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/07/CSS3-1/" rel="next" title="CSS3-1">
+                <i class="fa fa-chevron-left"></i> CSS3-1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/09/CSS3-3/" rel="prev" title="CSS3-3">
+                CSS3-3 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#过渡"><span class="nav-number">1.</span> <span class="nav-text">过渡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变形"><span class="nav-number">2.</span> <span class="nav-text">变形</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#变换组合"><span class="nav-number">2.1.</span> <span class="nav-text">变换组合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3D变换"><span class="nav-number">3.</span> <span class="nav-text">3D变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#景深"><span class="nav-number">3.1.</span> <span class="nav-text">景深</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3d舞台"><span class="nav-number">3.2.</span> <span class="nav-text">3d舞台</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#transition旧版"><span class="nav-number">3.2.1.</span> <span class="nav-text">transition旧版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#transform旧版"><span class="nav-number">3.2.2.</span> <span class="nav-text">transform旧版</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动画"><span class="nav-number">4.</span> <span class="nav-text">动画</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动画属性"><span class="nav-number">4.1.</span> <span class="nav-text">动画属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关键帧"><span class="nav-number">4.2.</span> <span class="nav-text">关键帧</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

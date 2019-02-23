@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HTML5,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="HTML51. HTML5：HTML标准的的最新版本，是一个更大的技术集，具有新的元素、属性、行为； 2. 跨平台：H5本身并不能跨平台，但浏览器是跨平台的，如Java语言不跨平台，但JVM是跨平台的； 3. HTML运行在浏览器上，是唯一可以通吃PC、MAC、iPhone、Android、Linux等主流平台的语言。 H5与H41. &amp;lt;meta charset=&amp;quot;UTF-8&amp;qu">
+<meta name="keywords" content="HTML5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML5-1">
+<meta property="og:url" content="http://yoursite.com/2018/05/12/HTML5-1/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="HTML51. HTML5：HTML标准的的最新版本，是一个更大的技术集，具有新的元素、属性、行为； 2. 跨平台：H5本身并不能跨平台，但浏览器是跨平台的，如Java语言不跨平台，但JVM是跨平台的； 3. HTML运行在浏览器上，是唯一可以通吃PC、MAC、iPhone、Android、Linux等主流平台的语言。 H5与H41. &amp;lt;meta charset=&amp;quot;UTF-8&amp;qu">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-10-14T05:10:22.259Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTML5-1">
+<meta name="twitter:description" content="HTML51. HTML5：HTML标准的的最新版本，是一个更大的技术集，具有新的元素、属性、行为； 2. 跨平台：H5本身并不能跨平台，但浏览器是跨平台的，如Java语言不跨平台，但JVM是跨平台的； 3. HTML运行在浏览器上，是唯一可以通吃PC、MAC、iPhone、Android、Linux等主流平台的语言。 H5与H41. &amp;lt;meta charset=&amp;quot;UTF-8&amp;qu">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/12/HTML5-1/">
+
+
+
+
+
+  <title>HTML5-1 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/12/HTML5-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTML5-1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-12T00:00:00+08:00">
+                2018-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="HTML5"><a href="#HTML5" class="headerlink" title="HTML5"></a>HTML5</h2><pre><code>1. HTML5：HTML标准的的最新版本，是一个更大的技术集，具有新的元素、属性、行为；
+2. 跨平台：H5本身并不能跨平台，但浏览器是跨平台的，如Java语言不跨平台，但JVM是跨平台的；
+3. HTML运行在浏览器上，是唯一可以通吃PC、MAC、iPhone、Android、Linux等主流平台的语言。
+</code></pre><h3 id="H5与H4"><a href="#H5与H4" class="headerlink" title="H5与H4"></a>H5与H4</h3><pre><code>1. &lt;meta charset=&quot;UTF-8&quot;&gt;：告诉浏览器以utf-8渲染当前的html文档；
+2. DOCTYPE
+    1. DOCTYPE：Document Type Declaration，文档类型声明，简称DTD
+    2. 通常情况下，DOCTYPE在HTML文档的首行位置，因为浏览器在解析HTML正文之前，必须确定
+    当前文档的类型，再决定需要采用的渲染模式；
+    3. 不同的渲染模式会影响浏览器对于CSS、JS的解析。
+3. 浏览器的渲染模式
+    1. 目前为止，浏览器主要包括三种渲染模式，在H5草案中规定了模式的定义；
+    2. 现代主流浏览器，包括IE9以上的浏览器，三种模式在渲染方面几乎没有区别；
+    3. IE7/8/9理论上存在怪异模式，但实际上只有标准模式；
+    4. 在IE6中，标准模式和怪异模式的差别最大，而IE6以下的浏览器只有怪异模式。
+4. document.compatMode：查看当前的渲染模式，返回两个值CSS1Compat、BackCompat
+    1. 标准兼容模式：CSS1Compat，怪异模式：BackCompat
+    2. H5文件的首行声明：&lt;!DOCTYPE html&gt; ==&gt;&gt;表示开启标准模式，必须放在首行才有效
+    3. 如果不声明&lt;!DOCTYPE html&gt;，或者&lt;!DOCTYPE html&gt;的位置不正确，则开启怪异模式。
+5. H4的声明、根标签、META
+    &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot; ······&gt;
+    &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; lang=&quot;en&quot;&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;&quot; charset=&quot;UTF-8&quot; /&gt;
+    1. xmlns：XHTML1.0的概念，声明命名空间，而H5中的每个元素都具有此空间，不需要声明；
+    2. H5中已经简化了根标签的声明：&lt;html&gt;&lt;/html&gt;
+    3. META类型：Content-Type:text/html; 在网络传输声明当前数据类型为html；
+    4. 在H5中，Content-Type的声明已经被移植到HTTP中，不需要在&lt;meta /&gt;上声明。
+</code></pre><h3 id="语义化标签"><a href="#语义化标签" class="headerlink" title="语义化标签"></a>语义化标签</h3><pre><code>1. 常用的H5语义化标签：&lt;hgroup&gt;、&lt;header&gt;、&lt;nav&gt;、&lt;section&gt;、&lt;footer&gt;、&lt;article&gt;...
+    1. 各大浏览器厂商在分析了大量的页面之后，发现&lt;div&gt;的id名称大量重复，如id=&quot;footer&quot;
+    标记页脚内容，所以引入了语义化标签；
+    2. 这些语义化标签其实也是&lt;div&gt;，它们也没有任何默认样式，除了会让文本另起一行之外；
+    3. HTML5通过这些语义化、结构化的代码标签，代替无意义的&lt;div&gt;，提升了网页的质量和语义，
+    对搜索引擎也更加友好。
+2. 测试H5文档的语义化站点：https://gsnedders.html5.org/outliner/
+3. &lt;hgroup&gt;：多个h1-h6的容器，比如文章的主标题和副标题
+    1. 如果有连续多个h1-h6标签，就用&lt;hgroup&gt;包裹，如果只有一个h1-h6标签，则不需要；
+    2. 如果有连续多个标题和其他数据，则标题放入&lt;hgroup&gt;，并和其他数据一起放入&lt;header&gt;
+4. &lt;header&gt;：网页或&lt;section&gt;的页眉，没有个数限制，通常会包含h1-h6或者&lt;hgroup&gt;
+5. &lt;nav&gt;：页面的导航区域，用于定义整个页面的主要导航部分
+6. &lt;section&gt;：h5文档中的片段，节
+7. &lt;article&gt;：表示一个文档，在页面中自成一体的内容
+8. &lt;aside&gt;：可用于侧边栏、副导航、附属信息如名词解释
+</code></pre><h2 id="prop与attribute"><a href="#prop与attribute" class="headerlink" title="prop与attribute"></a>prop与attribute</h2><pre><code>1. 以复选框为例，checked表示勾选，其属性值并没有类型之分，都是字符串，只要使用了此属性，
+   复选框都会被勾选；
+    &lt;input type=&quot;checkbox&quot; checked=&quot;checked&quot; /&gt;
+    &lt;input type=&quot;checkbox&quot; checked=&quot;true&quot; /&gt;
+    &lt;input type=&quot;checkbox&quot; checked=&quot;234&quot; /&gt; &lt;input type=&quot;checkbox&quot; checked /&gt;
+2. 标签上固有的属性，称为html预定义属性，如type、check，除此之外，还有html自定义属性；
+    &lt;input type=&quot;checkbox&quot; checked=&quot;true&quot; abc=&quot;abc&quot; /&gt; --&gt;abc就是自定义属性
+    1. 预定义属性和自定义属性统称为attribute，在元素对象的attributes属性中管理；
+    2. JS原生对象的直接属性，被称为property，如attributes
+    3. 每一个预定义的attribute都会有一个property与之对应，即attributes中管理的预定义
+    属性，在对象的直接属性上也会有一份，但自定义属性不会有；
+    元素对象==&gt; {
+        attributes: { type:&quot;checkbox&quot;, check:&quot;true&quot;, abc:&quot;abc&quot; },
+        type:&quot;checkbox&quot;,
+        check:&quot;true&quot;
+    }
+    4. attributes中管理的属性，是以对象的形式管理的，这些属性对象被称为属性节点，它们都
+    具有3个通用的属性，分别是：nodeName、nodeType、nodeValue
+    5. 属性节点的nodeType都是2，以type属性为例：&quot;type&quot;, 2, &quot;checkbox&quot;
+    6. 操作attributes中的属性：setAttribute()、getAttribute()、removeAttribute()
+3. 调试的关键字：debugger
+4. attribute与property的关系
+    &lt;input type=&quot;checkbox&quot; checked=&quot;true&quot; name=&quot;user&quot; /&gt;
+    let pt = document.querySelector(&apos;input[type=checkbox]&apos;)
+    1. pt.setAttribute(&apos;checked&apos;, false); --&gt; 操作的是attribute
+    2. pt.checked=false; pt[&apos;name&apos;]=&apos;psd&apos;; ---&gt; 操作的是property
+    3. 布尔值属性：property是布尔值类型，如checked
+    pt.checked=&apos;123&apos;; --&gt;&apos;123&apos;会转为布尔型 --&gt;console.log(pt.checked)--&gt;true
+    4. 非布尔值属性：property是非布尔值类型，如name、type
+</code></pre><h3 id="attribute与property的同步"><a href="#attribute与property的同步" class="headerlink" title="attribute与property的同步"></a>attribute与property的同步</h3><pre><code>1. 非布尔值属性：attribute与property会立刻实时同步，修改任意一方，另一方也会随之改变；
+2. 布尔值属性
+    1. 改变property，不会同步修改attribute
+    2. 在没有修改过property时，修改attribute，会同步修改property
+    3. 一旦修改过property，则不会再同步给attribute
+    4. property保存的始终是布尔值，而attribute中保存的则是当前设置的值
+    pt.setAttribute(&apos;checked&apos;, &apos;abc&apos;) --&gt;attribute：checked:&apos;abc&apos;
+3. 浏览器界面上的操作，影响的是property，还是attributes
+    1. 对于非布尔值属性，property和attributes是相互同步的，相对来说，操作attribute的
+    成本更低，因为操作property会有一个转换过程；
+    2. 鼠标选中/取消复选框，即操作布尔值属性，改变的也是property，不会影响attribute
+    3. 即：只有property变化了，浏览器界面上的属性效果才会随之变化，所以操作布尔值属性时，
+    务必使用property
+</code></pre><h2 id="新增功能"><a href="#新增功能" class="headerlink" title="新增功能"></a>新增功能</h2><pre><code>    &lt;div id=&quot;box&quot; data-test=&quot;123&quot; data-user-name=&quot;Mack&quot;&gt;&lt;/div&gt;
+    let node = document.querySelector(&quot;#box&quot;)
+1. classList：标签上的CSS选择器的集合
+    1. node.classList.add(&quot;test&quot;); --&gt; 添加一个新的选择器test
+    2. node.classList.remove(&quot;test&quot;); --&gt; 移出选择器test
+    3. node.classList.toggle(&quot;test&quot;); --&gt; 如果有，则移出，反之则添加
+2. dataset：标签上的自定义属性的集合
+    1. 对于以 data- 开头的自定义属性，都会保存在元素的 dataset 中；
+    2. node.dataset.test：获取自定义属性test的属性值，同时可以直接修改此属性值；
+    3. 对于 - 连接的自定义属性，必须使用驼峰式操作：node.dataset.userName
+    node.dataset[&apos;userName&apos;]，不能使用node.dataset[&apos;user-name&apos;]
+    4. node.dataset.password=&apos;abcde&apos;; --&gt;在dataset中新增/修改自定义属性
+    5. delete node.dataset[&apos;userName&apos;]; --&gt;删除dataset中的自定义属性
+    6. for-in 可以遍历dataset，但for-of不能。
+3. attribute操作dataset
+    1. node.attributes：获取当前标签显式使用的属性，包括自定义属性；
+    2. node.attributes中管理的标签属性，就是标签上的名称，即使是自定义属性，也不会改变
+        node.attributes：NamedNodeMap{ id, data-test, data-user-name }
+    3. attributes必须使用 for-of 遍历，不能用 for-in
+    4. setAttribute()、getAttribute()：也可以操作自定义属性
+        node.setAttribute(&apos;data-user-name&apos;, &apos;abc&apos;); --&gt;修改自定义属性
+    5. setAttribute(&apos;data-evty&apos;, &apos;12&apos;)：添加自定义属性，因为是以&quot;data-&quot;开头的属性，
+    所以该属性也会被 dataset 管理。
+4. 让标签内的字符串文本可编辑：contenteditable=&quot;true&quot;
+    &lt;div id=&quot;box&quot; contenteditable=&quot;true&quot;&gt;新增标签属性&lt;/div&gt;
+</code></pre><h2 id="其他新增标签"><a href="#其他新增标签" class="headerlink" title="其他新增标签"></a>其他新增标签</h2><pre><code>1. &lt;meter&gt;：用于显示已知范围的标量值/分数值，默认样式类似于进度条
+    1. value：当前数值
+    2. min/max：最小/最大边界值，如果没有设置，默认为0/1
+    3. low/high：定义了低值/高值区间的上限值/下限值，value处在低值与高值区间的样式不同
+    4. optimum：用于指示最优/最佳的取值。
+&lt;meter value=&quot;80&quot; min=&quot;0&quot; max=&quot;100&quot; low=&quot;40&quot; high=&quot;60&quot; optimum=&quot;50&quot;&gt;&lt;/meter&gt;
+2. &lt;progress&gt;：用于显示一项任务的完成进度，默认样式为带有单元格的进度条
+    1. max：总进度
+    2. value：当前完成的进度，如果不设置，进度条不会显示任何进度。
+3. 列表标签：datalist、detail、summary
+    1. datalist：让input输入框具备可选列表，类似于&lt;select&gt;的列表
+    &lt;input type=&quot;text&quot; list=&quot;zdy&quot; /&gt;
+    &lt;datalist id=&quot;zdy&quot;&gt; -------------------&gt;通过id属性绑定input
+        &lt;option value=&quot;1&quot;&gt;列表标签&lt;/option&gt;
+    &lt;/datalist&gt;
+    2. detail、summary：展开/折叠
+    &lt;detail&gt;
+        &lt;summary&gt;用于展开折叠的文本&lt;/summary&gt;
+        &lt;p&gt;被折叠的内容&lt;/p&gt;
+        &lt;p&gt;被折叠的内容&lt;/p&gt;
+    &lt;/detail&gt;
+4. 注释标签：ruby、rt，展示文字注音或字符注释
+    &lt;span&gt;&lt;ruby&gt;注&lt;rt&gt;zhu&lt;/rt&gt;释单词&lt;/ruby&gt;&lt;/span&gt;  --&gt;&quot;注&quot;的上面会有注音&quot;zhu&quot;
+5. 标记标签：&lt;mark&gt;着重内容&lt;/mark&gt;
+</code></pre><h3 id="新增表单属性"><a href="#新增表单属性" class="headerlink" title="新增表单属性"></a>新增表单属性</h3><pre><code>1. placeholder：输入框的提示信息，&lt;input type=&quot;text&quot; placeholder=&quot;请输入账号&quot; /&gt;
+2. autofocus：指定表单获取输入焦点，布尔值属性，&lt;input type=&quot;text&quot; autofocus /&gt;
+3. required：必填项、必选项，不能为空；如果没有内容/选项，在提交表单时会弹框提示；
+4. pattern：自定义正则校验，如果不符合正则，提交时会弹框提示；
+    &lt;input type=&quot;text&quot; pattern=&quot;\d{1,5}&quot; /&gt;
+5. formaction：自定义submit的提交地址；
+&lt;form action=&quot;http://www.sina.com&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;提交1&quot; /&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;提交2&quot; formaction=&quot;http://www.baidu.com&quot; /&gt;
+&lt;/form&gt;
+6. list属性与&lt;datalist&gt;：为输入框构造一个选择列表。
+</code></pre><h3 id="新增表单type类型"><a href="#新增表单type类型" class="headerlink" title="新增表单type类型"></a>新增表单type类型</h3><pre><code>1. type=&quot;email&quot;：email地址类型，type=&quot;tel&quot;：电话类型，type=&quot;url&quot;：URL地址类型
+    1. 它们并不会限制输入内容，只是在输入的内容不符合指定的类型格式时，提交不会成功；
+    2. 但是在移动端，它们获得焦点时会弹出对应类型的键盘。
+2. type=&quot;range&quot;：可拖动的进度条
+    1. min(最小值)、max(最大值)、value(当前值)
+    2. step：一步跳动的值，如取值范围0-100，step=&quot;20&quot;，相当于分了5步，每一步跳动20
+    &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;20&quot; step=&quot;20&quot; /&gt;
+3. type=&quot;search&quot;：输入框的内右侧会有一个&quot;x&quot;，用于便捷式清空输入的内容；
+4. type=&quot;number&quot;：只允许输入数字，输入框获取焦点时，内右侧会有增大(+1)和减小(-1)的按钮；
+5. type=&quot;color&quot;：颜色选择器，可以调出颜色选择的面板；
+6. 日期时间：type=&quot;datetime&quot;、&quot;datetime-local&quot;、&quot;date&quot;、&quot;time&quot;、&quot;week&quot;、&quot;month&quot;
+</code></pre><h3 id="表单验证"><a href="#表单验证" class="headerlink" title="表单验证"></a>表单验证</h3><pre><code>1. validity对象：通过注册 invalid 事件，查看验证是否通过；
+    input.addEventListener(&quot;invalid&quot;, function(){ this.validity }, false)
+    1. 提交表单时，如果验证失败，则会触发此事件；
+    2. 在回调函数中，通过 this.validity 获取验证对象。
+2. validity.valueMissing：输入内容为空时返回true
+    &lt;input type=&quot;text&quot; required /&gt; --&gt;没有输入内容时，valueMissing为true
+3. validity.typeMismatch：输入的内容与预期类型不匹配时返回true
+    &lt;input type=&quot;email&quot; /&gt; --&gt;输入内容不是Email类型时，typeMismatch为true
+4. validity.patternMismatch：输入内容不匹配pattern正则时返回true
+5. 鸡肋的属性
+    1. tooLong：maxLenght属性已经限制了输入内容的长度，所以不会触发此验证属性
+    2. rangeUnderflow、rangeOverflow、stepMismatch：&lt;input type=&quot;range&quot; /&gt;相关
+6. validity.customError：不符合自定义验证时，则返回true
+    1. setCustomValidity()：用于设置自定义验证的提示内容；
+    2. setCustomValidity(&quot;&quot;)：设置为空字符串，表示放行，验证通过；
+    &lt;form&gt; &lt;input type=&quot;text&quot; name=&quot;user&quot; id=&quot;user&quot; /&gt;
+        &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt; &lt;/form&gt;
+    let name = document.querySelector(&quot;#user&quot;)
+    let submit = document.querySelector(&quot;input[type=submit]&quot;)
+    submit.onclick = function() {
+        if(name.value === &apos;123&apos;) { ---&gt; 当输入框中的内容为&quot;123&quot;时，会弹框提示
+            name.setCustomValidity(&apos;请不要输入敏感词&apos;) ---&gt; 设置提示框的内容
+            console.log(name.validity) --&gt; validity.customError返回true
+        } else {
+            name.setCustomValidity(&apos;&apos;)
+        }
+    }
+    3. 验证失败时，会阻止表单继续提交。
+7. 关闭验证：formnovalidate属性
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HTML5/" rel="tag"># HTML5</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/09/CSS3-3/" rel="next" title="CSS3-3">
+                <i class="fa fa-chevron-left"></i> CSS3-3
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/13/HTML5-2/" rel="prev" title="HTML5-2">
+                HTML5-2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML5"><span class="nav-number">1.</span> <span class="nav-text">HTML5</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#H5与H4"><span class="nav-number">1.1.</span> <span class="nav-text">H5与H4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语义化标签"><span class="nav-number">1.2.</span> <span class="nav-text">语义化标签</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#prop与attribute"><span class="nav-number">2.</span> <span class="nav-text">prop与attribute</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#attribute与property的同步"><span class="nav-number">2.1.</span> <span class="nav-text">attribute与property的同步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新增功能"><span class="nav-number">3.</span> <span class="nav-text">新增功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他新增标签"><span class="nav-number">4.</span> <span class="nav-text">其他新增标签</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#新增表单属性"><span class="nav-number">4.1.</span> <span class="nav-text">新增表单属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增表单type类型"><span class="nav-number">4.2.</span> <span class="nav-text">新增表单type类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表单验证"><span class="nav-number">4.3.</span> <span class="nav-text">表单验证</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

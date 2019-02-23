@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="调试，拷贝，模块进阶，属性详解，动态添加,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="调试pdb 调试pdb 是基于命令行的调试工具，有三种启动方式； 执行时调试python/python3 -m pdb x.py 进入pdb调试：     l：查看当前程序执行到了哪一步；     n：单步执行，控制程序向下执行一步；     c：一次性执行完毕，重新回到第一步；     b 行号：加断点，l 会显示行号，c 会一次性执行到断点处；     b：显示所有断点，会显示断点的序号；">
+<meta name="keywords" content="调试，拷贝，模块进阶，属性详解，动态添加">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python高级1">
+<meta property="og:url" content="http://yoursite.com/2017/07/28/python高级1/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="调试pdb 调试pdb 是基于命令行的调试工具，有三种启动方式； 执行时调试python/python3 -m pdb x.py 进入pdb调试：     l：查看当前程序执行到了哪一步；     n：单步执行，控制程序向下执行一步；     c：一次性执行完毕，重新回到第一步；     b 行号：加断点，l 会显示行号，c 会一次性执行到断点处；     b：显示所有断点，会显示断点的序号；">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/uMPoRAt.png">
+<meta property="og:image" content="http://i.imgur.com/kCWBLZc.jpg">
+<meta property="og:image" content="http://i.imgur.com/jG77WUh.jpg">
+<meta property="og:image" content="http://i.imgur.com/mQY97LQ.jpg">
+<meta property="og:image" content="http://i.imgur.com/Q1ijMNt.jpg">
+<meta property="og:image" content="http://i.imgur.com/W7ZXtfx.jpg">
+<meta property="og:image" content="http://i.imgur.com/R3iUc9f.jpg">
+<meta property="og:image" content="http://i.imgur.com/F5xadW1.jpg">
+<meta property="og:image" content="http://i.imgur.com/0FYMbUZ.jpg">
+<meta property="og:image" content="http://i.imgur.com/WfbF39u.png">
+<meta property="og:image" content="http://i.imgur.com/m78fjj9.jpg">
+<meta property="og:image" content="http://i.imgur.com/sx7TtQ2.jpg">
+<meta property="og:updated_time" content="2018-04-14T05:04:27.951Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python高级1">
+<meta name="twitter:description" content="调试pdb 调试pdb 是基于命令行的调试工具，有三种启动方式； 执行时调试python/python3 -m pdb x.py 进入pdb调试：     l：查看当前程序执行到了哪一步；     n：单步执行，控制程序向下执行一步；     c：一次性执行完毕，重新回到第一步；     b 行号：加断点，l 会显示行号，c 会一次性执行到断点处；     b：显示所有断点，会显示断点的序号；">
+<meta name="twitter:image" content="http://i.imgur.com/uMPoRAt.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/28/python高级1/">
+
+
+
+
+
+  <title>python高级1 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/28/python高级1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python高级1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-28T00:00:00+08:00">
+                2017-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><h3 id="pdb-调试"><a href="#pdb-调试" class="headerlink" title="pdb 调试"></a>pdb 调试</h3><pre><code>pdb 是基于命令行的调试工具，有三种启动方式；
+</code></pre><h4 id="执行时调试"><a href="#执行时调试" class="headerlink" title="执行时调试"></a>执行时调试</h4><pre><code>python/python3 -m pdb x.py
+进入pdb调试：
+    l：查看当前程序执行到了哪一步；
+    n：单步执行，控制程序向下执行一步；
+    c：一次性执行完毕，重新回到第一步；
+    b 行号：加断点，l 会显示行号，c 会一次性执行到断点处；
+    b：显示所有断点，会显示断点的序号；
+    cl/clear 序号：删除某个断点；
+    s：如果当前行执行的是函数，会跳转到函数内部执行；
+    p 形参：查看当前传递的实参值，p 也可以查看当前变量的值；
+    a：查看当前函数所有的形参值；
+    r：快速执行完函数；
+    q：退出调试。
+</code></pre><h4 id="交互调试"><a href="#交互调试" class="headerlink" title="交互调试"></a>交互调试</h4><pre><code>在交互模式下进行调试，先导入pdb模块：import pdb
+调试函数test(args)：pdb.run(&quot;test(实参)&quot;)，进入pdb调试，s 命令进入函数内部开始执行。
+</code></pre><h4 id="程序里埋点"><a href="#程序里埋点" class="headerlink" title="程序里埋点"></a>程序里埋点</h4><pre><code>在代码中，导入pdb模块：import pdb
+当执行到 pdb.set_trace() 时，进入pdb调试模式。
+</code></pre><h3 id="日志调试"><a href="#日志调试" class="headerlink" title="日志调试"></a>日志调试</h3><pre><code>print() 打印日志；
+不允许服务器停止，通过分析日志查找Bug，使用热修复(程序未停止的前提下打补丁)的方式解决。
+</code></pre><h2 id="进制的转换"><a href="#进制的转换" class="headerlink" title="进制的转换"></a>进制的转换</h2><pre><code>字节的最高位是符号位，0表示正数，1表示负数。
+</code></pre><h3 id="原码、反码、补码"><a href="#原码、反码、补码" class="headerlink" title="原码、反码、补码"></a>原码、反码、补码</h3><pre><code>正数：原码 = 反码 = 补码
+负数：反码 = 符号位不变，其他位取反；补码 = 反码+1；负数在内存中按补码存储。
+负数参与的运算，用的是补码；如果运算的结果是负数，也是补码形式。
+</code></pre><h3 id="十进制与二-八-十六进制间的转换"><a href="#十进制与二-八-十六进制间的转换" class="headerlink" title="十进制与二/八/十六进制间的转换"></a>十进制与二/八/十六进制间的转换</h3><pre><code>bin(x)：将x转为二进制，二进制数的开头是 0b；
+oct(x)：将x转为八进制，八进制数的开头是 0o；
+hex(x)：将x转为十六进制，十六进制数的开头是0x；
+int(x, 2/8/16)：二/八/十六进制数(字符串形式)转十进制；
+</code></pre><h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><pre><code>1. 位运算：一个数值按照比特位进行的运算；位运算的效率最高，而且节约内存。
+    比如，十进制5，对应的二进制为0000 0101，5&lt;&lt;1：5左移1位为00001010，
+    对应十进制为10，是5的两倍，比直接使用乘法5*2的效率要高，
+    因为计算机底层的乘除运算，其实就是按位左移/右移，再做加减运算。
+2. 低4位对应的十进制是8-4-2-1：1000--&gt;8，0100--&gt;4，0010--&gt;2，0001--&gt;1；
+3. &amp;：按位与； |：按位或； ^：按位异或，不同为1，相同为0； ~：按位取反；
+    比如 ~9，二进制00001001，取反：11110110，负数在内存中以补码形式存储的，
+    所以取反后的11110110是补码形式，反码：11110101，原码：10001010，
+    二进制10001010，对应十进制-10，即~9的值为-10。
+4. &lt;&lt;：按位左移； &gt;&gt;：按位右移。
+</code></pre><h2 id="深拷贝与浅拷贝"><a href="#深拷贝与浅拷贝" class="headerlink" title="深拷贝与浅拷贝"></a>深拷贝与浅拷贝</h2><h3 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h3><pre><code>只复制变量指向的地址，而没有在内存中重新创建数据；
+a=[2, 3, 4]，b=a --&gt; 浅拷贝
+b 和 a指向同一个地址，“[2, 3, 4]” 在内存中只有一份。
+</code></pre><h3 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h3><pre><code>import copy
+b=copy.deepcopy(a) --&gt; 深拷贝
+b 和 a 指向不同的地址，a 修改列表数据，b 列表不会受到影响。
+
+注意：深拷贝只对可变类型有效；对数值、字符串、元组都无效。
+</code></pre><h4 id="deepcopy-与-copy"><a href="#deepcopy-与-copy" class="headerlink" title="deepcopy 与 copy"></a>deepcopy 与 copy</h4><pre><code>1. deepcopy
+    a=[1, 2, 3]，b=[5, 6, 7]
+    c=[a, b] --&gt; [[1, 2, 3], [4, 5, 6]]； m=(a, b) --&gt; ([1, 2, 3], [4, 5, 6])
+        修改列表a/b的数据，列表c 和元组m 中的元素都会变化；
+    d=copy.deepcopy(c)； n=copy.deepcopy(m)
+        深拷贝会递归拷贝，不仅拷贝列表c/元组m的数据，也会拷贝列表a和b的数据。
+2. copy
+    与deepcopy不同的是，copy() 是单层拷贝，不会递归拷贝；
+    但是，如果拷贝的是元组m=(a, b)，copy() 不会拷贝； t=copy.copy(m) 等效于 t=m；
+    也即，copy() 会判断拷贝的数据是可变类型，还是不可变类型；copy() 不会拷贝不可变类型。
+</code></pre><h2 id="模块进阶"><a href="#模块进阶" class="headerlink" title="模块进阶"></a>模块进阶</h2><h3 id="模块导入问题"><a href="#模块导入问题" class="headerlink" title="模块导入问题"></a>模块导入问题</h3><h4 id="模块的重新导入"><a href="#模块的重新导入" class="headerlink" title="模块的重新导入"></a>模块的重新导入</h4><pre><code>1. 模块名.path：查看系统搜索模块的优先顺序；
+</code></pre><p><img src="http://i.imgur.com/uMPoRAt.png" alt></p>
+<pre><code>   sys.path 返回的是一个列表，列表是可以修改的，比如增加一条搜索路径，
+   sys.path.append(&quot;/home&quot;)；
+2. 导入一个模块后，在程序没有结束的情况下，又对该模块做了修改，程序检测不到模块被修改的，
+    使用的仍然是模块原来的功能，“ import 模块名 ” 重新导入的方式是无效的；
+需要借助 imp 模块实现重新导入：import imp --&gt; imp.reload(模块名) 函数实现重新导入。
+</code></pre><h4 id="模块的循环导入"><a href="#模块的循环导入" class="headerlink" title="模块的循环导入"></a>模块的循环导入</h4><pre><code>模块A导入模块B，模块B又需要导入模块A，会陷入循环、导致程序崩溃；
+在设计模块的过程中，必须避免循环导入。
+</code></pre><h3 id="functools-模块"><a href="#functools-模块" class="headerlink" title="functools 模块"></a>functools 模块</h3><pre><code>python2.5引入的一个模块，存放一些常用的工具函数；
+1. partial()：偏函数，加工一个函数，传递默认值；
+</code></pre><p><img src="http://i.imgur.com/kCWBLZc.jpg" alt></p>
+<pre><code>2. wraps()
+    一个函数被装饰之后，其函数名的指向已经发生了改变，所以，再查看该函数的doc信息时，
+所查看的是其实际指向的函数体的文档信息；
+wraps() 装饰到函数实际指向的函数上，就可以恢复原始的doc；
+</code></pre><p><img src="http://i.imgur.com/jG77WUh.jpg" alt></p>
+<h3 id="常用模块"><a href="#常用模块" class="headerlink" title="常用模块"></a>常用模块</h3><h4 id="标准库"><a href="#标准库" class="headerlink" title="标准库"></a>标准库</h4><pre><code>Python常用的标准库有 os，sys，functools ...
+1. builtins：内建函数是默认加载的；
+2. os：操作系统接口；        sys：Python自身运行环境相关；
+4. functools：常用工具库；    random：生成随机数；        copy：拷贝相关；
+5. time：时间相关；        datetime：日期和时间；    calendar：日历相关；
+6. multiprocessing：多进程相关；        threading：多线程相关；
+7. json：编码和解码 JSON 对象；
+8. logging：记录日志，调试相关；
+9. re：字符串正则匹配；
+10. hashlib：加密算法；
+11. socket：标准的 BSD Sockets API；
+12. shutil：文件和目录管理；
+13. glob：基于文件通配符搜索。
+</code></pre><h4 id="扩展库"><a href="#扩展库" class="headerlink" title="扩展库"></a>扩展库</h4><pre><code>Python常用的扩展库有 requests，urllib，scrapy，beautifulsoup4 ...
+1. urllib：基于http的高层库；
+2. requests：使用的是urllib3，继承了urllib2的所有特性；
+3. scrapy：爬虫相关；
+4. beautifulsoup4：HTML/XML的解析器；        xmltodict：xml转dict；
+5. redis：缓存相关；
+6. celery：分布式任务调度模块；
+7. pymysql：数据库连接相关；
+8. matplotlib：画图相关；        Pillow：图像处理(PIL)；
+9. xlsxwriter/xlwt/xlrd：excel相关；
+10. diango/tornado/flask：Web框架；
+11. SimpleHTTPServer：一个不使用Web框架、简单的HttpServer；
+12. gevent：基于协程的Python网络库；
+</code></pre><h2 id="内建模块"><a href="#内建模块" class="headerlink" title="内建模块"></a>内建模块</h2><pre><code>内建模块是Python系统默认提供的功能，不需要导入模块，可以直接使用。
+</code></pre><h3 id="内建属性"><a href="#内建属性" class="headerlink" title="内建属性"></a>内建属性</h3><pre><code>常用的内建(专有)属性：__new__，__init__，__str__，__del__，__class__，__repr__，
+__dict__，__doc__，__getattribute__，__bases__；
+__repr__：没有重写__str__的情况下，直接打印一个类对象，就是__repr__返回的结果；
+__dict__：dir(对象)可以查看所有的属性，对象.__dict__ 只返回对象自己的属性；
+__doc__：查看类文档；
+__bases__：类名调用，查看所有父类；
+</code></pre><h4 id="getattribute"><a href="#getattribute" class="headerlink" title="__getattribute__"></a>__getattribute__</h4><pre><code>__getattribute__：属性访问拦截器，用于高级定制属性；
+    1. 方法名也是属性，只不过它指向的是函数体；
+    2. 对象.访问属性/方法时，不管是否存在，都会先执行__getattribute__()；
+</code></pre><p><img src="http://i.imgur.com/mQY97LQ.jpg" alt></p>
+<pre><code>1. 属性/方法名会先被转为字符串，再传递给__getattribute__()；
+2. __getattribute__()必须要有return返回值，否则默认返回None，返回值决定属性值；
+3. 不需要自定义属性的内容时，必须要返回object.__getattribute__()，执行默认的操作；
+4. 方法名也是属性，object.__getattribute__()会检测到show 是绑定到具体哪个对象的方法，
+   返回的检测的信息：bound method ... ，然后才会进一步执行show()，完成方法的调用。
+5. __getattribute__ 的bug：
+</code></pre><p><img src="http://i.imgur.com/Q1ijMNt.jpg" alt></p>
+<pre><code>1. p.a：不管属性a 是否存在，都会先调用__getattribute__()，将 a 作为字符串传递给
+    形参obj，符合设置的拦截条件，则返回自定义信息；
+2. p.b：属性b 不是以 &quot;a&quot; 开头的，则执行 &quot;return self.test&quot;，self.test也是在访问
+    属性，又会调用__getattribute__()，&quot;test&quot; 也不是以&quot;a&quot;开头的字符串，所以又
+    会执行 &quot;return self.test&quot;，如此循环，造成程序崩溃；
+所以，在__getattribute__()中定制属性的内容时，禁止再使用self.调用属性/方法。
+</code></pre><h4 id="getattr"><a href="#getattr" class="headerlink" title="__getattr__"></a>__getattr__</h4><pre><code>在对象.访问一个不存在的属性时，只要__getattribute__() 执行的是默认操作，python解释器在
+抛出异常前，会先调用__getattr__() 函数；
+反之，如果__getattribute__() 执行的不是默认操作，就不会再调用__getattr__()
+1. __getattr__() 的参数与__getattribute__() 的参数一致；
+2. __getattr__() 的返回值就是属性值，如果没有return，默认返回None；
+</code></pre><p><img src="http://i.imgur.com/W7ZXtfx.jpg" alt></p>
+<h3 id="内建方法"><a href="#内建方法" class="headerlink" title="内建方法"></a>内建方法</h3><pre><code>input、print ... 都是内建函数；
+1. range(start, stop, step)
+    1. python2中的 range() 可能造成内存溢出，xrange() 则可以避免；
+    2. xrange() 与python3中的 range() 功能相同；
+2. map(function, sequence...)
+    function：接收一个函数；
+    sequence：接收一个或多个可迭代序列，序列的个数取决于function需要几个参数；
+    迭代每个序列，把每个序列的元素依次传给function的形参，并返回一个新序列，新序列的每
+    个元素值取决于function的返回值；
+    1. map(lambda x:x*x, [1, 2, 3])
+        lambda 表达式需要1个参数，则传入1个序列：[1, 4, 9]
+    2. map(lambda x, y:x+y, [1, 2, 3], [4, 5, 6])
+        lambda 表达式需要2个参数，则传入2个序列：[1+4, 2+5, 3+6] --&gt; [5, 7, 9]
+    3. 与range()类似，python2中的map()会直接返回新序列，python3中则返回一个生成器。
+3. filter(function, sequence)：用于过滤可迭代对象的元素
+    迭代sequence，依次将每个元素传递给function，如果function返回True，则保留该元素，
+    如果function返回False，则舍弃该元素；
+    1. filter(lambda x:x%2, [1, 2, 3, 4])
+        只保留奇数：[1, 3]，因为0表示False，非0表示True；
+    2. fliter(None, &quot;Hello&quot;)
+        function接收的是None，表示不过滤，返回结果：Hello；
+    3. python2中的filter()会直接返回新序列，python3中则返回一个生成器。
+4. reduce(function, sequence, initial)
+    initial：固定初始值；
+    依次取出sequence 的元素，和上次function返回的结果作为参数，再次调用function；
+    1. reduce(lambda x, y:x+y, [1, 2, 3, 4])
+        迭代列表元素，第一个元素传递给x，第二个元素传递给y，返回的结果3 再传递给x，
+        第三个元素再传递给y，依次类推：1+2+3+4 --&gt; 10
+    2. reduce(lambda x, y:x+y, [1, 2, 3, 4], 5)
+        先把初始值5 传递给x，再迭代列表元素，把第一个元素传递给y：5+1+2+3+4 --&gt;15；
+    3. python3中的reduce()被放在模块functools中，需要导入才能使用。
+5. sorted(iterable)：与列表的sort() 函数相似，从小到大排序。
+</code></pre><h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><pre><code>1. globals()
+    查看当前可用的所有全局变量，返回一个字典；
+2. locals()
+    查看当前的局部变量，返回一个字典。
+</code></pre><h3 id="LEGB规则"><a href="#LEGB规则" class="headerlink" title="LEGB规则"></a>LEGB规则</h3><pre><code>LEGB规则：变量重名时，python解释器的查找规则；
+    Local --&gt; Enclosing function(闭包的内函数) --&gt; globals --&gt; builtins；
+    1. Local：当前代码块；
+    2. builtins：内建模块，包含python系统默认提供的变量、函数、类等；
+    3. dir(__builtin__)：查看所有的builtins；
+</code></pre><h2 id="python-动态添加属性、方法"><a href="#python-动态添加属性、方法" class="headerlink" title="python 动态添加属性、方法"></a>python 动态添加属性、方法</h2><h3 id="动态添加属性"><a href="#动态添加属性" class="headerlink" title="动态添加属性"></a>动态添加属性</h3><pre><code>1. 给对象动态添加属性
+    对象名.属性名：其实是给对象动态添加属性，其他对象不能使用。
+2. 给类动态添加属性
+    类名.属性名：动态添加类属性，所有对象共享。
+</code></pre><h4 id="slots"><a href="#slots" class="headerlink" title="__slots__"></a>__slots__</h4><pre><code>__slots__ 用于限制对象可以动态添加的属性；
+</code></pre><p><img src="http://i.imgur.com/R3iUc9f.jpg" alt></p>
+<h3 id="动态添加方法"><a href="#动态添加方法" class="headerlink" title="动态添加方法"></a>动态添加方法</h3><h4 id="给对象动态添加方法"><a href="#给对象动态添加方法" class="headerlink" title="给对象动态添加方法"></a>给对象动态添加方法</h4><pre><code>import types --&gt; types.MethodType(函数名, 对象名)：将函数绑定到指定的对象；
+绑定完成后，返回方法体的地址，需要有变量接收；
+</code></pre><p><img src="http://i.imgur.com/F5xadW1.jpg" alt></p>
+<pre><code>1. 为对象p1 动态添加属性 eat，指向绑定到对象的函数，属性eat 也就转化了为一个方法；
+2. 每次绑定都返回一个新的方法体地址，也即，p1.eat 和 x 的地址是不同的；
+3. 函数是绑定对象的，其他对象不能共享。
+</code></pre><h4 id="动态添加静态方法、类方法"><a href="#动态添加静态方法、类方法" class="headerlink" title="动态添加静态方法、类方法"></a>动态添加静态方法、类方法</h4><pre><code>给类动态添加静态方法、类方法，用类属性接收即可；
+</code></pre><p><img src="http://i.imgur.com/0FYMbUZ.jpg" alt></p>
+<h2 id="私有化"><a href="#私有化" class="headerlink" title="私有化"></a>私有化</h2><pre><code>__xx：属性名和方法名前加两个下划线，表示私有；
+__xxx__：前后两个下划线的属性和方法，通常是Python自带的、具有特殊功能的属性和方法，
+    比如__file__、__init__()；
+xx_：关键字不能用于定义变量和函数，如果强制使用，通常在关键字后面加一个下划线；
+_xx：前面加一个或两个下划线，禁止 “ from 模块名 import * ” 的方式导入到其他模块。
+</code></pre><h3 id="名字重整"><a href="#名字重整" class="headerlink" title="名字重整"></a>名字重整</h3><pre><code>私有属性和私有方法不能直接访问与继承，是因为python系统对它们进行了名字重整；
+dir(对象名)：查看类中的被重整之后的私有属性名和方法名、以及其他所有的属性和方法名；
+</code></pre><p><img src="http://i.imgur.com/WfbF39u.png" alt></p>
+<pre><code>也即，私有属性和方法也可以直接访问，P._Person__age，P._Person__writeFile()
+</code></pre><h3 id="property"><a href="#property" class="headerlink" title="property"></a>property</h3><pre><code>property 可以简化 set、get 方法的调用，
+方式一：property(get, set)，用属性的调用掩盖方法的调用；
+</code></pre><p><img src="http://i.imgur.com/m78fjj9.jpg" alt></p>
+<pre><code>方式二：装饰器
+</code></pre><p><img src="http://i.imgur.com/sx7TtQ2.jpg" alt></p>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/调试，拷贝，模块进阶，属性详解，动态添加/" rel="tag"># 调试，拷贝，模块进阶，属性详解，动态添加</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/27/python基础2/" rel="next" title="python基础2">
+                <i class="fa fa-chevron-left"></i> python基础2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/29/python高级2/" rel="prev" title="python高级2">
+                python高级2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#调试"><span class="nav-number">1.</span> <span class="nav-text">调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pdb-调试"><span class="nav-number">1.1.</span> <span class="nav-text">pdb 调试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#执行时调试"><span class="nav-number">1.1.1.</span> <span class="nav-text">执行时调试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#交互调试"><span class="nav-number">1.1.2.</span> <span class="nav-text">交互调试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#程序里埋点"><span class="nav-number">1.1.3.</span> <span class="nav-text">程序里埋点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日志调试"><span class="nav-number">1.2.</span> <span class="nav-text">日志调试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进制的转换"><span class="nav-number">2.</span> <span class="nav-text">进制的转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原码、反码、补码"><span class="nav-number">2.1.</span> <span class="nav-text">原码、反码、补码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十进制与二-八-十六进制间的转换"><span class="nav-number">2.2.</span> <span class="nav-text">十进制与二/八/十六进制间的转换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#位运算"><span class="nav-number">3.</span> <span class="nav-text">位运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深拷贝与浅拷贝"><span class="nav-number">4.</span> <span class="nav-text">深拷贝与浅拷贝</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#浅拷贝"><span class="nav-number">4.1.</span> <span class="nav-text">浅拷贝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深拷贝"><span class="nav-number">4.2.</span> <span class="nav-text">深拷贝</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#deepcopy-与-copy"><span class="nav-number">4.2.1.</span> <span class="nav-text">deepcopy 与 copy</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模块进阶"><span class="nav-number">5.</span> <span class="nav-text">模块进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模块导入问题"><span class="nav-number">5.1.</span> <span class="nav-text">模块导入问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模块的重新导入"><span class="nav-number">5.1.1.</span> <span class="nav-text">模块的重新导入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模块的循环导入"><span class="nav-number">5.1.2.</span> <span class="nav-text">模块的循环导入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#functools-模块"><span class="nav-number">5.2.</span> <span class="nav-text">functools 模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用模块"><span class="nav-number">5.3.</span> <span class="nav-text">常用模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#标准库"><span class="nav-number">5.3.1.</span> <span class="nav-text">标准库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展库"><span class="nav-number">5.3.2.</span> <span class="nav-text">扩展库</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内建模块"><span class="nav-number">6.</span> <span class="nav-text">内建模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内建属性"><span class="nav-number">6.1.</span> <span class="nav-text">内建属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#getattribute"><span class="nav-number">6.1.1.</span> <span class="nav-text">__getattribute__</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getattr"><span class="nav-number">6.1.2.</span> <span class="nav-text">__getattr__</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内建方法"><span class="nav-number">6.2.</span> <span class="nav-text">内建方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作用域"><span class="nav-number">7.</span> <span class="nav-text">作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LEGB规则"><span class="nav-number">7.1.</span> <span class="nav-text">LEGB规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#python-动态添加属性、方法"><span class="nav-number">8.</span> <span class="nav-text">python 动态添加属性、方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态添加属性"><span class="nav-number">8.1.</span> <span class="nav-text">动态添加属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#slots"><span class="nav-number">8.1.1.</span> <span class="nav-text">__slots__</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态添加方法"><span class="nav-number">8.2.</span> <span class="nav-text">动态添加方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#给对象动态添加方法"><span class="nav-number">8.2.1.</span> <span class="nav-text">给对象动态添加方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态添加静态方法、类方法"><span class="nav-number">8.2.2.</span> <span class="nav-text">动态添加静态方法、类方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私有化"><span class="nav-number">9.</span> <span class="nav-text">私有化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#名字重整"><span class="nav-number">9.1.</span> <span class="nav-text">名字重整</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#property"><span class="nav-number">9.2.</span> <span class="nav-text">property</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

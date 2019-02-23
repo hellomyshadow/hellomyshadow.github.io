@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Django,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="虚拟环境安装搭建虚拟环境的工具：pip install virtualenv，然后做一些必要的配置； 1. 创建/删除一个虚拟环境：mkvirtualenv/rmvirtualenv 虚拟环境名 2. 进入一个虚拟环境：workon 虚拟环境名 3. 退出当前的虚拟环境：deactivate 4. 查看当前虚拟环境中已经安装的包：pip list，pip freeze django安装django">
+<meta name="keywords" content="Django">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django">
+<meta property="og:url" content="http://yoursite.com/2017/10/01/Django/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="虚拟环境安装搭建虚拟环境的工具：pip install virtualenv，然后做一些必要的配置； 1. 创建/删除一个虚拟环境：mkvirtualenv/rmvirtualenv 虚拟环境名 2. 进入一个虚拟环境：workon 虚拟环境名 3. 退出当前的虚拟环境：deactivate 4. 查看当前虚拟环境中已经安装的包：pip list，pip freeze django安装django">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-12T11:22:58.212Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django">
+<meta name="twitter:description" content="虚拟环境安装搭建虚拟环境的工具：pip install virtualenv，然后做一些必要的配置； 1. 创建/删除一个虚拟环境：mkvirtualenv/rmvirtualenv 虚拟环境名 2. 进入一个虚拟环境：workon 虚拟环境名 3. 退出当前的虚拟环境：deactivate 4. 查看当前虚拟环境中已经安装的包：pip list，pip freeze django安装django">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/01/Django/">
+
+
+
+
+
+  <title>Django | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/01/Django/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-01T00:00:00+08:00">
+                2017-10-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="虚拟环境"><a href="#虚拟环境" class="headerlink" title="虚拟环境"></a>虚拟环境</h2><pre><code>安装搭建虚拟环境的工具：pip install virtualenv，然后做一些必要的配置；
+1. 创建/删除一个虚拟环境：mkvirtualenv/rmvirtualenv 虚拟环境名
+2. 进入一个虚拟环境：workon 虚拟环境名
+3. 退出当前的虚拟环境：deactivate
+4. 查看当前虚拟环境中已经安装的包：pip list，pip freeze
+</code></pre><h2 id="django"><a href="#django" class="headerlink" title="django"></a>django</h2><pre><code>安装django并指定版本：pip install django==1.8.2，会自动删除旧版本
+1. 查看django版本：python shell --&gt; import django --&gt; django.get_version()
+2. 创建项目：django-admin startproject 项目名
+   默认生成一个与项目同名的应用，用于项目的配置：
+    1. manage.py：一个命令行工具，可以用多种方式对Django项目进行交互；
+    2. settings.py：项目的配置文件； urls.py：项目的URL声明；
+    3. wsgi.py：项目与WSGI兼容的Web服务器入口；
+    4. django默认使用SQLite数据库，同时支持mysql、oracle
+3. 一个项目包含多个应用，创建应用：python manage.py startapp 应用名
+    1. 在settings.py中注册模型：INSTALLED_APPS = ( ... , &apos;模型名&apos;)
+    2. 在模型/models.py中创建model，用于生成数据库；
+    3. 数据库的迁移：python manage.py makemigrations --&gt; ... migrate
+    4. 进入测试环境：python manage.py shell
+4. 开启服务器：python manage.py runserver ip:port
+    1. ip默认localhost/127.0.0.1，port默认8000
+    2. 这是一个纯Python编写的轻量级web服务器，仅在开发阶段使用；
+    3. 修改文件不需要重启服务器，增删文件则需要重启服务器。
+5. 站点管理
+    1. 站点分为：内容发布和公共访问，内容发布的部分负责添加、修改、删除内容；
+    2. 创建管理员用户：python manage.py craetesuperuser
+    3. 启动服务器，访问站点：http://127.0.0.1:8000/admin
+    4. 管理站点的应用：项目settings.py中的
+    INSTALLED_APPS = (&apos;django.contrib.admin&apos;, ...)
+6. 使用MySql数据库
+    1. 在虚拟环境中安装MySql包：pip install mysql-python
+    2. 登录MySql创建数据库：create database test2 charset=utf8;
+    3. 在项目settings.py配置MySql：
+    DATABASES = { &apos;default&apos;: { &apos;ENGINE&apos;: &apos;django.db.backends.mysql&apos;,
+    &apos;NAME&apos;: &apos;test2&apos;, &apos;USER&apos;: &apos;用户名&apos;, &apos;PASSWORD&apos;: &apos;密码&apos;,
+    &apos;HOST&apos;: &apos;数据库服务器ip，本地可用localhost&apos;, &apos;PORT&apos;: &apos;默认3306&apos; } }
+7. settings.py修改测试模式为发布模式：
+    1. DEBUG = False
+    2. ALLOWED_HOSTS = [ &apos;*&apos;, ]：设置允许访问的主机，* 表示所有主机；
+</code></pre><h2 id="状态保持"><a href="#状态保持" class="headerlink" title="状态保持"></a>状态保持</h2><pre><code>1. HTTP协议是无状态的，每一次请求都是新的，不会记录之前的通信状态；
+2. 客户端与服务器端的一次通信，就是一次会话；
+3. 实在状态保持的方式：在客户端/服务器端存储与会话有关的数据；
+4. 存储方式：cookie、session，会话一般指session对象；
+5. 状态保持的目的是在一段时间内跟踪请求者的状态，实现跨页面访问当前请求者的数据；
+注意：但不同的请求者之间不会共享这个数据，该数据与请求者一一对应。
+</code></pre><h3 id="session"><a href="#session" class="headerlink" title="session"></a>session</h3><pre><code>session：服务器端记录客户端状态的一种机制，相应地会增加服务器端的存储压力；
+1. session是cookie的一种，使用方式类似，都是键值对形式；
+2. cookie保存在客户端浏览器，不能存储敏感信息，而session保存在服务器，数据更安全，
+   所以使用session实现状态保持；
+3. session依赖于cookie，每个session在存储时，都有一个session_id作为唯一标识，
+   cookie中存储有session_id，用于区分不同请求者的session.
+</code></pre><h3 id="django与session"><a href="#django与session" class="headerlink" title="django与session"></a>django与session</h3><pre><code>1. django默认启用session，在settings.py中：
+    1. INSTALLED_APPS：django.contrib.sessions
+    2. MIDDLEWARE_CLASSES：
+    django.contrib.sessions.middleware.SessionMiddleware
+    3. 删除这两个元素，即可禁止会话session，可节省一些性能；
+    4. session默认两个星期之后过期。
+2. django默认将session存储在数据库中，所以使用session之前必须做数据库的迁移；
+3. 在settings.py中设置session的存储方式：
+    1. 默认方式：SESSION_ENGINE=&apos;django.contrib.sessions.backends.db&apos;
+    2. 基于缓存：存储在内存中，django.contrib.sessions.backends.cache
+    3. 同时使用缓存和数据库：优先从本地缓存中读取
+    SESSION_ENGINE=&apos;django.contrib.sessions.backends.cached_db&apos;
+4. 会话还支持文件、纯cookie、Memcached、Redis等方式存储，以Redis为例：
+    1. 在当前虚拟环境下安装Redis：pip install django-redis-sessions
+    2. 配置settings.py：
+        SESSION_ENGINE = &apos;redis_sessions.session&apos;
+        SESSION_REDIS_HOST = &apos;localhost&apos;
+        SESSION_REDIS_PORT = 6379
+        SESSION_REDIS_DB = 0
+        SESSION_REDIS_PASSWORD = &apos;&apos;
+        SESSION_REDIS_PREFIX = &apos;session&apos;
+    3. 启动Redis：sudo redis-server /etc/redis/redis.conf
+</code></pre><h2 id="DTL"><a href="#DTL" class="headerlink" title="DTL"></a>DTL</h2><pre><code>1. DTL：Django模板语言，定义在django.template包中，在HTML中使用；
+    1. 变量语法：{{ 变量 }}
+    2. 执行Python代码：{% 代码块 %}
+    3. 过滤器：{{ 变量|过滤器 }}
+    4. {\# 单行注释 \#}，{% comment %} 多行注释 {% endcomment %}
+2. HTML转义：视图在向HTML中传递包含HTML标签的字符串时，Django会对标签自动转义；
+    1. HTML标签原样输出、而不解释执行，是为了防止可能存在的攻击代码，如JS脚本；
+    2. &lt; 转换为 &amp;lt，&gt; 转换为 &amp;gt，&apos; --&gt; &amp;#39，&quot; --&gt; &amp;quot，&amp; --&gt; &amp;amp；
+    3. 转义的过滤器：escape，{{ t1|escape }}，Django默认自动转义，默认省略；
+    4. 关闭转义的过滤器：safe，{{ t1|safe }}
+    5. 关闭代码块的转义：{% autoescape off %} {{ t1 }} {% endautoescape %}
+    6. base模板中关闭自动转义，其child模板也是关闭的。
+</code></pre><h2 id="反向解析"><a href="#反向解析" class="headerlink" title="反向解析"></a>反向解析</h2><pre><code>域名：http://127.0.0.1:9000
+&lt;a&gt;的href、&lt;form&gt;的action、&lt;img/&gt;的src在引用同域名的URL时，如href=&apos;/a/b/&apos;，
+其中，第一个&apos;/&apos;表示项目的根目录，即引用的地址是域名+&apos;/a/b/&apos;：
+http://127.0.0.1:9000/a/b/
+而href=&apos;a/b/&apos;则表示当前目录，即当前地址+&apos;a/b/&apos;，假设当前地址为：
+http://127.0.0.1:9000/m/n/
+则引用地址为：http://127.0.0.1:9000/m/n/a/b/
+
+反向解析：解除这种硬编码的形式，通过include()的namespace和url()的name动态生成URL。
+1. 配置应用的urls.py：url(r&apos;^&apos;, include(&apos;booktest.urls&apos;, namespace=&apos;booktest&apos;))
+2. booktest应用的urls.py：url(&apos;^$&apos;, views.index, name=&apos;index&apos;)
+3. 使用反向解析策略：&lt;a href=&quot;{% url 'booktest:index' %}&quot;&gt;
+4. 反向解析避免了硬编码，不再受限于项目配置应用url(r&apos;^&apos;, ...)中的正则变更。
+</code></pre><h2 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h2><pre><code>CSRF：Cross Site Request Forgery，跨站请求伪造
+1. 某些恶意网站上包含链接、表单或JS，它们利用登录过的用户在浏览器中的认证信息，试图在你的
+   网站上完成某些操作，即跨站攻击；
+2. django默认开启了CSRF防御，在配置应用的settings.py中，启用中间件：
+    MIDDLEWARE_CLASSES = (&apos;django.middleware.csrf.CsrfViewMiddleware&apos;, )
+3. 对于post请求的表单，必须加入CSRF验证，才能提交成功：
+    &lt;form method=&apos;POST&apos;&gt; {% csrf_token %} ... &lt;/form&gt;
+4. {% csrf_token %}其实是一个隐藏域：&lt;input type=&apos;hidden&apos; ... /&gt;
+    在提交时，请求头中会携带一个cookie信息，用于验证身份；
+5. 验证码也是有效防御CSRF的一种方式，原理：随机生成的验证码存储在session中，提交表单时，
+   比较用户填写的验证码是否与session中的一致。
+</code></pre><h2 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h2><pre><code>中间件：一个轻量级、底层的插件系统，可以介入Django的请求/响应处理过程，修改输入/输出。
+1. 项目配置应用的settings.py中，MIDDLEWARE_CLASSES元组中元素都是激活的中间件；
+2. 中间件的技术思想是AOP，面向切面编程，Django处理一个网络请求的过程：
+    接收请求--A--&gt;匹配URL--B--&gt;查找视图View--C--&gt;对应模板Template--D--&gt;响应
+3. 对于某些特殊需求，可能需要干涉网络请求的过程，从而不得不修改Django的源代码，为了应对
+   这种需求，Django提供了中间件，可以干涉A、B、C、D四个环节，从而避免开发者修改源代码；
+4. 中间件的本质也就是一个Python类，可以定义的方法包括：
+    1. _init_：无需任何参数，服务器响应第一个请求时响应一次，用于确定是否启用中间件；
+    2. process_request(request)：对应A环节，返回None/HttpResponse对象；
+    3. process_view(request, view_func, view_args, view_kwargs)：对应B环节，
+    返回None/HttpResponse对象；
+    4. process_template_response(request, response)：对应C环节，返回实现了
+    render()的响应对象；
+    5. process_response(request, response)：对应D环节，返回HttpResponse对象；
+    6. process_exception(request, response, exception)：当视图抛出异常时调用，
+    返回一个HttpResponse对象，然后响应给浏览器；404是匹配URL的错误，不会调用。
+    7. 自定义的中间件(Python类)也必须在MIDDLEWARE_CLASSES中注册，才会启用。
+5. 使用中间件，可以干扰整个处理过程，每次请求中都会执行中间件的方法。
+</code></pre><h2 id="静态文件管理"><a href="#静态文件管理" class="headerlink" title="静态文件管理"></a>静态文件管理</h2><pre><code>项目中的CSS、JS、图片都是静态文件，静态文件的处理并不需要经过Django，可以直接请求。
+1. 为了便于迁移，在项目根目录下创建static文件夹，用于存放静态文件；
+2. 项目的配置应用settings.py中：
+    1. STATIC_URL = &apos;/static/&apos; --&gt; 静态文件的逻辑地址，用于伪装静态文件的真实目录；
+    2. STATICFILES_DIRS = [ os.path.join(BASE_DIR, &apos;static&apos;), ] --&gt; 物理地址；
+3. 在模板中使用一个静态文件：/static/myapp/logo.jpg
+    1. 这种硬编码的形式，一旦STATIC_URL修改了，该地址也要修改；
+    2. static编码：{% load static from staticfiles %}
+    &lt;img src=&quot;{ % static &apos;myapp/logo.jpg&apos; %}&quot; alt=&quot;My image&quot;/&gt;
+4. 对于上传的静态文件，则在static目录下创建media文件夹，settings.py中配置：
+    MEDIA_ROOT = os.path.join(BASE_DIR, &apos;static/media&apos;)
+</code></pre><h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><pre><code>Django自带一个健壮的缓存系统来保存动态页面，避免对于每次请求都重新计算；
+Django可以控制缓存粒度：缓存特定视图的输出、仅仅缓存难以生产的部分数据、缓存整个网站；
+1. 缓存配置
+    1. 缓存可以设置在数据库中、文件系统、内存中；
+    2. 项目的配置应用settings.py：
+    CACHES = {
+        &apos;default&apos;: {
+            &apos;BACKEND&apos;: &apos;django.core.cache.backends.locmem.LocMemCache&apos;,
+            &apos;TIMEOUT&apos;: 60,
+        }
+    }
+    BACKEND：设置缓存的存储位置；
+    TIMEOUT：缓存的默认过期时间(s)，默认是300秒；None表示永不过期，0表示立即失效。
+2. 启用Redis缓存：
+    1. 安装包：pip install django-redis-cache，默认使用编号为1的数据库；
+    2. 配置：
+    &apos;BACKEND&apos;: &apos;redis_cache.cache.RedisCache&apos;,
+    &apos;LOCATION&apos;: &apos;localhost:6379&apos;,
+3. 缓存单个视图View
+    1. from django.views.decorators.cache import cache_page
+    2. @cache_page(timeout)：timeout表示过期时间，单位是秒；
+    @cache_page(60 * 15)
+    def index(request):
+        pass
+    3. 15分钟内重复访问index视图，数据都是从缓存中获取的，不会重复执行index()；
+    4. 如果多个URL指向同一个视图，每个URL会分别缓存该视图。
+4. 模板片段缓存：缓存模板中一块数据
+    1. {% load cache %}
+    2. {% cache 300 hello %} 被缓存的数据 {% endcache %}
+    3. 500表示缓存时间(s)，hello表示缓存片段的名称。
+5. 缓存视图内的某些数据
+    1. from django.core.cache import cache
+    2. 设置/获取：cache.set(key, value, timeout)，cache.get(key)
+    3. 删除/清空：cache.delete(key)，cache.clear()
+</code></pre><h2 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h2><pre><code>视图view在操作数据库时，如果不满足某种条件，或者发生异常，希望回滚到指定的代码位置；
+from django.db import transaction
+@transaction.atomic()
+def handle(request):
+    tran_id = transaction.savepoint() --&gt; 埋点
+    try:
+        ......
+    except Exception as e:
+        transaction.savepoint_rollback(tran_id) --&gt; 回滚到埋点处
+</code></pre><h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><pre><code>处理三个方面：uwsgi、nginx、静态文件static
+1. 配置服务器上的python虚拟环境，安装所需要的包，用ftp把项目上传到服务器的某个目录；
+2. 更改项目的setting.py文件：
+    1. DEBUG = False
+    2. ALLOW_HOSTS=[&apos;*&apos;, ] --&gt; 表示允许任何Ip的终端访问服务器
+3. python manage.py runserver：启动服务器，运行正常，但是静态文件无法加载。
+</code></pre><h3 id="WSGI"><a href="#WSGI" class="headerlink" title="WSGI"></a>WSGI</h3><pre><code>WSGI：生产环境使用，Web服务器网关接口，Python Web Server Gateway Interface
+1. python manage.py runserver：只是一个适合开发阶段使用的服务器，不适合生产环境；
+2. WSGI是Python应用/框架与Web服务器之间的一种接口，Django项目默认遵守WSGI协议，
+   只要是实现了WSGI的产品，就可以运行Python代码；
+3. WSGI没有官方的实现，因为WSGI更像一个协议，只要遵守这些协议，WSGI应用就可以在任何
+   服务器上运行。
+4. django命令创建项目时会生成一个简单的wsgi.py文件，配置了项目的运行环境；
+   wsgi.py确定了settings、application对象：
+    1. 在Python模块中使用application对象与应用服务器交互；
+    2. Django需要导入settings模块，它是定义应用的地方。
+注：此处所指的服务器其实就是一个软件，可以监听网卡端口、遵从网络层传输协议、收发Http协议
+    级别的数据。
+</code></pre><h3 id="uWSGI"><a href="#uWSGI" class="headerlink" title="uWSGI"></a>uWSGI</h3><pre><code>1. uWSGI实现了WSGI的所有接口，是一个快速、自我修复、开发人员和系统管理员友好的服务器；
+2. uWSGI代码完全用C编写，可以监听网卡的某个端口，获取请求报文，交给python代码处理；
+3. 安装：pip install uwsgi，在项目的根目录下新建uwsgi.ini，用于配置uWSGI
+    [uwsgi]
+    socket=外网Ip:端口 --&gt; 使用nginx连接时，只能使用socket协议
+    http=外网ip:端口 --&gt; 直接做web服务器，则使用Http协议，与socket二选一
+    chdir=项目根目录，绝对路径
+    wsgi-file=项目中wsgi.py文件的目录，相对于项目根目录
+    processes=4 --&gt; 启用n个进程运行uWSGI服务器
+    threads=2 --&gt; 每个进程启用n个线程运行uWSGI服务器，进程和线程的数量与硬件配置有关
+    master=True --&gt; 作为主机运行
+    pidfile=uwsgi.pid --&gt; 记录uWSGI服务的pid，便于关闭服务
+    daemonize=uwsgi.log --&gt; 指定记录日志的文件
+4. 启动：uwsgi --ini uwsgi.ini    停止/重启：uwsgi --stop/reload uwsgi.pid
+5. 使用http协议查看网站运行情况，运行正常，但是静态文件无法加载。
+</code></pre><h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><pre><code>1. nginx的作用：
+    1. 负载均衡：多台服务器轮流处理请求；
+    2. 反向代理：隐藏真实服务器。
+2. 实现架构：客户端请求nginx --&gt; nginx请求uwsgi --&gt; 运行框架下的python代码；
+3. 安装：sudo apt-get install nginx
+    1. 主程序目录：/usr/sbin/nginx    配置文件目录：/etc/nginx
+    2. 存放静态文件的目录：/usr/share/nginx    日志目录：/var/log/nginx
+    3. sudo nginx：启动；    sudo nginx -v：查看版本；
+    4. 停止/重启：sudo nginx -s stop/reload
+4. 配置：/etc/nginx/nginx.conf --&gt; http节点：include /etc/nginx/sites-enabled/*
+    1. sites-enabled目录下有文件default，可配置多个server节点，对应多个服务器；
+    server {
+        listen 192.168.233.128:80 default_server; --&gt; nginx监听的Ip和端口；
+        location / {    --&gt; 配置转发的uwsgi
+            include uwsgi_params; --&gt; 将所有的参数转给uwsgi
+            uwsgi_pass 192.168.233.128:8989; --&gt; uwsgi.ini中配置的Ip和端口
+        }
+    }
+    2. 配置uswgi.ini，禁用http：socket=192.168.233.128:8989
+    3. 重启uwsgi、nginx，访问http://192.168.233.128/，80是http的默认端口。
+</code></pre><h3 id="静态文件"><a href="#静态文件" class="headerlink" title="静态文件"></a>静态文件</h3><pre><code>对于静态文件，nginx可以直接返回给客户端，不需要再转到uwsgi；
+1. 在server节点下配置静态文件路径：
+    server {
+        ...
+        location /static {
+            alias /var/www/项目名/static/;
+        }
+    }
+2. 在服务器的/var/www目录下创建一个与项目同名的目录，如servtest
+    1. 修改其权限：sudo chmod 777 /var/www/servtest
+    2. 在servtest目录下创建static目录，用于存放静态文件；
+    3. 配置项目的settings.py：STATIC_ROOT=&apos;/var/www/servtest/static/&apos;
+    4. 收集所有静态文件到STATIC_ROOT指定的目录：python manage.py collectstatic
+3. 重启uwsgi、nginx，即可访问到静态文件；
+4. 同理，MEDIA_ROOT=&apos;/var/www/servtest/static/media&apos;
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/10/Redis/" rel="next" title="Redis">
+                <i class="fa fa-chevron-left"></i> Redis
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/03/爬虫基础-1/" rel="prev" title="爬虫基础-1">
+                爬虫基础-1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟环境"><span class="nav-number">1.</span> <span class="nav-text">虚拟环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#django"><span class="nav-number">2.</span> <span class="nav-text">django</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态保持"><span class="nav-number">3.</span> <span class="nav-text">状态保持</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#session"><span class="nav-number">3.1.</span> <span class="nav-text">session</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#django与session"><span class="nav-number">3.2.</span> <span class="nav-text">django与session</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DTL"><span class="nav-number">4.</span> <span class="nav-text">DTL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向解析"><span class="nav-number">5.</span> <span class="nav-text">反向解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSRF"><span class="nav-number">6.</span> <span class="nav-text">CSRF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中间件"><span class="nav-number">7.</span> <span class="nav-text">中间件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态文件管理"><span class="nav-number">8.</span> <span class="nav-text">静态文件管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">9.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事物"><span class="nav-number">10.</span> <span class="nav-text">事物</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">11.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WSGI"><span class="nav-number">11.1.</span> <span class="nav-text">WSGI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uWSGI"><span class="nav-number">11.2.</span> <span class="nav-text">uWSGI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx"><span class="nav-number">11.3.</span> <span class="nav-text">nginx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态文件"><span class="nav-number">11.4.</span> <span class="nav-text">静态文件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

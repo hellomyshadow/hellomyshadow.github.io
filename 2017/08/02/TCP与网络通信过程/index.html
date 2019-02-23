@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="TCP，MAC，DNS，DHCP，TTL，MSL,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="TCP socketTCP：传输控制协议； 1. 面向连接的、可靠的通信协议；相对UDP，传输速度要慢一些； 2. TCP更稳定，web服务器使用的都是TCP。  TCP 服务器1. 创建TCP对象：socket(AF_INET, SOCK_STREAM) 2. bind((&amp;quot;&amp;quot;, port))：绑定Ip和端口号，&amp;quot;&amp;quot; 表示本机任意Ip； 3. listen">
+<meta name="keywords" content="TCP，MAC，DNS，DHCP，TTL，MSL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP与网络通信过程">
+<meta property="og:url" content="http://yoursite.com/2017/08/02/TCP与网络通信过程/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="TCP socketTCP：传输控制协议； 1. 面向连接的、可靠的通信协议；相对UDP，传输速度要慢一些； 2. TCP更稳定，web服务器使用的都是TCP。  TCP 服务器1. 创建TCP对象：socket(AF_INET, SOCK_STREAM) 2. bind((&amp;quot;&amp;quot;, port))：绑定Ip和端口号，&amp;quot;&amp;quot; 表示本机任意Ip； 3. listen">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/Ln6b6hY.jpg">
+<meta property="og:image" content="http://i.imgur.com/mC9Gd8m.jpg">
+<meta property="og:image" content="http://i.imgur.com/Wu4zibo.jpg">
+<meta property="og:image" content="http://i.imgur.com/M50FULx.jpg">
+<meta property="og:image" content="http://i.imgur.com/SliT3hk.png">
+<meta property="og:image" content="http://i.imgur.com/9UANOjr.jpg">
+<meta property="og:image" content="http://i.imgur.com/FfaVua7.jpg">
+<meta property="og:image" content="http://i.imgur.com/k8X9R6l.png">
+<meta property="og:image" content="http://i.imgur.com/1oFDt5d.png">
+<meta property="og:image" content="http://i.imgur.com/xK9A3Me.jpg">
+<meta property="og:image" content="http://i.imgur.com/N0Z0Z4J.jpg">
+<meta property="og:image" content="http://i.imgur.com/dfTikPd.jpg">
+<meta property="og:image" content="http://i.imgur.com/u1rSxTU.jpg">
+<meta property="og:image" content="http://i.imgur.com/U17h8Jy.jpg">
+<meta property="og:updated_time" content="2018-03-29T14:26:31.116Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP与网络通信过程">
+<meta name="twitter:description" content="TCP socketTCP：传输控制协议； 1. 面向连接的、可靠的通信协议；相对UDP，传输速度要慢一些； 2. TCP更稳定，web服务器使用的都是TCP。  TCP 服务器1. 创建TCP对象：socket(AF_INET, SOCK_STREAM) 2. bind((&amp;quot;&amp;quot;, port))：绑定Ip和端口号，&amp;quot;&amp;quot; 表示本机任意Ip； 3. listen">
+<meta name="twitter:image" content="http://i.imgur.com/Ln6b6hY.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/02/TCP与网络通信过程/">
+
+
+
+
+
+  <title>TCP与网络通信过程 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/02/TCP与网络通信过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP与网络通信过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-02T00:00:00+08:00">
+                2017-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="TCP-socket"><a href="#TCP-socket" class="headerlink" title="TCP socket"></a>TCP socket</h2><pre><code>TCP：传输控制协议；
+1. 面向连接的、可靠的通信协议；相对UDP，传输速度要慢一些；
+2. TCP更稳定，web服务器使用的都是TCP。
+</code></pre><p><img src="http://i.imgur.com/Ln6b6hY.jpg" alt></p>
+<h3 id="TCP-服务器"><a href="#TCP-服务器" class="headerlink" title="TCP 服务器"></a>TCP 服务器</h3><pre><code>1. 创建TCP对象：socket(AF_INET, SOCK_STREAM)
+2. bind((&quot;&quot;, port))：绑定Ip和端口号，&quot;&quot; 表示本机任意Ip；
+3. listen(max)
+    1. socket对象默认属性是主动地发送消息，listen() 将其变为被动地等待接收消息；
+    2. max 表示可以同时接受客户端访问的最大数量。
+4. accept()
+    1. 阻塞方法，等待客户端来访问，返回一个元组(clientSocket, clientAddr)
+    2. clientSocket：为当前客户端服务的socket对象；    clientAddr：客户端的地址。
+5. clientSocket.recv(1024)：接收客户端发来的数据，1024表示一次性接收的最大字节；
+6. clientSocket.send(data)：向客户端发送数据；
+7. clientSocket.close()：服务器主动关闭当前客户端的服务；
+    当客户端tcp socket主动调用close()关闭链接时，TCP服务器的recv()收到的数据长度为0，
+    此时TCP服务器也会结束对该客户端的服务。
+8. close()：关闭tcp socket服务；
+        只是accept()不再接受新的客户端进行链接，并不影响已链接的clientSocket。
+
+TCP服务器的大体框架：
+</code></pre><p><img src="http://i.imgur.com/mC9Gd8m.jpg" alt></p>
+<pre><code>如果开启的是线程，则不能关闭当前进程的client socket，因为在同一个进程中的传递，
+是引用传递；而进程间传递参数，是值传递，拷贝了一份数据。
+</code></pre><h3 id="TCP-客户端"><a href="#TCP-客户端" class="headerlink" title="TCP 客户端"></a>TCP 客户端</h3><pre><code>1. 创建TCP对象：socket(AF_INET, SOCK_STREAM)
+2. connect(serverAddr)：连接TCP服务器，且只需要链接一次；
+        serverAddr：是一个元组(Ip, port)，表示服务器的Ip和port。
+3. send(data)：向TCP服务器发送数据；
+4. recv(1024)：接收TCP服务器发来的数据；
+5. close()：关闭socke。
+</code></pre><h2 id="网络通信过程"><a href="#网络通信过程" class="headerlink" title="网络通信过程"></a>网络通信过程</h2><pre><code>Packet Tracer：模拟网络通信的软件，思科公司出品；
+五层网络通信的层次：
+</code></pre><p><img src="http://i.imgur.com/Wu4zibo.jpg" alt></p>
+<h3 id="交换机与集线器"><a href="#交换机与集线器" class="headerlink" title="交换机与集线器"></a>交换机与集线器</h3><pre><code>1. 两台主机可以通过一根网线连接，并将两台主机的Ip设置成同一网段，在不借助外网的情况下，
+   两台主机就可以实现直接通信，这样的网络就是一个小型局域网；
+2. 两台以上的主机要组成网络，就需要设备连接主机间的网线，比如集线器与交换机。
+</code></pre><h4 id="集线器"><a href="#集线器" class="headerlink" title="集线器"></a>集线器</h4><pre><code>集线器(hub)的主要作用：连接多台电脑；但是因为交换机的出现，集线器基本已经被淘汰了。
+缺点：每个数据包都是以广播的形式发送的，同一个网络中的其他所有主机都会受到数据包，
+    容易造成网络堵塞。
+</code></pre><h4 id="交换机"><a href="#交换机" class="headerlink" title="交换机"></a>交换机</h4><pre><code>交换机会有一个自动学习的过程：
+    同一个局域网下，主机A第一次向主机B发数据包，交换机会在自己的MAC地址表中记录下主机A的
+    Mac地址，然后以广播的形式向其他主机都发送一份数据包，因为数据包中的目的Ip是主机B的Ip，
+    所以只有主机B会解析数据包，并附加上自己的Mac地址，回复给交换机，交换机又记录下主机B的
+    Mac地址，再将数据包转发给主机A；
+    交换机学习完成，主机A和主机B再次发送数据包时，就会以点对点的形式单播。
+交换机的转发过滤：
+    交换机学习完成之后，在MAC地址表中就会存有通信双方的MAC地址，只要在MAC地址表中有映射，
+    交换机就会把数据包转发给目的节点，而不是所有主机。
+</code></pre><h3 id="MAC-地址"><a href="#MAC-地址" class="headerlink" title="MAC 地址"></a>MAC 地址</h3><pre><code>MAC地址：物理地址、实际地址、硬件地址，比如40-8D-5C-88-F0-81，其实是网卡号；
+网卡号一共有6个字节，分为前三组和后三组，前三组表示厂商，后三组表示厂商所生产的网卡序列号。
+MAC地址是唯一的。
+</code></pre><h3 id="ping-Ip"><a href="#ping-Ip" class="headerlink" title="ping Ip"></a>ping Ip</h3><pre><code>ping Ip：进行通信时，使用的是ICMP协议，即发送的是ICMP数据包。
+ping通信过程：
+    对于交换机组成的局域网，第一次 ping 目标主机Ip时，其实是先发送ARP协议数据包，携带了
+    源主机的IP和MAC地址，以及目的主机的IP，用于获取目的主机的MAC地址 --&gt; 交换机接收到
+    ARP数据包 --&gt; 转发给其他所有主机，即发送ARP广播 --&gt; 其他主机解析数据包中的目标Ip，
+    在网络层判断是否与自身的Ip一致，如果不一致，就会丢弃；如果Ip一致，就会在ARP数据包中
+    填写上自己的Mac地址，回复给交换机，交换机再回复给源主机；
+    在次过程，交换机会记录下双方的Mac地址，然后才会以单播形式发送ICMP数据包，进行通信；
+</code></pre><p><img src="http://i.imgur.com/M50FULx.jpg" alt></p>
+<pre><code>ARP协议：根据Ip找MAC地址，ARP数据包是OSI Model，七层协议模型；
+RARP协议：根据MAC地址找Ip。
+
+windows系统命令行：
+    arp -a，查看一台主机上的MAC地址表；MAC地址表，也就是ARP缓存表。
+    arp -d：删除ARP缓存表。
+</code></pre><h3 id="路由器"><a href="#路由器" class="headerlink" title="路由器"></a>路由器</h3><pre><code>集线器和交换机只能链接同一网段的主机，对于不同网段的主机，交换机和集线器都无法完成通信。
+TCP/IP协议规定：
+    同一网段的主机通过ARP协议查找MAC地址，通过MAC地址进行通信；
+    不同网段的主机，不能直接通信，也就是说：两个不同网段的的网卡，不能直接发送数据包。
+    不同网段的主机要进行通信，必须设置主机的网关Ip，将数据包发给指定的网关，由网关通过
+    路由查找目的主机的Ip地址。
+网关(Gateway)：
+    网关其实就是具有路由功能的设备，比如：路由器、启用了路由协议的服务器(相当于路由器)、
+    代理服务器(也相当于路由器)。
+    通常情况下，把路由器设置为默认网关。
+路由器的作用：
+    路由器中实际上至少有两个串口网卡，正是因为两个网卡在同一台设备上，才可以实现两个不同
+    网段的网卡进行直接通信，从而链接两个不同网段的网络，实现不同网段间的主机通信。
+</code></pre><h4 id="单个路由器组网"><a href="#单个路由器组网" class="headerlink" title="单个路由器组网"></a>单个路由器组网</h4><pre><code>两个不同网段的主机(A/B)通过一个路由器进行通信：
+    1. 路由器有两个串口网卡(Card1，Card2)，对应两个Mac地址(Mac1，Mac2)；
+    2. Card1的Ip与主机A的Ip在同一个网段，Card2的Ip与主机B的Ip在同一个网段；
+    3. 设置主机A的默认网关Ip为Card1的Ip，设置主机B的默认网关Ip为Card2的Ip。
+
+配置路由器串口网卡的Ip：
+</code></pre><p><img src="http://i.imgur.com/SliT3hk.png" alt></p>
+<pre><code>开始第一次通信：
+    主机A ping 主机B --&gt; 主机A发送ARP数据包，经交换机广播给所有端口，包括默认网关 --
+--&gt; 默认网关转发给路由器 --&gt; 路由器Card1 解析ARP数据包，并填上自己的MAC地址，经交换机
+回复给主机A --&gt; 主机A再发送ICMP数据包，经交换机转发给默认网关 --&gt; 默认网关转发给路由器
+--&gt; Card1在路由器内部转发给Card2 --&gt; 路由器Card2发送携带了自身Mac地址和数据包目的IP的
+ARP数据包，经交换机转发给主机B所在网络的所有主机 --&gt; 因为目的Ip是主机B，所以只有主机B才
+会解析ARP数据包，并填写上自己的Mac地址，回复给默认网关 --&gt; 默认网关原路转发给主机A --&gt;
+通信建立完成，开始以单播的形式发送ICMP数据包。
+</code></pre><h4 id="多个路由器组网"><a href="#多个路由器组网" class="headerlink" title="多个路由器组网"></a>多个路由器组网</h4><pre><code>两台不同网段的主机，经由多个路由器进行通信：
+    1. 两个路由器之间必须设置成同一网段的Ip，组成单独的网络，实现路由器之间通信；
+    2. 路由器之间第一次通信，也是发送ARP广播，获取下一个路由器的Mac地址；
+    3. 配置路由器的Ip地址：
+</code></pre><p><img src="http://i.imgur.com/9UANOjr.jpg" alt></p>
+<pre><code>4. 在整个转发数据包的过程中，数据包的源Ip和目的Ip不会变化，数据包的转发是根据Mac地址
+   寻找下一个转发设备的；
+5. 路由器之间的通信使用的是路由协议，比如，路由器Router0要向Router1转发数据包，就必
+   须配置Router0的路由表：
+    1. Network：配置数据包的目的Ip；因为路由器会对配置的目的Ip和子网掩码进行与运算，
+            最终得到数据包所在的网段，所以配置为数据包目的Ip所在的网段即可。
+    2. Next Hop：配置下一个要转发的路由器的Ip，即配置为路由器Router1的Card1 Ip；
+    3. Add：添加进路由器，可以添加多个。
+</code></pre><p><img src="http://i.imgur.com/FfaVua7.jpg" alt></p>
+<pre><code>    192.168.1.x网络的主机 ping 192.168.2.x的主机，路由器的Network设置为192.168.2.0；
+    反之，2.x的主机向1.x的主机发送数据包，路由器的Network设置为192.168.1.0。
+如果不配置路由器的路由表，或者配置错误，它会丢弃掉接收到的数据包。
+</code></pre><h3 id="Mac-与-Ip-的作用"><a href="#Mac-与-Ip-的作用" class="headerlink" title="Mac 与 Ip 的作用"></a>Mac 与 Ip 的作用</h3><pre><code>Ip地址和Mac地址都是唯一标识一个网卡，之所以同时设计Ip地址和Mac地址，通过演示 “不同网段的
+两台主机、经由多个路由器进行通信” 发现：
+    在整个通信过程中，数据包中的源主机Ip与目的主机Ip始终是不变的，而Mac地址是在变化的；
+    数据包中的Mac地址是当前设备和下一个要转发的设备的Mac地址。
+1. Ip地址用于标记逻辑上的地址，记录发送端和接收端；
+2. Mac地址用于标记当前实际转发的设备地址，记录下一次应该转发给哪台设备。
+</code></pre><h3 id="服务器组网"><a href="#服务器组网" class="headerlink" title="服务器组网"></a>服务器组网</h3><pre><code>服务器其实就是配置较高的主机，也需要配置Ip和默认网关(Gateway)。
+</code></pre><h4 id="http服务器"><a href="#http服务器" class="headerlink" title="http服务器"></a>http服务器</h4><pre><code>用主机上的浏览器访问另一个网段的http服务器：
+    1. 配置主机、http服务器的Ip地址和默认网关；
+    2. 配置路由器；
+    3. 除了HTTP服务，关闭服务器上的其他服务，可以编辑Http服务的index.html页面；
+</code></pre><p><img src="http://i.imgur.com/k8X9R6l.png" alt></p>
+<pre><code>TCP的三次握手、4次挥手：
+    主机192.168.1.1的浏览器上，输入http服务器的地址192.168.2.1，开始访问 --&gt; 浏览器
+先发送ARP数据广播，获取默认网关的Mac地址 --&gt; .....(获取Mac地址的过程) --&gt; 浏览器发送
+TCP数据包到http服务器 -- (不考虑超时重发) --&gt; http服务器回复TCP数据包 --&gt; 浏览器发送
+TCP数据包，紧接着又发送HTTP数据包 --&gt; http服务器收到数据包，解析浏览器请求的数据 ----
+-- 浏览器与Web服务器完成3次TCP握手，TCP链接建立完成，可以进行数据交互 ---- http服务器
+回复TCP数据包和HTTP数据包 --&gt; 浏览器收到TCP数据包和HTTP数据包 ----web浏览器使用的正是
+HTTP协议，所以浏览器能解析响应的HTTP数据包，加上渲染效果，展示数据 --- 数据请求完成 --&gt;
+浏览器再次发送TCP数据包 --&gt; http服务器回复TCP数据包 --&gt; 浏览器再次发送TCP数据包 ----&gt;
+http服务器收到TCP数据包 ---- 浏览器与Web服务器完成4次TCP挥手，成功断开TCP链接。
+</code></pre><h4 id="DNS服务器"><a href="#DNS服务器" class="headerlink" title="DNS服务器"></a>DNS服务器</h4><pre><code>1. 域名：其实就是服务器Ip地址的别名，便于记忆，如 https://www.baidu.com/
+2. DNS协议用于解析域名对应的Ip地址；一个Ip地址，可以对应多个域名；
+3. 因为域名的数量过于庞大，所以就用一个服务器专门解析域名：DNS服务器。
+4. 主机访问一个域名时，比如baidu.com --&gt; 先访问的是DNS服务器 --&gt; DNS服务器解析域名，
+   返回对应的Ip地址给主机 --&gt; 主机通过Ip地址访问百度的服务器。
+5. 用主机浏览器通过域名访问http服务器：
+    1. 配置主机、DNS服务器、http服务器的Ip地址和默认网关；
+    2. 配置主机上的DNS服务器Ip：DNS Server；
+    3. DNS服务器：除了DNS服务，关闭服务器上的其他服务；
+    4. 在DNS服务中，自定义http服务器的Ip对应的域名，一个Ip可以添加多个域名；
+</code></pre><p><img src="http://i.imgur.com/1oFDt5d.png" alt></p>
+<pre><code>在主机192.168.1.1的浏览器上，输入DNS服务中保存的域名，开始访问：
+    浏览器发送ARP广播，获取默认网关的Mac地址 --&gt; ...(获取Mac地址的过程) --&gt; 浏览器
+发送DNS数据包到DNS服务器 -- DNS协议底层使用的也是UDP协议，没有确认收到的回复过程 --&gt;
+NDS服务器收到DNS数据包，解析数据包中的域名，回复带有相应Ip的DNS数据包 --&gt; 浏览器收到
+DNS数据包，获取域名对应的Ip，开始发送TCP数据包，与http服务器建立通信...
+</code></pre><h3 id="DHCP-协议"><a href="#DHCP-协议" class="headerlink" title="DHCP 协议"></a>DHCP 协议</h3><pre><code>DHCP协议：
+    一个局域网的、基于UDP协议的网络协议，用于给局域网内的主机自动分配Ip地址、子网掩码、
+    默认网关地址、DNS服务器地址等TCP/IP参数。
+DHCP服务器：启用DHCP服务的主机；用于检测同一局域网中没有TCP/IP参数的主机，并为其分配。
+应用：
+    DHCP服务器通常应用于主机数量比较多的大型局域网，因为主机数量比较多，手动设置众多主机
+    的TCP/IP参数会很麻烦；而且，一旦主机的TCP/IP参数发生了变化，还需要重新手动修改；
+    所以，只需要为主机配置好DHCP服务器的Ip地址，DHCP服务器会为主机自动分配TCP/IP参数；
+    如果TCP/IP参数有所变动，也只需要修改DHCP服务器上的TCP/IP参数即可。
+</code></pre><h3 id="访问百度的过程"><a href="#访问百度的过程" class="headerlink" title="访问百度的过程"></a>访问百度的过程</h3><pre><code>1. 先解析baidu.com对应的Ip地址；
+    1. 浏览器先发送ARP广播，获取默认网关的MAC地址；
+    2. 浏览器组织DNS数据包，发送给默认网关；
+        1. DNS数据包：携带的源Ip是客户端主机Ip，目的Ip是主机配置的DNS服务器Ip；
+        2. DNS数据包：携带的目的Mac地址是下一个转发设备的MAC地址，即默认网关的MAC地址。
+    3. 默认网关具有转发数据的能力，把DNS数据包转发给路由器；
+    4. 路由器根据自己的路由协议，选择一个较快的路径转发数据包到目的网关；
+    5. 目的网关，即DNS服务器的默认网关，把DNS数据包转发给DNS服务器；
+    6. DNS服务器解析查询出baidu.com对应的Ip地址，组织成DNS数据包，原路转发给浏览器。
+2. 浏览器解析DNS数据包，得到baidu.com对应的Ip地址，即Web服务器的Ip地址；
+3. 浏览器开始向Web服务器发送TCP的3次握手，进行TCP链接；
+4. 链接成功之后，浏览器使用HTTP协议发送数据请求给Web服务器；
+5. Web服务器收到HTTP请求后，查询自己的主机，将相应的数据组织成Http数据包，转发给客户端；
+6. 浏览器收到响应的Http数据包后，通过自己的渲染功能，将数据展示到网页上；
+7. 浏览器关闭TCP链接，发送TCP数据包到Web服务器；
+8. Web服务器收到TCP数据包，回复一个TCP数据包，然后关闭对该客户端的服务，同时又发送一个
+   TCP数据包到浏览器；
+9. 浏览器收到TCP数据包，回复给Web服务器一个TCP数据包 --&gt; 访问完成。
+百度服务器的访问量很大，如果客户端接收到数据后，没有关闭TCP链接，百度服务器会强制断开。
+</code></pre><h3 id="TCP的3次握手与4次挥手"><a href="#TCP的3次握手与4次挥手" class="headerlink" title="TCP的3次握手与4次挥手"></a>TCP的3次握手与4次挥手</h3><pre><code>1. TCP客户端通过connect() 链接TCP服务器，TCP服务器通过accept() 接收TCP客户端；
+2. TCP客户端调用close() 关闭链接，TCP服务器的recv() 会收到一个长度为0的数据，随之也
+   调用close()，关闭对该TCP客户端的服务。
+</code></pre><h4 id="3次握手"><a href="#3次握手" class="headerlink" title="3次握手"></a>3次握手</h4><pre><code>TCP-Client 调用connect()，底层发送一个类型为SYN的TCP数据包，数据包中还带有ACK NUM和
+SEQUENCE NUM --&gt; TCP-Server收到TCP数据包，并将ACK NUM的值+1，回复一个类型为SYN+ACK
+的TCP数据包 --&gt; TCP-Client收到TCP数据包，如果ACK NUM数值是正确的，则发送ACK确认包，
+紧接着又会发送一个请求数据的HTTP数据包 --&gt; TCP-Server 收到TCP数据包，如果各项数值都是
+正确的，则表示3次握手完成。
+</code></pre><p><img src="http://i.imgur.com/xK9A3Me.jpg" alt></p>
+<pre><code>3次握手成功，也就意味着，双方都准备好了进行通信的所有条件，比如内存、网络拥堵等。
+
+listen(max)：max指的是半链接数和已链接数的总和；
+    1. 半链接与已链接：TCP-Client调用connect() 链接TCP-Server，底层TCP先向Server
+       发送一个SYN类型的TCP数据包，即第一次握手，Server的accept() 底层会有一个队列
+       存储申请链接的Client，此时的Client就是半链接状态，即处于阻塞等待状态；
+       等到第三次握手时，Server收到Client回复的ACK确认包，从半链接状态的队列中取出发送
+       ACK确认包的Client，存储在一个新的队列，此时的Client处于已链接状态。
+    2. 在Mac系统和Windows系统中，同时链接Server的最大Client数量就是max；
+    3. 而在Linux系统中，系统会自动计算一个max值，不会以开发者设置的max为准；
+    4. 正是因为Linux系统会自动计算一个max值，所以Web服务器的开发通常使用Linux系统。
+</code></pre><h4 id="4次挥手"><a href="#4次挥手" class="headerlink" title="4次挥手"></a>4次挥手</h4><pre><code>TCP客户端调用 close() 关闭链接，底层的TCP会发送一个类型为FIN+ACK的TCP数据包，用于通知
+TCP服务器：TCP客户端已经关闭了链接 --&gt; TCP服务器收到TCP数据包，然后回复一个ACK确认包；
+TCP服务器底层解析数据包，给recv() 返回一个长度为0的数据，然后也调用close() 关闭链接，
+底层的TCP也会发送一个类型为FIN+ACK的TCP数据包，通知TCP客户端：TCP服务器也关闭了对其服
+务的链接 --&gt; TCP客户端收到数据包，回复给一个ACK确认包 --&gt; 4次挥手完成。
+</code></pre><p><img src="http://i.imgur.com/N0Z0Z4J.jpg" alt></p>
+<pre><code>4次挥手成功，表示TCP-Client与TCP-Server之间成功断开了链接，释放了占用的端口等资源；
+浏览器的表现：
+    浏览器加载过程中，标签上会有正在加载的转圈图标，4次挥手成功之后，转圈图标会
+停止加载，浏览器的刷新图标也会停止刷新。
+
+TCP稳定、而UDP不稳定的底层核心区别：
+    TCP通信过程中，如果一方收到了对方的数据，一定会给对方回复ACK确认包；
+    而UDP通信则没有这个过程。因此，TCP通信稳定，而UDP通信不稳定。
+</code></pre><h3 id="长连接与短链接"><a href="#长连接与短链接" class="headerlink" title="长连接与短链接"></a>长连接与短链接</h3><pre><code>1. 长链接：3次握手一次，源源不断地传送数据，传送完成之后，再调用close()，完成4次挥手；
+    1. 长连接适用于频繁请求资源的客户端，比如观看在线视频、数据库操作，使用长连接可以省
+       去较多的TCP建立和关闭的操作，减少浪费；
+    2. 但是，TCP-Client与TCP-Server之间的链接如果长时间不关闭，随着TCP-Client的增加，
+       TCP-Server可能会崩溃，所以TCP-Server就会采取一些策略，比如关闭一些长时间没有
+       数据传输的链接，避免一些恶意链接导致Server端的服务受损；再或者以Client机器为颗
+       粒度，限制每个Client的最大长链接数，避免某个Client连累Server。
+2. 短链接：每传输一次数据，就3次握手、4次挥手一次。
+    1. 短链接对TCP-Server来说管理较为简单，存在的链接都是有效连接，不需要额外控制手段；
+    2. 比如Web网站的Http服务，只是展示一个网站的页面，同时访问的TCP-Client数量巨大，
+       即并发量大，但每个用户又无需频繁操作，一般都用短链接。
+3. HTTP1.0 默认使用的是短链接，从HTTP1.1 开始，默认使用的是长链接。
+    1. HTTP协议的短链接和长链接，底层其实就是TCP的短链接和长链接；
+    2. 使用长链接的HTTP协议，会在响应头加入：Connection:keep-alive
+    3. 但是，keep-alive 并不会永久保持链接性，可以在Server端设置链接的时间。
+</code></pre><h3 id="TTL-与-MSL"><a href="#TTL-与-MSL" class="headerlink" title="TTL 与 MSL"></a>TTL 与 MSL</h3><h4 id="TTL"><a href="#TTL" class="headerlink" title="TTL"></a>TTL</h4><pre><code>TTL：一个数据包在网络上允许经过的最大网段个数。
+1. 因为连接两个不同网段的设备是路由器，所以TTL也是经过路由器的最大个数；
+2. 数据包每经过一个网段，即路由器转发一次，TTL会减1，所以TTL可用于检测经过路由器的个数；
+3. 当数据包的TTL值为0时，路由器就会丢弃该数据包。
+</code></pre><p><img src="http://i.imgur.com/dfTikPd.jpg" alt></p>
+<pre><code>主机192.168.1.1 ping 同一网络的主机192.168.1.2，TTL的值是128；
+主机192.168.1.1 ping 远程主机192.168.2.1，中间经过3个路由器转发，TTL的值是125；
+</code></pre><h4 id="MSL"><a href="#MSL" class="headerlink" title="MSL"></a>MSL</h4><pre><code>MSL：一个数据包在网络上的最长存活时间；2MSL：2倍的最长存活时间。
+1. TCP-Client先调用close() 关闭链接
+    TCP-Client 最后一次回复ACK确认包之后，会等待2MSL，然后才会将TCP的状态置为CLOSED；
+因为TCP是可靠的连接，如果TCP-Server没有收到ACK确认包，会给Client再发一次FIN通知包，
+而数据包的最长存活时间是MSL，也就是：Client发送的ACK确认包+Server重发的FIN通知包的存活
+时间=2MSL；TCP-Client等待2MSL之后，如果仍没有重新收到FIN通知包，说明Server一定收到了
+ACK确认包，Client的状态就可以设置为CLOSED。
+2. TCP-Server因为某些原因，先调用close() 关闭链接
+    TCP-Server 最后一次回复ACK确认包之后，等待2MSL，在这段时间之内，Server socket是
+不会被释放的，而TCP-Server程序是绑定端口的，所以如果重启了Server程序，操作系统会提示
+端口被占用，绑定失败；过了2MSL的时间，端口被释放了，Server程序才能启动成功。
+因为TCP-Client往往不会绑定端口，使用的是系统分配的动态端口，所以Client先调用close()，
+不会出现TCP-Server绑定端口失败的问题；而实际应用中，也是TCP-Client先关闭链接。
+</code></pre><h2 id="常见网络攻击"><a href="#常见网络攻击" class="headerlink" title="常见网络攻击"></a>常见网络攻击</h2><h3 id="DOS攻击"><a href="#DOS攻击" class="headerlink" title="DOS攻击"></a>DOS攻击</h3><pre><code>DOS攻击：拒绝服务式攻击，也称为TCP半链接攻击、SYN Flood(SYN洪水攻击)
+    TCP-Server调用listen(max) 设置半链接和已链接的最大TCP-Client数量max，DOS攻击就是
+大量向Server发送第一次握手，进入半链接状态，但不回复给Server第三次握手的ACK确认包，即长期
+占用半链接状态的队列，那么其他正常Client就无法访问Server，造成服务器无法正常使用。
+</code></pre><h3 id="DNS攻击"><a href="#DNS攻击" class="headerlink" title="DNS攻击"></a>DNS攻击</h3><pre><code>nslookup baidu.com：查看当前网络中，baidu.com对应的服务器Ip
+CDN：内容分发，baidu.com对应多个服务器Ip，每个地区的baidu.com对应的服务器Ip都是不同的。
+</code></pre><h4 id="DNS服务器被劫持"><a href="#DNS服务器被劫持" class="headerlink" title="DNS服务器被劫持"></a>DNS服务器被劫持</h4><pre><code>攻击一个DNS服务器，篡改其中的域名所对应的服务器Ip，比如篡改taobao.com对应的Ip，再用爬虫
+爬取taobao.com的数据，制作一个钓鱼网站，Client访问taobao.com进入的就是该钓鱼网站。
+</code></pre><h4 id="DNS服务器欺骗"><a href="#DNS服务器欺骗" class="headerlink" title="DNS服务器欺骗"></a>DNS服务器欺骗</h4><pre><code>修改路由器中的DNS服务器Ip，分配给Client假的DNS-Ip，Client访问的是钓鱼网站，或者在真网站
+上增加广告。
+</code></pre><h3 id="ARP攻击"><a href="#ARP攻击" class="headerlink" title="ARP攻击"></a>ARP攻击</h3><pre><code>ARP攻击：中间人攻击，伪造ARP数据包，通过Python使用原始套接字组织数据包；
+</code></pre><p><img src="http://i.imgur.com/u1rSxTU.jpg" alt></p>
+<pre><code>主机A和路由器C要进行通信，必须先发送ARP数据包，以获取路由器C的Mac地址，但是黑客B组织两个
+伪造的ARP数据包：一个携带路由器C的Ip地址、主机B的Mac地址，回复给主机A，另一个携带主机A的
+Ip地址、主机B的Mac地址，发送给路由器C；
+由此，主机A与路由器C进行通信时，数据包一定会经过主机B，主机B把数据拷贝并存入数据库，再迅速
+把数据包转发给下一级。
+</code></pre><h2 id="NAT"><a href="#NAT" class="headerlink" title="NAT"></a>NAT</h2><pre><code>NAT：网络地址转换器
+路由器上有WAN口(Internet口)和LAN口(可能有多个)；
+    1. WAN口用于连接外网(公网)，电话线上网时，WAN口用来连接调制解调器(猫)；光纤上网时，
+       WAN口用来连接光猫；网线入户上网时，WAN口用来连接入户网线。
+    2. LAN口则用来连接内网(局域网)中的设备，比如电脑、交换机等。
+国外的路由器就是用来链接两个不同的网段，而国内家庭上网时使用的路由器，则是一种NAT；
+    国内家庭中的电脑等设备使用的是私有Ip，不能直接访问外网；NAT内部有一张转换表，家庭电脑
+的浏览器访问百度服务器时，NAT会将私有Ip转换成公有Ip，并为浏览器进程重新分配一个Port，再用
+NAT内部的转换表记录下两者的映射关系；百度服务器回复数据后，NAT收到百度服务器回复的数据后，
+查询映射转换表，将数据发给对应的设备和进程。
+</code></pre><p><img src="http://i.imgur.com/U17h8Jy.jpg" alt></p>
+<pre><code>这也就是为什么在家庭电脑上搭建的服务器，外网的设备不能直接访问；
+就是因为在经过NAT时，转换表上并没有对应的映射关系。
+想要被直接访问，需要借助其他工具，比如托管到阿里云，使用花生壳软件等。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TCP，MAC，DNS，DHCP，TTL，MSL/" rel="tag"># TCP，MAC，DNS，DHCP，TTL，MSL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/01/网络基础与UDP/" rel="next" title="网络基础与UDP">
+                <i class="fa fa-chevron-left"></i> 网络基础与UDP
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/03/单任务并发服务器与协程/" rel="prev" title="单任务并发服务器与协程">
+                单任务并发服务器与协程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-socket"><span class="nav-number">1.</span> <span class="nav-text">TCP socket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-服务器"><span class="nav-number">1.1.</span> <span class="nav-text">TCP 服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-客户端"><span class="nav-number">1.2.</span> <span class="nav-text">TCP 客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络通信过程"><span class="nav-number">2.</span> <span class="nav-text">网络通信过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#交换机与集线器"><span class="nav-number">2.1.</span> <span class="nav-text">交换机与集线器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#集线器"><span class="nav-number">2.1.1.</span> <span class="nav-text">集线器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#交换机"><span class="nav-number">2.1.2.</span> <span class="nav-text">交换机</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MAC-地址"><span class="nav-number">2.2.</span> <span class="nav-text">MAC 地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ping-Ip"><span class="nav-number">2.3.</span> <span class="nav-text">ping Ip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器"><span class="nav-number">2.4.</span> <span class="nav-text">路由器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单个路由器组网"><span class="nav-number">2.4.1.</span> <span class="nav-text">单个路由器组网</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多个路由器组网"><span class="nav-number">2.4.2.</span> <span class="nav-text">多个路由器组网</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mac-与-Ip-的作用"><span class="nav-number">2.5.</span> <span class="nav-text">Mac 与 Ip 的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器组网"><span class="nav-number">2.6.</span> <span class="nav-text">服务器组网</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#http服务器"><span class="nav-number">2.6.1.</span> <span class="nav-text">http服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS服务器"><span class="nav-number">2.6.2.</span> <span class="nav-text">DNS服务器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DHCP-协议"><span class="nav-number">2.7.</span> <span class="nav-text">DHCP 协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问百度的过程"><span class="nav-number">2.8.</span> <span class="nav-text">访问百度的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP的3次握手与4次挥手"><span class="nav-number">2.9.</span> <span class="nav-text">TCP的3次握手与4次挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3次握手"><span class="nav-number">2.9.1.</span> <span class="nav-text">3次握手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4次挥手"><span class="nav-number">2.9.2.</span> <span class="nav-text">4次挥手</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#长连接与短链接"><span class="nav-number">2.10.</span> <span class="nav-text">长连接与短链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TTL-与-MSL"><span class="nav-number">2.11.</span> <span class="nav-text">TTL 与 MSL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TTL"><span class="nav-number">2.11.1.</span> <span class="nav-text">TTL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MSL"><span class="nav-number">2.11.2.</span> <span class="nav-text">MSL</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见网络攻击"><span class="nav-number">3.</span> <span class="nav-text">常见网络攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DOS攻击"><span class="nav-number">3.1.</span> <span class="nav-text">DOS攻击</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS攻击"><span class="nav-number">3.2.</span> <span class="nav-text">DNS攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS服务器被劫持"><span class="nav-number">3.2.1.</span> <span class="nav-text">DNS服务器被劫持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS服务器欺骗"><span class="nav-number">3.2.2.</span> <span class="nav-text">DNS服务器欺骗</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ARP攻击"><span class="nav-number">3.3.</span> <span class="nav-text">ARP攻击</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NAT"><span class="nav-number">4.</span> <span class="nav-text">NAT</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

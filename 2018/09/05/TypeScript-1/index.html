@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="TypeScript,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="TypeScript1. TypeScript是微软开发的，基于类的面向对象编程，其文件以 .ts 为后缀名； 2. TypeScript是JavaScript的超集，完全兼容JavaScript代码； 3. TypeScript只存活于编译阶段，编译为JavaScript之后，在浏览器/Node环境下才能运行； 4. 安装TS编译器：npm i typescript -g  ===&amp;gt; ts">
+<meta name="keywords" content="TypeScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TypeScript-1">
+<meta property="og:url" content="http://yoursite.com/2018/09/05/TypeScript-1/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="TypeScript1. TypeScript是微软开发的，基于类的面向对象编程，其文件以 .ts 为后缀名； 2. TypeScript是JavaScript的超集，完全兼容JavaScript代码； 3. TypeScript只存活于编译阶段，编译为JavaScript之后，在浏览器/Node环境下才能运行； 4. 安装TS编译器：npm i typescript -g  ===&amp;gt; ts">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-27T11:29:54.539Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TypeScript-1">
+<meta name="twitter:description" content="TypeScript1. TypeScript是微软开发的，基于类的面向对象编程，其文件以 .ts 为后缀名； 2. TypeScript是JavaScript的超集，完全兼容JavaScript代码； 3. TypeScript只存活于编译阶段，编译为JavaScript之后，在浏览器/Node环境下才能运行； 4. 安装TS编译器：npm i typescript -g  ===&amp;gt; ts">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/05/TypeScript-1/">
+
+
+
+
+
+  <title>TypeScript-1 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/05/TypeScript-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TypeScript-1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-05T00:00:00+08:00">
+                2018-09-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="TypeScript"><a href="#TypeScript" class="headerlink" title="TypeScript"></a>TypeScript</h2><pre><code>1. TypeScript是微软开发的，基于类的面向对象编程，其文件以 .ts 为后缀名；
+2. TypeScript是JavaScript的超集，完全兼容JavaScript代码；
+3. TypeScript只存活于编译阶段，编译为JavaScript之后，在浏览器/Node环境下才能运行；
+4. 安装TS编译器：npm i typescript -g  ===&gt; tsc ts文件名 [编译后输出目录及文件]
+    1. 默认情况下，编译生成的js文件输出到当前目录下；
+    2. tsc t1.ts --outDir ./dist：编译后的t1.js文件输出到dist目录下。
+</code></pre><h2 id="tsconfig-json"><a href="#tsconfig-json" class="headerlink" title="tsconfig.json"></a>tsconfig.json</h2><pre><code>1. tsconfig.json：用于配置 tsc 的编译配置选项，如js文件的输出目录
+2. 当 tsc 不指定要编译的ts文件时，编译器会从当前目录开始逐级向上查找tsconfig.json
+3. 当指定了编译的ts文件时，tsconfig.json会被忽略；
+4. --project(-p)：指定一个包含 tsconfig.json 的目录来进行编译；
+</code></pre><h3 id="编译选项"><a href="#编译选项" class="headerlink" title="编译选项"></a>编译选项</h3><pre><code>1. compilerOptions：编译选项的配置，在tsconfig.json的第一层
+    { 
+        &quot;compilerOptions&quot;: { }
+    }
+2. 配置输出目录
+    &quot;compilerOptions&quot;: {
+        &quot;outDir&quot;: &quot;./dist&quot;  ---&gt; 指定输出目录：tsconfig.json所在目录/dist
+    }
+    1. 执行 tsc 命令，但不指定任何ts文件，会自动把ts文件编译输出到dist目录。
+3. 合并输出到一个文件，合并的文件顺序为加载和依赖顺序
+    &quot;compilerOptions&quot;: {
+        &quot;outFile&quot;: &quot;./bundle.js&quot;  ---&gt; 把ts文件合并编译输出到bundle.js中
+    }
+4. target：指定编译后的js对应的ECMAScript版本，es3、es5、es6、es2015、es2016 ...
+5. module：编译后的js所使用的模块化系统，none、commonjs、es2015、amd、esnext ...
+</code></pre><h3 id="指定编译文件"><a href="#指定编译文件" class="headerlink" title="指定编译文件"></a>指定编译文件</h3><pre><code>1. 执行 tsc 命令，但不指定任何ts文件时，默认会编译当前项目中的所有ts文件；
+2. include：指定要编译的ts文件目录
+    &quot;include&quot;: [ &quot;./src/&quot; ] ---&gt; 编译tsconfig.json所在目录/src目录下的ts文件
+    1. 使用glob模式，类似于正则表达式，**/ 递归匹配任意子目录；
+    2. * 匹配0或多个字符，? 匹配一个任意字符，但都不包括目录分隔符；
+    3. &quot;./src/*&quot;：只编译src目录下的ts文件，不包括src的子目录；
+    4. &quot;./src/**/*&quot;：递归编译src目录下的ts文件，包括子目录；
+3. exclude：指定不编译的ts文件目录，默认已经排除了 node_modules 和 &lt;outDir&gt; 目录
+</code></pre><h2 id="ts-node"><a href="#ts-node" class="headerlink" title="ts-node"></a>ts-node</h2><pre><code>1. npm i ts-node -D/-g：与 tsc 命令不同的是，它会编译并执行ts文件；
+2. ts-node 命令也会读取 tsconfig.json
+</code></pre><h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><pre><code>1. 语法：let 变量: 类型
+    1. let input: HTMLInputElement = document.querySelector(&apos;uname&apos;);
+    2. let value: number = Number(input.value) + 10;
+    3. let a: string;  a = 1; --&gt; 报错
+2. TS的类型：数字、字符串、布尔型、null、undefined、数组、元组、枚举、void、any、Never
+3. 基本类型与包装类型
+    1. 基本类型：string、number、boolean
+    2. 包装类型：String、Number、Boolean
+    3. 基本类型可以直接赋值给对应的包装类型，但反之不行。
+    let s: String = &apos;nodejs&apos;;
+4. 数组
+    1. 基本语法：let list: number[];  --&gt; 一个number类型的数组，只能存储number
+    2. 泛型方式：let list: Array&lt;number&gt;;
+5. 元组：与数组类似，但可以存储不同类型的元素
+    1. let tup: [number, string, boolean];  --&gt; 定义一个存储三种类型的元组
+    2. 元组的元素顺序必须与定义的类型一一对应，tup[0]=1; tup[1]=&apos;a&apos;; tup[2]=true;
+    3. 对于越界部分的元素，则采用联合类型(三种类型中的任意一种)：tup[3]=&apos;b&apos;;
+    4. 定义联合类型的元组：let tup: string|number; --&gt; 元素类型属于这两种之一即可
+    5. 交叉类型的元组：let tup: string&amp;number; --&gt; 此元组必须包含这两种类型的元素
+6. 枚举：为一组数据赋予友好的名字
+    1. enum Color {Red, Green, Blue};  --&gt;Color.Red，Color.Green，Color.Blue
+    2. 默认情况下，元素的编号从 0 开始，也可以手动指定编号，enum Color {Red=1, ...};
+7. 更多其他类型：null、undefined、void、any、never
+    1. null和undefined的值分别只有null、undefined，所以用处不大；
+    2. let a: undefined = undefined; 不能再赋其他值，只能赋值undefined
+    3. 默认情况下，null和undefined是所以类型的子类型，可以赋值给其他类型；
+    4. 如果采用严格模式，则不允许把null和undefined赋值给其他类型；
+    5. 启用严格模式：tsconfig.json的 compilerOptions 下增加 strictNullChecks
+    &quot;compilerOptions&quot;: {
+        &quot;strictNullChecks&quot;: true
+    }
+    let div1 = document.querySelector(&apos;#div1&apos;);
+    div1.style.color = &apos;red&apos;;  --&gt; ts报错，因为div1可能为null，需要判断不为null
+    6. never：表示那些永不存在的值的类型；
+    7. any：任意类型，在不确定返回类型的情况下使用；
+    8. void：与 any 相反，表示没有任何类型，常见于没有返回值的函数。
+8. 类型推导
+    1. 有时候不一定强制使用类型声明，TS会根据语境进行类型推导；
+    2. TS的变量初始化推导
+    let a;  a=1; --&gt; 变量a 是number类型，不允许再赋予其他类型的值；
+    3. TS的上下文推导
+    btn.onclick = function(e) {} --&gt; e: MouseEvent
+    btn.onkeydown = function(e) {} --&gt; e: KeyboardEvent
+    4. TS会根据当前绑定的事件，推导出回调函数的第一个参数类型MouseEvent/KeyboardEvent
+</code></pre><h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><pre><code>1. 函数声明：function fn(x: Type, y: Type): Type { ... }
+    function fn(x: number, y: number): number { --&gt; 参数为number，返回值为number
+        return x+y;
+    }
+    let fn = function(x: number, y: number): number { return x+y; }
+2. 函数表达式：let fn:(x:Type, y:Type) =&gt; Type = function(x:Type, y:Type){ ... }
+    let fn: (x: number, y: number) =&gt; number = function(x, y) {
+        return x+y;
+    }
+    1. 函数体function的参数类型可以省略，ts会进行类型推导
+3. 类型约束：函数参数、函数返回值、无返回值的类型为void
+4. 可选参数：通过 ? 定义，默认值为undefined(与ES6保持一致)，必须在必传参数之后
+    function fn(x: number, y?: number): void { ... }
+    fn(10); --&gt; 参数y 为可选参数
+5. 默认值：如果手动指定了可选参数的默认值，则不能再使用 ? ，也可以不明确类型
+    function fn(x: number, y=1)
+6. 剩余参数：必须是数组类型
+    function fn(...args: any[]) { ... } --&gt; any表示剩余参数可以是任意类型
+7. 函数重载
+    1. 重载形式
+    function fn(x: number, y: number): number;
+    function fn(x: string, y: string): string;
+    2. 函数实现
+    function fn(x: any, y: any): any { ... } ---&gt; 实现时的类型必须是 any
+    3. 参数x、y 的类型必须同时为number或者string; fn(1, 2);  fn(&apos;a&apos;, &apos;b&apos;);
+8. 函数的this
+    1. ts的函数中，this默认指向 any，ts不能对any类型提示任何属性和方法；
+    2. 在tsconfig.json中，取消 this 默认指向 any 的设置：
+    &quot;compilerOptions&quot;: {
+        &quot;noImplicitThis&quot;: true
+    }
+    3. 对于某些情况，如DOM事件，回调函数的this默认指向DOM对象，TS自动推导。
+</code></pre><h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><pre><code>1. TS的类与ES2015(es6)中的 class 类似，同时新增了一些实用特性；
+2. 成员属性和成员方法：与ES6不同，与Java类似
+    class Person {
+        username: string = &apos;&apos;;  ---&gt; 提前声明成员属性
+        constructor(name: string) {
+            this.username = name;  --&gt; 使用成员属性
+        }
+    }
+    let p1 = new Person(&apos;Mack&apos;); --&gt;TS自动推导出p1的类型为Person
+3. 修饰符：public、protected、private、readonly，控制对成员属性/方法的访问
+    1. public：成员属性和方法的默认修饰符，可以公开访问；
+    2. protected：只能在类中、及其子类中访问；
+    3. private：只能在类的内部直接访问，但可以定义 setter/getter，让外部对象访问；
+    4. readonly：只读，对象只能获取，不能重新赋值。
+    5. 在构造函数的参数上使用修饰符，表示同时在类中创建该属性，该属性不能在类中预定义；
+    constructor(public age: number){ --&gt;为Person创建属性age：public age: number;
+        this.age = age;
+    }
+4. 存取器：setter/getter的简写形式
+    private _age: number = 10;
+    get age(): number {  ------&gt; 访问：p1.age;
+        return this._age;
+    }
+    set age(age: number) {  ---&gt; 访问：p1.age = 20;
+        this._age = age;
+    }
+5. 静态成员：static修饰的属性和方法
+    1. 单例模式
+    class MySql {
+        private constructor(){}  ---&gt; 私有化构造函数
+        public static instance;  ---&gt; 静态属性
+        public static getInstance() {  -----&gt; 静态方法
+            if(!MySql.instance) {
+                MySql.instance = new MySql();
+            }
+            return MySql.instance;
+        }
+    }
+6. 继承：extends实现继承机制，且是单继承
+    1. 与JS相同，如果子类重写了构造函数，必须先调用 super(); 初始化父类的构造函数；
+    class Student extends Person {
+        constructor(name: string) {
+            super(name);
+        }
+    }
+7. 抽象类：abstract修饰的类
+    1. 抽象方法：abstract修饰的方法，且没有方法体，只能定义在抽象类中；
+    abstract class Person {
+        abstract study(): void;
+    }
+    2. 不允许通过 new 创建抽象类的对象；
+    3. 抽象类的子类必须实现所有抽象方法，否则该子类也必须声明为抽象类。
+</code></pre><h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><pre><code>1. 接口用于定义规则，TS的数据检测就是一种规则
+    1. 接口的规则只有抽象描述，属性不能有具体的值，方法不能有具体的实现；
+    interface Options {
+        width: number, height: number
+    }
+    2. 使用规则：width和height都是必须的属性
+    function fn(opts: Options){ ... }
+    fn({ width:100, height:200 });
+    3. TS类型检测器只会检查接口所定义的规则属性是否存在，并不会检查属性的顺序。
+    fn({ height:200, width:100 });
+2. 可选的接口规则：通过 ? 声明
+    interface Options {
+        width: number, height: number,
+        color?: string  ---&gt; 属性color是可选的
+    }
+3. 只读的接口规则：readonly修饰，readonly height?: number
+4. 绕开类型检测
+    1. 断言：as
+    fn({ width: 100 } as Options);  ---&gt; 虽然少了规则，但TS不会报错
+    2. 如果有多余的规则，TS也不允许，则先赋值给一个变量，再作为参数传入规则
+    fn({ width:100, height:200, a:1 });  ---&gt; TS报错
+    let opt = { width:100, height:200, a:1 };
+    fn(opt); --&gt; TS允许
+5. 索引签名：定义一组key-value的数据，这组数据的个数是不确定的，其中key具有某种特性
+    interface Options {
+        [attr: number]: any,  ---&gt; 一组k-v数据：key为number类型，value为任意类型
+        length: number  -----&gt; 非索引属性
+    }
+    fn({
+        0: 100, 1: 200, 2: 300,  ---&gt; 也可以绕开TS的类型检测
+        length: 1
+    });
+    1. 索引 key 的类型只能是string和number
+    2. 在TS的类中，不允许对象直接扩展属性/方法
+    class Person { }
+    let p: Person = new Person();
+    p.fly = function() { }  -------&gt; TS报错，Person类中不存在fly
+    3. 以全局对象 window 为例，通过接口去扩展属性/方法
+    interface Window{  ------&gt; window对象实现了 Window 接口
+        abc: number
+    }
+    window.abc = 1; -----&gt; 通过TS检查
+    4. 由此可见，可以通过接口去扩展Person的属性/方法
+    interface Person {
+        [attr: string]: any
+    }
+    p.fly = function() { }  -------&gt; 通过TS检查
+5. 函数类型的接口规则
+    1. 只包含成员类型为函数的接口，并不是函数类型的接口
+    interface Options {
+        fn: Function
+    }
+    let opt: Options = { fn: function(){} }
+    2. 函数类型的接口描述的是一个函数结构
+    interface IFn {
+        (x: number, y: number): number  --&gt; 两个number类型的参数，返回值为number
+    }
+    let fn: IFn = function(x: number, y: number): number { return x+y; }
+    3. 定义一个MouseEvent类型参数的函数结构
+    interface MouseEback {
+        (e: MouseEvent): any
+    }
+    let fn: MouseEback = function(ex: MouseEvent){}
+    document.onclick = fn; ---&gt; 符合DOM点击事件的回调函数，通过TS的类型检查
+6. 接口的实现：implements，从而让一个类符合某种规则
+    1. 类是单继承的，接口可以多实现，接口之间通过 extends 实现继承；
+    2. 实现接口时，必须实现接口中的定义属性和方法
+    interface ISuper {
+        fly(): void;
+    }
+    class SuperMan implements ISuper {
+        fly() { }
+    }
+</code></pre><h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><pre><code>1. 泛型：把类型变成一个变量，提高复用性；此变量一般使用单个大写字母；
+2. 函数的泛型
+    function fn&lt;T&gt;(x: T): number {
+        return Number(x) * 10;
+    }
+    fn&lt;number&gt;(4);
+    1. 在调用函数的时候再决定类型，从而根据指定的类型去检测；
+    2. 泛型也可以指定多个：
+    function fn&lt;T, S&gt;(a:T, b:S): [T, S] {}
+    3. 数组形式的泛型：
+    function fn&lt;T&gt;(a: T[]): T[] {}
+    function fn&lt;T&gt;(a: Array&lt;T&gt;): Array&lt;T&gt; {}
+3. 类的泛型
+    class Cat &lt;T&gt; {
+        private _data: T[] = [];
+        public push(v: T): number {}
+    }
+    let cat: Cat&lt;string&gt; = new Cat();
+4. 泛型作为一种类型
+    let fn: &lt;T&gt;(x: T, y: T) =&gt; number = function(x, y) {
+        return Number(x) + Number(y);
+    }
+5. 泛型接口
+    interface IFn &lt;T&gt; {
+        (x: T, y: T): number
+    }
+    let fn: IFn&lt;string&gt; = function(x, y) {
+        return Number(x) + Number(y);
+    }
+6. 泛型约束：约束泛型的类型范围，extends
+    1. 约束泛型为HTML节点
+    function fn&lt;T extends HTMLElement&gt; (ele: T) { }
+    2. 配合接口使用
+    interface Len {
+        length: number
+    }
+    function fn&lt;T extends Len&gt; (e: T) { }
+    fn(1);  ---&gt; TS报错：number类型没有实现 Len 接口，也不具备 length 属性
+    fn(&apos;2&apos;); --&gt; string类型实现了 Len 接口
+7. 类类型
+    1. 如何让一个外部函数成为创建对象的工厂
+    function getArray(constructor: Array) {
+        return new constructor();
+    }
+    let arr = getArray(Array);  --&gt; TS报错
+    2. 形参constructor表示Array类型的对象，而不是一个Array的构造函数，所以无法创建对象
+    3. {new()}：表示构造函数类型
+    function getInstance(constructor: {new()}) {
+        return new constructor();
+    }
+    let arr = getInstance(Array);  --&gt; 通过TS检查，创建一个数组对象
+    4. 限制构造函数的类型：
+    function getInstance(ct: {new(): Array&lt;string&gt;}) {
+        return new ct();   --&gt; 只能创建Array&lt;string&gt;类型的对象
+    }
+    function getInstance&lt;T&gt;(ct: {new(): T}) { --&gt; 泛型
+        return new ct();
+    }
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TypeScript/" rel="tag"># TypeScript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/01/Electron/" rel="next" title="Electron">
+                <i class="fa fa-chevron-left"></i> Electron
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/08/TypeScript-2/" rel="prev" title="TypeScript-2">
+                TypeScript-2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TypeScript"><span class="nav-number">1.</span> <span class="nav-text">TypeScript</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tsconfig-json"><span class="nav-number">2.</span> <span class="nav-text">tsconfig.json</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译选项"><span class="nav-number">2.1.</span> <span class="nav-text">编译选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定编译文件"><span class="nav-number">2.2.</span> <span class="nav-text">指定编译文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ts-node"><span class="nav-number">3.</span> <span class="nav-text">ts-node</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型"><span class="nav-number">4.</span> <span class="nav-text">类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数"><span class="nav-number">4.1.</span> <span class="nav-text">函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类"><span class="nav-number">5.</span> <span class="nav-text">类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">6.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#泛型"><span class="nav-number">7.</span> <span class="nav-text">泛型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

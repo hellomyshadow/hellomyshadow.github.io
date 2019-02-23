@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python MySQL,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="数据库简介每一种数据库的核心区别：对硬盘的读写算法不同；     1. 数据是存在本地硬盘上的，以实现数据的持久化存储；     2. 数据库并不是简单的IO操作，其读写硬盘数据的算法是经过优化的，读写更加高效；     3. 数据库保证了数据的有效性，比如身份证号是唯一的，不允许录入重复的号码。 数据库主要分为两类：     1. 文档型，比如移动端使用的轻量级数据库Sqlite，其实就是一个文">
+<meta name="keywords" content="Python MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL">
+<meta property="og:url" content="http://yoursite.com/2017/08/08/MySQL/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="数据库简介每一种数据库的核心区别：对硬盘的读写算法不同；     1. 数据是存在本地硬盘上的，以实现数据的持久化存储；     2. 数据库并不是简单的IO操作，其读写硬盘数据的算法是经过优化的，读写更加高效；     3. 数据库保证了数据的有效性，比如身份证号是唯一的，不允许录入重复的号码。 数据库主要分为两类：     1. 文档型，比如移动端使用的轻量级数据库Sqlite，其实就是一个文">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/1FIcRlR.jpg">
+<meta property="og:image" content="https://i.imgur.com/wL7rTfI.jpg">
+<meta property="og:image" content="https://i.imgur.com/7iV6Enj.jpg">
+<meta property="og:image" content="https://i.imgur.com/KhGDLuq.jpg">
+<meta property="og:image" content="https://i.imgur.com/JDIztZW.jpg">
+<meta property="og:image" content="https://i.imgur.com/CMHLT69.jpg">
+<meta property="og:image" content="https://i.imgur.com/TAfCbHY.jpg">
+<meta property="og:image" content="https://i.imgur.com/LMo4FE1.jpg">
+<meta property="og:image" content="https://i.imgur.com/pEjXMMH.jpg">
+<meta property="og:updated_time" content="2019-02-21T12:25:05.104Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL">
+<meta name="twitter:description" content="数据库简介每一种数据库的核心区别：对硬盘的读写算法不同；     1. 数据是存在本地硬盘上的，以实现数据的持久化存储；     2. 数据库并不是简单的IO操作，其读写硬盘数据的算法是经过优化的，读写更加高效；     3. 数据库保证了数据的有效性，比如身份证号是唯一的，不允许录入重复的号码。 数据库主要分为两类：     1. 文档型，比如移动端使用的轻量级数据库Sqlite，其实就是一个文">
+<meta name="twitter:image" content="https://i.imgur.com/1FIcRlR.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/08/MySQL/">
+
+
+
+
+
+  <title>MySQL | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/08/MySQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MySQL</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-08T00:00:00+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="数据库简介"><a href="#数据库简介" class="headerlink" title="数据库简介"></a>数据库简介</h2><pre><code>每一种数据库的核心区别：对硬盘的读写算法不同；
+    1. 数据是存在本地硬盘上的，以实现数据的持久化存储；
+    2. 数据库并不是简单的IO操作，其读写硬盘数据的算法是经过优化的，读写更加高效；
+    3. 数据库保证了数据的有效性，比如身份证号是唯一的，不允许录入重复的号码。
+数据库主要分为两类：
+    1. 文档型，比如移动端使用的轻量级数据库Sqlite，其实就是一个文件，但读写算法做了优化；
+    2. 服务型，比如Oracle、MySQL、PostgreSQL，分为客户端和服务端，数据存储在服务器端，
+       客户端通过TCP/IP协议链接，进行数据库的读写操作；
+</code></pre><h3 id="E-R-模型"><a href="#E-R-模型" class="headerlink" title="E-R 模型"></a>E-R 模型</h3><pre><code>E-R模型针对的是关系型数据库，E：Entry(实体)，R：Relationship(关系)；
+1. 当前物理的数据库都是按照E-R模型设计的，将一个实体转换为数据库的一个表，实体的属性转换为
+   表中的字段；
+2. 关系用于描述两个实体之间的对应规则：一对一、一对多、多对多；
+3. 关系转换为表中的一个列，在关系型数据库中，一行就是一个对象；
+</code></pre><h3 id="三范式"><a href="#三范式" class="headerlink" title="三范式"></a>三范式</h3><pre><code>数据库的设计需要遵循一定的规则，这些规则称为范式；
+1. 第一范式(1NF)：列不可拆分
+    1. 比如&quot;学生&quot;作为一个实体，其属性&quot;姓名&quot;是两个信息，可以设计成一列，也可以设计成两列，
+    但是，对于学生信息，只需要维护&quot;姓名&quot;作为一列就足够使用了，而对于公安系统来说，则需要
+    单独维护&quot;姓&quot;和&quot;名&quot;作为两列(两个字段)；
+    2. &quot;不可拆分&quot;的标准在于，&quot;够用就行&quot;，基于当前的实际需求。
+2. 第二范式(2NF)：唯一标识
+    每个实体(表)都可以通过一个属性唯一的查找到，该属性就是表的唯一标识；
+3. 第三范式(3NF)：引用主键
+    针对的是关系，主键是一个表的唯一标识，引用另一张表的数据时，必须通过主键引用；
+说明：后一个范式，都是在前一个范式的基础上建立的。
+</code></pre><h3 id="数据完整性"><a href="#数据完整性" class="headerlink" title="数据完整性"></a>数据完整性</h3><pre><code>数据的完整性：保证数据正确有效，在创建表时，添加一些强制性验证，包括数据字段的类型、约束；
+1. 字段类型
+    1. 数字常用的类型：
+        1. 整数：int
+        2. 浮点数：decimal(m, n)，m 表示浮点数的位数，n 表示小数点后的位数；
+    2. 字符串：char，varchar，text
+        1. char(n)：如果字符个数少于 n，则在右侧补空格，强制使字符个数保持在 n 个；
+        2. varchar(n)：与char的不同，不会自动补空格，存放的是字符的真实个数；
+        3. text：字符个数不固定时使用，不限制字符的个数，比如描述信息；
+        4. 另外，只要使用了字符串，必须统一编码格式，比如 utf-8；
+    3. 日期：datetime
+    4. 布尔类型：bit
+        1. bit：存放二进制的比特位，默认存放 1 个比特位(0，1)；
+        2. bit(8)：存放 8 个比特位，即一个字节；
+        3. bit 的空间开销更小，比如性别(male，female)，字符串类型所占用的空间开销更大，
+           既然性别只有两种状态，就可以使用 0 和 1 表示，用bit进行存储。
+2. 约束
+    1. 主键约束：primary key，主键不能重复，数据库通过主键查找数据的速度很快；
+    2. 非空约束：not null，比如约束字段name不能为空，保存name为空的数据时，就会报错；
+    3. 唯一约束：unique，不能出现重复的值；
+        1. 与主键的区别是，一个实体可以有多个唯一约束，但只有一个主键；
+        2. 物理上的存储结构是按照主键进行维护的，而不是按照唯一约束；
+    4. 默认约束：default，用于设置默认值；
+    5. 外键约束：foreign key
+</code></pre><h2 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h2><pre><code>1. 在设计表时，通常预留一定数量的字段，以适应后期的设计变化，避免修改表的结构；
+   因为表一旦设计完成，一般不会再增删字段，即使字段不再使用，也不会删除；
+2. 物理删除：在删除表中的数据时，把数据从硬盘上直接删除，数据也就被永久性删除了；
+3. 逻辑删除：在表中增加一个标识性字段isDelete，类型为bit，默认值为0；
+    1. isDelete的值为0 表示数据存在，值为1 表示数据被删除；
+    2. 在删除数据时，只需要把该条数据的isDelete设置为1 即可；
+    3. 从数据库中读取数据时，只读取isDelete的字段值为0 的数据；
+    4. 逻辑删除可以保护重要的数据不会因为某种原因被永久性删除。
+4. mysql的默认端口是：3306
+</code></pre><h3 id="图形化管理MySQL"><a href="#图形化管理MySQL" class="headerlink" title="图形化管理MySQL"></a>图形化管理MySQL</h3><pre><code>在Windows系统上使用MySQL管理软件SQLyog/Navicat for MySQL，图形化管理MySQL数据库；
+1. 本地连接
+    在Windows系统上安装MySQL，并启动MySQL服务：net start MySQL；
+    使用管理软件Navicat可以直接建立MySQL连接。
+2. 远程连接
+    一台主机模拟远程连接：
+        1. 在Windows系统上安装VW虚拟机；
+        2. VW虚拟机上安装ubuntu Linux；
+        3. ubuntu Linux系统上安装MySQL。
+    1. MySQL默认不允许远程连接，必须设置为可远程连接，并重启MySQL；
+    2. 远程连接之前，先确认Window系统与Linux系统可以通信：ping，测试连通性；
+    3. 如果ping 失败，可能是因为Linux系统的Ip 与Window系统的Ip 不在同一网段；
+       1. 执行 sudo dhclient 命令，重新动态分配Ip；
+       2. 如果 sudo dhclient 执行失败，可以将VW虚拟机的网络适配器设置为桥接模式；
+       3. 这两种方式执行完之后，最好重启一下mysql。
+    4. ping 成功之后，使用Windows系统中的Navicat，远程连接Linux系统中的MySQL。
+</code></pre><h3 id="命令管理MySQL"><a href="#命令管理MySQL" class="headerlink" title="命令管理MySQL"></a>命令管理MySQL</h3><pre><code>1. mysql --help：查看mysql命令文档；
+2. 本地登录MySQL：mysql -uroot -p
+    1. root：登录的用户名；  -p：回车后输入密码；
+    3. 不指定端口号，表示使用mysql的默认端口：3306
+3. MySQL客户端远程登录：
+    1. 在开发过程中，数据库通常统一搭建在一台服务器上，需要远程连接；
+    2. 远程连接的命令：mysql -hIP -uroot -p
+    3. IP：要连接的主机Ip；  root：登录的用户名；  使用默认端口：3306
+4. 退出登录：quit/exit
+5. 查看版本：select version();
+6. 显示当前时间：select now();
+7. 登录mysql之后，操作MySQL的命令语句都以分号&quot;;&quot;结尾。
+</code></pre><h4 id="数据库操作"><a href="#数据库操作" class="headerlink" title="数据库操作"></a>数据库操作</h4><pre><code>1. 创建数据库：create database 数据库名 charset=utf8;
+2. 删除数据库：drop database 数据库名;
+3. 切换数据库：use 数据库名;
+4. 查看当前操作的数据库：select database();
+5. 查看所有的数据库：show databases;
+</code></pre><h4 id="表操作"><a href="#表操作" class="headerlink" title="表操作"></a>表操作</h4><pre><code>1. 查看当前数据库中所有的表：show tables;
+2. 创建一个表：create table 表名(列及类型);
+    mysql&gt; create table student(
+        -&gt; id int auto_increment primary key,
+        -&gt; name varchar(10) not null,
+        -&gt; gender bit default 1,
+        -&gt; birthday datetime);
+    1. auto_increment：设置为自动增长；
+    2. primary key：设置为主键，一个表只能有一个字段设置为主键；
+    3. not null：字段的值不能为空；
+    4. default 默认值：设置字段的默认值。
+3. 查询一个表的结构：desc 表名;
+4. 修改表：
+    1. 更改字段名：alter table 表名 change 旧字段名 新字段名 新类型;
+       如果只修改字段类型，则新字段名与旧字段名设置为同名；
+       如果不需要修改类型，则把新类型设置为原字段类型。
+    2. 增加一个新字段：alter table 表名 add 列名 类型;
+       增加一个标识性字段并指定默认值：alter table 表名 add isDelete bit default 0;
+    3. 删除字段：alter table 表名 drop 列名;
+    4. 修改字段类型：alter table 表名 modify column 字段名 新类型;
+5. 删除表：drop table 表名;
+6. 更改表的名称：rename table 原表名 to 新表名;
+7. 查看表的创建语句：show create table 表名;
+</code></pre><h4 id="数据操作"><a href="#数据操作" class="headerlink" title="数据操作"></a>数据操作</h4><pre><code>1. 查看表中所有字段的数据：select * from 表名;
+2. 添加数据：insert
+    1. 全字段添加：insert into 表名 values(字段1的值, 字段2的值, ...);
+        1. 先使用 desc 命令查看表的结构(列的顺序)，字段的值与字段的顺序必须一一对应；
+        2. 主键字段id 虽然设置为auto_increment，仍然需要根据字段的顺序设置 id 的值，
+           但是，id 的真实数据会以自动生成的为准，手动设置的值只是作为占位符，比如 0；
+        3. 字符串和日期类型的数据，用单引号标识。
+    2. 指定字段添加：insert into 表名(字段1, ...) values(值1, ...);
+    3. 同时插入多条数据：
+        1. insert into 表名 values(字段1的值, ...), (字段1的值, ...), ...;
+        2. insert into 表名(字段1, ...) values(值1, ...), (值1, ...), ...;
+3. 修改数据：update
+    1. update 表名 set 字段1=值1, 字段2=值2, ... where 条件;
+    2. 逻辑删除 id=2 的数据：update students set isDelete=0 where id=2;
+    3. 只查看 isDelete=1 的数据：select * from students where isDelete=1;
+4. 删除数据
+    1. delete from 表名 where 条件;
+    2. 物理删除 id=3 的数据：delete from students where id=3;
+5. 数据备份与恢复
+    1. 更换开发使用的服务器时，就需要对数据进行备份，并在另一台服务器上恢复数据；
+    2. 备份数据，其实就是生成一个sql脚本，但该脚本中不包含创建数据库的SQL语句，所以在恢复
+       数据时，要先创建数据库；
+    3. 备份数据库需要有管理员权限：sudo -s，进入mysql目录：cd /var/lib/mysql
+    4. 备份到桌面：mysqldump -uroot -p 数据库名 &gt; ~/Desktop/copy.sql
+       输入mysql的登陆密码；
+    5. 先登录mysql，创建一个新的数据库，退出mysql；
+    6. 恢复数据：mysql -uroot -p 新数据库名 &lt; ~/Desktop/copy.sql，输入mysql的密码。
+</code></pre><h2 id="查询：select"><a href="#查询：select" class="headerlink" title="查询：select"></a>查询：select</h2><pre><code>1. 查询指定字段的数据：select 字段1,字段2,... from 表名;
+2. distinct：去除数据重复的行；
+    1. select distinct id,name from students;
+    2. id 是自增长的主键字段，不会重复，所以，即使 name 有重复的数据，也不会被筛选。
+3. as：为查询的字段/表名取一个别名，可以更直观地显示查询结果，也方便后续的语句使用；
+    1. select name as &apos;姓名&apos;,sex as &apos;性别&apos; from students;
+    2. 显示查询结果时，字段name 以&quot;姓名&quot;显示，字段sex 以&quot;性别&quot;显示。
+</code></pre><h3 id="条件：where"><a href="#条件：where" class="headerlink" title="条件：where"></a>条件：where</h3><pre><code>1. 比较运算符：=，&gt;，&gt;=，&lt;，&lt;=，!=/&lt;&gt;
+2. 逻辑运算符：and，or，not
+3. 模糊查询：like
+    1. %：匹配任意多个字符；
+        1. select * from students where name like &apos;李%&apos; or name like &apos;%豪%&apos;;
+        2. 查询姓&quot;李&quot;，或者名字中带&quot;豪&quot;的学生。
+    2. _：只匹配一个字符；
+4. 范围查询：in，between...and...
+    1. in：在一个非连续的范围内，select * from students where id in(1,3,6);
+    2. between...and...：在一个连续的范围内，where id between 3 and 8;
+5. 空判断：is null，is not null
+</code></pre><h3 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h3><pre><code>1. 子查询：嵌套查询
+    select *, (select count(*) from projects where user.id=projects.creator)
+    as projectNum from user where delete!=1 limit 0,10
+</code></pre><h4 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h4><pre><code>(...) &gt; not &gt; 比较运算符 &gt; 逻辑运算符
+1. and 的优先级大于 or，如果希望先运算or，需要使用小括号改变优先级；
+2. in、between...and... 与比较运算符是同级的。
+</code></pre><h3 id="聚合函数"><a href="#聚合函数" class="headerlink" title="聚合函数"></a>聚合函数</h3><pre><code>聚合：为了快速得到统计数据，只显示统计的结果，而不展示统计出的原始数据；
+1. count(*)：计算总行数，select count(*) from students; --&gt; 统计学生总数；
+2. min/max(列名)：求此列的最小值/最大值；
+3. sum(列名)：求和；
+4. avg(列名)：求平均值；
+</code></pre><h3 id="分组：group-by"><a href="#分组：group-by" class="headerlink" title="分组：group by"></a>分组：group by</h3><pre><code>1. select 列1,列2,聚合... from 表名 group by 列1,列2...
+    1. 按照字段进行分组，在此字段的数据中，相同的数据被分为一组；
+    2. 分组是为了更好的聚合，所以还会使用聚合函数统计数据。
+2. 按照性别gender(bit类型)分类，并统计男女人数：
+    select gender as &apos;性别&apos;,count(*) from students group by gender;
+    count(*)：* 匹配的是每一类gender，计算每一类gender的数量。
+3. 聚合与分组：当对表中的所有数据进行聚合时，通常不需要分组；如果是对表中的某些数据聚合，
+    则需要考虑分组。
+</code></pre><h4 id="数据筛选：having"><a href="#数据筛选：having" class="headerlink" title="数据筛选：having"></a>数据筛选：having</h4><pre><code>1. hanving 与 where
+    1. where：对from 后面所指定的表进行数据筛选，属于原始数据的筛选；
+    2. having：对 group by 的结果集进行筛选，having语句所使用的字段也必须在该结果集中；
+    3. having 后面使用条件运算符与 where 的相同。
+2. select 列1,列2,聚合... from 表名 group by 列1,列2... having 条件;
+3. 统计男生的总人数：
+    1. select count(*) from students where gender=1;
+    2. select gender,count(*) from students group by gender having gender=1;
+</code></pre><h3 id="排序：order-by"><a href="#排序：order-by" class="headerlink" title="排序：order by"></a>排序：order by</h3><pre><code>1. select * from 表名 order by 列1 asc/desc,列2 asc/desc...
+    1. asc 升序，desc 降序，默认是升序排列；
+    2. order by 是对最终的结果集进行排序的，所以必须放在 where、group by 的后面；
+    3. 排序是为了更直观的查看数据。
+2. 按照id 降序排列：select * from students where isDelete=1 order by id desc;
+</code></pre><h3 id="分页：limit"><a href="#分页：limit" class="headerlink" title="分页：limit"></a>分页：limit</h3><pre><code>1. select * from 表名 limit start,count;
+2. start 开始的索引(起始索引为0，与id无关)，count 条数；
+3. 表中数据的索引是从 0 开始，而显示数据时，每一页的索引通常是从 1 开始的。
+4. 一个完整的select语句，各个关键字的排列顺序如下：
+    select distinct * from 表名 where ... group by ... having ... order by ...
+    limit start,count;
+5. 执行顺序：
+    from 表名 --&gt; 获取最原始的数据集合 ==&gt; where --&gt; 对原始数据筛选，获取符合条件的行，
+    组成新的结果集 ==&gt; group by --&gt; 对结果集进行分组，即合并行，得到一个新的结果集 ==&gt;
+    select distinct * --&gt; 筛选出指定的字段，并去除重复的行，组成新的结果集 ==&gt; having
+    --&gt; 再次对结果集筛选，得到新的结果集 ==&gt; order by --&gt; 对数据排序 ==&gt; limit ---&gt;
+    分页显示数据
+</code></pre><h2 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h2><pre><code>1. 表与表之间的关系类型：一对一，一对多，多对多；
+2. 关系字段：用于引用另一张表的主键；
+    1. 表A--&gt;表B 是一对一的关系，则关系字段存储在表A和表B任意一个都可以；
+    2. 表A--&gt;表B 是一对多的关系，则关系字段存储在表B中；
+    3. 表A--&gt;表B 是多对多的关系，则新建一张表，存储关系字段；
+3. 关系不能闭合，比如表A与表B、表B与表C、表A与表C 都有关系，在设计表之间的关系时，一定不能
+   让关系闭合；根据实际的需求，把经常操作的两张表建立关系，比如 A--&gt;B--&gt;C，A和C不能再直接
+   建立关系，而是通过表B进行关联。
+4. 分析过程：确定两个实体是否存在关系 --&gt; 确定关系的类型 --&gt; 在哪个实体中创建关系字段；
+5. 外键约束
+    1. 创建外键的方式：
+        1. 创建表时：foreign key(关系字段) references 被关联的表名(被关联的字段);
+        2. 表已创建：alter table 表名 add constraint 外键名 foreign key(关系字段)
+            references 被关联的表名(被关联的字段);
+            外键名：为外键定义的名字，可以不指定，mysql会自动创建一个。
+    2. 作用：建立关系字段之后，为了保证关系字段的数据正确、有效；
+    mysql&gt; create table scores(
+        -&gt; id int auto_increment primary key not null,
+        -&gt; score decimal(4,1),
+        -&gt; stuid int,
+        -&gt; subid int,
+        -&gt; foreign key(stuid) references students(id),
+        -&gt; foreign key(subid) references subjects(id));
+    3. 被关联的字段通常是被关联表的主键字段.
+6. 外键的级联操作
+    1. 表A 关联了表B，如果删除了表B 的相关数据时，会抛出异常；所以，通常使用逻辑删除。
+    2. 级联操作的类型：
+        1. restrict：限制，默认类型，会抛出异常；
+        2. cascade：级联，如果删除/更新了表B 的相关数据，则表A中的记录也会被删除/更新；
+        3. set null：将外键设置为空；
+        4. no action：什么都不做。
+    3. 创建了表之后，修改外键为cascade：alter table scores add constraint 外键名
+    foreign key(关系字段) references 被关联的表名(被关联的字段) on delete cascade
+    on update cascade;
+    4. 在设计表时，如果表的某个字段被外界所关联，通常设置为逻辑删除即可，而不使用级联操作
+</code></pre><h3 id="连接查询"><a href="#连接查询" class="headerlink" title="连接查询"></a>连接查询</h3><pre><code>当查询的字段是外键时，需要使用连接查询；
+    1. 表A inner join 表B on：只显示表A和表B匹配的字段；
+    2. 表A left join 表B on：除了显示匹配的字段，还包括表A 中独有的数据，未匹配的数据用
+       null占位；
+    3. 表A right join 表B on：除了显示匹配的字段，还有表B 中独有的数据；
+</code></pre><p><img src="https://i.imgur.com/1FIcRlR.jpg" alt></p>
+<pre><code>1. inner join 表名 on 关系
+    1. select students.name,subjects.title,scores.score from scores
+    inner join students on scores.stuid=students.id
+    inner join subjects on scores.subid=subjects.id;
+</code></pre><p><img src="https://i.imgur.com/wL7rTfI.jpg" alt></p>
+<pre><code>    2. 调换表名&quot;scores&quot;和&quot;students&quot;的位置，结果是等效的，只要保证表名和关系相对应即可；
+    比如&quot;students&quot;和&quot;subjects&quot;是不能交换位置的，因为会造成 on 后面的关系不对应。
+2. 计算平均分，并排序：
+    select students.name as &apos;姓名&apos;,avg(score) as avg1 from scores
+    inner join students on scores.stuid=students.id
+    group by stuid order by avg1;
+</code></pre><p><img src="https://i.imgur.com/7iV6Enj.jpg" alt></p>
+<pre><code>1. group by stuid 等效于：group by students.id；
+2. inner join 连接了students表，就可以通过 &quot;students.字段&quot; 使用students表的任意
+字段，也就可以获取students表的任意字段值。
+</code></pre><h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><pre><code>视图是对 select 查询语句的封装；
+1. 创建一个视图：create view 视图名 as select语句;
+2. 修改视图：alter view 视图名 as select语句;
+3. 执行视图：select * from 视图名;
+4. show tables：可以查看所有的表和视图。
+</code></pre><h3 id="自关联"><a href="#自关联" class="headerlink" title="自关联"></a>自关联</h3><pre><code>对于高性能的数据库，一个表可以存数十万条数据，如果相关联的两张表所存储的数据总量比较少，
+则可以合成一张表，比如国内的省、市、县，其数量基本是固定的，设计成3个表会造成性能的浪费，
+就可以使用自关联的方式，合并成一个表。
+1. 自关联：表的外键关联自身的字段；
+</code></pre><p><img src="https://i.imgur.com/KhGDLuq.jpg" alt></p>
+<pre><code>省、市、县中，省是最高一级，其pid设置为null/0
+2. 在当前使用的数据库中，导入一个sql脚本：source xx.sql;
+</code></pre><p><img src="https://i.imgur.com/JDIztZW.jpg" alt></p>
+<pre><code>3. 在查询省市县时，因为是在同一张表，可以使用嵌套查询/子查询，但语句逻辑会很混乱，所以仍然
+   使用连接查询，只查询河南省的市：
+</code></pre><p><img src="https://i.imgur.com/CMHLT69.jpg" alt></p>
+<pre><code>4. 查询周口市的所有县区：
+</code></pre><p><img src="https://i.imgur.com/TAfCbHY.jpg" alt></p>
+<h2 id="内置函数"><a href="#内置函数" class="headerlink" title="内置函数"></a>内置函数</h2><pre><code>内置函数可以将字段名当作参数，MySQL提供了很多内置函数；
+1. 字符串常用的内置函数
+    1. select ASCII(str)：返回第一个字符在ASCII码表中对应的数值；
+    2. select char(int)：数值在ASCII码表中对应的字符；
+    3. select concat(12,&apos;ab&apos;,13)：拼接成字符串，12ab13；
+    4. 截取字符串：对于字符串位置的操作，第一个字符的位置为 1
+        1. select left(str, len)：字符串str左起截取len个字符；
+        2. select right(str, len)：右起截取len个字符；
+        3. select substring(str, pos, len)：从第pos个字符开始，截取len个字符；
+    5. 去除空格
+        1. ltrim(str)：返回一个去除了左边空格的新字符串；
+        2. rtrim(str)：去除右边的空格；
+        3. trim(str)：去除左右两边的空格；
+        4. trim(orientation remstr FROM str)：指定删除某一侧的remstr；
+        orientation：both(两侧的都删除)，leading(删除左侧的)，trailing(删除右侧的)
+        select trim(both &apos;x&apos; from &apos;xxxxbaxlxxxx&apos;)：删除两侧的&apos;x&apos; --&gt; &apos;baxl&apos;
+    6. select space(n)：返回一个由n个空格组成的字符串；
+    7. replace(str, oldstr, newstr)：将str的字串oldstr替换成newstr；
+    8. 大小写：lower(str)、upper(str)
+2. 数学函数
+    1. select abs(n)：求绝对值；
+    2. mod(m, n)：求余数，等效于 select m%n;
+    3. floor(n)：不大于n的最大整数，floor(2.3) --&gt; 2；
+    4. ceiling(n)：不小于n的最小整数，ceiling(2.3) --&gt; 3；
+    5. round(n, d=0)：四舍五入的值，n 表示原数，d 表示小数的个数；
+    6. pow(m, y)：m 的 n 次幂；
+    7. PI()：圆周率；
+    8. rand()：随机数，0-1 之间的浮点数；
+    9. log(x)，sin(x)，radians(x) ...
+3. 日期时间函数
+    1. year(data)、month(data)、day(data)：年份、月份、日期；
+    2. hour(time)、minute(time)、second(time)：时0-23、分0-59、秒0-59
+    3. date_format(date, format)：日期格式化；
+    format：
+        1. %Y：完整的年，比如2016；  %y：简略的年，只保留后两位；
+        2. %m：月份1-12；   %d：日期
+        3. %H：24小时制0-23；   %h：12小时制1-12；
+        4. %i：分钟0-59；   %s：秒钟0-59；
+    select date_format(&apos;2016-12-21&apos;, &apos;%Y年%m月%d日&apos;)：2016年12月21日；
+    4. current_date()、current_time()：获取当前日期、时间，等效于 now();
+    5. 时间日期也可以用 +、- 进行计算；
+        1. SELECT &apos;2008-12-31 23:59:59&apos; + INTERVAL 1 SECOND; --&gt; 加1秒；
+        2. SELECT &apos;2008-12-31 23:59:59&apos; + INTERVAL 1 DAY; --&gt; 加1天。
+</code></pre><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><pre><code>1. select语句只是查询数据，并不会影响数据；当对数据进行更改操作时，为了保证执行的有效性，
+   也即，要么成功，要么全部失败，不会只成功一部分，这就是事务。
+2. 事务的四大特性：原子性、一致性、隔离性、持久性
+3. 表的类型(引擎)必须是：innodb、bdb，才能使用事务；
+    1. mysql创建的表，默认使用的是InnoDB；
+    2. 不同的引擎，其性能的侧重点是不同的；
+    3. show create table 表名：查看创建表的结构，也包括表的引擎；
+    4. 修改表的引擎：alter table 表名 engine=innodb;
+4. 使用事务：begin(开启)，commit(提交)，rollback(回滚)
+    1. begin：开启事务，在内存中创建一个表，对数据的操作不会影响物理内存中的表；
+    2. commit：提交事务，修改物理内存中的表；
+    3. rollback：放弃操作，关闭事务；
+</code></pre><h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><pre><code>1. 当数据库中的数据量很大时，查找数据会变得很慢，索引用于提高数据访问的性能；
+   比如，在一本汉语字典的前几页，标注有拼音/笔画查找，这就是索引；
+2. 主键是一种特殊的索引，在数据库中，默认是按照主键存储的；
+3. 索引的创建，也会增加物理开销，要合理选择字段/列的数据类型
+    1. 越小的数据类型通常会更好，在磁盘、内存和CPU缓存中所占用的空间更少，处理更快；
+    开销：bit &lt; int &lt; decimal
+    2. 简单的数据类型更好：字符串在底层需要转换，整型数据则更简单，处理开销更小；
+    3. 尽量避免NULL：尽量设置字段为NOT NULL，使用0、一个特殊值、空字符串代替NULL；
+    在MySQL中，含有NULL的列很难进行优化，因为它使索引、索引统计信息以及比较运算更加复杂。
+4. 索引通常并不是在设计数据库时添加的，而是在后期数据量太大、对数据库进行优化时添加，对那些
+   where语句中频繁使用的字段创建索引；
+5. where语句是从第一行开始筛选的，即使在中间遇到了匹配的数据，也会执行到最后一行，因为匹配
+    的数据可能有多行；但是，一旦为 where语句中使用的字段增加了索引，它会直接找到匹配的行，
+    而不会再继续执行；也即，优化数据库其实就是优化耗时的 where语句。
+    1. 单列索引：为 where语句后的每个字段都创建一个索引；
+    2. 组合索引：where后的所有字段只创建一个索引。
+6. 语句的顺序也会影响索引的效果，比如 where gender=0 and isdelete=0 and id&gt;8;
+    1. and 是与运算，= 表示唯一的值，&gt; 表示一个范围，索引只对gender和isdelete有效，所以
+    只创建gender和isdelete的索引即可；
+    2. where gender=0 and id&gt;8 and isdelete=0：会造成isdelete的索引无效；
+    3. 尽量避免使用 or 运算符，因为 or 也会造成字段的索引无效。
+</code></pre><h3 id="操作索引"><a href="#操作索引" class="headerlink" title="操作索引"></a>操作索引</h3><pre><code>1. 查看表的所有索引：show index from 表名;
+2. 创建索引：create index 索引名 on 表名(字段(长度));
+    1. 长度是创建字段时指定的长度，一般字符串需要显示指定长度，整型则不需要；
+    2. 为多个字段创建一个索引： ... on 表名(字段1(长度),字段2(长度)...);
+3. 删除索引：drop index 索引名 on 表名;
+4. 索引虽然大大提高了查询速度，但同时也会降低更新表的速度；
+    1. 执行INSERT、UPDATE和DELETE时，MySQL不仅要保持数据，还要保存索引文件；
+    2. 索引文件也会占用磁盘空间。
+</code></pre><h3 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h3><pre><code>1. 开启执行时间的检测：set profiling=1;
+2. 执行SQL语句之后，查看执行时间：show profiles;
+</code></pre><p><img src="https://i.imgur.com/LMo4FE1.jpg" alt></p>
+<h2 id="Python与MySQL的交互"><a href="#Python与MySQL的交互" class="headerlink" title="Python与MySQL的交互"></a>Python与MySQL的交互</h2><pre><code>1. 安装mysql模块：
+    1. python2环境：sudo apt-get install python-mysqldb --&gt; import MySQLdb
+    2. python3环境：安装pymysql模块 --&gt; import pymysql
+2. python3环境下，操作数据库，插入一条数据：
+</code></pre><p><img src="https://i.imgur.com/pEjXMMH.jpg" alt></p>
+<pre><code>    1. connect连接数据库时，默认开启事务，必须执行 commit() 才有效。
+    2. conn.rollback()：回滚，放弃之前的操作。
+1. 参数化
+    参数化是为了避免SQL语句的攻击，比如SQL注入；参数化会调用内置的函数，检查输入的数据；
+    sql = &quot;insert into students(name) VALUES(%s)&quot;
+    param = [&apos;LiLi&apos;]  --&gt;列表
+    cursor.execute(sql, param)
+    1. %s 只是用于占位，与格式化输出的 %s 并不相同；
+    2. execute(sql, param)：param 可以是一个列表/元组/字典； 
+2. 查询：与增/删/改不同，select语句还会返回查询的结果
+    1. cursor.fetchone()：返回一行数据的查询结果，元组类型，数据不存在则返回None；
+    2. cursor.fetchall()：多行数据的查询结果，元组类型，其元素也是元组类型；
+    3. scroll(value, mode=&apos;relative&apos;)：将行指针移动到指定位置，mode表示移动的方式；
+        1. relative 是默认值，表示基于当前行移动到value，value为正数，则指针向下移动，
+        value为负数，则指针向上移动；
+        2. mode=&apos;absolute&apos;，基于第一行的位置，第一条数据的位置为 0.
+    cursor = conn.cursor()
+    cursor.execute(&quot;select * from students&quot;)
+    result = cursor.fetchall()
+3. 在操作数据库时，尽量晚打开、尽量早关闭。
+</code></pre><h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><pre><code>有些数据并不是直接存入数据库的，比如用户的登录密码，必须加密之后再存入数据库。
+1. python中的加密模块：import hashlib
+2. hashlib模块包含多种加密：md5、sha1、sha224、blake2b ...
+3. sha1 相当于是 md5 的加强版；md5加密后的字符固定是32个，sha1加密后的字符是40个。
+    from hashlib import sha1
+    pwd = &quot;abcd123&quot;   s1 = sha1()
+    s1.update(pwd.encode(&apos;utf8&apos;))  --&gt; python3的字符串要先编码
+    pwd2 = s1.hexdigest()  -------&gt; 加密完成
+1. password使用sha1加密之后，生成的字符固定为40个，则password的类型定义为char(40)；
+2. s1.digest()：生成的是byte类型数据，十六进制；
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python-MySQL/" rel="tag"># Python MySQL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/07/数据结构与算法2/" rel="next" title="数据结构与算法2">
+                <i class="fa fa-chevron-left"></i> 数据结构与算法2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/09/MongoDB/" rel="prev" title="MongoDB">
+                MongoDB <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库简介"><span class="nav-number">1.</span> <span class="nav-text">数据库简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#E-R-模型"><span class="nav-number">1.1.</span> <span class="nav-text">E-R 模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三范式"><span class="nav-number">1.2.</span> <span class="nav-text">三范式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据完整性"><span class="nav-number">1.3.</span> <span class="nav-text">数据完整性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL基础"><span class="nav-number">2.</span> <span class="nav-text">MySQL基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#图形化管理MySQL"><span class="nav-number">2.1.</span> <span class="nav-text">图形化管理MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令管理MySQL"><span class="nav-number">2.2.</span> <span class="nav-text">命令管理MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库操作"><span class="nav-number">2.2.1.</span> <span class="nav-text">数据库操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表操作"><span class="nav-number">2.2.2.</span> <span class="nav-text">表操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据操作"><span class="nav-number">2.2.3.</span> <span class="nav-text">数据操作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询：select"><span class="nav-number">3.</span> <span class="nav-text">查询：select</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#条件：where"><span class="nav-number">3.1.</span> <span class="nav-text">条件：where</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子查询"><span class="nav-number">3.2.</span> <span class="nav-text">子查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优先级"><span class="nav-number">3.2.1.</span> <span class="nav-text">优先级</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#聚合函数"><span class="nav-number">3.3.</span> <span class="nav-text">聚合函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分组：group-by"><span class="nav-number">3.4.</span> <span class="nav-text">分组：group by</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据筛选：having"><span class="nav-number">3.4.1.</span> <span class="nav-text">数据筛选：having</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排序：order-by"><span class="nav-number">3.5.</span> <span class="nav-text">排序：order by</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分页：limit"><span class="nav-number">3.6.</span> <span class="nav-text">分页：limit</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关系"><span class="nav-number">4.</span> <span class="nav-text">关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接查询"><span class="nav-number">4.1.</span> <span class="nav-text">连接查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#视图"><span class="nav-number">4.2.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自关联"><span class="nav-number">4.3.</span> <span class="nav-text">自关联</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内置函数"><span class="nav-number">5.</span> <span class="nav-text">内置函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">6.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引"><span class="nav-number">7.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作索引"><span class="nav-number">7.1.</span> <span class="nav-text">操作索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能分析"><span class="nav-number">7.2.</span> <span class="nav-text">性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python与MySQL的交互"><span class="nav-number">8.</span> <span class="nav-text">Python与MySQL的交互</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加密"><span class="nav-number">8.1.</span> <span class="nav-text">加密</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

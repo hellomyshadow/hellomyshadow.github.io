@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaEE,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta name="keywords" content="JavaEE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基础">
+<meta property="og:url" content="http://yoursite.com/2017/01/02/Java基础/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/vLw2xgt.jpg">
+<meta property="og:updated_time" content="2019-02-08T06:32:27.908Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java基础">
+<meta name="twitter:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta name="twitter:image" content="https://i.imgur.com/vLw2xgt.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/02/Java基础/">
+
+
+
+
+
+  <title>Java基础 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/02/Java基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-02T00:00:00+08:00">
+                2017-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h2><pre><code>1. 浮点数的精确计算：BigDecimal，java.math包中的类
+    1. 相减
+    BigDecimal db1 = BigDecimal.valueOf(1.0);  --&gt; 浮点数1.0
+    db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&gt; 1.0 - 0.1
+    2. 相除
+    BigDecimal db2 = BigDecimal.valueOf(0.1);
+    BigDecimal db3 = BigDecimal.valueOf(1.0/10.0);
+    System.out.println(db2.equals(db3)); --&gt; true
+2. 自动类型转换：容量小的类型自动向容量大的类型转换
+    1. 特例：byte b = 123;
+    2. 123 本身是 int 类型(Java中的数值默认是int类型)，byte类型的范围为-128~127
+    3. 所以，123 可以直接赋值给 byte类型(自动转为byte类型)。
+3. 溢出
+    1. int m = 1000000000;  int y = 20;
+    2. int t = m * y; --&gt; 负数(溢出导致)
+    3. long t = m * (long)y; --&gt; 20000000000
+4. TreeMap与TreeSet
+    1. TreeMap：红黑二叉树的典型实现，按照key自增长的方向排序；
+    2. TreeSet：内部维持了一个简化版的TreeMap，通过key存储Set的元素；
+    3. 如果存储的是对象，此对象应实现 Comparable 接口，以便于对其进行排序。
+5. 多线程之Callable
+    1. Callable是一个接口，包含方法call()，接收一个泛型，默认是Object，作为call()的
+    返回值类型
+    public class CLoader implements Callable&lt;Boolean&gt; {  --&gt; 泛型指定为Boolean
+        public Boolean call() throw Exception {
+            ...... //执行任务
+            return true
+        }
+    }
+    CLoader cd1 = new CLoader(); CLoader cd2 = new CLoader();
+    2. 使用线程池，创建服务
+    ExecutorService es = Executors.newFixedThreadPool(2);
+    3. 提交执行
+    Future&lt;Boolean&gt; ft1 = es.submit(cd1);  Future&lt;Boolean&gt; ft2 = es.submit(cd2);
+    4. 获取结果
+    boolean re1 = ft1.get();  boolean re2 = ft2.get();
+    5. 关闭服务
+    es.shutdownNow();
+    6. 与Thread/Runnable的 run() 相比，call()可以抛出异常，而 run() 不能抛出异常，只能
+    try-catch捕获。
+6. lambda表达式
+    1. 针对的是只包含一个方法的接口，如Runnable
+    new Thread(new Runnable(){
+        public void run(){ System.out.println(&quot;start Run&quot;); }
+    }).start();
+    new Thread(()-&gt; {
+        System.out.println(&quot;start Run&quot;);
+    }).start();
+7. 静态代理
+    1. 代理对象和原对象都实现同一个接口
+    interface Task {  void work();  }
+    2. 原对象
+    class Stuff implements Sask {
+        public void work() { }
+    }
+    3. 静态代理对象
+    class StaticProxy implements Task {
+        private Task target;
+        public StaticProxy(Task target) {
+            this.target = target;
+        }
+        public void work() {
+            this.start();
+            this.target.work();
+            this.end();
+        }
+        private void start(){ }
+        private void end(){ }
+    }
+    4. 通过代理对象，执行原对象的任务方法
+    new StaticProxy(new Stuff()).work();
+</code></pre><h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><pre><code>1. 线程状态
+</code></pre><p><img src="https://i.imgur.com/vLw2xgt.jpg" alt></p>
+<pre><code>    1. Thread.State：线程的状态，NEW(尚未启动的线程)、RUNNABLE、BLOCKED、WAITING、
+    TIMED_WAITING、TERMINATED(已退出的线程)
+    2. RUNNABLE：包含就绪状态和运行状态；
+    3. getState()：获取线程的状态。
+2. 线程的 stop() 方法已经被废弃，因为线程的终止可以通过一个boolean型的标志位变量完成；
+3. sleep() yield() join()
+    1. sleep() 表示休眠，会阻塞线程，且不会释放锁，睡眠时间到了之后，重新进入就绪状态；
+    常用于模拟网络延迟、倒计时...
+    2. yield() 则礼让出CPU的执行权，线程进入就绪状态；
+    3. join() 插队，待此线程执行完成后，再执行其他线程，这段时间内，其他线程处于阻塞状态；
+4. 优先级：线程的优先级并不能决定哪个线程先执行，优先级高的线程被执行的概率相对会高一些；
+    1. setPriority(priority)：设置线程的优先级，范围1-10，在 start() 之前设置有效；
+    2. Thread.MIN_PRIORITY，Thread.MAX_PRIORITY，Thread.NORM_PRIORITY：1，10，5
+5. 线程分为用户线程和守护线程，默认的线程都是用户线程
+    1. 虚拟机JVM会确保所有的用户线程执行完毕，再退出程序，但不会等待守护线程执行完毕；
+    2. 如后台记录操作日志、监控内存使用等
+    3. setDaemon(true)：把线程设置为守护线程，在 start() 之前调用。
+6. Thread.currentThread()：获取当前线程；
+7. isAlive()：线程是否还活着。
+</code></pre><h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><pre><code>1. 线程同步：synchronized，队列
+    1. 若将一个大的方法声明为synchronized，将会大大影响效率；
+    2. 与大的synchronized方法相比，synchronized块能在一定程度上减少性能的损失；
+    3. 使用 synchronized 的关键在于，第一要锁对目标，第二要取舍synchronized块的面积。
+2. 同步块的锁：
+    1. 同步方法的锁是this，表示当前对象，不可改变；
+    2. 同步块的锁可以指定，锁住的目标更明确，还能减小锁的面积。
+3. 并发容器：CopyOnWriteArrayList，加锁的ArrayList，保证在写入数据时的安全；
+4. 死锁：相互持有对方的锁，需要避免锁的嵌套。
+</code></pre><h3 id="并发协作"><a href="#并发协作" class="headerlink" title="并发协作"></a>并发协作</h3><pre><code>1. 生产者与消费者模式：线程同步问题，生产者和消费者共享同一资源，且生产者和消费者相互依赖；
+    1. synchronized只是阻止并发更新同一共享资源，实现同步，但并不能实现线程间的通信；
+    2. 管程法：利用并发缓冲容器实现；
+    3. 信号灯法：借助标志位实现。
+2. 管程法：wait()，notify()，notifyAll()
+3. 信号灯法：
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaEE/" rel="tag"># JavaEE</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/01/多线程/" rel="next" title="多线程">
+                <i class="fa fa-chevron-left"></i> 多线程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程"><span class="nav-number">2.</span> <span class="nav-text">多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发"><span class="nav-number">2.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发协作"><span class="nav-number">2.2.</span> <span class="nav-text">并发协作</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

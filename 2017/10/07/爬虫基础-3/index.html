@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="爬虫,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="多线程爬虫1. 多进程通常应用于计算密集型，多线程通常应用于IO密集型，网络数据传输其实就是IO数据流，    所以爬虫大多使用多线程，配合队列Queue实现线程间的数据交互； 2. 尽管多线程在Python中比较鸡肋，但对于多路IO复用，通常还是使用多线程； 3. from Queue import Queue：先进先出     1. queue = Queue(10)：创建队列，并指定队列的最">
+<meta name="keywords" content="爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="爬虫基础-3">
+<meta property="og:url" content="http://yoursite.com/2017/10/07/爬虫基础-3/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="多线程爬虫1. 多进程通常应用于计算密集型，多线程通常应用于IO密集型，网络数据传输其实就是IO数据流，    所以爬虫大多使用多线程，配合队列Queue实现线程间的数据交互； 2. 尽管多线程在Python中比较鸡肋，但对于多路IO复用，通常还是使用多线程； 3. from Queue import Queue：先进先出     1. queue = Queue(10)：创建队列，并指定队列的最">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-12T11:24:24.845Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="爬虫基础-3">
+<meta name="twitter:description" content="多线程爬虫1. 多进程通常应用于计算密集型，多线程通常应用于IO密集型，网络数据传输其实就是IO数据流，    所以爬虫大多使用多线程，配合队列Queue实现线程间的数据交互； 2. 尽管多线程在Python中比较鸡肋，但对于多路IO复用，通常还是使用多线程； 3. from Queue import Queue：先进先出     1. queue = Queue(10)：创建队列，并指定队列的最">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/07/爬虫基础-3/">
+
+
+
+
+
+  <title>爬虫基础-3 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/07/爬虫基础-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">爬虫基础-3</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-07T00:00:00+08:00">
+                2017-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="多线程爬虫"><a href="#多线程爬虫" class="headerlink" title="多线程爬虫"></a>多线程爬虫</h2><pre><code>1. 多进程通常应用于计算密集型，多线程通常应用于IO密集型，网络数据传输其实就是IO数据流，
+   所以爬虫大多使用多线程，配合队列Queue实现线程间的数据交互；
+2. 尽管多线程在Python中比较鸡肋，但对于多路IO复用，通常还是使用多线程；
+3. from Queue import Queue：先进先出
+    1. queue = Queue(10)：创建队列，并指定队列的最大容量；不指定，则表示无限大；
+    2. queue.qsize()：查看队列的大小；
+    3. queue.empty()：如果队列为空，则返回True；
+    4. queue.full()：如果队列满了，则返回True；
+    5. queue.put()：向队列中存放一个数据；
+    6. queue.get([block[, timeout]])：获取队列中的一个数据，timeout等待时间；
+    block默认值为True，当队列为空时，则进入阻塞状态，不会结束，直到队列中有新的值；
+    block=False，当队列为空时，不会等待，直接报一个Queue.empty的异常。
+</code></pre><h2 id="动态HTML"><a href="#动态HTML" class="headerlink" title="动态HTML"></a>动态HTML</h2><pre><code>1. 动态HTML的技术：JavaScript、jQuery、Ajax、DHTML
+    1. jQuery可以动态创建HTML内容，只有在JS代码执行之后才会显示，而传统方法只能采集
+    JS代码执行之前的内容；
+    2. AJAX不是一门语言，而是用来完成网络任务的一系列技术，可以在网页不刷新的情况下，
+    完成与服务器的网络交互，收发数据；
+    3. DHTML：动态HTML，与AJAX一样，也是一系列用于解决网络问题的技术集合；
+    DHTML是用客户端语言改变页面的HTML元素，比如页面上的按钮只有当移动鼠标之后才出现，
+    背景色可能每次点击都会改变，或者用一个Ajax请求触发页面加载一段新内容；
+    网页是否属于DHTML，关键是有没有用JS控制 HTML和CSS元素。
+2. 解决动态HTML：
+    1. 直接从JavaScript代码里采集内容，但过于费时费力；
+    2. 用Python的第三方库运行JavaScript，直接采集在浏览器里看到的页面。
+</code></pre><h3 id="Selenium与PhantomJS"><a href="#Selenium与PhantomJS" class="headerlink" title="Selenium与PhantomJS"></a>Selenium与PhantomJS</h3><pre><code>1. Selenium是一个Web的自动化测试工具，最初是为网站自动化测试而开发的；
+    1. Selenium可以按指定的命令自动操作，可以直接运行在浏览器上，支持所有主流浏览器，
+    包括PhantomJS这些无界面的浏览器。
+    2. Selenium可以根据指定的命令，让浏览器自动加载页面，获取需要的数据；
+    3. Selenium还提供页面截屏功能，查看浏览器当前的行为；
+    4. Selenium本身并不带浏览器，不支持浏览器的功能，需要与第三方浏览器结合才能使用；
+    但有时候需要让它内嵌在代码中运行，所以就可以使用PhantomJS代替真实的浏览器。
+    5. 安装：pip install selenium
+2. PhantomJS是一个基于Webkit的无界面浏览器，它会把网站加载到内存、并执行页面上的JS；
+    1. PhantomJS不会展示图形界面，所以运行起来比完整的浏览器要高效；
+    2. 尽管PhantomJS是无界面的，但Selenium的页面截屏功能可以查看页面的行为；
+    3. 把Selenium和PhantomJS结合在一起，就可以运行一个非常强大的网络爬虫了，这个爬虫
+    可以处理JS、Cookie、headers，以及任何真实用户需要做的事情。
+    4. PhantomJS是一个功能完善的浏览器(无界面)，并不是一个python库，所以不能像py库
+    一样安装，但可以通过Selenium调用PhantomJS来直接使用；
+3. Selenium与PhantomJS虽然是很强大的工具，但性能上比真实浏览器要低，使用后及时关闭。
+4. Selenium里有WebDriver API，WebDriver有点儿像可以加载网站的浏览器，但它也可以像
+   BeautifulSoup或者其他Selector对象一样用来查找页面元素、与页面上的元素进行交互(发送
+   文本、点击等)、执行其他动作来运行网络爬虫：from selenium import webdriver
+    1. ubuntu下载PhantomJS，引用其bin目录下的phantomjs文件，创建浏览器对象；
+    driver = webdriver.PhantomJS(executable_path=&quot;./phantomjs&quot;)
+    2. 配置环境变量~/.bashrc，指定phantomjs文件的路径：
+    PHANTOMJS_HOME=/home/python/phantomjs
+    export PATH=$PATH:$PHANTOMJS_HOME
+    3. 让环境变量生效：source ~/.bashrc --&gt; driver = webdriver.PhantomJS()
+    4. 访问豆瓣网：driver.get(&apos;https://www.douban.com/&apos;)
+    5. driver.title：获取页面标题；    driver.current_url：获取当前的URL；
+    6. html = driver.page_source：获取页面源码；
+    7. driver.save_screenshot(&quot;douban.png&quot;)：生成当前页面快照/截图并保存；
+    8. driver.close()：关闭当前页面，如果只有一个页面，则关闭浏览器；
+    9. driver.quit()：退出，关闭浏览器。
+5. driver = webdriver.Chrome()/Firefox()/Ie() --&gt; 启动Chrome/Firefox/IE浏览器
+   同理，也需要分别安装三大浏览器的驱动driver，并配置环境变量。
+</code></pre><h4 id="页面操作"><a href="#页面操作" class="headerlink" title="页面操作"></a>页面操作</h4><pre><code>&lt;input type=&quot;text&quot; name=&quot;uname&quot; id=&quot;uname&quot; class=&quot;box&quot; /&gt;
+1. 获取标签--&gt; driver.find_element_by...()，driver.find_elements_by...()
+    1. driver.find_element_by...()：获取一个标签；
+    2. driver.find_elements_by...()：获取一组标签；
+    3. element = driver.find_element_by_id(&quot;uname&quot;)
+    4. find_element_by_name(&quot;uname&quot;)、find_element_by_tag_name(&quot;input&quot;)
+    5. find_element_by_class_name(&quot;box&quot;)、find_element_by_css_selector()
+    6. find_element_by_xpath(&apos;//input[@id=&quot;uname&quot;]&apos;)
+    7. find_element_by_link_text()、find_element_by_partial_link_text()
+2. 获取标签--&gt; driver.find_element()、driver.find_elements()
+    1. from selenium.webdriver.common.by import By
+    2. find_element/find_elements： --&gt; 获取一个/一组标签
+    3. element = driver.find_element(by=By.ID, value=&quot;uname&quot;)
+    4. By.NAME、By.CLASS_NAME、By.TAG_NAME、By.XPATH
+    5. By.LINK_TEXT、By.PARTIAL_LINK_TEXT、By.CSS_SELECTOR
+3. 操作标签
+    1. element.text：获取标签的文本内容；
+    2. 对于输入框，输入内容：element.send_keys(&apos;abc&apos;)，输入中文：u&apos;中国&apos;
+    3. 清空输入框：element.clear()
+    4. 对于按钮，模拟点击：element.click() --&gt; 点击按钮也相当于发送一个请求
+    driver.save_screenshot(&quot;a.png&quot;) --&gt; 查看当前的浏览器行为(最新的页面)；
+    5. 通常在执行点击之后，会等待一段时间，待浏览器加载完成，再去执行其他操作。
+4. 键盘操作：from selenium.webdriver.common.keys import Keys
+    1. Ctrl+A/X全选/剪切输入框的内容：element.send_keys(Keys.CONTROL,&apos;a&apos;/&apos;x&apos;)
+    2. 模拟Enter回车键：element.send_keys(Keys.RETURN)
+5. 鼠标动作：from selenium.webdriver import ActionChains
+    1. btn = driver.find_element_by_id(&quot;btn&quot;)
+    2. ActionChains(driver).move_to_element(btn).perform()：鼠标移动到btn位置；
+    3. ActionChains(driver).move_to_element(btn).click(btn).perform()：单击； 
+    4. double_click(btn)：双击；    context_click(btn)：右击；
+    5. click_and_hold(btn)：左键单击hold住；
+    6. 将btn1拖拽到btn2的位置：
+    ActionChains(driver).drag_and_drop(btn1, btn2).perform()
+6. &lt;select&gt;下拉框：from selenium.webdriver.support.ui import Select
+    1. select = Select(driver.find_element_by_name(&apos;status&apos;))：选取下拉框；
+    2. select.select_by_index(1)：根据索引选取，索引从0开始；
+    3. select.select_by_value(&quot;0&quot;)：根据&lt;option&gt;的value属性值选取；
+    4. select.select_by_visible_text(u&quot;未审核&quot;)：根据&lt;option&gt;的字符串文本选取；
+    5. select.deselect_all()：全部取消选择。
+7. 页面弹窗：alert = driver.switch_to_alert()
+8. 切换页面窗口：driver.switch_to.window(&quot;window name&quot;)
+    for handle in driver.window_handles:
+        driver.switch_to_window(handle) --&gt; 遍历每一个窗口的操作对象
+9. 页面的前进和后退：driver.forward()、driver.back()
+10. 操作Cookie
+    1. driver.get_cookies()：获取当前页面的Cookie；
+    for cookie in driver.get_cookies():    --&gt; 遍历页面的Cookie
+        print &quot;%s: %s&quot; % (cookie[&apos;name&apos;], cookie[&apos;value&apos;])
+    2. driver.delete_cookie(&quot;CookieName&quot;)：根据名称删除Cookie；
+    3. driver.delete_all_cookies()：删除所有的Cookie；
+11. 页面等待
+    1. 采用AJAX技术的网页不确定何时加载完成，那么操作DOM就可能抛出空指针异常；
+    2. Selenium提供了两种等待方式：显式等待、隐式等待；
+    3. 隐式等待是等待特定的时间，显式等待是直到指定的某个条件成立时继续执行；
+12. 显式等待：指定某个条件，并设置最长等待时间，如果仍没有找到某个元素，则抛异常；
+    1. WebDriverWait：负责循环等待
+    from selenium.webdriver.support.ui import WebDriverWait
+    2. expected_conditions：负责条件触发
+    from selenium.webdriver.support import expected_conditions as EC
+    3. 执行等待：
+    driver = webdriver.Chrome()
+    driver.get(&quot;http://www.xxxxx.com/loading&quot;)
+    try: --&gt; 页面一直循环，直到 id=&quot;uname&quot; 出现
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, &quot;uname&quot;)))
+    finally:
+        driver.quit()
+    4. 如果不指定最长等待时间，程序默认会每隔0.5s查看一次元素是否已经生成；
+    5. 内置的一些等待条件：title_is、title_contains、visibility_of ...
+13. 隐式等待：设置一个等待时间，单位是秒，如果不设置，默认等待0s；
+    driver = webdriver.Chrome()
+    driver.implicitly_wait(10)    --&gt; 等待10s
+    driver.get(&quot;http://www.xxxxx.com/loading&quot;)
+    myDynamicElement = driver.find_element_by_id(&quot;uname&quot;)
+</code></pre><h4 id="执行JS"><a href="#执行JS" class="headerlink" title="执行JS"></a>执行JS</h4><pre><code>1. JS修改标签样式：
+   js = &apos;var q=document.getElementById(&quot;kw&quot;);q.style.border=&quot;2px solid red&quot;;&apos;
+   driver.execute_script(js)
+2. JS隐藏标签
+    1. img = driver.find_element_by_xpath(&quot;//*[@id=&apos;lg&apos;]/img&quot;)
+    2. driver.execute_script(&apos;$(arguments[0]).fadeOut()&apos;,img)
+3. JS模拟滚动到底部
+    1. js = &quot;document.body.scrollTop=10000&quot;
+    2. driver.execute_script(js)
+</code></pre><h2 id="测试模块"><a href="#测试模块" class="headerlink" title="测试模块"></a>测试模块</h2><pre><code>python的测试模块：import unittest
+1. 定义测试类：class TestUnit(unittest.TestCase)
+2. 测试模块的初始化方法：def setUp(self) --&gt; 固定名称
+3. 定义具体的测试用例方法时，方法名必须以&apos;test&apos;开头，比如：def testDao(self)
+4. 退出时的清理方法：def testDown(self) --&gt; 固定名称
+5. 执行测试用例：
+    if __name__ == &quot;__main__&quot;:
+        unittest.main()
+</code></pre><h2 id="Tesseract"><a href="#Tesseract" class="headerlink" title="Tesseract"></a>Tesseract</h2><pre><code>机器视觉：文字识别是其一个分支；
+OCR：光学文字识别，将图像翻译成文字的技术，Tesseract就是一个OCR库；
+1. Tesseract属于Google，是目前最优秀、最精确的开源OCR系统，同时具有很高的灵活性；
+2. Tesseract可以通过训练识别出任何字体，也可以识别出任何Unicode字符；
+3. linux系统的安装：sudo apt-get tesseract-ocr
+    1. 要使用Tesseract的功能，必须设置环境变量$TESSDATA_PREFIX，让Tesseract知道训练
+    的数据文件存储在哪里：export TESSDATA_PREFIX=/usr/local/share/Tesseract
+    2. 还需要找一份tessdata数据文件，放到Tesseract目录下。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/爬虫/" rel="tag"># 爬虫</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/05/爬虫基础-2/" rel="next" title="爬虫基础-2">
+                <i class="fa fa-chevron-left"></i> 爬虫基础-2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/10/Scrapy-1/" rel="prev" title="Scrapy-1">
+                Scrapy-1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程爬虫"><span class="nav-number">1.</span> <span class="nav-text">多线程爬虫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态HTML"><span class="nav-number">2.</span> <span class="nav-text">动态HTML</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Selenium与PhantomJS"><span class="nav-number">2.1.</span> <span class="nav-text">Selenium与PhantomJS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#页面操作"><span class="nav-number">2.1.1.</span> <span class="nav-text">页面操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行JS"><span class="nav-number">2.1.2.</span> <span class="nav-text">执行JS</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试模块"><span class="nav-number">3.</span> <span class="nav-text">测试模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tesseract"><span class="nav-number">4.</span> <span class="nav-text">Tesseract</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

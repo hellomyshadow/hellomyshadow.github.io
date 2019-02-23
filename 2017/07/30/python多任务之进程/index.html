@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="进程,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="子进程程序运行起来之后，就是一个进程，称为主(父)进程； 在主进程中新创建的进程，称为子进程； 操作系统根据调度算法决定要运行的进程，父子进程的先后顺序是不确定的。 fork 创建子进程import os os.getpid()：获取当前进程的PID；PID是进程ID号，类似于身份证号； os.getppid()：获取父进程的PID； os.fork()：创建一个子进程；子进程的返回值为 0，主进">
+<meta name="keywords" content="进程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python多任务之进程">
+<meta property="og:url" content="http://yoursite.com/2017/07/30/python多任务之进程/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="子进程程序运行起来之后，就是一个进程，称为主(父)进程； 在主进程中新创建的进程，称为子进程； 操作系统根据调度算法决定要运行的进程，父子进程的先后顺序是不确定的。 fork 创建子进程import os os.getpid()：获取当前进程的PID；PID是进程ID号，类似于身份证号； os.getppid()：获取父进程的PID； os.fork()：创建一个子进程；子进程的返回值为 0，主进">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/PGTUiNO.jpg">
+<meta property="og:image" content="http://i.imgur.com/CrxmdyQ.jpg">
+<meta property="og:image" content="http://i.imgur.com/4eJzfOE.jpg">
+<meta property="og:image" content="http://i.imgur.com/7pdzK0I.jpg">
+<meta property="og:image" content="http://i.imgur.com/DwJCh0V.jpg">
+<meta property="og:image" content="http://i.imgur.com/1kjwDsy.jpg">
+<meta property="og:image" content="http://i.imgur.com/hHS1aDu.jpg">
+<meta property="og:image" content="http://i.imgur.com/p2CZx34.jpg">
+<meta property="og:image" content="http://i.imgur.com/lllkukn.jpg">
+<meta property="og:updated_time" content="2018-02-28T13:18:37.935Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python多任务之进程">
+<meta name="twitter:description" content="子进程程序运行起来之后，就是一个进程，称为主(父)进程； 在主进程中新创建的进程，称为子进程； 操作系统根据调度算法决定要运行的进程，父子进程的先后顺序是不确定的。 fork 创建子进程import os os.getpid()：获取当前进程的PID；PID是进程ID号，类似于身份证号； os.getppid()：获取父进程的PID； os.fork()：创建一个子进程；子进程的返回值为 0，主进">
+<meta name="twitter:image" content="http://i.imgur.com/PGTUiNO.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/30/python多任务之进程/">
+
+
+
+
+
+  <title>python多任务之进程 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/30/python多任务之进程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python多任务之进程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-30T00:00:00+08:00">
+                2017-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="子进程"><a href="#子进程" class="headerlink" title="子进程"></a>子进程</h2><pre><code>程序运行起来之后，就是一个进程，称为主(父)进程；
+在主进程中新创建的进程，称为子进程；
+操作系统根据调度算法决定要运行的进程，父子进程的先后顺序是不确定的。
+</code></pre><h3 id="fork-创建子进程"><a href="#fork-创建子进程" class="headerlink" title="fork 创建子进程"></a>fork 创建子进程</h3><pre><code>import os
+os.getpid()：获取当前进程的PID；PID是进程ID号，类似于身份证号；
+os.getppid()：获取父进程的PID；
+os.fork()：创建一个子进程；子进程的返回值为 0，主进程的返回值是大于 0 的；
+        主进程的返回值其实就是子进程的PID，形成父子进程的映射关系；
+</code></pre><p><img src="http://i.imgur.com/PGTUiNO.jpg" alt></p>
+<pre><code>fork的子进程是独立执行的，并不会随着主进程的结束而结束；
+子进程运行起来之后，其实是两块内存中执行两份代码，全局变量是不能共享的，也即进程之间不能直接
+共享数据。
+</code></pre><h4 id="fork-多个子进程"><a href="#fork-多个子进程" class="headerlink" title="fork 多个子进程"></a>fork 多个子进程</h4><pre><code>主进程创建子进程A，进程A 创建子进程B，那么对于进程B，进程A就是父进制；
+也即，对于创建进程B 的fork()，进程B 返回值是 0，进程A 的返回值大于 0；
+</code></pre><p><img src="http://i.imgur.com/CrxmdyQ.jpg" alt></p>
+<pre><code>fork炸弹：
+        while True: os.fork()
+</code></pre><h3 id="Process-创建子进程"><a href="#Process-创建子进程" class="headerlink" title="Process 创建子进程"></a>Process 创建子进程</h3><pre><code>Python 是跨平台的语言，但 fork() 适用于ubuntu、Mac等，在windows上却没有 fock() 的调用；
+为此，Python提供了一个跨平台的多进程支持模块：multiprocessing；
+from multiprocessing import Process:导入 Process 类；
+start()：开启进程；
+</code></pre><p><img src="http://i.imgur.com/4eJzfOE.jpg" alt></p>
+<pre><code>与fork()不同，Process的所有子进程执行结束之后，主进程才会结束；
+
+1. Process()的常见参数：
+    Process(target=None, name=None, args=(), kwargs={})
+            target：指定进程执行的代码任务；
+            name：为当前进程设置别名；
+            args：所调用对象需要的参数，是一个元组；
+            kwargs：所调用对象需要的参数，是一个字典。
+</code></pre><p><img src="http://i.imgur.com/7pdzK0I.jpg" alt></p>
+<pre><code>2. Process 的常用属性和方法：
+    1. name：获取当前进程的名字；
+    2. pid：同 os.getpid()；
+    3. is_alive()：判断进程是否还在执行；
+    4. join()：等待进程执行结束，再继续向下执行；    join(seconds)：等待一段时间(秒)；
+    5. terminate()：杀死进程。
+</code></pre><h4 id="僵尸进程与孤儿进程"><a href="#僵尸进程与孤儿进程" class="headerlink" title="僵尸进程与孤儿进程"></a>僵尸进程与孤儿进程</h4><pre><code>Process创建的子进程时，主进程会等待子进程执行结束，主进程再结束，是为了子进程结束之后，
+让主进程回收子进程的资源；
+如果子进程结束了，但主进程没有回收子进程的资源，这样的主进程称为僵尸进程；
+如果子进程结束之前，主进程先结束了，这样的子进程称为孤儿进程；
+在Linux运行起来时，会有一个PID为1的进程，系统中所有的子进程都是1号进程直接或间接创建的，
+孤儿进程结束之后的资源回收，也是由1号进程完成的。
+</code></pre><h4 id="继承Process，创建子进程"><a href="#继承Process，创建子进程" class="headerlink" title="继承Process，创建子进程"></a>继承Process，创建子进程</h4><pre><code>如果没有指定Process 的形参target，调用start() 开启进程时，就将执行 run()；
+所以，继承Process、重写 run() 方法，创建对象时不指定target，也能创建一个进程。
+</code></pre><p><img src="http://i.imgur.com/DwJCh0V.jpg" alt></p>
+<pre><code>如果重写了Process 的 __init__() 方法，必须在子类的 init 方法中先执行 Process.__init__()
+完成Process 的初始化，否则Process的一些功能无法正常使用。
+</code></pre><h3 id="进程池Pool"><a href="#进程池Pool" class="headerlink" title="进程池Pool"></a>进程池Pool</h3><pre><code>进程池：先创建一定数量的子进程等待使用，使用完之后再重新归还进程池，增加重复使用；
+Pool 也是属于 multiprocessing 的类，可以跨平台使用。
+import multiprocessing import Pool：导入进程池类 Pool；
+p = Pool(max)：创建一个进程池，包含max个进程；如果请求的任务个数大于max，进程池会分批完成；
+Pool 的常用方法：
+    apply_async(func, [args, kwargs, callback=None, error_callback=None])：
+                非阻塞的方式执行进程任务func，即max个进程并行执行；
+                func：进程执行的任务，args：参数元组，kwargs：参数字典；
+                callback：异步回掉；
+                error_callback：进程挂掉的回调。
+    apply(func, [args, kwargs])：阻塞的方式执行，即每次只能执行一个进程；
+    close()：关闭Pool，不再接受新的任务；
+    join()：等待进程池中的进程完成任务，必须在 close()/terminate() 之后使用；
+    terminate()：立即终止进程，不管任务是否完成。
+</code></pre><p><img src="http://i.imgur.com/1kjwDsy.jpg" alt></p>
+<pre><code>主进程不会等待Pool中的进程完成任务，主进程一旦执行结束，Pool也就随之结束；
+1. 使用 join()，让主进程等待Pool 中的进程完成任务；
+2. 在主进程中使用循环语句，不让主进程结束。
+</code></pre><h4 id="异步回掉"><a href="#异步回掉" class="headerlink" title="异步回掉"></a>异步回掉</h4><pre><code>apply_async() 的可选参数 callback 用于异步回掉，回掉的代码是由主进程执行的；
+callback 会接收子进程执行结束之后，即 func执行结束之后的返回值，没有return，表示返回None；
+</code></pre><p><img src="http://i.imgur.com/hHS1aDu.jpg" alt></p>
+<h2 id="进程间的通信"><a href="#进程间的通信" class="headerlink" title="进程间的通信"></a>进程间的通信</h2><pre><code>进程之间是没有任何关联的，不能直接共享数据，
+</code></pre><h3 id="Process-进程间的通信"><a href="#Process-进程间的通信" class="headerlink" title="Process 进程间的通信"></a>Process 进程间的通信</h3><pre><code>Queue：队列，先进先出；multiprocessing 模块提供的类，用于支持进程间的通信；
+Queue本身是一个消息队列程序；
+import multiprocessing import Queue：导入队列；
+q = Queue(max)：创建一个队列，可以接收max条消息，也可以指定max；
+1. 向队列中写入消息
+    put(msg, [block, timeout])：将消息存入队列，msg 可以是任意类型，包括对象；
+                block，time：可选参数，block默认为true，表示队列没有空间时，程序会被阻塞，
+                            停在写入状态，直到队列腾出空间为止；
+                            如果设置了超时时间timeout，则会等待timeout秒，若还没有空间，
+                            则抛出异常；
+                            block设置为false时，消息队列一旦没有空间，则会立刻抛出异常。
+    put_nowait(msg)：相当于 put(msg, False)。
+2. 从队列中读取消息
+    get([block, timeout])：从队列中取出一条消息，该消息将从队列中移除，先进先出的原则；
+            block，timeout：可选参数，block默认为true，表示队列没有空间时，程序会被阻塞，
+                            停在读取状态，直到读到消息为止；
+                            如果设置了超时时间timeout，则会等待timeout秒，若队列中还没有
+                            消息可读取，则抛出异常；
+                            block设置为false时，消息队列一旦为空，则会立刻抛出异常。
+    get_nowait()：相当于 get(False)。
+3. full()：判断消息队列是否已经满了；
+4. empty()：判断消息队列是否为空；
+5. qsize()：获取当前队列的消息数量；
+</code></pre><p><img src="http://i.imgur.com/p2CZx34.jpg" alt></p>
+<h3 id="Pool-进程间的通信"><a href="#Pool-进程间的通信" class="headerlink" title="Pool 进程间的通信"></a>Pool 进程间的通信</h3><pre><code>Pool进程间通信，使用的是 multiprocessing 模块提供的 Manager 类，Manager类 中提供了 Queue；
+import multiprocessing import Manager：导入 Manager；
+q = Manager().Queue(max)：创建消息队列；操作队列的方法与Process使用的 Queue 相同。
+
+拷贝一个目录(目录中不包括文件夹)：
+</code></pre><p><img src="http://i.imgur.com/lllkukn.jpg" alt></p>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/进程/" rel="tag"># 进程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/29/python高级2/" rel="next" title="python高级2">
+                <i class="fa fa-chevron-left"></i> python高级2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/31/python多任务之线程/" rel="prev" title="python多任务之线程">
+                python多任务之线程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#子进程"><span class="nav-number">1.</span> <span class="nav-text">子进程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#fork-创建子进程"><span class="nav-number">1.1.</span> <span class="nav-text">fork 创建子进程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fork-多个子进程"><span class="nav-number">1.1.1.</span> <span class="nav-text">fork 多个子进程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-创建子进程"><span class="nav-number">1.2.</span> <span class="nav-text">Process 创建子进程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#僵尸进程与孤儿进程"><span class="nav-number">1.2.1.</span> <span class="nav-text">僵尸进程与孤儿进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继承Process，创建子进程"><span class="nav-number">1.2.2.</span> <span class="nav-text">继承Process，创建子进程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程池Pool"><span class="nav-number">1.3.</span> <span class="nav-text">进程池Pool</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#异步回掉"><span class="nav-number">1.3.1.</span> <span class="nav-text">异步回掉</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程间的通信"><span class="nav-number">2.</span> <span class="nav-text">进程间的通信</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-进程间的通信"><span class="nav-number">2.1.</span> <span class="nav-text">Process 进程间的通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pool-进程间的通信"><span class="nav-number">2.2.</span> <span class="nav-text">Pool 进程间的通信</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

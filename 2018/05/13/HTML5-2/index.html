@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HTML5 Canvas,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Canvas音视频标签1. H5之前对音视频没有一个标准，在网页中的音视频都是通过第三方插件的方式嵌入的； 2. 视频：&amp;lt;video src=&amp;quot;video/test.mp4&amp;quot; controls width=&amp;quot;500&amp;quot; height=&amp;quot;500&amp;quot;&amp;gt;     1. controls：布尔值属性，显示/隐藏控制播放的控件，但不同浏览器">
+<meta name="keywords" content="HTML5 Canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML5-2">
+<meta property="og:url" content="http://yoursite.com/2018/05/13/HTML5-2/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Canvas音视频标签1. H5之前对音视频没有一个标准，在网页中的音视频都是通过第三方插件的方式嵌入的； 2. 视频：&amp;lt;video src=&amp;quot;video/test.mp4&amp;quot; controls width=&amp;quot;500&amp;quot; height=&amp;quot;500&amp;quot;&amp;gt;     1. controls：布尔值属性，显示/隐藏控制播放的控件，但不同浏览器">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-10-14T23:26:44.408Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTML5-2">
+<meta name="twitter:description" content="Canvas音视频标签1. H5之前对音视频没有一个标准，在网页中的音视频都是通过第三方插件的方式嵌入的； 2. 视频：&amp;lt;video src=&amp;quot;video/test.mp4&amp;quot; controls width=&amp;quot;500&amp;quot; height=&amp;quot;500&amp;quot;&amp;gt;     1. controls：布尔值属性，显示/隐藏控制播放的控件，但不同浏览器">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/13/HTML5-2/">
+
+
+
+
+
+  <title>HTML5-2 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/13/HTML5-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTML5-2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-13T00:00:00+08:00">
+                2018-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Canvas"><a href="#Canvas" class="headerlink" title="Canvas"></a>Canvas</h2><h2 id="音视频标签"><a href="#音视频标签" class="headerlink" title="音视频标签"></a>音视频标签</h2><pre><code>1. H5之前对音视频没有一个标准，在网页中的音视频都是通过第三方插件的方式嵌入的；
+2. 视频：&lt;video src=&quot;video/test.mp4&quot; controls width=&quot;500&quot; height=&quot;500&quot;&gt;
+    1. controls：布尔值属性，显示/隐藏控制播放的控件，但不同浏览器上渲染的样式不同；
+    2. src还可以加载网络视频资源：src=&quot;http://······&quot;
+    3. poster：一个海报帧(图片)的地址，用于在用户播放或跳帧之前的展示；
+    4. autoplay/loop/muted：是否自动播放/循环/静音；
+    5. preload：none(告诉浏览器不要预加载该视频，点击播放时再加载)，metada(只抓取该视频的
+    元数据，如长度、海报帧等，并显示给用户，但不会预加载该视频)，auto(预加载该视频)
+    6. preload: &quot;&quot;; --&gt; 等效于 preload: auto;
+    7. 这些都是attribute属性
+    8. property属性：
+3. 音频：&lt;audio src=&quot;res/test.mp3&quot; controls&gt;
+    1. attribute属性：src、controls、autoplay、loop、muted、preload
+    2. 对音视频标签支持最好的是FireFox；
+    3. property属性：
+4. 容器
+    1. 实际上，.avi、.mp4并不是视频文件本身，而是容器的格式，它只是决定了视频存储的方式，
+    而不关心存储的内容，类似于.zip
+    2. 视频容器包含音频轨道、视频轨道和其他一些元数据，视频播放时，音频轨道和视频轨道是绑定
+    在一起的，元数据包含了视频的封面、标题、子标题、字幕等相关信息；
+    3. 主流容器格式(视频文件格式)：MPEG-4(以.mp4为扩展名)，Flash视频(.flv)，Ogg(.ogv)，
+    WebM(.webm)，音频视频交错(.avi)
+    4. 主流音频文件格式：MPEG-3(.mp3)，Acc音频(.acc)，Ogg音频(.ogg)
+5. 编解码器
+    1. 音频和视频的编码/解码是一组算法，用来对一段特定音频/视频进行解码和编码，使音频和视频
+    能够播放；
+    2. 原始的媒体文件体积非常巨大，如果不编码，数据量很大，在互联网上传输也会消耗大量时间；
+    如果不解码，也无法将编码后的数据重组为原始的媒体数据；
+    3. 视频编解码器：H.264(又称为MPEG-4的第十部份)、VP8、Ogg Theora
+    4. 音频编解码器：ACC、MPEG-3、Ogg Vorbis
+    5. 编解码器的配置分为基本配置、主配置、高级配置，手机上支持基本配置，电视机上支持基本配置
+    和主配置，电脑上支持三种配置；
+    6. 目前还没有一种编解码器和容器的组合能够适配所有浏览器，因此要对视频做格式转化；
+    7. 音视频的格式转化工具：FFmpeg
+6. 音视频的兼容模式
+    1. &lt;video&gt;可以包裹&lt;source&gt;，提供不同格式的视频，不支持视频标签，则提供视频的下载链接；
+    &lt;video width=&quot;800&quot; height=&quot;800&quot; controls&gt;
+        &lt;source src=&quot;res/test.mp4&quot; type=&quot;video/mp4&quot;&gt;&lt;/source&gt;
+        &lt;source src=&quot;res/test.ogv&quot; type=&quot;video/ogg&quot;&gt;&lt;/source&gt;
+        &lt;source src=&quot;res/test.webm&quot; type=&quot;video/webm&quot;&gt;&lt;/source&gt;
+        当前浏览器不支持video直接播放，点击下载：&lt;a href=&quot;res/test.mp4&quot;&gt;下载视频&lt;/a&gt;
+    &lt;/video&gt;
+    2. 浏览器通过检查&lt;source&gt;的type属性，查找所支持的视频格式，达到浏览器的兼容效果；
+    3. 同理，&lt;audio&gt;也可以包裹&lt;source&gt;，提供不同格式的音频。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HTML5-Canvas/" rel="tag"># HTML5 Canvas</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/12/HTML5-1/" rel="next" title="HTML5-1">
+                <i class="fa fa-chevron-left"></i> HTML5-1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/15/图片格式/" rel="prev" title="图片格式">
+                图片格式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Canvas"><span class="nav-number">1.</span> <span class="nav-text">Canvas</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#音视频标签"><span class="nav-number">2.</span> <span class="nav-text">音视频标签</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

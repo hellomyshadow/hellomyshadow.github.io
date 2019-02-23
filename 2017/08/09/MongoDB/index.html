@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python MongoDB,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="NoSQL简介NoSQL：Not Only SQL，非关系型数据库，不基于E-R模型，没有统一的结构，不用维护复杂的关系；     1. NoSQL拥有内存级的数据读写，比物理磁盘级的读写速度更快；     2. 高可扩展性，分布式计算，低成本，架构灵活，半结构化数据，但没有标准化，程序不直观； NoSQL的分类：     1. 列存储：Cassandra、Hypertable     2. 文档">
+<meta name="keywords" content="Python MongoDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB">
+<meta property="og:url" content="http://yoursite.com/2017/08/09/MongoDB/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="NoSQL简介NoSQL：Not Only SQL，非关系型数据库，不基于E-R模型，没有统一的结构，不用维护复杂的关系；     1. NoSQL拥有内存级的数据读写，比物理磁盘级的读写速度更快；     2. 高可扩展性，分布式计算，低成本，架构灵活，半结构化数据，但没有标准化，程序不直观； NoSQL的分类：     1. 列存储：Cassandra、Hypertable     2. 文档">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/ugdmhbD.jpg">
+<meta property="og:image" content="https://i.imgur.com/9LNzoX8.jpg">
+<meta property="og:image" content="https://i.imgur.com/R5ZPW3Q.jpg">
+<meta property="og:image" content="https://i.imgur.com/RCFAnAr.jpg">
+<meta property="og:image" content="https://i.imgur.com/FOFObvH.jpg">
+<meta property="og:image" content="https://i.imgur.com/EgbuMyz.jpg">
+<meta property="og:image" content="https://i.imgur.com/DYcOal2.jpg">
+<meta property="og:image" content="https://i.imgur.com/4YilwiA.jpg">
+<meta property="og:image" content="https://i.imgur.com/jYs5Kj8.jpg">
+<meta property="og:image" content="https://i.imgur.com/dbIj8wu.jpg">
+<meta property="og:image" content="https://i.imgur.com/wBvqbAC.jpg">
+<meta property="og:updated_time" content="2018-07-25T13:18:51.734Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB">
+<meta name="twitter:description" content="NoSQL简介NoSQL：Not Only SQL，非关系型数据库，不基于E-R模型，没有统一的结构，不用维护复杂的关系；     1. NoSQL拥有内存级的数据读写，比物理磁盘级的读写速度更快；     2. 高可扩展性，分布式计算，低成本，架构灵活，半结构化数据，但没有标准化，程序不直观； NoSQL的分类：     1. 列存储：Cassandra、Hypertable     2. 文档">
+<meta name="twitter:image" content="https://i.imgur.com/ugdmhbD.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/09/MongoDB/">
+
+
+
+
+
+  <title>MongoDB | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/09/MongoDB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MongoDB</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-09T00:00:00+08:00">
+                2017-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="NoSQL简介"><a href="#NoSQL简介" class="headerlink" title="NoSQL简介"></a>NoSQL简介</h2><pre><code>NoSQL：Not Only SQL，非关系型数据库，不基于E-R模型，没有统一的结构，不用维护复杂的关系；
+    1. NoSQL拥有内存级的数据读写，比物理磁盘级的读写速度更快；
+    2. 高可扩展性，分布式计算，低成本，架构灵活，半结构化数据，但没有标准化，程序不直观；
+NoSQL的分类：
+    1. 列存储：Cassandra、Hypertable
+    2. 文档存储：MongoDB、CouchaDB ...
+       一般用类似JSON的格式存储，可以为某些字段建立索引，实现关系型数据库的某些功能；
+    3. key-value存储：Redis、MemcacheDB、Berkeley DB... 通过key可以快速查询到value；
+    4. 图存储：Neo4J、FlockDB
+       图形关系的最佳存储，而使用传统的关系型数据库，则性能低下；
+    5. 对象存储：db4o、Versant
+    6. xml数据库：baseX、Berkeley DB XML
+用户在访问一个Web应用时，查找数据的过程：应用 --&gt; NoSQL --&gt; 关系型数据库；
+    1. 从关系型数据库中查到的数据，会先缓存到NoSQL中，并设置数据的过期时间，其他用户再次
+    访问时，就可以直接从NoSQL中获取数据，提高查询效率，也减轻了关系型数据库的压力；
+    2. 比如taobao的主页，每个用户访问的页面都是相同的，在第一次被访问后，就缓存到NoSQL中。
+高并发的处理策略：分布式、集群、缓存
+    1. 分布式：对于10个服务器，如果一个任务可以分成10个小任务，则每个服务器完成一个小任务；
+    2. 集群：后台同时接收10个任务，每个服务器独立完成一个任务；
+    3. 缓存：NoSQL数据库做缓存。
+</code></pre><h2 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h2><pre><code>MongoDB：一个基于分布式文件存储的NoSQL数据库；
+    1. 内存级的读写效率，在物理上以文件的形式存储数据，数据结构由键-值对组成；
+    2. 由C++编写，稳定且性能高，为Web应用提供可扩展的高性能数据存储。
+    3. 模式自由：可以不同结构的文档存储在同一个数据库；
+    4. 面向集合的存储：适合存储JSON风格的文件形式；
+    5. 完整的索引支持：对任何属性都可以索引；
+    6. 复制和高可用性：支持服务器之间的数据复制，支持主-从模式及服务器之间的相互复制；
+       复制的主要目的是提供冗余及自动故障转移。
+    7. 自动分片：支持云级别的伸缩性，支持水平的数据库集群，可动态添加额外的机器。
+1. MongoDB与MySQL的概念对比：
+    1. database ---&gt; batabase：数据库，MongoDB和MySQL也都支持索引index；
+    2. table ---&gt; collection：表 --&gt; 集合；
+    3. row ---&gt; document：行 --&gt; 文档，比如 {&apos;name&apos;:&apos;Mike&apos;, &apos;gender&apos;:&apos;男&apos;}
+       文档其实就是一个由键值对构成、BSON形式的对象，BSON是JSON的扩展；
+    4. column ---&gt; field：列/字段 --&gt; 域/属性；
+    5. primary key ---&gt; primary key：主键，MongoDB自动将_id字段设置为主键；
+    6. MongoDB不维护复杂的关系，也就不支持表的连接查询。
+2. 32位的MongoDB最大只能存储2G的数据，而64位的MongoDB则没有限制；
+3. MongoDB也分为服务端mongod和客户端mongo；
+    1. 服务端配置文件的目录为/etc/mongod.conf，默认Ip为127.0.0.1，默认端口为27017，
+    默认数据库目录/data/db
+        1. 显式启动：mongod，会显示启动过程，可以查看是否启动成功；
+        2. 后台启动/重启/停止：sudo service mongod start/restart/stop；
+        3. 后台启动之后，检查是否启动成功的命令：ps ajx|grep mongod
+    2. mongod启动失败
+        1. exception ... Data directory /data/db not found.
+        解决：在根目录&apos;/&apos;下创建目录/data/db，并修改data的权限为777；
+        2. failed to ... /tmp/mongodb ... not permitted.
+        解决：1.chown root:root /tmp  2.chmod 777 /tmp
+    3. 客户端启动连接：mongo，是一个shell脚本，同时也是一个JS的编辑器；
+4. 图形界面的管理软件：robomongo
+</code></pre><h2 id="操作MongoDB"><a href="#操作MongoDB" class="headerlink" title="操作MongoDB"></a>操作MongoDB</h2><h3 id="数据库操作"><a href="#数据库操作" class="headerlink" title="数据库操作"></a>数据库操作</h3><pre><code>1. db：查看当前数据库名，默认数据库是test；
+2. db.stats()：查看当前数据库的信息；
+3. show dbs：查看所有数据库；
+4. use 数据库名：切换数据库，切换一个不存在的数据库，虽然物理上不存在，但是会在新建集合或
+    插入数据时自动创建；
+5. db.dropDatabase()：删除当前操作的数据库。
+</code></pre><h3 id="集合操作"><a href="#集合操作" class="headerlink" title="集合操作"></a>集合操作</h3><pre><code>1. 创建集合：db.createCollection(集合名, options)
+    1. options是可选参数，用于指定集合的配置，限制集合的大小，不指定则表示不设置上限；
+    db.createCollection(&apos;sub&apos;, {capped:true, size:10})
+    2. capped的默认值为false，表示不设置集合的上限大小；capped设置为true时，size用于
+       指定集合的大小，单位是字节，一旦存储的文档达到上限，之前的数据会被覆盖。
+2. 查看所有集合：show collections
+3. 删除集合：db.集合名.drop()
+</code></pre><h3 id="文档操作"><a href="#文档操作" class="headerlink" title="文档操作"></a>文档操作</h3><pre><code>1. 数据类型
+    1. Object ID：每个文档都有一个属性_id，保证文档的唯一性，类似于MySQL中的主键；
+        1. _id的类型是Object ID，由MongoDB自动维护，也可以显式设置，但不允许重复；
+        2. Object ID是一个12字节的十六进制数：前4个字节是当前时间戳，3个字节的机器ID，
+        MongoDB的服务进程ID占2个字节，最后3个字节是简单的增量值。
+    2. String：字符串，必须设置为utf-8才有效；
+    3. Boolean：存储一个布尔值，true/false；
+    4. Integer：整数可以是32位/64位，取决于服务器；  Double：浮点数；
+    5. Arrays：数据/列表，一个键对应多个值；
+    6. Object：用于嵌入式的文档，即一个文档作为一个值；  Null：存储Null值；
+    7. Timestamp：时间戳；  Date：存储当前日期/时间的UNIX时间。
+2. 查看集合中的文档：db.集合名.find()
+3. 插入文档：db.集合名.insert(document)
+    1. db.stu.({name:&apos;Mike&apos;,gender:1})，如果操作的集合不存在，则自动创建；
+    2. doc={name:&apos;DD&apos;}，doc.gender=0 --&gt; db.stu.insert(doc)
+4. 更新文档：db.集合名.update({query}, {update}, {multi:true/false})
+    1. query：查询条件，比如匹配包含键-值为name:&apos;Mike&apos;的文档，条件为{name:&apos;Mike&apos;}；
+        如果不设置条件，则用 {} 作占位符；
+    2. update：更新的内容；
+    3. multi：可选，默认为false，表示只更新匹配的第一条文档，设置为true表示全部更新；
+    4. update默认会对除了_id属性之外的所有属性覆盖更新，修改掉整个文档的结构：
+</code></pre><p><img src="https://i.imgur.com/ugdmhbD.jpg" alt></p>
+<pre><code>5. $set：只修改指定的属性，如果该属性不存在，则相当于为匹配的文档添加一个新的属性；
+        而且，multi 必须和 $ 配合使用才有效，单独使用 multi 会报异常；
+</code></pre><p><img src="https://i.imgur.com/9LNzoX8.jpg" alt></p>
+<pre><code>5. 保存(添加/修改)：db.集合名.save(document)
+    如果文档的_id已经存在，则相当于修改文档，如果不存在，则添加一个新的文档。
+6. 删除：db.集合名.remove({query}, {justOne:false})
+    1. query：删除的文档条件；
+    2. justOne：可选，默认为false，表示删除所有匹配的文档，设置为true/1，只删除第一条；
+    3. remove({}) 表示删除所有文档。
+</code></pre><h2 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h2><pre><code>1. db.集合名.find({条件文档})：查询匹配条件的所有文档；
+2. db.集合名.findOne({条件文档})：只查询第一条匹配的文档；
+3. find({条件文档}).pertty()：格式化显示文档；
+4. 比较运算符
+    1. 没有显式的等于运算符，默认就是等于判断；
+    2. $lt：小于，$lte：小于或等于，$gt：大于，$gte：大于或等于，$ne：不等于；
+    3. find({age:{$gt:18}})：查询年龄age&gt;18的文档。
+5. 逻辑运算符
+    1. 默认就是逻辑与，没有显式的逻辑与运算符；
+    find({age:{$lt:20},gender:1})：查询年龄小于20，且性别为1的文档；
+    2. $or：逻辑或，对应一个文档数组[{...},{...},{...}]
+    find({$or:[{age:{$lt:20}},{gender:1}]})：年龄小于20，或性别为1的文档；
+    3. 逻辑与和逻辑或同时使用：find({$or:[{age:{$lt:20}},{gender:1}],name:&apos;Mike&apos;})
+        年龄小于20，或性别为1，且姓名为Mike的文档。
+6. 范围运算符
+    1. $in：在指定的数组中[x,y,z]；
+    2. $nin：不在某个范围内；
+    3. find.({age:{$in:[10,18,20]}})：年龄为10/18/20的文档。
+7. 支持正则表达式
+    1. /正则/，&amp;regex
+    2. find({name:/^李/})，find({name:{$regex:&apos;^李&apos;}})：查询姓李的文档。
+8. 自定义查询
+    1. $where：JavaScript结合Mongo进行查询，使用JS定义查询的函数，功能强大；
+    2. find({$where:function(){return this.age&gt;20}})：年龄age&gt;20的文档。
+</code></pre><h3 id="高级查询"><a href="#高级查询" class="headerlink" title="高级查询"></a>高级查询</h3><pre><code>1. limit与skip
+    1. db.集合名.find().limit(number)：显示number条文档，不指定number则显示全部；
+    2. db.集合名.find().skip(number)：跳过number条文档，默认值为0；
+    3. limit()和skip配合使用(不分先后)，才可以实现MySQL中的分页limit；
+    4. find().skip(5).limit(4)：跳过5条文档，取第6条到第9条文档。
+2. 投影
+    1. 在返回查询的结果时，只希望显示文档的指定字段，而不显示整个文档；
+    2. 投影文档是 find() 的第二个参数：find({},{属性名:1,...})，设置为1，表示显示；
+       设置为0 或不设置，则不显示；但是，_id默认是显示的，需要手动设置为0 才会不显示。
+3. 排序：sort()
+    1. 对结果集排序：db.集合名.find().sort({属性:1,...})，1 升序，-1 降序；
+    2. 比如 db.stu.sort({gender:-1,age:1})：先根据性别降序，再根据年龄升序；
+    3. 结果集默认是根据_id属性排序。
+4. 统计：count()
+    db.集合名.find({条件文档}).count() 等效于 db.集合名.count({条件文档})
+5. 消除重复：distinct()
+    1. db.集合名.distinct(&apos;属性名&apos;,{条件文档})，也可以结合 find() 使用；
+    2. 比如 distinct(&apos;gender&apos;,{age:{$gt:18}})：查找年龄age&gt;18的性别，并去重；
+    3. 查询的结果集是一个数组/列表，元素是gender的属性值。
+</code></pre><h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><pre><code>db.集合名.aggregate([{管道:{表达式}}])
+1. 管道
+    1. 在Unix和Linux中，管道一般用于将当前命令的输出结果，作为下一个命令的输入；
+       比如 ps ajx | grep mongo：grep 从 ps ajx 得到的结果集中搜索 mongo
+    2. 在MongoDB中，管道具有同样的作用，文档处理完毕后，通过管道进行下一次处理。
+2. 常用的管道
+    1. $group：对集合中的文档分组，可用于统计结果；
+    2. $match：过滤数据，只输出匹配条件的文档；
+    3. $project：投影，修改输入文档的结构，如重命名、增加、删除属性、创建计算结果...
+    4. $sort：将输入文档排序后输出；
+    5. $limit：限制聚合管道返回的文档数；
+    6. $skip：跳过指定数量的文档，并返回剩下的文档；
+    7. $unwind：将数组类型的属性进行拆分。
+3. 表达式
+    1. 表达式:&apos;$属性名&apos;
+    2. 常用表达式
+        1. $sum：计算总和，$sum:1 和 count() 都表示计数；
+        2. $avg：计算平均数；
+        3. $min/max：获取最小/最大值；
+        5. $push：在结果文档中插入值到一个数组中；
+        6. $first/last：根据资源文档的排序获取第一个/最后一个属性值。
+</code></pre><h3 id="分组：-group"><a href="#分组：-group" class="headerlink" title="分组：$group"></a>分组：$group</h3><pre><code>1. _id 表示分组的依据，不能自定义，使用属性的格式：&apos;$属性名&apos;；
+比如，统计男生女生的人数：
+</code></pre><p><img src="https://i.imgur.com/R5ZPW3Q.jpg" alt></p>
+<pre><code>$sum:1 表示计数，$sum:&apos;$属性名&apos; 则表示基于某个属性求和，比如对年龄求和：$sum:&apos;$age&apos;；
+同理，$avg:&apos;$属性名&apos; 对某个属性求平均值，$last:&apos;$age&apos;获取本组中排序最后的一个年龄值。
+2. 透视数据
+$push:&apos;$age&apos; 将每一组年龄的属性值组成一个数组；
+$push:&apos;$$ROOT&apos; 将每一组的整个文档组成一个数组；
+</code></pre><p><img src="https://i.imgur.com/RCFAnAr.jpg" alt></p>
+<pre><code>3. _id:null 则表示把集合分成一组，比如统计总人数和平均年龄：
+</code></pre><p><img src="https://i.imgur.com/FOFObvH.jpg" alt></p>
+<h3 id="过滤：-match"><a href="#过滤：-match" class="headerlink" title="过滤：$match"></a>过滤：$match</h3><pre><code>1. 支持MongoDB的标准查询操作
+比如查询/过滤年龄大于20的文档：db.stu.aggregate([{$match:{age:{$gt:20}}}])
+2. 对过滤后的文档进行聚合操作
+比如，对过滤后的文档进行分组、统计：db.stu.aggregate([{$match:{age:{$gt:20}}},
+{$group:{_id:&apos;$gender&apos;,count:{$sum:1}}}])
+</code></pre><h3 id="投影：-project"><a href="#投影：-project" class="headerlink" title="投影：$project"></a>投影：$project</h3><pre><code>1. 与find()的投影功能相同
+比如只输出属性name、age：db.stu.aggregate([{$project:{_id:0,name:1,age:1}}])
+2. 对聚合后的文档做投影
+比如只输出分组后的人数：aggregate([{$group:{_id:&apos;$gender&apos;,count:{$sum:1}}},
+{$project:{_id:0,count:1}}])
+</code></pre><h3 id="排序：-sort"><a href="#排序：-sort" class="headerlink" title="排序：$sort"></a>排序：$sort</h3><pre><code>1. 与sort()的功能相同
+比如按年龄升序：db.stu.aggregate([{$sort:{age:1}}])
+2. 对聚合后的文档做排序
+比如对分组后的人数做降序：aggregate([{$group:{_id:&apos;$gender&apos;,count:{$sum:1}}},
+{$sort:{count:-1}}])
+</code></pre><h3 id="分页：-limit、-skip"><a href="#分页：-limit、-skip" class="headerlink" title="分页：$limit、$skip"></a>分页：$limit、$skip</h3><pre><code>在分页时，$skip必须在$limit的前面使用：aggregate([{$skip:2},{$limit:5}])
+</code></pre><h3 id="拆分：-unwind"><a href="#拆分：-unwind" class="headerlink" title="拆分：$unwind"></a>拆分：$unwind</h3><pre><code>基于某一个数组类型的属性，将文档拆分成多个子文档，每个子文档包含该数组的一个元素；
+1. db.集合名.aggregate([{$unwind:&apos;$属性名&apos;}])
+</code></pre><p><img src="https://i.imgur.com/EgbuMyz.jpg" alt></p>
+<pre><code>2. 如果拆分的属性是空数组、非数组类型、不存在、null，则拆分失败，数据丢失；
+$unwind:{path:&apos;属性名&apos;,preserveNullAndEmptyArrays:true}：防止数据丢失；
+</code></pre><p><img src="https://i.imgur.com/DYcOal2.jpg" alt></p>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><pre><code>1. MongoDB也支持索引，以提升查询速度，索引的创建原则与MySQL的相同；
+2. 查询性能分析：db.集合名.find({条件文档}).explain(&apos;executionStats&apos;)
+    executionStats下的executionTimeMillis表示整体查询时间，单位是毫秒；
+3. 创建索引
+    1. 普通索引：db.集合名.ensureIndex({属性名:1})，1 升序，-1 降序；
+    2. 唯一索引：ensureIndex({属性名:1},{unique:true})，属性值不能重复；
+    3. 联合索引：ensureIndex({属性名:1,属性名:1})，基于多个属性，创建一个索引。
+4. 查看集合中的所有索引：db.集合名：getIndexes()，同时会列出索引名称；
+5. 删除索引
+    1. 根据索引名称删除：db.集合名.dropIndex(&apos;索引名&apos;)
+    2. 删除所有索引：db.集合名.dropIndexes()，_id是一个特殊的索引，不会被删除。
+</code></pre><h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><pre><code>1. MongoDB采用角色-用户-数据库的安全管理方式，为了安全性，需要访问者提供用户名和密码；
+2. 常用的系统角色：
+    1. root：只在admin数据库中可以使用，超级权限/账号；
+    2. Read：允许用户读取指定的数据库；
+    3. readWrite：允许用户读写指定的数据库。
+</code></pre><h3 id="超级管理用户"><a href="#超级管理用户" class="headerlink" title="超级管理用户"></a>超级管理用户</h3><pre><code>mongo登录后，创建超级管理用户：
+</code></pre><p><img src="https://i.imgur.com/4YilwiA.jpg" alt></p>
+<pre><code>1. 设置角色和对应数据库的属性roles是一个数组，可以同时设置多个角色和对应数据库；
+2. 角色设置之后，还需要修改配置文件：sudo vi /etc/mongod.conf，启用安全验证：
+</code></pre><p><img src="https://i.imgur.com/jYs5Kj8.jpg" alt></p>
+<pre><code>3. 修改了配置文件，必须重启MongoDB服务；
+4. mongo命令登录后，并不能再查看所有数据库，必须使用身份验证的方式登录：
+mongo -u 用户名(admin) -p 密码(123) --authenticationDatabase 验证的数据库(admin)
+身份验证通过之后，就可以查看所有数据库，也可以切换到admin数据库进行操作。
+5. 查看所有用户
+    1. use admin：切换到admin数据库；
+    2. db.system.users.find()：查看所有用户，以及用户的角色、对应的数据库。
+</code></pre><h3 id="普通用户管理"><a href="#普通用户管理" class="headerlink" title="普通用户管理"></a>普通用户管理</h3><pre><code>1. 使用超级管理员登陆，查看当前数据库的用户：show users
+2. 创建普通用户：
+</code></pre><p><img src="https://i.imgur.com/dbIj8wu.jpg" alt></p>
+<pre><code>3. 普通用户登录：mongo -u p1 -p 123 --authenticationDatabase py5
+4. 该普通用户p1只对数据库py5有操作权限，是无法操作其他数据库的；
+5. 在实际开发过程中，一个项目通常对应一个数据库，由超级管理员创建数据库，并分配数据库用户
+   给项目开发者，保证开发者不能随便操作其他项目的数据库。
+</code></pre><h2 id="复制-副本集"><a href="#复制-副本集" class="headerlink" title="复制-副本集"></a>复制-副本集</h2><pre><code>复制/副本集：提供数据的冗余备份，并在多个服务器上存储数据副本，提供数据的可用性，保证数据的
+    安全性，允许从硬件故障和服务中断中恢复数据。
+1. 主-从配置的服务器，应用程序访问A服务器(主)，B服务器定期从A服务器上读取数据，进行备份；
+   如果A服务器宕机，应用程序会立即切换到B服务器(主)，待A服务器重启之后，则作为从服务器。
+2. 复制的工作原理
+    1. 复制至少需要两个节点A、B，常见的搭配方式：一主一从、一主多从；
+    2. 主节点负责处理客户端请求，其他节点都是从节点，负责复制主节点上的数据；
+    3. 从节点定期轮询主节点上记录的所有操作，然后对数据副本执行这些操作，保证从节点的数据
+       与主节点一致；
+3. 复制的特点
+    1. N个节点的集群，任何节点都可以作为主节点，所有的写入操作都在主节点上；
+    2. 自动故障转移，自动恢复，无宕机维护；
+</code></pre><h3 id="设置复制节点"><a href="#设置复制节点" class="headerlink" title="设置复制节点"></a>设置复制节点</h3><pre><code>用xShell链接MongoDB服务器，完成节点设置，因为xShell支持对同一个ubuntu账户多开窗口；
+1. 创建两个存放MongoDB数据库的文件夹t1、t2；
+2. 在同一个Ip上启动两个MongoDB服务，指定不同的端口，使用不同的目录存放数据库，但既然做成
+   一个副本集，replSet的名字必须要一致：
+mongod --bind_ip 绑定Ip --port 绑定Port --dhpath 数据库的目录路径 --replSet 命名
+3. 启动两个MongoDB服务：
+</code></pre><p><img src="https://i.imgur.com/wBvqbAC.jpg" alt></p>
+<pre><code>4. 重新指定了数据库目录，那么在启动MongoDB客户端连接时，也就不需要做身份验证了，但必须指定
+   连接的Ip和Port：mongo --host Ip --port Port
+5. 在终端上做初始化：rs.initiate()
+    1. 在哪个终端上做初始化，那么它所连接的哪个MongoDB服务就设置成了主节点；
+    2. 主节点设置成功之后，其命令提示符会发生变化；
+    3. rs.status()：查看当前副本集的状态。
+6. 在连接主节点的终端上添加副本集：rs.add(&apos;Ip:Port&apos;)，把另一个MongoDB服务作为从节点；
+    1. 添加成功之后，连接从节点的终端提示符需要在Enter回车之后才会发生变化；
+    2. 删除副本集：rs.remove(&apos;Ip:Port&apos;)
+7. 自动备份数据
+    1. 在主节点的终端上创建数据库，并插入数据；几秒钟之后，在从节点的终端上查询这些数据；
+    2. 在从节点的终端上做查询操作，必须设置：rs.slaveOk()
+8. 自动主从切换
+    1. 重启主节点的服务，并退出主节点的终端和从节点的终端；
+    2. 服务重启完成之后，再连接主节点和从节点，其命令提示符会交换，说明主从切换完成。
+</code></pre><h2 id="数据备份与恢复"><a href="#数据备份与恢复" class="headerlink" title="数据备份与恢复"></a>数据备份与恢复</h2><pre><code>副本集可以实现自动数据备份，MongoDB也支持手动数据备份；
+</code></pre><h3 id="数据备份"><a href="#数据备份" class="headerlink" title="数据备份"></a>数据备份</h3><pre><code>1. 无身份验证：mongodump -h db_host -d db_name -o db_directory
+    1. db_host：服务器的地址，ip:port，如果是在服务器主机上直接操作，则省略-h部分；
+    2. db_name：需要备份的数据库名称；
+    3. db_directory：数据库的备份目录；
+    4. 比如：mongodump -h 192.168.196.128:27017 -d test1 -o ~/Desktop/bak
+2. 需要身份验证：mongodump -h db_host -u db_user(用户名) -p db_password(密码) 
+    --authenticationDatabase db_name(验证的数据库) -d db_name -o db_directory
+</code></pre><h3 id="数据恢复"><a href="#数据恢复" class="headerlink" title="数据恢复"></a>数据恢复</h3><pre><code>mongorestore -h db_host -d db_name --dir db_directory
+1. mongoDB并不需要事先创建好数据库db_name，数据恢复时会自动创建；
+2. 如果需要身份验证，可以直接使用超级管理员的账户，它能验证所有数据库。
+</code></pre><h2 id="MongoDB与Python"><a href="#MongoDB与Python" class="headerlink" title="MongoDB与Python"></a>MongoDB与Python</h2><pre><code>1. 安装python包：sudo pip/pip3 install pymongo
+2. 导入pymongo模块：from pymongo import *
+3. 建立连接并创建客户端对象：
+    1. 无安全认证：client=MongoClient(&apos;mongodb://Ip:Port&apos;)
+    2. 有安全认证：client=MongoClient(&apos;mongodb://用户名:密码@Ip:Port/数据库名&apos;)
+4. 获取数据库：db=client.数据库名
+5. 获取集合：stu=db.集合名
+</code></pre><h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><pre><code>1. 插入数据
+    1. stu.insert_one({文档})，返回一个对象，其属性inserted_id可以获取文档的_id；
+    2. stu.insert_many([{文档1}, {文档2}, {文档3} ...])，插入多条文档。
+2. 修改数据
+    1. stu.update_one({条件文档}, {&apos;$set&apos;:{新的文档}})：只更新第一条匹配的文档；
+    2. stu.update_many({条件文档}, {&apos;$set&apos;:{新的文档}})：更新所有匹配的文档。
+3. 删除数据
+    1. stu.delete_one({条件文档})：只删除第一条匹配的文档；
+    2. stu.delete_many({条件文档})：删除所有匹配的文档。
+4. 查询数据
+    1. find_one({条件文档})：返回匹配的第一条文档，字典类型；
+    2. find({条件文档})：返回一个Cursor对象，直接对Cursor对象遍历，得到所有匹配的文档。
+5. 排序：返回一个Cursor对象，ASCENDING 升序，DESCENDING 降序；
+    1. 单属性：stu.find().sort(&apos;age&apos;, DESCENDING)，对查询的所有文档按照age降序；
+    2. 多属性：stu.find().sort([(&apos;age&apos;, DESCENDING), (&apos;name&apos;, ASCENDING)])
+6. 分页：stu.find().skip(2).limit(5)，返回一个Cursor对象；
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python-MongoDB/" rel="tag"># Python MongoDB</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/08/MySQL/" rel="next" title="MySQL">
+                <i class="fa fa-chevron-left"></i> MySQL
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/10/Redis/" rel="prev" title="Redis">
+                Redis <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#NoSQL简介"><span class="nav-number">1.</span> <span class="nav-text">NoSQL简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MongoDB"><span class="nav-number">2.</span> <span class="nav-text">MongoDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作MongoDB"><span class="nav-number">3.</span> <span class="nav-text">操作MongoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库操作"><span class="nav-number">3.1.</span> <span class="nav-text">数据库操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集合操作"><span class="nav-number">3.2.</span> <span class="nav-text">集合操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档操作"><span class="nav-number">3.3.</span> <span class="nav-text">文档操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询"><span class="nav-number">4.</span> <span class="nav-text">查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#高级查询"><span class="nav-number">4.1.</span> <span class="nav-text">高级查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合"><span class="nav-number">5.</span> <span class="nav-text">聚合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分组：-group"><span class="nav-number">5.1.</span> <span class="nav-text">分组：$group</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过滤：-match"><span class="nav-number">5.2.</span> <span class="nav-text">过滤：$match</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#投影：-project"><span class="nav-number">5.3.</span> <span class="nav-text">投影：$project</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排序：-sort"><span class="nav-number">5.4.</span> <span class="nav-text">排序：$sort</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分页：-limit、-skip"><span class="nav-number">5.5.</span> <span class="nav-text">分页：$limit、$skip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拆分：-unwind"><span class="nav-number">5.6.</span> <span class="nav-text">拆分：$unwind</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引"><span class="nav-number">6.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性"><span class="nav-number">7.</span> <span class="nav-text">安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#超级管理用户"><span class="nav-number">7.1.</span> <span class="nav-text">超级管理用户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#普通用户管理"><span class="nav-number">7.2.</span> <span class="nav-text">普通用户管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制-副本集"><span class="nav-number">8.</span> <span class="nav-text">复制-副本集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置复制节点"><span class="nav-number">8.1.</span> <span class="nav-text">设置复制节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据备份与恢复"><span class="nav-number">9.</span> <span class="nav-text">数据备份与恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据备份"><span class="nav-number">9.1.</span> <span class="nav-text">数据备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据恢复"><span class="nav-number">9.2.</span> <span class="nav-text">数据恢复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MongoDB与Python"><span class="nav-number">10.</span> <span class="nav-text">MongoDB与Python</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#增删改查"><span class="nav-number">10.1.</span> <span class="nav-text">增删改查</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

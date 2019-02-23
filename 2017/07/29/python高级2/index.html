@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="生成器，迭代器，闭包，装饰器，元类，GC,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="生成器：generator生成器：保存一种算法，它并不会立刻创建所有的元素，而是在需要某个元素时再生成，节约内存； 1. 创建生成器的方式1：     创建一个偶数生成器generator：g = (x*2 for x in range(10))     next(g)：每次生成一个元素，所有元素生成之后再调用next(g)，会报StopIteration； 2. 创建生成器的方式2：yield">
+<meta name="keywords" content="生成器，迭代器，闭包，装饰器，元类，GC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python高级2">
+<meta property="og:url" content="http://yoursite.com/2017/07/29/python高级2/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="生成器：generator生成器：保存一种算法，它并不会立刻创建所有的元素，而是在需要某个元素时再生成，节约内存； 1. 创建生成器的方式1：     创建一个偶数生成器generator：g = (x*2 for x in range(10))     next(g)：每次生成一个元素，所有元素生成之后再调用next(g)，会报StopIteration； 2. 创建生成器的方式2：yield">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/GjADhWZ.png">
+<meta property="og:image" content="http://i.imgur.com/gqV0AYt.png">
+<meta property="og:image" content="http://i.imgur.com/Bh2H8AJ.png">
+<meta property="og:image" content="http://i.imgur.com/WonhjIG.png">
+<meta property="og:image" content="http://i.imgur.com/UIQfW0G.png">
+<meta property="og:image" content="http://i.imgur.com/Zib2HKJ.png">
+<meta property="og:image" content="http://i.imgur.com/p5AIWZ4.png">
+<meta property="og:image" content="http://i.imgur.com/oVeDKhZ.png">
+<meta property="og:image" content="http://i.imgur.com/5n0b2xJ.png">
+<meta property="og:image" content="http://i.imgur.com/F1Fs3U3.jpg">
+<meta property="og:image" content="http://i.imgur.com/53vv2WC.jpg">
+<meta property="og:image" content="http://i.imgur.com/LIwWQqX.jpg">
+<meta property="og:image" content="http://i.imgur.com/bzn18Mf.jpg">
+<meta property="og:image" content="http://i.imgur.com/o6jJfrI.jpg">
+<meta property="og:image" content="http://i.imgur.com/kx07k5r.jpg">
+<meta property="og:image" content="http://i.imgur.com/P3mW6ta.jpg">
+<meta property="og:image" content="http://i.imgur.com/5noUzSI.jpg">
+<meta property="og:image" content="http://i.imgur.com/OC4QU9x.jpg">
+<meta property="og:image" content="http://i.imgur.com/oU9WiQq.jpg">
+<meta property="og:image" content="http://i.imgur.com/YptTQqH.jpg">
+<meta property="og:image" content="http://i.imgur.com/Lm945XP.jpg">
+<meta property="og:updated_time" content="2018-05-13T03:02:56.456Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python高级2">
+<meta name="twitter:description" content="生成器：generator生成器：保存一种算法，它并不会立刻创建所有的元素，而是在需要某个元素时再生成，节约内存； 1. 创建生成器的方式1：     创建一个偶数生成器generator：g = (x*2 for x in range(10))     next(g)：每次生成一个元素，所有元素生成之后再调用next(g)，会报StopIteration； 2. 创建生成器的方式2：yield">
+<meta name="twitter:image" content="http://i.imgur.com/GjADhWZ.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/29/python高级2/">
+
+
+
+
+
+  <title>python高级2 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/29/python高级2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python高级2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-29T00:00:00+08:00">
+                2017-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="生成器：generator"><a href="#生成器：generator" class="headerlink" title="生成器：generator"></a>生成器：generator</h2><pre><code>生成器：保存一种算法，它并不会立刻创建所有的元素，而是在需要某个元素时再生成，节约内存；
+1. 创建生成器的方式1：
+    创建一个偶数生成器generator：g = (x*2 for x in range(10))
+    next(g)：每次生成一个元素，所有元素生成之后再调用next(g)，会报StopIteration；
+2. 创建生成器的方式2：yield
+    带有 yield 关键字的函数，就是生成器，返回一个对象g，next(g)生成元素；
+    1. next(g)执行一次，程序执行到 yield 会终止，并返回 yield 的值；
+    2. 下次执行 next(g)，会从上次终止的地方开始执行，遇到 yield 终止；
+</code></pre><p><img src="http://i.imgur.com/GjADhWZ.png" alt></p>
+<pre><code>for temp in generator：可以直接迭代一个生成器，temp是每次 yield 返回的值；
+next(g) 等价于 g.__next__()；
+3. send()：也是用于生成元素；
+    yield 语句赋值给一个变量，该变量并不能获得 yield 返回的值，变量值仍为 None；
+    与next()不同，send(data)的参数值可以直接赋值给 yield 所赋值的变量；
+</code></pre><p><img src="http://i.imgur.com/gqV0AYt.png" alt></p>
+<pre><code>在执行 send() 之前，必须先执行一次next()；
+如果强制第一次就执行 send()，必须设置参数为 None：send(None)，temp的值为None；
+4. 生成器完成多任务：协程，多任务的一种
+</code></pre><p><img src="http://i.imgur.com/Bh2H8AJ.png" alt></p>
+<pre><code>因为CPU运行很快，看起来任务1和任务2在同时执行。
+5. 集合数据类型(list、tuple、dict、set、str)和生成器generator，都可以作用于for循环，
+    这些对象统称为可迭代对象：Iterable
+    1. 判断一个对象是否是Iterable：from collections import Iterable
+    2. isinstance(x, Iterable)：True/False
+</code></pre><h2 id="迭代器：iterator"><a href="#迭代器：iterator" class="headerlink" title="迭代器：iterator"></a>迭代器：iterator</h2><pre><code>字符串、列表、字典、元组、集合、生成器都是可迭代的对象，但只有生成器才是迭代器；
+1. 可以被next()函数调用并不断返回下一个值的对象，统称为迭代器；
+    1. 判断是不是迭代器：from collections import Iterator
+    2. isinstance(g, Iterator)：True/False
+2. iter(iterable)：可以把字符串、列表等Iterable转为Iterator
+3. Python的Iterator是一个数据流，可以理解为一个有序序列，但并不能提前获取序列长度，
+只能通过next()实现按需计算下一个数据，也即Iterator的计算是惰性的；Iterator甚至可以
+表示一个无限大的数据流，如全体自然数，而list是不可能存储所有自然数的。
+</code></pre><h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><pre><code>变量名是对数据的引用，同理，函数名(变量)是对函数体的引用；
+定义函数，其实是在内存中创建函数体，再让函数名(变量)指向函数体；
+Python中定义同名的函数，其实是改变函数名(变量)的指向，并不会报错；
+lambda 表达式定义的小型匿名函数，test = lambda x, y:x+y，相当于 test(x, y) 函数；
+</code></pre><p><img src="http://i.imgur.com/WonhjIG.png" alt></p>
+<pre><code>闭包：在函数内再定义一个函数，并且该函数用到了外函数的变量；
+一个完整的闭包是，外函数的返回值是内函数的函数名；
+模拟 y = ax + b
+</code></pre><p><img src="http://i.imgur.com/UIQfW0G.png" alt></p>
+<pre><code>1. line = test(1, 1)：虽然外函数执行完毕，但因为 line 指向内函数，而内函数又使用了
+   外函数的变量，所以外函数并没有被销毁；
+2. 如果再创建一条直线 line2 = test(10, 4)，python会在内存中再创建一份外函数和内函数，
+   而不会销毁上次创建的函数；
+3. 闭包最大的作用：保存局部变量，避免被全局变量污染。
+</code></pre><h2 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h2><pre><code>装饰器可以提高开发的效率；
+写代码遵循 开放-封闭 的原则，规定已经实现的功能代码不允许被修改，但可以扩展开发；
+</code></pre><h3 id="装饰器的原理"><a href="#装饰器的原理" class="headerlink" title="装饰器的原理"></a>装饰器的原理</h3><pre><code>场景1：部门A负责功能代码的实现，部门B调用部门A提供的接口(函数)；
+    现需要对原有函数加验证，否则不允许调用，但是又不能影响部门B的调用方式；
+</code></pre><p><img src="http://i.imgur.com/Zib2HKJ.png" alt></p>
+<h3 id="装饰器的实现"><a href="#装饰器的实现" class="headerlink" title="装饰器的实现"></a>装饰器的实现</h3><pre><code>@...：装饰标识，在函数的上面声明；
+</code></pre><p><img src="http://i.imgur.com/p5AIWZ4.png" alt></p>
+<h3 id="装饰器的执行时间"><a href="#装饰器的执行时间" class="headerlink" title="装饰器的执行时间"></a>装饰器的执行时间</h3><pre><code>python编译器只要执行了@...，就已经开始执行装饰了，而不是在调用时才开始装饰；
+</code></pre><p><img src="http://i.imgur.com/oVeDKhZ.png" alt></p>
+<h3 id="多个装饰器"><a href="#多个装饰器" class="headerlink" title="多个装饰器"></a>多个装饰器</h3><p><img src="http://i.imgur.com/5n0b2xJ.png" alt></p>
+<pre><code>1. python编译器执行到 @makeBold 时，并没有加载装饰器makeBold，因为它下面是一个装饰器，
+    而不是被装饰的函数，所以python会优先加载内装饰器makeItalic，然后再加载外装饰器;
+    加载过程：
+        --&gt; 加载内装饰器makeItalic --&gt; makeItalic(fn) 的fn 接收被装饰的函数test, 
+    即 fn 与 test 指向同一个函数体 --&gt; return 内函数 ，返回值是用被装饰的函数test
+    接收的，即 test 的指向被改变 --&gt; test 指向 makeItalic 的内函数wrapped ------
+    --&gt; 再加载外装饰器makeBold --&gt; makeBold(fn) 的fn 接收被装饰的函数test，此时的
+    test 的指向已经改变了,即 fn 与 test 指向内装饰器makeItalic 的内函数wrapped ---
+    --&gt; return 内函数，返回值也是用 test 接收的，即test 的指向再次被改变 ----------
+    --&gt; test 指向 makeBold 的内函数wrapped --&gt; 加载完成；
+2. 最后调用 test() 时，test 指向外装饰器makeBold 的内函数 --&gt; 执行 makeBold-wrapped
+    --&gt; makeBold-wrapped 内部调用的 fn 又指向内装饰器makeItalic 的内函数 --&gt; 执行
+    makeItalic-wrapped --&gt; makeItalic-wrapped 内部调用的 fn 又指向原test 的函数体
+    --&gt; 执行原test 函数 --&gt; 执行完毕。
+3. 装饰器的加载是由外而内，但数据的装饰是由内而外的。
+</code></pre><h3 id="有参数函数的装饰"><a href="#有参数函数的装饰" class="headerlink" title="有参数函数的装饰"></a>有参数函数的装饰</h3><pre><code>1. 固定参数
+    被装饰函数的指向链上的每一个函数，都保持与被装饰函数的参数一致；
+</code></pre><p><img src="http://i.imgur.com/F1Fs3U3.jpg" alt></p>
+<pre><code>    被装饰函数test(a, b) 的指向链：test --&gt; wrapBold(fn) --&gt; wrapItalic(fn)
+2. 不定长参数
+    不定长参数使用 *args和 **kwargs，args 将参数保存为元组，kwargs 将参数保存为字典，
+    所以，在指向链上的参数传递过程中，必须要拆包传递；
+</code></pre><p><img src="http://i.imgur.com/53vv2WC.jpg" alt></p>
+<h3 id="有返回值函数的装饰"><a href="#有返回值函数的装饰" class="headerlink" title="有返回值函数的装饰"></a>有返回值函数的装饰</h3><pre><code>在执行被装饰函数时，其函数名的指向已经发生了改变，所以在指向链上的每个函数，必须返回
+被装饰后的结果；
+</code></pre><p><img src="http://i.imgur.com/LIwWQqX.jpg" alt></p>
+<h3 id="通用装饰器"><a href="#通用装饰器" class="headerlink" title="通用装饰器"></a>通用装饰器</h3><pre><code>通用的装饰器，也即是使用不定长参数、并带有 return 的装饰器；
+</code></pre><p><img src="http://i.imgur.com/bzn18Mf.jpg" alt></p>
+<h3 id="带有参数的装饰器"><a href="#带有参数的装饰器" class="headerlink" title="带有参数的装饰器"></a>带有参数的装饰器</h3><pre><code>如果装饰器需要参数，就要在原装饰器的外面再定义一个函数，组成一个新的装饰器；
+最外层的函数用于接收参数，其返回值是原装饰器的函数名；
+</code></pre><p><img src="http://i.imgur.com/o6jJfrI.jpg" alt></p>
+<pre><code>1. python编译器执行到 @makeBold_arg(&quot;Hello&quot;)，时，会执行函数 makeBold_arg(arg)，
+并返回原装饰器makeBold 的函数名，也即是 @makeBold，然后加载原装饰器，装饰test 函数。
+2. 带参数的作用
+    内函数可以使用外函数的变量，所以，原装饰器可以根据外部传入的参数，执行不同的操作。
+</code></pre><h3 id="类装饰器"><a href="#类装饰器" class="headerlink" title="类装饰器"></a>类装饰器</h3><pre><code>类装饰器，是用一个类装饰函数；
+__call__(self)：重写了该方法，可以像调用函数的方式调用对象，执行的就是该方法；
+</code></pre><p><img src="http://i.imgur.com/kx07k5r.jpg" alt></p>
+<pre><code>@类名：类装饰器装饰函数的形式
+</code></pre><p><img src="http://i.imgur.com/P3mW6ta.jpg" alt></p>
+<pre><code>形参func.__name__：获取传入实参的函数名；
+加载过程：
+    ---&gt;执行 @Decorator 时，开始加载装饰器 --&gt; 初始化对象，被装饰函数test 作为实参，
+--&gt; func 与 test 指向同一个函数体 --&gt; self.__func = func，即 self.func 与 func
+指向同一个函数体 --&gt; 初始化完成，返回值是对象的引用，被装饰函数test 接收，即 test 的
+指向被改变 --&gt; test = Decorator(test)；
+最后执行 test() 时，test 指向类对象，因为类对象重写了 __call__()，所以其实执行的是
+__call__ 方法 --&gt; self.__func 指向原test 的函数体，self.__func() 执行的是被装饰
+函数 --&gt; 执行完毕。
+</code></pre><h2 id="元类"><a href="#元类" class="headerlink" title="元类"></a>元类</h2><pre><code>1. 类也是对象
+  如果类中有执行语句，python解释器加载类的过程，也是执行类的过程，类中的执行语句会被执行
+</code></pre><p><img src="http://i.imgur.com/5noUzSI.jpg" alt></p>
+<pre><code>2. 类可以动态创建
+  可以用函数动态创建类，返回值是类名，也即在调用函数的过程中，动态创建类，甚至根据不同的
+条件，创建不同的类。
+</code></pre><p><img src="http://i.imgur.com/OC4QU9x.jpg" alt></p>
+<pre><code>  但是，类在开发中属于一等公民，通常不会放在其他作用域中去创建。
+3. 创建类的另一种方式：type()
+  type() 可以查看一个数据的类型，也可以动态创建一个类；
+类型实际上也是一个类，比如，100 是 int 类型，100 其实是 int 创建的对象。
+type() 之所以会根据传入参数的不同、实现两种完全不同的功能，python 是为了兼容其他的版本。
+type(className, tuple, dict)：
+    className：创建的类名，是一个字符串；
+    tuple：由父类名组成的元组，如果没有继承，元组为空；
+    dict：包含属性的字典，key 必须是字符串；
+实例对象是由类创建的，类也是对象，类是由 type() 创建的，type() 就是元类；
+    1. 创建一个空类Test：Test = type(&quot;Test&quot;, (), {})；
+    2. 创建一个带有属性的类：Test = type(&quot;Test&quot;, (), {&quot;num&quot;:20})； num 是类属性；
+    3. 创建一个带有实例方法、类方法、静态方法的类：
+</code></pre><p><img src="http://i.imgur.com/oU9WiQq.jpg" alt></p>
+<pre><code>type(x) 与 x.__class__ 都可以查看数据的类型
+    p.__class__： __main__.Person
+        表示对象p 是当前模块中的类Person 创建的，__main__表示当前模块中；
+    Person.__class__：type，表示类Person 是元类type 创建的。
+</code></pre><h3 id="metaclass-属性"><a href="#metaclass-属性" class="headerlink" title="__metaclass__ 属性"></a>__metaclass__ 属性</h3><pre><code>__metaclass__ 属性用于决定在class 定义一个类时，谁创建这个类；也即，其属性值就是元类；
+class 定义一个类时，python解释器 __metaclass__ 属性的过程：
+    当前类中 --&gt; 父类中 --&gt; 内建模块中 --&gt; 使用python系统默认的 __metaclass__；
+__metaclass__ 属性的使用：
+</code></pre><p><img src="http://i.imgur.com/YptTQqH.jpg" alt></p>
+<h2 id="gc：垃圾回收"><a href="#gc：垃圾回收" class="headerlink" title="gc：垃圾回收"></a>gc：垃圾回收</h2><pre><code>python 的 gc 采用引用计数机制为主、隔(分)代回收机制为辅的策略；
+Python及时清理内存，保证了程序运行的效率。
+</code></pre><h3 id="小整数对象池-常量池"><a href="#小整数对象池-常量池" class="headerlink" title="小整数对象池(常量池)"></a>小整数对象池(常量池)</h3><pre><code>Python定义的小整数：[-5, 256]，这些整数对象是提前创建好的，不会被gc，常驻内存；
+重复创建小整数，使用的都是小整数对象池的整数：a=10，b=10，a和b的地址相同，a is b：True；
+同理，字母也是这样的：a=&apos;a&apos;，b=&apos;a&apos;，a和b的地址也是相同的；
+
+疑惑部分：
+    在.py文件中，只要是数值，不管整数和浮点数，地址都是相同的；字符串的地址也是相同；
+数值和字符串都是不可变类型，但不可变类型中的元组却不一样。
+</code></pre><h3 id="intern-机制"><a href="#intern-机制" class="headerlink" title="intern 机制"></a>intern 机制</h3><pre><code>字符串是不可变类型，对于纯字母组成的字符串，Python会开启 intern 机制，共享的该字符串；
+a=&quot;helloworld&quot;，b=&quot;helloworld&quot;，a和b的地址是一样的；
+当 &quot;helloworld&quot; 的引用计数为 0 时，就会触发gc。
+</code></pre><h3 id="引用计数机制"><a href="#引用计数机制" class="headerlink" title="引用计数机制"></a>引用计数机制</h3><pre><code>python的底层是C语言，CPython是C语言编写的Python解释器；
+gc 的引用计数机制的核心就是一个结构体：pyObject
+</code></pre><p><img src="http://i.imgur.com/Lm945XP.jpg" alt></p>
+<pre><code>引用计数为 0 时，就会触发 gc；
+查看一个对象的引用个数：import sys --&gt; sys.getrefcount(x)
+因为sys.getrefcount(x) 用形参接收对象的引用，所以返回的引用计数会比实际的引用计数多1个。
+</code></pre><h4 id="引用计数-1"><a href="#引用计数-1" class="headerlink" title="引用计数 +1"></a>引用计数 +1</h4><pre><code>1. 对象被创建：a = 10，引用计数+1
+2. 对象被引用：b = a，引用计数+1
+3. 对象被作为函数的参数：func(a)，引用计数+1
+4. 对象作为一个元素存入容器：list = [10, a]，引用计数+1
+</code></pre><h4 id="引用计数-1-1"><a href="#引用计数-1-1" class="headerlink" title="引用计数 -1"></a>引用计数 -1</h4><pre><code>1. del a
+2. 改变引用的指向：a = 20，a = None
+3. 离开其作用域，比如函数func执行结束，形参会被释放，引用计数-1
+4. 所在容器被销毁，或容器主动删除该对象元素，引用计数-1
+</code></pre><h3 id="隔-分-代回收"><a href="#隔-分-代回收" class="headerlink" title="隔(分)代回收"></a>隔(分)代回收</h3><pre><code>引用计数机制只能解决大部分垃圾回收，对于循环引用，引用计数始终不为0，也就无法触发gc；
+隔代回收机制可以解决循环引用的问题：
+    创建一个类对象或其他数据之后，python会使用一种不同的链表进行持续追踪，python内部的
+C代码将其称为零代Zero；
+    当达到某种程度时，零代链表会检测循环引用，对于存在循环引用的对象，Python会将其引用计
+数减1，并清理引用计数为0的对象，而没有被清理的对象会用另一条链表进行追踪，称为一代One；
+    当达到某种程度时，一代链表也会检测循环引用，对存在循环引用的对象，将其引用计数减1，
+并清理引用计数为0的对象，引用计数不为0的对象会再用一条链表进行追踪，称为二代Two；
+这就是Python的隔代回收机制。
+</code></pre><h3 id="gc-模块"><a href="#gc-模块" class="headerlink" title="gc 模块"></a>gc 模块</h3><pre><code>gc 是Python提供的一个模块，import gc 导入模块；
+Python 的 gc 默认是开启的；
+gc.isenable()：判断gc 是否开启，返回值为True 时，表示gc 是开启状态；
+gc.disable()：关闭gc；
+gc.enable()：开启gc；
+gc.collect()：手动立即执行垃圾回收；
+gc.garbage：获取清理的详细信息；
+gc.get_threshold()：返回一个元组(700, 10, 10)，元组的元素值表示隔代回收触发的条件；
+    700：表示已创建的对象减去已回收的对象，差值大于700时，就会触发清理零代链表；
+    10：表示每清理10次零代链表，就触发清理1次一代链表，同时再清理1次零代链表；
+    10：表示每清理10次一代链表，就触发清理1次而代链表，同时再清理1次一代和零代链表；
+gc.set_threshold(x1, x2, x3)：可以设置触发的频率；
+gc.get_count()：返回一个元组，包含3个元素，获取当前自动执行gc 的计数器；
+    元素1：已创建对象与已回收对象的差值，每次触发清理零代链表，其差值就会锐减；
+    元素2：清理一代链表的次数；
+    元素3：清理二代链表的次数。
+另外，类的 __del__(self) 方法，其实是用于清理这个类及其对象占用的内存，如果重写了 del
+方法，但是没有调用其父类的 del 方法清理内存，__del__ 方法就失去了清理类及其对象的功能，
+即使手动执行gc，也是无效的；
+所以，如果重写了 __del__(self) 方法，就必须调用父类的 __del__ 方法，完成内存的释放。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/生成器，迭代器，闭包，装饰器，元类，GC/" rel="tag"># 生成器，迭代器，闭包，装饰器，元类，GC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/28/python高级1/" rel="next" title="python高级1">
+                <i class="fa fa-chevron-left"></i> python高级1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/30/python多任务之进程/" rel="prev" title="python多任务之进程">
+                python多任务之进程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#生成器：generator"><span class="nav-number">1.</span> <span class="nav-text">生成器：generator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器：iterator"><span class="nav-number">2.</span> <span class="nav-text">迭代器：iterator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#闭包"><span class="nav-number">3.</span> <span class="nav-text">闭包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#装饰器"><span class="nav-number">4.</span> <span class="nav-text">装饰器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰器的原理"><span class="nav-number">4.1.</span> <span class="nav-text">装饰器的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰器的实现"><span class="nav-number">4.2.</span> <span class="nav-text">装饰器的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰器的执行时间"><span class="nav-number">4.3.</span> <span class="nav-text">装饰器的执行时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多个装饰器"><span class="nav-number">4.4.</span> <span class="nav-text">多个装饰器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有参数函数的装饰"><span class="nav-number">4.5.</span> <span class="nav-text">有参数函数的装饰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有返回值函数的装饰"><span class="nav-number">4.6.</span> <span class="nav-text">有返回值函数的装饰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通用装饰器"><span class="nav-number">4.7.</span> <span class="nav-text">通用装饰器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有参数的装饰器"><span class="nav-number">4.8.</span> <span class="nav-text">带有参数的装饰器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类装饰器"><span class="nav-number">4.9.</span> <span class="nav-text">类装饰器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#元类"><span class="nav-number">5.</span> <span class="nav-text">元类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#metaclass-属性"><span class="nav-number">5.1.</span> <span class="nav-text">__metaclass__ 属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gc：垃圾回收"><span class="nav-number">6.</span> <span class="nav-text">gc：垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#小整数对象池-常量池"><span class="nav-number">6.1.</span> <span class="nav-text">小整数对象池(常量池)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#intern-机制"><span class="nav-number">6.2.</span> <span class="nav-text">intern 机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引用计数机制"><span class="nav-number">6.3.</span> <span class="nav-text">引用计数机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#引用计数-1"><span class="nav-number">6.3.1.</span> <span class="nav-text">引用计数 +1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引用计数-1-1"><span class="nav-number">6.3.2.</span> <span class="nav-text">引用计数 -1</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔-分-代回收"><span class="nav-number">6.4.</span> <span class="nav-text">隔(分)代回收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gc-模块"><span class="nav-number">6.5.</span> <span class="nav-text">gc 模块</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

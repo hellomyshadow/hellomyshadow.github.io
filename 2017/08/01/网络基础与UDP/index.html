@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="网络基础，Socket，UDP，网络数据包,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="网络基础TCP/IP协议是进程间通信的一种规范； TCP/IP 协议是一个协议族，常用的网络协议：  五层划分：物理层、链路层、网络层、传输层、应用层； 七层划分：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。 端口端口：用于区分数据接收方的进程；      PID虽然也可以区分进程，但只适合同一台计算机，在不同的计算机上，很难获取对方的PID，      所以约定使用端口，系统会为">
+<meta name="keywords" content="网络基础，Socket，UDP，网络数据包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络基础与UDP">
+<meta property="og:url" content="http://yoursite.com/2017/08/01/网络基础与UDP/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="网络基础TCP/IP协议是进程间通信的一种规范； TCP/IP 协议是一个协议族，常用的网络协议：  五层划分：物理层、链路层、网络层、传输层、应用层； 七层划分：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。 端口端口：用于区分数据接收方的进程；      PID虽然也可以区分进程，但只适合同一台计算机，在不同的计算机上，很难获取对方的PID，      所以约定使用端口，系统会为">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/067loRu.jpg">
+<meta property="og:image" content="http://i.imgur.com/AlfHqjc.jpg">
+<meta property="og:image" content="http://i.imgur.com/3v8S80Y.jpg">
+<meta property="og:image" content="http://i.imgur.com/RMIZbKp.jpg">
+<meta property="og:image" content="http://i.imgur.com/3SPQJKj.jpg">
+<meta property="og:image" content="http://i.imgur.com/v35N4aP.jpg">
+<meta property="og:image" content="http://i.imgur.com/alrQze3.jpg">
+<meta property="og:image" content="http://i.imgur.com/UKZO5r0.jpg">
+<meta property="og:image" content="http://i.imgur.com/gbrpThl.jpg">
+<meta property="og:updated_time" content="2018-02-28T13:27:04.575Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络基础与UDP">
+<meta name="twitter:description" content="网络基础TCP/IP协议是进程间通信的一种规范； TCP/IP 协议是一个协议族，常用的网络协议：  五层划分：物理层、链路层、网络层、传输层、应用层； 七层划分：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。 端口端口：用于区分数据接收方的进程；      PID虽然也可以区分进程，但只适合同一台计算机，在不同的计算机上，很难获取对方的PID，      所以约定使用端口，系统会为">
+<meta name="twitter:image" content="http://i.imgur.com/067loRu.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/01/网络基础与UDP/">
+
+
+
+
+
+  <title>网络基础与UDP | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/01/网络基础与UDP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网络基础与UDP</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-01T00:00:00+08:00">
+                2017-08-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="网络基础"><a href="#网络基础" class="headerlink" title="网络基础"></a>网络基础</h2><h3 id="TCP-IP"><a href="#TCP-IP" class="headerlink" title="TCP/IP"></a>TCP/IP</h3><pre><code>协议是进程间通信的一种规范；
+TCP/IP 协议是一个协议族，常用的网络协议：
+</code></pre><p><img src="http://i.imgur.com/067loRu.jpg" alt></p>
+<pre><code>五层划分：物理层、链路层、网络层、传输层、应用层；
+七层划分：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。
+</code></pre><h3 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h3><pre><code>端口：用于区分数据接收方的进程；
+     PID虽然也可以区分进程，但只适合同一台计算机，在不同的计算机上，很难获取对方的PID，
+     所以约定使用端口，系统会为每个启动的进程分配唯一的端口。
+端口号：用于标记端口的整数，在Linux系统上，端口号的范围：0 ~ 65535，2的16次方个端口；
+    端口号又分为知名端口、动态端口等类别；
+    知名端口：固定分配给某些服务，不能随意使用，范围0 ~ 1023，80端口分配给HTTP服务，
+            21端口分配给FTP服务；
+            一般情况下，如果一个程序需要使用知名端口，需要有root权限。
+    动态端口：动态分配，不固定分配给某种服务，范围1024 ~ 65535。
+Linux系统，netstat -an：查看端口状态。
+</code></pre><h3 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h3><pre><code>IP地址：用于逻辑上标记一台唯一的计算机；
+IP地址分为A、B、C、D、E五大类；
+</code></pre><p><img src="http://i.imgur.com/AlfHqjc.jpg" alt></p>
+<pre><code>A类：由1个字节的网络地址和3个字节主机地址组成；
+    网络地址的最高位必须是0，所以IP地址范围：1.0.0.1 ~ 126.255.255.254；
+    也即，可用的A类网络有126个，每个网络能容纳1677214个主机；
+B类：由2个字节的网络地址和2个字节的主机地址组成；
+    网络地址的最高位必须是10，所以IP地址范围：128.1.0.1 ~ 191.255.255.254；
+    也即，可用的B类网络有16384个，每个网络能容纳65534个主机； 
+C类：由3个字节的网络地址和1个字节的主机地址组成；
+    网络地址的最高位必须是110，所以IP地址范围：192.0.1.1 ~ 223.255.255.254；
+    也即，C类网络有2097152个，每个网络能容纳254个主机；
+D类地址用于多点广播，第一个字节以1110开始，范围：224.0.0.1 ~ 239.255.255.254；
+    多点广播地址用于一次寻址一组计算机，比如视频会议；
+E类地址仅用作实验和开发，IPV6的出现，E类已经废了。
+
+1. 网络号相同的主机，表示在同一个网段；
+    1. 网络正常的情况下，同一网段的主机可以直接通信；
+    2. ping Ip：ping对方的Ip，测试网络是否正常。
+2. 同一个网段的IP地址不允许相同，否则会报IP地址冲突。
+3. 同一个网段，比如192.168.119，主机号 0 和 255 不允许使用；
+   因为192.168.119.0表示的就是网络号，192.168.119.255是广播地址；
+   所以，对于192.168.119网段，可用范围也就是：1 ~ 254。
+</code></pre><h4 id="私有IP"><a href="#私有IP" class="headerlink" title="私有IP"></a>私有IP</h4><pre><code>公有IP能访问全球网络；私有IP只能在局域网中进行通信，比如一个公司的内网，不能访问公网；
+    A类私有IP的范围：10.0.0.0 ~ 10.255.255.255
+    B类私有IP的范围：172.16.0.0 ~ 172.31.255.255
+    C类私有IP的范围：192.168.0.0 ~ 192.168.255.255
+</code></pre><h4 id="特殊IP"><a href="#特殊IP" class="headerlink" title="特殊IP"></a>特殊IP</h4><pre><code>127.0.0.1：回环地址，也代表本机地址，可用于回路测试；
+    ping 127.0.0.1：测试自身计算机上的网络协议是否正常；
+</code></pre><h3 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h3><pre><code>子网掩码必须配合Ip一起使用，否则没有任何作用；
+子网掩码的作用：与Ip按位与，得到主机的网络号，即判断两台主机是否在同一网段；
+A类Ip的默认子网掩码：255.255.255.0
+B类Ip的默认子网掩码：255.255.0.0
+C类Ip的默认子网掩码：255.0.0.0
+</code></pre><h3 id="网络通信的过程"><a href="#网络通信的过程" class="headerlink" title="网络通信的过程"></a>网络通信的过程</h3><p><img src="http://i.imgur.com/3v8S80Y.jpg" alt></p>
+<h2 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h2><pre><code>socket 是进程间通信的一种方式，它能实现不同主机上的进程间通信；
+Python提供了 socket 模块，用于实现socket通信；
+</code></pre><h3 id="创建socket对象"><a href="#创建socket对象" class="headerlink" title="创建socket对象"></a>创建socket对象</h3><pre><code>socket(Address, Type)：返回创建的套接字对象；
+    Address：通信类型，AF_INET 与 AF_UNIX；
+        AF_INET：用于IPV4 Internet进程间的通信；
+        AF_UNIX：用于同一台主机上的进程间通信。
+    Type：套接字类型，SOCK_STREAM 与 SOCK_DGRAM；
+        SOCK_STREAM：流式套接字，用于TCP协议通信；
+        SOCK_DGRAM：数据报套接字，用于UDP协议通信。
+UDP和TCP都是全双工，即发送消息的同时，也可以接收消息。
+</code></pre><h3 id="udp-socket"><a href="#udp-socket" class="headerlink" title="udp socket"></a>udp socket</h3><pre><code>UDP：用户数据报协议，无连接的、面向数据报的传输层协议，没有超时重发等机制，传输速度快，
+    但不可靠；
+应用：语音广播，视频，TFTP(简单文件传输)，SNMP(简单网络管理协议)，RIP(路由信息协议)...
+</code></pre><p><img src="http://i.imgur.com/RMIZbKp.jpg" alt></p>
+<pre><code>from socket import *
+1. 创建 UDP Socket 对象
+   socket(AF_INET, SOCK_DGRAM)
+2. 关闭socket： close()
+3. 发送数据
+sendto(data, [flags], address)
+    data：要发送的数据，数据大小必须在64KB之内；python2可以直接发送字符串类型，
+          python3必须是bytes类型(b&quot;hello&quot;：字符串转bytes)，或者对字符串编码；
+    address：一个元组(Ip, port)，指定接收方的IP地址(字符串)和端口号(int)。
+4. 接收数据
+recvfrom(buffersize, [flags])：会阻塞，等待接收消息；
+        buffersize：指定一次接收数据的最大字节数，常用1024个字节；
+        返回一个元组(data, (Ip, port))：
+            data：接收的字符串数据，如果是乱码，则需要解码；
+            (Ip, port)：发送方的Ip和端口号，通过该Ip和port向对方回复消息。
+5. 编码与解码
+    1. str.encode(&quot;utf-8&quot;)：对字符串str编码成国际通用的utf-8格式；
+    2. str.decode(&quot;utf-8&quot;)：按照utf-8对字符串str进行解码；
+    3. 中文常用码表：gb2312
+</code></pre><p><img src="http://i.imgur.com/3SPQJKj.jpg" alt></p>
+<h3 id="udp-绑定端口"><a href="#udp-绑定端口" class="headerlink" title="udp 绑定端口"></a>udp 绑定端口</h3><pre><code>1. 在同一个系统中，端口不能重复使用，因为端口用于标识一个进程，其他主机上的进程必须获取
+   该端口的端口号，才能向该进程发送消息；
+2. 一个程序每次运行，系统分配的端口是不固定的，也即每次的端口号都在变化；对于一个服务器
+   程序，往往需要固定的端口号，以便于接受终端发来的消息；所以，服务性程序需要绑定端口；
+   绑定之后，每次程序启动，操作系统都会为其分配固定的端口号。
+3. 一个网卡就对应一个Ip地址，如果一台计算机上配置了有线网卡和虚拟网卡，就会有多个Ip；
+   如果有线网卡和虚拟网卡同时连接网络，网络中会路由选择网速更优的一方连接。
+3. 绑定端口
+bind(addr)
+     addr：是一个元组(Ip, port)，Ip一般不指定(空字符串)，表示本机的任何一个Ip；
+绑定端口必须放在socket发送/接收消息之前。
+</code></pre><h3 id="udp-广播"><a href="#udp-广播" class="headerlink" title="udp 广播"></a>udp 广播</h3><pre><code>网络节点之间的通信方式：
+    单播：点对点；    多播：一对多；    广播：一对所有；
+
+setsockopt(SOL_SOCKET, SO_BROADCAST, 1)：设置当前socket对象允许发送广播数据；
+
+sendto()发送的Ip必须设置为广播地址，比如 192.168.1.255，网段在192.168.1以内的主机，只要
+监听sendto()使用的port，都可以收到广播数据；如果没有监听，即没有进程使用该port，广播数据只
+传输到网络层，在运输层判断到主机中没有任何进程使用该端口，就会丢弃该广播数据；
+但是对于其他网段的主机，也就收不到数据了，更通用的方式是，把Ip设置为：&quot;&lt;broadcast&gt;&quot;
+</code></pre><h3 id="echo服务器"><a href="#echo服务器" class="headerlink" title="echo服务器"></a>echo服务器</h3><pre><code>核心逻辑：接收到数据之后，原封不动地回给发送方；
+</code></pre><p><img src="http://i.imgur.com/v35N4aP.jpg" alt></p>
+<h2 id="TFTP"><a href="#TFTP" class="headerlink" title="TFTP"></a>TFTP</h2><pre><code>TFTP：简单文件传输协议，一种基于UDP协议的应用，C/S架构；
+1. 简单，占用资源小；
+2. 适合在局域网中进行小文件传输；
+3. 端口号默认为69
+</code></pre><h3 id="TFTP的交互过程"><a href="#TFTP的交互过程" class="headerlink" title="TFTP的交互过程"></a>TFTP的交互过程</h3><p><img src="http://i.imgur.com/alrQze3.jpg" alt></p>
+<pre><code>1. TFTP服务器默认监听的端口号是69，TFTP客户端通过69端口发起读写(上传与下载)请求；
+2. UDP是不安全的，如果客户端接收到数据包，会回复给服务器一个应答包(ACK)；
+3. 如果文件过大，服务器会分批传输，每一个数据包设置一个编号，编号从1开始；
+   接收的数据包可能会重复，对于编号相同的数据包，应该舍弃；
+4. 如果传输错误，比如文件不存在，服务器会发送一个包含错误信息的差错包；
+5. 为了区分不同的数据包，在数据包的前面会带有操作码：
+</code></pre><p><img src="http://i.imgur.com/UKZO5r0.jpg" alt></p>
+<h3 id="TFTP的数据包"><a href="#TFTP的数据包" class="headerlink" title="TFTP的数据包"></a>TFTP的数据包</h3><p><img src="http://i.imgur.com/gbrpThl.jpg" alt></p>
+<pre><code>1. 数据包最前面是操作码，占2个字节；
+2. 请求数据包的模式：octet
+3. 0 表示终止，占1个字节；
+4. 数据包的块编号就是数据包的编号，占2个字节，最大编号是65535；
+   如果文件过大，致使编号大于2个字节，即 编号==65536 时，数据包会从0开始编号；
+5. 数据包中的数据内容最多占512个字节，当数据内容的长度小于512B时，表示传输完成；
+6. ACK是应答包，回复确认已收到数据包，块编号表示当前收到的数据包编号，也是占2个字节；
+   服务器收到ACK之后，继续发送下一个数据包；
+7. ERROR是差错包，差错码表示错误类型，占2个字节；收到差错包，不需要回复ACK；
+8. TFTP是基于UDP协议，数据包的发送和接收通过udp socket完成；对于TFTP下载，socket发送读请
+   求到69端口，TFTP服务器响应发送第一个数据包，TFTP终端接收到数据包，如果编号为1，表示响应
+   成功，可以创建文件，开始解析数据包，执行写操作。
+
+注意：69端口是TFTP客户端向TFTP服务器发送读写请求的端口，而服务器发送数据包使用的是一个新
+    的随机端口，回复ACK时，也必须发送给该随机端口，否则无效。
+
+传输完成的标识
+    一个完整的数据包：操作码2B + 块编号2B + 数据内容512B = 516B
+   当操作码为3、且数据包的字节长度小于516B时，表示数据传输完成：len(data) &lt; 516
+</code></pre><h3 id="组包与解包"><a href="#组包与解包" class="headerlink" title="组包与解包"></a>组包与解包</h3><pre><code>struct 模块：
+    1. 组包：设置数据占用的字节数，将各个数据组织成协议规定的网络数据包；
+    2. 解包：解析接收到的网络数据包，拆出各个数据。
+</code></pre><h4 id="大端与小端"><a href="#大端与小端" class="headerlink" title="大端与小端"></a>大端与小端</h4><pre><code>大端与小端：CUP在内存中存储数据的模式；比如十六进制数据 0x11223344
+1. 大端模式
+    低地址---&gt;高地址：0x11 0x22 0x33 0x44，低地址存储数据的高位
+2. 小端模式
+    低地址---&gt;高地址：0x44 0x33 0x22 0x11，低地址存储数据的低位
+
+在存储同一个数据时，对于不同的CPU，有的先存储数据的高位(小端)，有的先存储数据的低位(大端)；
+个人PC一般是小端，大型服务器如IBM 一般是大端；
+所以，在网络协议中规定，对于多字节数据，在网络上发送时，必须转为大端模式。
+</code></pre><h4 id="组包"><a href="#组包" class="headerlink" title="组包"></a>组包</h4><pre><code>pack()：组包，返回一个字符串
+    pack(&quot;!H8sb5sb&quot;, 1, &quot;test.jpg&quot;, 0, &quot;octet&quot;, 0)：组一个TFTP请求下载的数据包；
+        !：大端模式组织数据；
+        H：表示占2个字节，存储的数据是操作码 1；
+        s：表示占1个字节，8s 表示占8个字节，存储数据&quot;test.jpg&quot;，8个字符占8个字节；
+           同理，5s 表示占5个字节，存储数据&quot;octet&quot;，5个字符占5个字节；
+        b：表示占1个字节，存储的数据是 0。
+</code></pre><h4 id="解包"><a href="#解包" class="headerlink" title="解包"></a>解包</h4><pre><code>unpack()：解包，返回一个元组
+    unpack(&quot;!H&quot;, data[:2])：
+        !：大端模式解包；
+        H：data[:2]返回data的前两个字符，python中的字符用1个字节存储，H 表示对这两个字符
+           按照2个字节解析成一个数据；也即，获取数据包的操作码。
+    unpack(&quot;!HH&quot;, data[:4])：
+            data[:4]返回4个字符，HH 表示每两个字符按照2个字节拆出一个数据；
+            如果是数据包，获取的是操作码和块编号；如果是差错包，则是操作码和错误码。
+
+数据包中的数据内容data[4:]，以及差错包中的差错信息，都是有效内容，不需要unpack解包。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络基础，Socket，UDP，网络数据包/" rel="tag"># 网络基础，Socket，UDP，网络数据包</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/31/python多任务之线程/" rel="next" title="python多任务之线程">
+                <i class="fa fa-chevron-left"></i> python多任务之线程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/02/TCP与网络通信过程/" rel="prev" title="TCP与网络通信过程">
+                TCP与网络通信过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络基础"><span class="nav-number">1.</span> <span class="nav-text">网络基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-IP"><span class="nav-number">1.1.</span> <span class="nav-text">TCP/IP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#端口"><span class="nav-number">1.2.</span> <span class="nav-text">端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IP地址"><span class="nav-number">1.3.</span> <span class="nav-text">IP地址</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#私有IP"><span class="nav-number">1.3.1.</span> <span class="nav-text">私有IP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特殊IP"><span class="nav-number">1.3.2.</span> <span class="nav-text">特殊IP</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子网掩码"><span class="nav-number">1.4.</span> <span class="nav-text">子网掩码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络通信的过程"><span class="nav-number">1.5.</span> <span class="nav-text">网络通信的过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Socket"><span class="nav-number">2.</span> <span class="nav-text">Socket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建socket对象"><span class="nav-number">2.1.</span> <span class="nav-text">创建socket对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#udp-socket"><span class="nav-number">2.2.</span> <span class="nav-text">udp socket</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#udp-绑定端口"><span class="nav-number">2.3.</span> <span class="nav-text">udp 绑定端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#udp-广播"><span class="nav-number">2.4.</span> <span class="nav-text">udp 广播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#echo服务器"><span class="nav-number">2.5.</span> <span class="nav-text">echo服务器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TFTP"><span class="nav-number">3.</span> <span class="nav-text">TFTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TFTP的交互过程"><span class="nav-number">3.1.</span> <span class="nav-text">TFTP的交互过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TFTP的数据包"><span class="nav-number">3.2.</span> <span class="nav-text">TFTP的数据包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组包与解包"><span class="nav-number">3.3.</span> <span class="nav-text">组包与解包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#大端与小端"><span class="nav-number">3.3.1.</span> <span class="nav-text">大端与小端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#组包"><span class="nav-number">3.3.2.</span> <span class="nav-text">组包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解包"><span class="nav-number">3.3.3.</span> <span class="nav-text">解包</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

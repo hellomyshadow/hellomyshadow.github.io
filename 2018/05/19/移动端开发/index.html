@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="移动端,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="视口视口是移动设备用于显示网页的区域，一般会比移动设备的可视区域大，宽度可能是980px或1024px； 目的是为了显示整个为PC端设计的网页，这样在移动端会出现横向滚动条；为了避免滚动条，移动端会 将视口缩放到移动端窗口的大小。 缩放后的网页在移动设备上不易观看，使用&amp;lt;meta/&amp;gt;标签，让视口兼容移动设备可视区的大小。 &amp;lt;meta name=&amp;quot;viewport&amp;quo">
+<meta name="keywords" content="移动端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端开发">
+<meta property="og:url" content="http://yoursite.com/2018/05/19/移动端开发/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="视口视口是移动设备用于显示网页的区域，一般会比移动设备的可视区域大，宽度可能是980px或1024px； 目的是为了显示整个为PC端设计的网页，这样在移动端会出现横向滚动条；为了避免滚动条，移动端会 将视口缩放到移动端窗口的大小。 缩放后的网页在移动设备上不易观看，使用&amp;lt;meta/&amp;gt;标签，让视口兼容移动设备可视区的大小。 &amp;lt;meta name=&amp;quot;viewport&amp;quo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/nmV4fIB.jpg">
+<meta property="og:updated_time" content="2018-08-29T22:42:33.213Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端开发">
+<meta name="twitter:description" content="视口视口是移动设备用于显示网页的区域，一般会比移动设备的可视区域大，宽度可能是980px或1024px； 目的是为了显示整个为PC端设计的网页，这样在移动端会出现横向滚动条；为了避免滚动条，移动端会 将视口缩放到移动端窗口的大小。 缩放后的网页在移动设备上不易观看，使用&amp;lt;meta/&amp;gt;标签，让视口兼容移动设备可视区的大小。 &amp;lt;meta name=&amp;quot;viewport&amp;quo">
+<meta name="twitter:image" content="https://i.imgur.com/nmV4fIB.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/19/移动端开发/">
+
+
+
+
+
+  <title>移动端开发 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/19/移动端开发/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">移动端开发</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-19T00:00:00+08:00">
+                2018-05-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="视口"><a href="#视口" class="headerlink" title="视口"></a>视口</h2><pre><code>视口是移动设备用于显示网页的区域，一般会比移动设备的可视区域大，宽度可能是980px或1024px；
+目的是为了显示整个为PC端设计的网页，这样在移动端会出现横向滚动条；为了避免滚动条，移动端会
+将视口缩放到移动端窗口的大小。
+缩放后的网页在移动设备上不易观看，使用&lt;meta/&gt;标签，让视口兼容移动设备可视区的大小。
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, user-scalable=no,
+    initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0&quot; /&gt;
+1. viewport：视口；
+2. width=device-width：设置视口的宽度等于设备的宽度；
+3. user-scalable=no：不允许用户缩放；
+4. initial-scale=1.0：设置初始缩放；
+5. maximum-scale=1.0, minimum-scale=1.0：兼容浏览器。
+6. 在&lt;head&gt;中生成的快捷键：meta:vp + tab键
+</code></pre><h2 id="屏幕适配"><a href="#屏幕适配" class="headerlink" title="屏幕适配"></a>屏幕适配</h2><pre><code>视网膜屏幕：物理像素密度更高的屏幕，常见有2倍和3倍的视网膜屏幕，其物理像素点更小；
+图像在视网膜屏和一般屏幕上显示的大小一样时，由于视网膜屏的物理像素点比一般屏幕小，图像就会
+变得模糊；
+解决方式：使用大一倍的图像，再用CSS强制设置图像的尺寸；
+1. background-size：设置背景图像的大小；
+    1. background-size: 500px 500px; --&gt; 设置背景图的宽高px；
+    2. background-size: 100% 100%; --&gt; 百分比设置背景图的宽高，100%表示完全填充容器；
+    3. auto：使用背景图的真实大小；
+    4. cover：等比缩放到完全覆盖容器，背景图的宽度/高度可能超出容器；
+    5. contain：等比缩放到与容器的宽度/高度相等，保证背景图始终被包含在容器内。
+2. 标签的宽高不会影响到背景图的大小，通常会把使用标签的宽高设置的大一些，避免裁剪到背景图。
+</code></pre><h3 id="布局"><a href="#布局" class="headerlink" title="布局"></a>布局</h3><pre><code>1. 全适配：流体布局+响应式布局，适配PC端、平板、手机；
+2. 移动端适配：流体布局+少量响应式，基于rem的布局，弹性盒模型；
+3. 屏幕适配必须设置 &lt;meta name=&quot;viewport&quot; ... /&gt; 才有效；
+4. 对于iPhone的设计图的尺寸，如果是2倍图，所有尺寸应该先除以2才是真实的px尺寸。
+</code></pre><h3 id="流体布局"><a href="#流体布局" class="headerlink" title="流体布局"></a>流体布局</h3><pre><code>原理：用百分比设置标签的宽度width，比如 width:25%; 而height仍使用实际高度的固定值。
+1. 盒子的边线无法用百分比
+    1. 使用计算函数 calc() 设置宽度width，比如 2px的border：width:calc(25% - 4px);
+    1. calc()中的运算符两边必须保证有一个空格，否则无效；
+    2. 使用属性 box-sizing 将盒子设置为从边线计算盒子尺寸。
+2. box-sizing
+    1. content-box：默认的盒子尺寸计算方式；
+    2. border-box：设置盒子的尺寸计算方式为从边框开始，width+border+padding
+</code></pre><h3 id="响应式布局"><a href="#响应式布局" class="headerlink" title="响应式布局"></a>响应式布局</h3><pre><code>原理：使用媒体查询的方式，通过查询浏览器窗口的宽度，对不同的宽度应用不同的样式块，
+    每个样式块对应的是该宽度下的布局方式，从而实现响应式布局。
+1. 实际上就是根据宽度/高度的改变，动态修改CSS样式的属性，以达到适配多种终端屏幕；
+2. @media only screen and (max-width: 500px) { .box li{ width:50%; } }
+    1. 当屏幕宽度width&lt;=500px时，&lt;li&gt;盒子的宽度设置为父标签宽度的50%；
+    2. @media only screen and (min-width: 100px) and (max-width: 640px) { ... }
+</code></pre><h3 id="rem布局"><a href="#rem布局" class="headerlink" title="rem布局"></a>rem布局</h3><pre><code>1. em：以标签自身的文字大小font-size为参考，设置该标签的尺寸；
+    1. 比如 font-size:20px; 时，width:200px; --&gt; width:10em;
+    2. em 单位只对当前的标签有效，对其他标签是无效的。
+2. rem：以根节点&lt;html&gt;的文字大小font-size为参照，设置标签的尺寸；
+    1. &lt;html style=&quot;font-size: 20px;&quot;&gt;
+    2. div{ width:400px; height:200px } --&gt; div{ width:20rem; height:10rem }
+    3. rem 单位对整个HTML都有效，在浏览器窗口大小变化时，就可以通过JS获取窗口的大小，
+       并重新设置&lt;html&gt;的font-size，从而动态改变每个标签的 width、height、margin、
+       padding... 达到适配不同屏幕的效果。
+    4. 为了避免影响阅读效果，字体大小font-size仍使用px，部分字体使用响应式布局。
+3. 监听页面宽度width的变化，动态修改&lt;html&gt;上的style.font-size属性值：
+</code></pre><p><img src="https://i.imgur.com/nmV4fIB.jpg" alt></p>
+<pre><code>4. innerWidth、clientWidth：前者是window对象的属性，后者是DOM对象的属性；
+    1. innerWidth：窗口的文档显示区(body)的宽度，不支持IE9以下的IE浏览器；
+    2. document.documentElement/document.body的clientWidth取代了innerWidth.
+</code></pre><h3 id="弹性盒模型布局"><a href="#弹性盒模型布局" class="headerlink" title="弹性盒模型布局"></a>弹性盒模型布局</h3><pre><code>1. 容器属性，比如&lt;ul&gt;&lt;/ul&gt;
+    1. display: flex; --&gt; 声明使用弹性盒布局；
+    2. flex-direction：子元素的排列方向；
+        1. row/row-reverse：子元素水平靠左排列/靠右倒序排列，row是默认属性值；
+        2. column/column-reverse：垂直方向排列。
+    3. flex-wrap：子元素超过父容器尺寸时是否换行；
+        1. nowrap：默认值，不换行，对子元素进行缩放；
+        2. wrap/wrap-reverse：换行/换行反向排列；
+    4. flex-flow: flex-direction的属性值 | flex-wrap的属性值 --&gt; 同时设置；
+    5. justify-content：多个子元素在水平方向上的分布方式；
+        1. flex-start/flex-end：子元素整体靠左/右；
+        2. center：水平居中；
+        3. space-between：第一个/最后一个子元素分别靠左/右顶格，中间的子元素等分间距；
+        4. space-around：第一个子元素靠左的间距和最后一个子元素靠右的间距，是中间子元素
+        间距的一半，中间的子元素等分间距。
+    6. align-items：多个子元素在垂直方向上的分布方式；
+        1. flex-start/flex-end：子元素整体靠上/靠下；
+        2. center：垂直居中；
+        3. baseline：子元素内的文字底部对齐，如果文字大小不一致，子元素底部会对不齐；
+        4. stretch：如果子元素不设置高度，其高度会被拉伸到与父容器的高度一致。
+    7. align-content：设置多行子元素在行方向上的对其方式；
+        1. flex-start/flex-end：每一行的子元素整体靠上/靠下；
+        2. center：多行子元素整体居中；
+        3. space-between：第一行/最后一行子元素分别靠上/下顶格，中间行元素等分间距；
+        4. space-around：第一行子元素到上面的距离和最后一行子元素到下面的距离，是中间
+        行元素间距的一半，中间行元素等分间距。
+2. 条目属性，比如&lt;li /&gt;
+    1. flex-grow：表示当父容器有多余空间时，这些空间在每个子标签之间的分配比例；
+        1. 类似于权重，比如flex-grow: 1; --&gt; 如果&lt;li /&gt;是水平排列、且&lt;ul&gt;仍有多余空间，
+        则每个&lt;li /&gt;会增大相同比例的宽度，平分&lt;ul&gt;的空间；
+        2. 如果某个&lt;li /&gt;的flex-grow: 2; --&gt; 该&lt;li /&gt;的宽度会增长更多；
+        3. 只有使用了flex-grow属性的标签才会被分配增长空间。
+    2. flex-shrink：表示当父容器的空间不足、且不换行时，各个子标签的尺寸缩小比例；
+    3. 父容器的空间不足时，flex-shrink设置缩小比例，此时设置flex-grow是无效的；
+    4. flex-basis：设置弹性条目标签的初始尺寸，弹性布局的基数；
+        1. flex-grow在平分父容器的多余空间时，增长基数默认是相同的；
+        2. flex-basis:20px; --&gt; 设置该标签的增长基数为20px。
+    5. align-self：复写父容器设置的对齐方式，即复写父容器的align-items属性；
+    6. order：重置标签在父容器中的排列位置，类似于修改数组的角标。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/移动端/" rel="tag"># 移动端</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/15/图片格式/" rel="next" title="图片格式">
+                <i class="fa fa-chevron-left"></i> 图片格式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/01/JS-基础/" rel="prev" title="JS-基础">
+                JS-基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#视口"><span class="nav-number">1.</span> <span class="nav-text">视口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#屏幕适配"><span class="nav-number">2.</span> <span class="nav-text">屏幕适配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#布局"><span class="nav-number">2.1.</span> <span class="nav-text">布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流体布局"><span class="nav-number">2.2.</span> <span class="nav-text">流体布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应式布局"><span class="nav-number">2.3.</span> <span class="nav-text">响应式布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rem布局"><span class="nav-number">2.4.</span> <span class="nav-text">rem布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#弹性盒模型布局"><span class="nav-number">2.5.</span> <span class="nav-text">弹性盒模型布局</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

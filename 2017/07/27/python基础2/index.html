@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="函数，文件操作，面向对象，异常处理，模块基础,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="函数1. 定义：def 函数名() 2. return：     1. 连续执行多个return，并没有语法错误，但只会执行第一个return；     2. return a, b, c：abc会被封装成元组后再返回，相当于 return (a, b, c)；     3. 将没有返回值的函数赋值给一个变量，变量值为None。 全局变量与局部变量1. 全局变量定义在函数外部；局部变量定义在函数内">
+<meta name="keywords" content="函数，文件操作，面向对象，异常处理，模块基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python基础2">
+<meta property="og:url" content="http://yoursite.com/2017/07/27/python基础2/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="函数1. 定义：def 函数名() 2. return：     1. 连续执行多个return，并没有语法错误，但只会执行第一个return；     2. return a, b, c：abc会被封装成元组后再返回，相当于 return (a, b, c)；     3. 将没有返回值的函数赋值给一个变量，变量值为None。 全局变量与局部变量1. 全局变量定义在函数外部；局部变量定义在函数内">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i.imgur.com/KmEQG11.jpg">
+<meta property="og:image" content="http://i.imgur.com/m216UHZ.jpg">
+<meta property="og:image" content="http://i.imgur.com/oIv1rIZ.jpg">
+<meta property="og:image" content="http://i.imgur.com/THg5fmv.png">
+<meta property="og:image" content="http://i.imgur.com/GM7Iheu.jpg">
+<meta property="og:image" content="http://i.imgur.com/54PV3Wp.png">
+<meta property="og:image" content="http://i.imgur.com/mbmQrS6.png">
+<meta property="og:image" content="http://i.imgur.com/Ryy0m6J.png">
+<meta property="og:image" content="http://i.imgur.com/WkDaqdW.jpg">
+<meta property="og:image" content="http://i.imgur.com/vvetpC4.png">
+<meta property="og:image" content="http://i.imgur.com/dqC7CD1.png">
+<meta property="og:image" content="http://i.imgur.com/7naQEBy.png">
+<meta property="og:image" content="http://i.imgur.com/FghXJJs.png">
+<meta property="og:image" content="http://i.imgur.com/GgGmLgx.png">
+<meta property="og:image" content="http://i.imgur.com/jDKSxnV.png">
+<meta property="og:image" content="http://i.imgur.com/4sGLX2O.png">
+<meta property="og:updated_time" content="2018-05-30T14:31:56.217Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python基础2">
+<meta name="twitter:description" content="函数1. 定义：def 函数名() 2. return：     1. 连续执行多个return，并没有语法错误，但只会执行第一个return；     2. return a, b, c：abc会被封装成元组后再返回，相当于 return (a, b, c)；     3. 将没有返回值的函数赋值给一个变量，变量值为None。 全局变量与局部变量1. 全局变量定义在函数外部；局部变量定义在函数内">
+<meta name="twitter:image" content="http://i.imgur.com/KmEQG11.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/27/python基础2/">
+
+
+
+
+
+  <title>python基础2 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/27/python基础2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python基础2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-27T00:00:00+08:00">
+                2017-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><pre><code>1. 定义：def 函数名()
+2. return：
+    1. 连续执行多个return，并没有语法错误，但只会执行第一个return；
+    2. return a, b, c：abc会被封装成元组后再返回，相当于 return (a, b, c)；
+    3. 将没有返回值的函数赋值给一个变量，变量值为None。
+</code></pre><h3 id="全局变量与局部变量"><a href="#全局变量与局部变量" class="headerlink" title="全局变量与局部变量"></a>全局变量与局部变量</h3><pre><code>1. 全局变量定义在函数外部；局部变量定义在函数内部，作用域只限于该函数；
+2. global：
+    1. 在函数内部修改全局变量，必须先用 global 声明，否则只不过是在定义一个与全局变量同名
+    的局部变量，修改变量值，对全局变量无效；
+    2. 列表、字典：可以不用 global 声明，在函数中可以直接修改，作为实参传递的方式也可以修改，
+    但是也只限于修改，不能重新定义(赋值)，否则，如果不用 global 声明，仍然是局部变量；
+    3. 全局变量定义的位置：如果函数中使用了全局变量，则该全局变量必须在函数调用之前定义；
+    4. 为了区分全局变量和局部变量，通常全局变量名的前几个字符使用统一风格
+    比如 g_name，g_age，g_height；
+    5. Python检索局部变量的速度比检索全局变量快，也即尽量少用 global 关键字。
+</code></pre><h3 id="复合赋值运算符的特性"><a href="#复合赋值运算符的特性" class="headerlink" title="复合赋值运算符的特性"></a>复合赋值运算符的特性</h3><p><img src="http://i.imgur.com/KmEQG11.jpg" alt></p>
+<pre><code>在接收到一个实参时，系统会检查该参数是不是可变类型；
+如果是不可变类型，“ x += x ” 其实是定义局部变量x，如果是可变类型，则会修改参数本身；
+而 “ x = x + x ” 其实是在定义局部变量，并不会改变实参的值。
+</code></pre><h3 id="函数的文档说明"><a href="#函数的文档说明" class="headerlink" title="函数的文档说明"></a>函数的文档说明</h3><pre><code>1. 在函数体内，第一行使用多行注释对函数的功能进行说明，就可以定义函数的文档；
+2. 在交互模式下，help(函数名)，可以查看函数的文档说明。
+</code></pre><h3 id="缺省参数"><a href="#缺省参数" class="headerlink" title="缺省参数"></a>缺省参数</h3><pre><code>1. 定义函数时，被赋值的形参：def test(a, b = 20)，又称为默认参数；
+2. 缺省参数必须放在形参的最后位置，形参a称为位置参数；
+3. 调用函数时，如果缺省参数没有传递实参，则使用缺省参数的默认值；
+4. 多个缺省参数时，给指定的缺省参数传递实参，要指定缺省参数名
+    1. 定义：def test(a, b = 20, c = 30)
+    2. 调用：test(5, c = 100) ---&gt; a：5，b：20，c：100，此时，参数c 称为命名参数；
+    3. 一般参数也可以使用命名参数：test(a = 50, c = 100)
+5. 默认参数必须指向不可变对象，而不能是列表等可变对象，否则在使用时会有bug。
+</code></pre><h3 id="不定长参数"><a href="#不定长参数" class="headerlink" title="不定长参数"></a>不定长参数</h3><pre><code>1. 定义1：def test(a, b, *args)，args：接收多余的、没有命名的实参，并返回一个元组；
+2. 定义2：def test(a, b=10, *args, **kwargs)
+    1. kwargs：称为关键字参数，接收多余的、带名字的实参，并返回一个字典；
+    2. test(3, 4, 5, 6, task=99, done=89) ---&gt; a：3，b：4
+    --&gt; args：(5, 6)，kwargs：{ &quot;task&quot;: 99, &quot;done&quot;: 89 }
+3. 定义3：def test(a, b, *, name, age)，def test(a, b, *args, name, age)
+    1. *和*args后的参数称为命名关键字参数，用于限制可传递的关键字参数；
+    2. 调用时也必须指定命名关键字参数名：test(1, 2, name=&apos;Jack&apos;, age=20)
+    3. 命名关键字参数也可以使用缺省值：def test(a, b, *, name=&apos;Mack&apos;, age=20)
+</code></pre><h3 id="拆包"><a href="#拆包" class="headerlink" title="拆包"></a>拆包</h3><pre><code>A = (12, 13, 15)，B = {&apos;name&apos;:&apos;Mack&apos;, &apos;age&apos;:20}
+在传递实参时，在元组名前加&quot;*&quot;，在字典名前加&quot;**&quot;，就会传递给对应的args和kwargs，
+即拆包：test(3, 4, *A, **B)，如果不拆包，A和B会作为整体被传递给args。
+1. 拆包之后，参数的实际形式为：test(3, 4, 12, 13, 15, name=&quot;Make&quot;, age=20)，
+    这样才会把12、13、15存入args，把name、age存入kwargs。
+2. kwargs实际是拷贝了一份B，在函数内更改kwargs的元素，并不会影响B。
+</code></pre><h3 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h3><pre><code>1. lambda表达式可以定义小型匿名函数
+</code></pre><p><img src="http://i.imgur.com/m216UHZ.jpg" alt></p>
+<pre><code>冒号前的参数是函数的形参，冒号后面其实是函数 return 的返回值；
+在ASCII表中，每个字母对应的都有数值，按照 name 排序，其实就是按照字母的大小排序。
+2. 函数可以接收函数作为参数：
+</code></pre><p><img src="http://i.imgur.com/oIv1rIZ.jpg" alt></p>
+<pre><code>3. python是动态语言，可以在程序的运行中，再输入传递的实参
+</code></pre><p><img src="http://i.imgur.com/THg5fmv.png" alt></p>
+<pre><code>eval(str)：将字符串转化为有效的表达式。
+</code></pre><h2 id="eval-str"><a href="#eval-str" class="headerlink" title="eval(str)"></a>eval(str)</h2><pre><code>eval(str)：作用是把字符串的标识(双引号)去掉，恢复数据本身的含义；
+1. eval(&quot;1+2&quot;) --&gt; 1+2 --&gt; 3；
+2. eval(&quot;lambda x,y:x+y&quot;) --&gt; 返回一个lambda表达式；
+3. l = [1, 2, 3] --&gt; sl = str(list) --&gt; 恢复为列表：eval(sl)
+</code></pre><h2 id="不可变类型"><a href="#不可变类型" class="headerlink" title="不可变类型"></a>不可变类型</h2><pre><code>1. 数值本身；
+2. 字符串：name = &quot;Hello&quot;，name[0] = &quot;w&quot; 会报异常；
+3. 元组：tuple = (10, 20)，tuple[0] = &quot;30&quot; 会报异常。
+</code></pre><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><pre><code>1. a = 10，b = a ：在Python中，“ a=10 ”并不是在赋值，而是让a指向“10”所在的内存地址，
+   “ b=a ” 使 a 和 b 指向同一个内存地址，变量a 和变量b 都是引用；
+2. 没有任何引用指向的内存地址，Python会自动清理；
+3. id(变量)：查询变量所指向的地址；
+4. del a：删除变量a，并解除变量a 对数据“ 10 ”的引用；当没有任何变量指向数据“ 10 ” 时，
+   python就会清理“ 10 ”所占用的内存。
+</code></pre><h2 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h2><pre><code>1. open(文件名, 模式)：打开文件
+    1. open() 返回一个文件对象，不显式声明模式，默认只读；
+    2. Linux中并不强调文件的扩展名，有些文件为了避免直接被编辑器打开，通常自定义后缀名；
+    3. 文件名支持相对路径和绝对路径：open(&quot;../a.txt&quot;, &quot;w&quot;)，在上一层路径下创建文件a.txt；
+    4. 模式说明：
+</code></pre><p><img src="http://i.imgur.com/GM7Iheu.jpg" alt></p>
+<pre><code>    5. r 与 w 配合使用，rb 与 wb 配合使用；
+    6. r、w 只适合读写文本文件，rb、wb 是二进制读写文件，适合文本、图片、音频等各式文件。
+2. close()：通过open()返回的文件对象调用，关闭读取流。
+3. 读取文件
+    1. read()：一次性读取出文件的所有内容；
+        1. r、w 模式，返回值是字符串；rb、wb 模式，返回值是bytes类型；
+        2. 读取文件时，由读取指针不断移动、实现读取，read()之后，读取指针处于内容末尾，
+        文件读取完毕，再次执行read()，将返回空字符串；
+    2. read(1)：r、w 模式，每次读取一个字符；rb、wb 模式，每次读取一个字节；
+    3. readline()：每次读取一行；
+    4. readlines()：返回一个列表，列表的元素是每一行的内容。
+4. write(content)：写入content，如果是复制文件，content 是 read() 的返回值。
+</code></pre><h3 id="大文件操作"><a href="#大文件操作" class="headerlink" title="大文件操作"></a>大文件操作</h3><pre><code>1. read() 是把文件内容一次性读取到内存中，文件过大可能报内存溢出，所以，大文件操作禁止使用；
+2. read(1024)：按照1024或1024的倍数循环读取，用 len() 判断返回值的长度是否为0，
+如果长度为 0，则表示读取完毕，结束循环。
+</code></pre><h3 id="定位读写"><a href="#定位读写" class="headerlink" title="定位读写"></a>定位读写</h3><pre><code>1. seek(offset, from)：控制读取指针的位置；
+    offset：偏移量，单位是字节；正数向右移动，负数向左移动，但python3不支持负数；
+    from：方向，0：文件开头，1：当前位置，2：文件末尾；
+    seek(0, 0)：控制读取指针回到文件开头位置。
+2. tell()：获取当前读取指针的位置。
+</code></pre><h3 id="常见操作"><a href="#常见操作" class="headerlink" title="常见操作"></a>常见操作</h3><pre><code>import os：
+重命名/删除文件：os.rename(oldName, newName)/os.remove(filename)；
+创建/删除文件夹：os.mkdir(dirname)/os.rmdir(dirname)；
+os.getcwd()：返回当前正在操作的绝对路径；
+os.chdir(&quot;../&quot;)：切换到上一层路径，此后的操作都是在上一层路径中；
+os.listdir(&quot;./&quot;)：返回一个当前路径下的所有文件和文件夹名的列表。
+</code></pre><h2 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h2><pre><code>python既支持面向过程，又支持面向对象；
+</code></pre><h3 id="类"><a href="#类" class="headerlink" title="类"></a>类</h3><pre><code>1. 定义：class 类名 ==&gt; 成员：属性，方法；class Cat:
+2. 对象：tom = Cat()
+3. 对象可以为自身创建属性：tom.name = &quot;Tom&quot;，为tom对象创建属性name，属性值为&quot;Tom&quot;；
+4. self：用于保持对象的引用，类似于Java中的this；
+</code></pre><p><img src="http://i.imgur.com/54PV3Wp.png" alt></p>
+<pre><code>5. __init__(self, ...)：类似于Java中的构造方法，用于初始化对象；
+</code></pre><p><img src="http://i.imgur.com/mbmQrS6.png" alt></p>
+<pre><code>6. __str__(self)：自定义对象的描述信息；默认打印对象，得到是内存地址等信息；
+</code></pre><p><img src="http://i.imgur.com/Ryy0m6J.png" alt></p>
+<pre><code>7. __del__(self)：当没有任何引用指向一个对象时，Python就会销毁该对象，此时会调用 del()；
+    当程序执行结束，对于没有释放的对象，Python会统一释放掉，此时也会调用 del()。
+</code></pre><h4 id="查看一个对象的引用个数"><a href="#查看一个对象的引用个数" class="headerlink" title="查看一个对象的引用个数"></a>查看一个对象的引用个数</h4><pre><code>import sys
+sys.getrefcount(引用)：结果会比实际引用多1个，因为形参接收到实参之后，也指向了对象。
+</code></pre><h4 id="私有属性、方法"><a href="#私有属性、方法" class="headerlink" title="私有属性、方法"></a>私有属性、方法</h4><pre><code>在类中定义属性/方法时，在属性名/方法名前加两个下划线，比如self.__name，此时不能再通过
+&quot;对象.属性&quot;直接访问了，但Python中没有真正的私有属性，加双下划线更像是一种规范；
+1. 为私有属性定义set、get 方法，间接设置/获取私有属性；
+2. 对象.__name = &apos;Python&apos;：只是为该对象定义了一个与私有属性__name同名的属性。
+</code></pre><h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><pre><code>1. 定义：class 类名(父类名)
+   1. 定义一个类时，默认都会继承顶层父类 object；
+   2. 显式写出继承的 object 类，python3中称为新式类，隐式的称为经典类；
+2. 重写：在子类中定义一个和父类方法同名的方法；
+3. 调用被重写的父类方法：父类名调用、super()调用，super()只适用于python3；
+    class Cat:
+        def eat(self):
+            pass
+    class BosiCat(Cat):
+        def eat(self):
+            Cat.eat(self) --&gt; 调用父类被重写的方法
+            super().eat() --&gt; 调用父类被重写的方法，只适用于python3
+4. 如果子类重写了__init__()，那么必须在第一行调用父类的初始化方法：
+    1. 父类名.__init__(self)
+    2. super(子类名, self).__init__()
+5. 私有方法、私有属性不能被继承；
+6. 多继承：class D(A, B, C)
+7. 类名.__mro__：查看调用属性/方法时的遍历顺序：C3算法
+</code></pre><p><img src="http://i.imgur.com/WkDaqdW.jpg" alt></p>
+<pre><code>尽量避免同名的属性/方法。
+8. python2和python3环境下，尽量使用新式类，新式类与经典类的区别
+    1. 多继承时，新式类查找属性/方法的顺序是广度优先级：
+    D--&gt;A--&gt;B--&gt;C--&gt;A的父类--&gt;B的父类--&gt;C的父类--&gt;...--&gt;object
+    2. 经典类的查找顺序是深度优先级：
+    D--&gt;A--&gt;A的父类--&gt;...--&gt;object--&gt;B--&gt;B的父类--&gt;...--&gt;object--&gt;C--&gt;...
+</code></pre><h3 id="类属性与实例属性"><a href="#类属性与实例属性" class="headerlink" title="类属性与实例属性"></a>类属性与实例属性</h3><pre><code>1. 类属性：在类中直接定义的变量，所有对象共享，类似于Java中的静态属性；
+   调用：类名调用和对象调用；但是，类名调用可以修改，而对象调用只能获取值，不能修改；
+    对象直接修改类属性，相当于为该对象添加一个同名的实例属性；
+2. 实例属性：类的方法中定义的变量，以及“ 对象.属性名 ”所添加的变量，只属于对象，不能共享。
+</code></pre><h3 id="实例方法、类方法、静态方法"><a href="#实例方法、类方法、静态方法" class="headerlink" title="实例方法、类方法、静态方法"></a>实例方法、类方法、静态方法</h3><pre><code>1. 实例方法：在类中直接定义的方法，如果要使用或修改类属性，必须使用类名调用类属性；
+2. 类方法：在定义方法时，在方法的上面加上“ @classmethod ”，
+    第一个形参是 cls，用于保存类的引用；类名和对象都可以直接调用。
+3. 静态方法：python同时支持面向过程和面向对象，可以在类外定义函数，但是不符合面向对象
+    的规范，所以需要把函数定义在类内部，但是该函数又不能受这个类的限制；
+    1. 定义：在方法上面加上 “ @staticmethod ” ，函数的参数不受类限制；
+    2. 调用：类名调用和对象调用；
+</code></pre><p><img src="http://i.imgur.com/vvetpC4.png" alt></p>
+<h3 id="new-cls"><a href="#new-cls" class="headerlink" title="__new__(cls)"></a>__new__(cls)</h3><pre><code>__new__(cls, ...)：用于创建对象；
+1. Java中的构造方法负责对象的创建和初始化，在Python中，对象的创建和初始化是分开的；
+2. 重写 new()，但是重写后的 new() 不能创建对象，必须通过 object 的 new() 创建对象；
+3. 类其实也是对象，类名和 cls 都是该对象的引用，指向同一地址；
+</code></pre><p><img src="http://i.imgur.com/dqC7CD1.png" alt></p>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><pre><code>单例对象、单例初始化：__new__()和__init__()分别用于对象的创建和初始化，它们的第一个参数
+表示不同的意义，其他参数必须保持一致；
+</code></pre><p><img src="http://i.imgur.com/7naQEBy.png" alt></p>
+<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><pre><code>1. 基本形式：try - except
+2. except 可以有多个，捕获不同的异常；可以把多个异常组成一个元组，使用一个except；
+3. Exception 是所有异常的父类；try ... except Exception 可以捕获所有的异常；
+    Python2中，except 后不指定任何异常，表示捕获所有异常；
+4. except Exception as ret：变量ret 中保存有出现异常的具体信息；
+5. try - except - else - finally
+    1. else 的内容只有在没有异常时才会执行；
+    2. finally 的语句不管有没有异常，都会被执行。
+6. try 语句中还可以嵌套 try - except；
+7. 在程序执行过程中，Ctrl+C 强制结束程序也是一个异常：KeyboardInterrupt。
+8. 异常的传递：一个函数抛出异常，但没有try-except，异常就会向上传递给调用者，
+    如果调用者仍没有处理，直至传递给Python编译器。
+</code></pre><h3 id="抛出自定义异常"><a href="#抛出自定义异常" class="headerlink" title="抛出自定义异常"></a>抛出自定义异常</h3><pre><code>1. raise 异常对象：抛出异常；
+2. 自定义异常必须继承 Exception；
+3. except 语句中仍可以使用 raise 抛出异常；
+4. exit()：结束程序。
+</code></pre><h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><pre><code>模块其实就是.py文件，通常，主模块命名为 main.py，主函数命名为 main()；
+1. __file__：查看模块的路径，import os --&gt; os.__file__：os.py的路径。
+2. 编译器查找模块时的顺序
+    当前目录 --&gt; python系统默认目录/usr/lib/python --&gt; 找不到，报错；
+    定义模块时，避免与系统自带的模块同名。
+3. 安装第三方模块
+    pip/pip3是python管理模块的工具；
+    sudo pip/pip3 install 模块名：pip表示安装到python2中，pip3表示安装到python3中；
+    sudo pip install pygame：pygame是第三方开发小游戏的模块。
+</code></pre><h3 id="导入模块"><a href="#导入模块" class="headerlink" title="导入模块"></a>导入模块</h3><pre><code>1. import 模块名
+    使用模块时，必须用模块名调用模块中的函数，变量和类；
+    import 模块名 as 别名：为模块名自定义一个别名，应用于模块名比较复杂的模块。
+2. __import__(&quot;模块名&quot;)
+    m = __import__(&quot;sys&quot;)：动态导入模块，类似于：import sys as m
+3. from 模块名 import 函数名1, 函数名2, 函数名3 ...
+    1. 可以直接使用被导入的函数；
+    2. 缺点：如果从不同模块中导入同名的函数，后面导入的函数会覆盖掉前面导入的；
+    3. from 模块名 import *：导入模块中的所有内容。
+4. __name__
+    1. 导入模块时，其实会把模块的语句执行一遍，如果模块中有测试语句，也会被执行；
+    2. __name__ 是一个系统属性，用于判断一个模块是自身单独执行的，还是被导入执行的；
+    3. 自身单独执行时，值为 &quot;__main__&quot;；被导入执行时，值为模块名；
+</code></pre><p><img src="http://i.imgur.com/FghXJJs.png" alt></p>
+<pre><code>5. __all__
+    用于限制“ from 模块名 import * ”导入的功能，只有添加进 all 列表中的功能，才能被导入；
+</code></pre><p><img src="http://i.imgur.com/GgGmLgx.png" alt></p>
+<h3 id="包"><a href="#包" class="headerlink" title="包"></a>包</h3><pre><code>1. 存放.py文件的目录，并在该目录下创建 __init__.py 文件，称为包；
+2. __init__.py：该文件用于声明可以使用的模块；导入一个包时，实际上会先执行 init 文件；
+    1. 声明方式1：__all__ = [&quot;模块名1&quot;, &quot;模块名2&quot;]
+    影响“ from 包名 import * ”导入的模块，可以直接使用模块；
+    2. 声明方式2：import 模块名
+    影响“ import 包名 ”导入的模块，通过包名调用模块：包名.模块名.功能；
+    但是，这两种声明方式只适用于 python2，对 python3 无效；
+    3. 通用声明方式：from . import 模块名，. 表示当前目录。
+</code></pre><h3 id="模块的发布与安装"><a href="#模块的发布与安装" class="headerlink" title="模块的发布与安装"></a>模块的发布与安装</h3><pre><code>1. 制作
+    1. 创建 setup.py 文件，setup.py 的内容格式：
+</code></pre><p><img src="http://i.imgur.com/jDKSxnV.png" alt></p>
+<pre><code>    2. 构建模块：python/python3 setup.py build，生成build目录；
+        python 命令表示制作 python2 的模块，python3 命令表示制作 python3 的模块；
+    3. 生成发布的压缩包：python/python3 setup.py sdist，生成sdist目录；
+       在sdist目录下生成的压缩包，模块制作完成。
+2. 发布：将压缩包上传到github上。
+3. 安装到python系统默认目录下
+    1. 对压缩包解压；
+    2. 进入解压的目录中，执行：sudo python/python3 setup.py install；
+    3. 安装完成，在任何目录下都能使用。
+</code></pre><h3 id="给程序传参数"><a href="#给程序传参数" class="headerlink" title="给程序传参数"></a>给程序传参数</h3><pre><code>import sys
+sys.argv：返回一个列表，保存运行.py文件时，python/python3 后面的参数；
+    列表的第一个元素是运行的.py文件名；
+</code></pre><p><img src="http://i.imgur.com/4sGLX2O.png" alt></p>
+<h3 id="time-模块"><a href="#time-模块" class="headerlink" title="time 模块"></a>time 模块</h3><pre><code>import time
+time.sleep(seconds)：单位是秒，seconds 可以是整型，也可以是浮点型；
+time.time()：获取当前时间的毫秒值(时间戳)，浮点型小数，更加精确；
+time.ctime()：获取当前格式化后的日期和时间，字符串类型。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/函数，文件操作，面向对象，异常处理，模块基础/" rel="tag"># 函数，文件操作，面向对象，异常处理，模块基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/26/python基础1/" rel="next" title="python基础1">
+                <i class="fa fa-chevron-left"></i> python基础1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/28/python高级1/" rel="prev" title="python高级1">
+                python高级1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数"><span class="nav-number">1.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局变量与局部变量"><span class="nav-number">1.1.</span> <span class="nav-text">全局变量与局部变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复合赋值运算符的特性"><span class="nav-number">1.2.</span> <span class="nav-text">复合赋值运算符的特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的文档说明"><span class="nav-number">1.3.</span> <span class="nav-text">函数的文档说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺省参数"><span class="nav-number">1.4.</span> <span class="nav-text">缺省参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不定长参数"><span class="nav-number">1.5.</span> <span class="nav-text">不定长参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拆包"><span class="nav-number">1.6.</span> <span class="nav-text">拆包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匿名函数"><span class="nav-number">1.7.</span> <span class="nav-text">匿名函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eval-str"><span class="nav-number">2.</span> <span class="nav-text">eval(str)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不可变类型"><span class="nav-number">3.</span> <span class="nav-text">不可变类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">4.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件操作"><span class="nav-number">5.</span> <span class="nav-text">文件操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#大文件操作"><span class="nav-number">5.1.</span> <span class="nav-text">大文件操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定位读写"><span class="nav-number">5.2.</span> <span class="nav-text">定位读写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见操作"><span class="nav-number">5.3.</span> <span class="nav-text">常见操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面向对象"><span class="nav-number">6.</span> <span class="nav-text">面向对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类"><span class="nav-number">6.1.</span> <span class="nav-text">类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#查看一个对象的引用个数"><span class="nav-number">6.1.1.</span> <span class="nav-text">查看一个对象的引用个数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#私有属性、方法"><span class="nav-number">6.1.2.</span> <span class="nav-text">私有属性、方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承"><span class="nav-number">6.2.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类属性与实例属性"><span class="nav-number">6.3.</span> <span class="nav-text">类属性与实例属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例方法、类方法、静态方法"><span class="nav-number">6.4.</span> <span class="nav-text">实例方法、类方法、静态方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new-cls"><span class="nav-number">6.5.</span> <span class="nav-text">__new__(cls)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单例模式"><span class="nav-number">6.6.</span> <span class="nav-text">单例模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常处理"><span class="nav-number">7.</span> <span class="nav-text">异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#抛出自定义异常"><span class="nav-number">7.1.</span> <span class="nav-text">抛出自定义异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模块"><span class="nav-number">8.</span> <span class="nav-text">模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入模块"><span class="nav-number">8.1.</span> <span class="nav-text">导入模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#包"><span class="nav-number">8.2.</span> <span class="nav-text">包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块的发布与安装"><span class="nav-number">8.3.</span> <span class="nav-text">模块的发布与安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给程序传参数"><span class="nav-number">8.4.</span> <span class="nav-text">给程序传参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#time-模块"><span class="nav-number">8.5.</span> <span class="nav-text">time 模块</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="线程,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="线程与进程1. 程序代码运行起来之后，系统会为其分配内存，占用系统资源，整个环境就是一个进程；    在一个进程中，代码执行的过程，其实就是一个指针跟着代码的逻辑不断移动，这就是一个线程； 2. 在同一个进程中，程序开始执行时的第一个指针称为主线程，由主线程创建的其他线程称为子线程； 3. 进程是系统进行资源分配和调度的一个独立单位，线程是进程的一个实体，是CPU调度和分派的单位； 4. 一个程序">
+<meta name="keywords" content="线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python多任务之线程">
+<meta property="og:url" content="http://yoursite.com/2017/07/31/python多任务之线程/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="线程与进程1. 程序代码运行起来之后，系统会为其分配内存，占用系统资源，整个环境就是一个进程；    在一个进程中，代码执行的过程，其实就是一个指针跟着代码的逻辑不断移动，这就是一个线程； 2. 在同一个进程中，程序开始执行时的第一个指针称为主线程，由主线程创建的其他线程称为子线程； 3. 进程是系统进行资源分配和调度的一个独立单位，线程是进程的一个实体，是CPU调度和分派的单位； 4. 一个程序">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/owkUZnq.jpg">
+<meta property="og:image" content="http://i.imgur.com/fRnPk4m.jpg">
+<meta property="og:image" content="http://i.imgur.com/TMCosYX.png">
+<meta property="og:image" content="http://i.imgur.com/rORO8zV.jpg">
+<meta property="og:image" content="http://i.imgur.com/hCS5uaV.jpg">
+<meta property="og:image" content="http://i.imgur.com/CWPl5gJ.jpg">
+<meta property="og:image" content="http://i.imgur.com/oY7EClN.jpg">
+<meta property="og:image" content="http://i.imgur.com/gQVO772.jpg">
+<meta property="og:updated_time" content="2018-05-30T15:56:39.229Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python多任务之线程">
+<meta name="twitter:description" content="线程与进程1. 程序代码运行起来之后，系统会为其分配内存，占用系统资源，整个环境就是一个进程；    在一个进程中，代码执行的过程，其实就是一个指针跟着代码的逻辑不断移动，这就是一个线程； 2. 在同一个进程中，程序开始执行时的第一个指针称为主线程，由主线程创建的其他线程称为子线程； 3. 进程是系统进行资源分配和调度的一个独立单位，线程是进程的一个实体，是CPU调度和分派的单位； 4. 一个程序">
+<meta name="twitter:image" content="https://i.imgur.com/owkUZnq.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/31/python多任务之线程/">
+
+
+
+
+
+  <title>python多任务之线程 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/31/python多任务之线程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python多任务之线程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-31T00:00:00+08:00">
+                2017-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="线程与进程"><a href="#线程与进程" class="headerlink" title="线程与进程"></a>线程与进程</h2><pre><code>1. 程序代码运行起来之后，系统会为其分配内存，占用系统资源，整个环境就是一个进程；
+   在一个进程中，代码执行的过程，其实就是一个指针跟着代码的逻辑不断移动，这就是一个线程；
+2. 在同一个进程中，程序开始执行时的第一个指针称为主线程，由主线程创建的其他线程称为子线程；
+3. 进程是系统进行资源分配和调度的一个独立单位，线程是进程的一个实体，是CPU调度和分派的单位；
+4. 一个程序至少有一个进程，一个进程至少有一个线程；
+5. 线程的划分尺度小于进程(资源比进程少)，使得多线程程序的并发性高；
+6. 进程拥有独立的内存单元，而多线程共享同一块内存，运行效率更高；
+7. 线程执行的开销更小，但却不利于资源的管理和保护，而进程则恰恰相反。
+</code></pre><h2 id="创建多线程"><a href="#创建多线程" class="headerlink" title="创建多线程"></a>创建多线程</h2><pre><code>Python的 thread 模块是比较底层的、创建多线程的模块，不能兼容不同的操作系统；
+threading 模块对 thread 做了封装，兼容性更好；
+</code></pre><h3 id="Thread-子线程"><a href="#Thread-子线程" class="headerlink" title="Thread 子线程"></a>Thread 子线程</h3><pre><code>Thread 是threading 模块提供的类，用于创建多线程：from threading import Thread
+1. start()：开启线程；
+2. Thread(target=None, name=None, args=(), kwargs={})
+    target：子线程执行的任务代码；
+    name：设置线程的名字；
+    args：target 接收的参数，是一个元组；
+    kwargs：target 接收的参数，是一个字典。
+3. threading.current_thread()：获取当前线程的对象；
+4. threading.current_thread().name：获取当前线程的名字；
+5. threading.enumerate()：查看当前的线程数量，返回一个列表，元素是线程的对象；
+    def test(a):
+        print &apos;%s--%s&apos; % (threading.current_thread().name, a)
+    t = Thread(target=test, args=(3,))
+    t.start()
+1. Thread 创建的子线程，主线程会主动等待所有的子线程执行结束，它才会结束；因为子线程也会
+   占有一些资源(如程序计数器，一组寄存器和栈)，主线程负责回收子线程结束之后的资源；
+2. 虽然主线程会等待子线程，但线程的执行顺序是不确定的，由系统的调度算法决定。
+</code></pre><h3 id="继承Thread，创建子线程"><a href="#继承Thread，创建子线程" class="headerlink" title="继承Thread，创建子线程"></a>继承Thread，创建子线程</h3><pre><code>如果没有指定Thread 的形参target，调用start() 开启线程时，就将执行Thread的 run()；
+所以，继承Thread、重写 run() 方法，创建对象时不指定target，也能创建一个线程。
+    class MyThread(threading.Thread):
+        def run(self):
+            print &apos;---%s---&apos; % self.name
+            time.sleep(1)
+    t = MyThread()
+    t.start()
+1. join()：让主线程主动等待子线程执行结束，或者子线程执行超时之后，再继续执行主线程；
+</code></pre><p><img src="https://i.imgur.com/owkUZnq.jpg" alt></p>
+<pre><code>2. setDaemon(True/False)：在start()之前设置，默认为False，表示前台线程；
+    1. setDaemon(True)：设置为后台线程，在主线程执行过程中，后台线程也执行，一旦主线程
+    执行完毕，后台线程不论是否执行结束，主线程和后台线程均停止，程序执行结束；
+    2. setDaemon(False)：主线程执行完毕后，会等待前台线程也执行完毕。
+</code></pre><h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><pre><code>1. 进程的内存资源都是独立的，所以进程之间不共享数据；
+2. 多线程是在同一个进程中，共享内存资源，但线程的执行顺序是不确定的，访问同一个数据时，
+   可能对数据造成破坏，这种现象称为线程不安全。
+</code></pre><h3 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h3><pre><code>mutex = threading.Lock()：创建锁；
+mutex.acquire([blocking=True, timeout=-1])：锁定；上锁失败返回False；
+    blocking：默认为True，如果已经有其他线程上锁，当前线程会阻塞，直到获取到锁为止；
+        如果设置为False，则当前线程不会阻塞，若没有第一时间获取锁，acquire() 返回False；
+    timeout：设置当前线程阻塞的超时时间，等待了timeout秒，仍然没有机会上锁，则返回False。
+mutex.release()：释放锁；
+</code></pre><p><img src="http://i.imgur.com/fRnPk4m.jpg" alt></p>
+<pre><code>互斥锁只能约束使用了锁的线程，没有使用lock.acquire()上锁的线程抢到执行权时，仍然会继续执行。
+</code></pre><h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><pre><code>嵌套锁可能造成死锁；
+</code></pre><p><img src="http://i.imgur.com/TMCosYX.png" alt></p>
+<pre><code>线程t1 先上锁A，等待锁A 被释放；线程t2 先上锁B，等待锁A 被释放，从而造成死锁；
+解决死锁的方式：
+    1. 银行家算法，避免死锁；
+    2. 设置acquire() 的超时时间timeout。
+</code></pre><h3 id="线程同步"><a href="#线程同步" class="headerlink" title="线程同步"></a>线程同步</h3><pre><code>线程之间的执行顺序是不确定的；
+同一个线程不能重复上同一把锁，必须等锁被释放之后，才能重新上锁，否则就会阻塞。
+依此原理，可以实现线程同步：
+</code></pre><p><img src="http://i.imgur.com/rORO8zV.jpg" alt></p>
+<pre><code>通过锁的锁定和解锁，实现线程同步:Task1 --&gt; Task2 --&gt; Task3 --&gt; Task1 --...
+</code></pre><h2 id="生产者与消费者模式"><a href="#生产者与消费者模式" class="headerlink" title="生产者与消费者模式"></a>生产者与消费者模式</h2><pre><code>进程和线程的执行顺序都是不确定的，造成数据生产方与数据处理方的速度也往往是不匹配的；
+此时需要使用数据缓冲，以匹配生产者和消费者的速度；
+列表作为数据缓冲池并不安全，队列是阻塞的，可以作为数据缓冲池，实现线程同步；
+Queue：队列，FIFO，first in first out，先进先出；
+Stack：栈，FILO，first in last out，先进后出。
+</code></pre><h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><pre><code>python2的导入队列方式：from Queue import Queue
+puthon3的导入队列方式：from queue import Queue
+队列是阻塞的，恰好为生产者和消费者解耦。
+线程中的队列与进程中的队列，所属模块不同，但在使用方法上是一样的；
+</code></pre><p><img src="http://i.imgur.com/hCS5uaV.jpg" alt></p>
+<h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h2><pre><code>ThreadLocal 是一个对象，用于记录不同的线程所执行的操作；
+threading.local()：创建ThreadLocal对象；
+</code></pre><p><img src="http://i.imgur.com/CWPl5gJ.jpg" alt></p>
+<pre><code>  ThreadLocal虽然是一个全局变量，但它可以记录每个线程所设置的属性值，线程之间互不干扰，
+每个线程都有自己的独立副本，不会被其他线程修改；
+  ThreadLocal解决了参数在每个线程中各个函数之间互相传递的问题。
+</code></pre><h2 id="GIL"><a href="#GIL" class="headerlink" title="GIL"></a>GIL</h2><pre><code>GIL：全局解释器锁；
+Python的多线程其实是伪多线程；
+    假设有两个线程，双核CPU，理论上应该是两个CPU同时执行两个线程，但python并不是；
+在同一时刻，只有一个线程被执行，由GIL控制线程的切换；当一个线程被CPU执行时，GIL会对线
+程加锁，阻止另一个CPU执行其他线程；也即，Python中的多线程是伪多线程。
+在Python中处理多任务，对于多核CPU，多进程的效率要远远大于多线程。
+解决伪多线程的方式：
+1. 尽量用多进程取代多线程；
+2. 关键代码用C语言实现：
+    from ctypes import * ：导入能执行C语言代码的模块；
+    cdll.LoadLibrary()：加载C语言写的动态库，返回一个对象，通过该对象调用库中的功能；
+</code></pre><p><img src="http://i.imgur.com/oY7EClN.jpg" alt></p>
+<pre><code>在使用C语言代码的文件(.c后缀)之前，通常都需要先编译，生成库文件(.os后缀)；
+对于编译方式，在提供C代码文件时，还会提供一个readme文件，其中会说明编译的环境和方式；
+</code></pre><p><img src="http://i.imgur.com/gQVO772.jpg" alt></p>
+<pre><code>Python多线程虽然不能实现多核任务，但多进程可以实现，每个进程有各自独立的GIL锁，互不影响。
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/线程/" rel="tag"># 线程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/30/python多任务之进程/" rel="next" title="python多任务之进程">
+                <i class="fa fa-chevron-left"></i> python多任务之进程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/01/网络基础与UDP/" rel="prev" title="网络基础与UDP">
+                网络基础与UDP <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程与进程"><span class="nav-number">1.</span> <span class="nav-text">线程与进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建多线程"><span class="nav-number">2.</span> <span class="nav-text">创建多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-子线程"><span class="nav-number">2.1.</span> <span class="nav-text">Thread 子线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承Thread，创建子线程"><span class="nav-number">2.2.</span> <span class="nav-text">继承Thread，创建子线程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程安全"><span class="nav-number">3.</span> <span class="nav-text">线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#互斥锁"><span class="nav-number">3.1.</span> <span class="nav-text">互斥锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁"><span class="nav-number">3.2.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程同步"><span class="nav-number">3.3.</span> <span class="nav-text">线程同步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生产者与消费者模式"><span class="nav-number">4.</span> <span class="nav-text">生产者与消费者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#队列"><span class="nav-number">4.1.</span> <span class="nav-text">队列</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocal"><span class="nav-number">5.</span> <span class="nav-text">ThreadLocal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GIL"><span class="nav-number">6.</span> <span class="nav-text">GIL</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
