@@ -87,12 +87,10 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://i.imgur.com/vLw2xgt.jpg">
-<meta property="og:updated_time" content="2019-02-08T06:32:27.908Z">
+<meta property="og:updated_time" content="2019-02-25T12:37:52.948Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java基础">
 <meta name="twitter:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
-<meta name="twitter:image" content="https://i.imgur.com/vLw2xgt.jpg">
 
 
 
@@ -372,6 +370,7 @@
     new Thread(()-&gt; {
         System.out.println(&quot;start Run&quot;);
     }).start();
+    2. Thread是Runnable的代理对象(静态代理)。
 7. 静态代理
     1. 代理对象和原对象都实现同一个接口
     interface Task {  void work();  }
@@ -395,42 +394,6 @@
     }
     4. 通过代理对象，执行原对象的任务方法
     new StaticProxy(new Stuff()).work();
-</code></pre><h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><pre><code>1. 线程状态
-</code></pre><p><img src="https://i.imgur.com/vLw2xgt.jpg" alt></p>
-<pre><code>    1. Thread.State：线程的状态，NEW(尚未启动的线程)、RUNNABLE、BLOCKED、WAITING、
-    TIMED_WAITING、TERMINATED(已退出的线程)
-    2. RUNNABLE：包含就绪状态和运行状态；
-    3. getState()：获取线程的状态。
-2. 线程的 stop() 方法已经被废弃，因为线程的终止可以通过一个boolean型的标志位变量完成；
-3. sleep() yield() join()
-    1. sleep() 表示休眠，会阻塞线程，且不会释放锁，睡眠时间到了之后，重新进入就绪状态；
-    常用于模拟网络延迟、倒计时...
-    2. yield() 则礼让出CPU的执行权，线程进入就绪状态；
-    3. join() 插队，待此线程执行完成后，再执行其他线程，这段时间内，其他线程处于阻塞状态；
-4. 优先级：线程的优先级并不能决定哪个线程先执行，优先级高的线程被执行的概率相对会高一些；
-    1. setPriority(priority)：设置线程的优先级，范围1-10，在 start() 之前设置有效；
-    2. Thread.MIN_PRIORITY，Thread.MAX_PRIORITY，Thread.NORM_PRIORITY：1，10，5
-5. 线程分为用户线程和守护线程，默认的线程都是用户线程
-    1. 虚拟机JVM会确保所有的用户线程执行完毕，再退出程序，但不会等待守护线程执行完毕；
-    2. 如后台记录操作日志、监控内存使用等
-    3. setDaemon(true)：把线程设置为守护线程，在 start() 之前调用。
-6. Thread.currentThread()：获取当前线程；
-7. isAlive()：线程是否还活着。
-</code></pre><h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><pre><code>1. 线程同步：synchronized，队列
-    1. 若将一个大的方法声明为synchronized，将会大大影响效率；
-    2. 与大的synchronized方法相比，synchronized块能在一定程度上减少性能的损失；
-    3. 使用 synchronized 的关键在于，第一要锁对目标，第二要取舍synchronized块的面积。
-2. 同步块的锁：
-    1. 同步方法的锁是this，表示当前对象，不可改变；
-    2. 同步块的锁可以指定，锁住的目标更明确，还能减小锁的面积。
-3. 并发容器：CopyOnWriteArrayList，加锁的ArrayList，保证在写入数据时的安全；
-4. 死锁：相互持有对方的锁，需要避免锁的嵌套。
-</code></pre><h3 id="并发协作"><a href="#并发协作" class="headerlink" title="并发协作"></a>并发协作</h3><pre><code>1. 生产者与消费者模式：线程同步问题，生产者和消费者共享同一资源，且生产者和消费者相互依赖；
-    1. synchronized只是阻止并发更新同一共享资源，实现同步，但并不能实现线程间的通信；
-    2. 管程法：利用并发缓冲容器实现；
-    3. 信号灯法：借助标志位实现。
-2. 管程法：wait()，notify()，notifyAll()
-3. 信号灯法：
 </code></pre><hr>
 
       
@@ -462,18 +425,14 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/01/01/多线程/" rel="next" title="多线程">
-                <i class="fa fa-chevron-left"></i> 多线程
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/01/03/Java多线程/" rel="prev" title="Java多线程">
+                Java多线程 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -606,7 +565,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程"><span class="nav-number">2.</span> <span class="nav-text">多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发"><span class="nav-number">2.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发协作"><span class="nav-number">2.2.</span> <span class="nav-text">并发协作</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li></ol></div>
             
 
           </div>
