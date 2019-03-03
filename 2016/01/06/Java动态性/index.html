@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaEE,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="反射机制类的反射1. 获取Class对象的三种方式     1. 对象.getClass()     2. 类名.class     3. Class.forName(&amp;quot;包名.类名&amp;quot;); 2. 获取类名     Class clz = Class.forName(&amp;quot;com.sxt.serv.Channel&amp;quot;);     clz.getName(); --&amp;g">
+<meta name="keywords" content="JavaEE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java动态性">
+<meta property="og:url" content="http://yoursite.com/2016/01/06/Java动态性/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="反射机制类的反射1. 获取Class对象的三种方式     1. 对象.getClass()     2. 类名.class     3. Class.forName(&amp;quot;包名.类名&amp;quot;); 2. 获取类名     Class clz = Class.forName(&amp;quot;com.sxt.serv.Channel&amp;quot;);     clz.getName(); --&amp;g">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-03-02T03:41:43.836Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java动态性">
+<meta name="twitter:description" content="反射机制类的反射1. 获取Class对象的三种方式     1. 对象.getClass()     2. 类名.class     3. Class.forName(&amp;quot;包名.类名&amp;quot;); 2. 获取类名     Class clz = Class.forName(&amp;quot;com.sxt.serv.Channel&amp;quot;);     clz.getName(); --&amp;g">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/06/Java动态性/">
+
+
+
+
+
+  <title>Java动态性 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/06/Java动态性/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java动态性</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-06T00:00:00+08:00">
+                2016-01-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="反射机制"><a href="#反射机制" class="headerlink" title="反射机制"></a>反射机制</h2><h3 id="类的反射"><a href="#类的反射" class="headerlink" title="类的反射"></a>类的反射</h3><pre><code>1. 获取Class对象的三种方式
+    1. 对象.getClass()
+    2. 类名.class
+    3. Class.forName(&quot;包名.类名&quot;);
+2. 获取类名
+    Class clz = Class.forName(&quot;com.sxt.serv.Channel&quot;);
+    clz.getName(); --&gt; 获取完整路径(包名)的类名
+    clz.getSimpleName(); --&gt; 只获取类名 
+3. 获取构造器Constructor
+    1. clz.getConstructor(参数类型.class...); 只能获取public构造器
+    2. clz.getDeclaredConstructor(参数类型.class...); 获取任意构造器
+    Constructor&lt;Channel&gt; cons = clz.getDeclaredConstructor(String.class);
+    cons.setAccessible(true); --&gt;默认不允许访问private成员，必须跳过安全检查
+    Channel cha = cons.newInstance(&quot;123&quot;); -- &gt;传递参数，创建对象
+    3. 参数类型都是可变长参数，对于无参构造器，则不传任何参数
+    Channel cha = clz.newInstance(); --&gt;使用public无参构造的创建对象，从JDK9开始废弃
+    Channel cha = clz.getConstructor().newInstance();
+4. 获取属性Field
+    1. clz.getField(&quot;属性名&quot;); 只能获取public修饰的属性
+    2. clz.getDeclaredField(&quot;属性名&quot;); 获取任意的属性
+    3. 操作(私有)属性
+    Field id = clz.getDeclaredField(&quot;id&quot;); //int id
+    id.setAccessible(true);  --&gt;跳过安全检查
+    id.set(cha, 10); --&gt;设置对象cha上的id属性
+    int i = id.get(cha); --&gt;获取id属性值
+5. 获取方法Method
+    1. clz.getMethod(&quot;方法名&quot;, 参数类型.class...); 只能获取public修饰的方法
+    2. clz.getDeclaredMethod(&quot;方法名&quot;, 参数类型.class...); 获取任意的方法
+    3. 如果方法是无参的，参数类型通常传null，也可以什么不传
+    4. 调用(私有)方法
+    Method m = clz.getDeclaredMethod(&quot;setAge&quot;, int.class);
+    m.setAccessible(true);
+    m.invoke(cha, 12);  //cha.setAge(12)
+</code></pre><h3 id="泛型的反射"><a href="#泛型的反射" class="headerlink" title="泛型的反射"></a>泛型的反射</h3><pre><code>1. 泛型仅仅是给编译器javac使用的，确保数据的安全性和免去强制类型转换的麻烦，一旦编译完成，
+   所有和泛型相关的类型都会全部擦除；
+2. 为了让反射可以操作泛型，Java新增ParameterizedType、GenericArrayType、TypeVariable、
+    WildcardType来代表不能被归到Class类中的类型、但又和原始类型齐名的类型；
+    1. ParameterizedType：表示参数化的类型，比如Collection&lt;String&gt;
+    2. GenericArrayType：表示元素类型是参数化类型，或类型变量的数组类型
+    3. TypeVariable：各种类型变量的公共父接口
+    4. WildcardType：代表通配符类型表达式，比如 ?，? extends Number，? super Integer
+3. ParameterizedType
+    public class TestTable {
+        public void test01(Map&lt;String, TableBean&gt; map, List&lt;TableBean&gt; list) { }
+        public Map&lt;Integer, TableBean&gt; test02() { return null; }
+    }
+    1. 获取参数泛型
+    Method m = TestTable.class.getMethod(&quot;test01&quot;, Map.class, List.class);
+    Type[] paramTypes = m.getGenericParameterTypes(); //获取带泛型的参数类型
+    for (Type t: paramTypes) {
+        System.out.println(&quot;paramType: &quot; + t); //带泛型的参数类型
+        if (t instanceof ParameterizedType) {
+            //获取真正的泛型类型
+            Type[] typeArgs = ((ParameterizedType) t).getActualTypeArguments();
+            for (Type gt: typeArgs) {
+                System.out.println(&quot;参数上的泛型类型：&quot; + gt);
+            }
+        }
+    }
+    2. 获取返回的参数泛型
+    Method m = TestTable.class.getMethod(&quot;test02&quot;, null);
+    Type at = m.getGenericReturnType(); //获取带泛型的返回值类型
+    if (at instanceof ParameterizedType) {
+        //获取真正的泛型类型
+        Type[] typeArgs = ((ParameterizedType) at).getActualTypeArguments();
+        for (Type gt: typeArgs) {
+            System.out.println(&quot;返回值的泛型类型：&quot; + gt);
+        }
+    }
+</code></pre><h2 id="动态编译"><a href="#动态编译" class="headerlink" title="动态编译"></a>动态编译</h2><pre><code>1. Java6.0引入动态编译，有两种方式
+    1. Runtime调用javac，启动新的进程去操作
+    Runtime run = Runtime.getRuntime();
+    Process p = run.exec(&quot;javac -cp d:/workplace/ HelloWorld.java&quot;);
+    2. JavaCompiler动态编译
+2. JavaCompiler
+    1. 动态编译Java文件
+    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    int result = compiler.run(null, null, null, &quot;E:/workplace/HelloWorld.java&quot;);
+    ---&gt; result为0，表示编译成功，生成class文件
+    2. 动态编译java字符串
+    String text = &quot;public class Hi { public static void main(String[] args)
+        { System.out.println(\&quot;hi\&quot;); } }&quot;;
+    ---&gt; 需要把这个字符串通过IO流存成一个临时文件(Hi.java)，再进行动态编译
+3. Runtime运行编译好的class文件
+    Runtime run = Runtime.getRuntime();
+    Process p = run.exec(&quot;java -cp E:/workplace HelloWorld&quot;);
+    InputStream is = p.getInputStream();
+    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    String info = &quot;&quot;;
+    while (null != (info=br.readLine())) {
+        System.out.println(info); //hi
+    }
+4. 反射运行编译好的class文件
+    URL[] urls = new URL[] {new URL(&quot;file:/&quot; + &quot;E:/workplace/&quot;)};
+    URLClassLoader loader = new URLClassLoader(urls);
+    Class clz = loader.loadClass(&quot;HelloWorld&quot;);
+    Method me = clz.getMethod(&quot;main&quot;, String[].class);
+    //由于可变参数在JDK5.0才引入，传递数组时，如new String[]{&quot;a&quot;, &quot;b&quot;}，会被解析为
+    //invoke(null, &quot;a&quot;, &quot;b&quot;)，所以需要使用Object强转类型
+    me.invoke(null, (Object)new String[]{});
+</code></pre><h2 id="动态执行JavaScript代码"><a href="#动态执行JavaScript代码" class="headerlink" title="动态执行JavaScript代码"></a>动态执行JavaScript代码</h2><pre><code>1. JDK6.0新增脚本引擎，使Java应用可以通过一套固定的接口与各种脚本引擎交互，从而在Java平台
+   上调用各种脚本语言
+2. JavaScript引擎：Rhino
+    1. Rhino是一种使用Java编写的JS的开源实现，原由Mozilla开发，现已被集成到JDK6.0
+    ScriptEngineManager sem = new ScriptEngineManager();
+    ScriptEngine engine = sem.getEngineByName(&quot;JavaScript&quot;);
+    2. 可以执行字符串形式的JS语句，也可以执行JS脚本文件。
+</code></pre><h2 id="动态字节码操作"><a href="#动态字节码操作" class="headerlink" title="动态字节码操作"></a>动态字节码操作</h2><pre><code>1. 运行时操作字节码可以实现：
+    1. 动态生成新的类
+    2. 动态改变某个类的结构(增删改 新的属性/方法)
+2. 优点：比反射开销小、性能高，与反射相辅相成；
+3. 常见的字节码操作类库
+    1. BCEL：可以深入JVM汇编语言进行类操作的细节，拥有丰富的JVM指令级支持；
+    2. ASM是一个轻量级Java字节码操作框架，直接涉及到JVM底层的操作和指令；
+    3. BECL和ASM的效率最高，因为是在JVM指令层次上进行操作，学习难度也比较大；
+    4. CGLIB：一个强大的、高性能、高质量的Code生成类库，基于ASM实现；
+    5. Javassist：一个开源的Java字节码类库，强调的是源代码级别，性能跟CGLIB差不多，
+    但使用简单，应用于很多开源框架。
+4. Javassist
+    1. 最外层API与Java反射的API颇为相似，如CtClass，CtMethod，CtField
+    2. 局限性：只适合常规操作
+</code></pre><h2 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h2><pre><code>1. 内置注解：@Override，@Deprecated，@SuppressWarnings，@Target...
+2. @interface 自定义注解，自动继承Annotation接口
+    public @interface 注解名 { ... }
+3. 元注解：负责解释其他注解，Java定义了4个标准的meta-annotation类型(元注解)
+    1. @Target、@Retention、@Documented、@Inherited
+    2. 这些类型和它们所支持的类在java.lang.annotation包中。
+4. @Target：声明注解的使用范围，由ElementType定义可取的值
+    1. package包：PACKAGE，@Target(value=ElementType.PACKAGE)
+    2. 类、接口、枚举、Annotation类型：TYPE
+    3. 类成员(构造方法、成员变量、方法、枚举值)：CONSTRUCTOR描述构造器，FIELD描述域(字段)，
+    METHOD描述方法
+    4. 方法参数和本地变量：LOCAL_VARIABLE用于描述局部变量，PARAMETER用于描述参数
+    @Target(value=ElementType.METHOD)  --&gt; 声明此注解只能在方法上使用
+    public @interface TestAnnot { ... }
+    5. value可以取多个值，扩大应用范围
+    @Target(value={ElementType.METHOD, ElementType.TYPE})
+    public @interface TestAnnot { ... }  --&gt;此注解可以同时修饰方法、类
+5. @Retention：表示需要在什么级别保存该注释信息，用于描述注解的生命周期
+    1. SOURCE：在源文件中有效
+    2. CLASS：在class文件中有效
+    3. RUNTIME：在运行时有效，被反射机制读取(反射在运行期有效)
+    @Target(value={ElementType.METHOD, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface TestAnnot { ... }
+</code></pre><h3 id="自定义注解"><a href="#自定义注解" class="headerlink" title="自定义注解"></a>自定义注解</h3><pre><code>1. 定义注解的成员
+    @Target(value={ElementType.METHOD, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface TestAnnot {
+        String stuName() default &quot;&quot;;  --&gt;参数类型String，参数名stuName，默认值&quot;&quot;
+        int age() default 0;
+        String[] schools() default {};
+    }
+2. 使用自定义注解
+    @TestAnnot
+    public class TestMain {
+        @TestAnnot
+        public void test(){ }
+    }
+    1. 如果没有注解中的成员没有默认值，则必须在使用时赋予值，否则会报编译期错误
+    @TestAnnot(uname = &quot;&quot;, age = -1, schools = {})
+    public class TestMain {
+        @TestAnnot(uname = &quot;abc&quot;, age = 0, schools = {&quot;a&quot;, &quot;b&quot;})
+        public void test(){ }
+    }
+    2. 如果注解中只有一个成员(通常定义为value)，在使用赋值时，可以不指定参数名
+    @Target(value=ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface MyAnnot {
+        String value();
+    }
+    @MyAnnot(&quot;abc&quot;)
+    public class TestMain { ... }
+3. 注解的解析，配合反射，以数据库表的ORM映射为例
+    1. 表的注解
+    @Target(value = {ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Table {
+        String value(); --&gt; 记录表名
+    }
+    2. 表的字段约束
+    @Target(value = ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Column {
+        String columnName(); --&gt; 字段名
+        String type(); --&gt; 字段类型
+        int length(); --&gt; 长度
+    }
+    3. 表映射的JavaBean
+    @Table(&quot;user&quot;)
+    public class UserBean {
+        @Column(columnName = &quot;id&quot;, type = &quot;int&quot;, length = 10)
+        private int id;
+        @Column(columnName = &quot;name&quot;, type = &quot;varchar&quot;, length = 10)
+        private String username;
+        @Column(columnName = &quot;age&quot;, type = &quot;int&quot;, length = 3)
+        private int age;
+        ......
+    }
+    Class clz = Class.forName(&quot;it.test.cn.UserBean&quot;);
+    4. 获取类上的注解
+    Annotation[] annots = clz.getAnnotations(); --&gt; 获取类UserBean上的所有注解
+    Table tab = (Table) clz.getAnnotation(Table.class); --&gt; 获取指定的注解
+    String val = tab.value();  --&gt; 获取注解成员的值&quot;user&quot;
+    5. 获取类属性上的注解(类方法同理)
+    Field f = clz.getDeclaredField(&quot;username&quot;); --&gt; 获取属性username
+    Column col = f.getAnnotation(Column.class); --&gt; 获取属性上的注解
+    col.columnName();//&quot;name&quot;  col.type();//&quot;varchar&quot;  col.length();//10
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaEE/" rel="tag"># JavaEE</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/05/Java网络编程/" rel="next" title="Java网络编程">
+                <i class="fa fa-chevron-left"></i> Java网络编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#反射机制"><span class="nav-number">1.</span> <span class="nav-text">反射机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类的反射"><span class="nav-number">1.1.</span> <span class="nav-text">类的反射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#泛型的反射"><span class="nav-number">1.2.</span> <span class="nav-text">泛型的反射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态编译"><span class="nav-number">2.</span> <span class="nav-text">动态编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态执行JavaScript代码"><span class="nav-number">3.</span> <span class="nav-text">动态执行JavaScript代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态字节码操作"><span class="nav-number">4.</span> <span class="nav-text">动态字节码操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注解"><span class="nav-number">5.</span> <span class="nav-text">注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义注解"><span class="nav-number">5.1.</span> <span class="nav-text">自定义注解</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

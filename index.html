@@ -1404,7 +1404,7 @@
         }
     })
     3. 在art模板中使用过滤器，格式化传递的变量time：&lt;div&gt;{{time | dateFormat}}&lt;/div&gt;
-4. ajax请求返回JSON的中间件：npm install koa-jsonp --save
+4. koa-jsonp：ajax请求返回JSON的中间件，npm install koa-jsonp --save
     1. let jsonp = require(&apos;koa-jsonp&apos;);  ---&gt; 同时支持处理JSON和jsonp
     2. 配置jsonp中间件：app.use(jsonp());
     3. 一个简单的JSON数据接口：
@@ -1423,7 +1423,6 @@
 &lt;/form&gt;
 1. koa-multer：用于处理 multipart/form-data 类型的表单数据，主要用于上传文件；
 2. koa-multer基于 multer 模块：npm i koa-multer --save
-3. 配置multer
     let multer = require(&apos;koa-multer&apos;);
     let storage = multer.diskStorage({
         destination: function(req, file, cb) {
@@ -1435,13 +1434,15 @@
         }
     });
     let upload = multer({storage: storage});
-4. 处理上传文件
+3. 处理上传文件
     router.post(&apos;/doUpload&apos;, upload.single(&apos;pic&apos;), async (ctx)=&gt;{
         let filename = ctx.req.file.filename;  ---&gt; 上传的文件名
         let form = ctx.req.body; ---&gt; form表单的其他数据
     })
-5. upload.single(&apos;pic&apos;)：pic与&lt;input type=&quot;file&quot; name=&quot;pic&quot; /&gt;的name保持一致；
-6. koa-multer也支持多个文件上传，在github上的multer模块中有更多配置信息。
+4. upload.single(&apos;pic&apos;)：pic与&lt;input type=&quot;file&quot; name=&quot;pic&quot; /&gt;的name保持一致；
+5. koa-multer也支持多个文件上传，在github上的multer模块中有更多配置信息；
+6. koa-body：用于取代 koa-bodyparser 和 koa-multer
+</code></pre><h3 id="路由鉴权"><a href="#路由鉴权" class="headerlink" title="路由鉴权"></a>路由鉴权</h3><pre><code>1. koa-jwt：用于路由鉴权、token验证
 </code></pre><h3 id="富文本编辑器"><a href="#富文本编辑器" class="headerlink" title="富文本编辑器"></a>富文本编辑器</h3><pre><code>1. ueditor：百度的轻量级、可定制富文本web编辑器，开源基于MIT协议，允许自由使用和修改代码
 2. ueditor官方虽然没有提供NodeJs版本，但官方推荐的第三方插件里有nodeJs版本；
     1. 第三方插件直接支持express，不支持koa2
@@ -3684,7 +3685,7 @@ res.cookie(&apos;uname&apos;, &apos;Node&apos;, {domain:&apos;.exa.com&apos;, pa
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta name="description" content="Ip相关的类：InetAddress1. 获取本机的Ip、hostname     InetAddress addr = InetAddress.getLocalHost();     String ip = addr.getHostAddress();     String hostName = addr.getHostName(); //计算机名 2. 根据域名获取Ip、hostname">
 <meta name="keywords" content="JavaEE">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java基础">
-<meta property="og:url" content="http://yoursite.com/2017/01/02/Java基础/index.html">
+<meta property="og:title" content="Java网络编程">
+<meta property="og:url" content="http://yoursite.com/2016/01/05/Java网络编程/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta property="og:description" content="Ip相关的类：InetAddress1. 获取本机的Ip、hostname     InetAddress addr = InetAddress.getLocalHost();     String ip = addr.getHostAddress();     String hostName = addr.getHostName(); //计算机名 2. 根据域名获取Ip、hostname">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-25T12:37:52.948Z">
+<meta property="og:updated_time" content="2019-02-27T12:42:35.296Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java基础">
-<meta name="twitter:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta name="twitter:title" content="Java网络编程">
+<meta name="twitter:description" content="Ip相关的类：InetAddress1. 获取本机的Ip、hostname     InetAddress addr = InetAddress.getLocalHost();     String ip = addr.getHostAddress();     String hostName = addr.getHostName(); //计算机名 2. 根据域名获取Ip、hostname">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/01/02/Java基础/">
+  <link rel="canonical" href="http://yoursite.com/2016/01/05/Java网络编程/">
 
 
 
 
 
-  <title>Java基础 | 大麦田程序猿</title>
+  <title>Java网络编程 | 大麦田程序猿</title>
   
 
 
@@ -233,7 +233,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/02/Java基础/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/05/Java网络编程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -250,7 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java基础</h1>
+          <h1 class="post-title" itemprop="name headline">Java网络编程</h1>
         
 
         <div class="post-meta">
@@ -262,8 +262,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-02T00:00:00+08:00">
-                2017-01-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-05T00:00:00+08:00">
+                2016-01-05
               </time>
             
 
@@ -322,79 +322,68 @@
       
 
       
-        <h2 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h2><pre><code>1. 浮点数的精确计算：BigDecimal，java.math包中的类
-    1. 相减
-    BigDecimal db1 = BigDecimal.valueOf(1.0);  --&gt; 浮点数1.0
-    db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&gt; 1.0 - 0.1
-    2. 相除
-    BigDecimal db2 = BigDecimal.valueOf(0.1);
-    BigDecimal db3 = BigDecimal.valueOf(1.0/10.0);
-    System.out.println(db2.equals(db3)); --&gt; true
-2. 自动类型转换：容量小的类型自动向容量大的类型转换
-    1. 特例：byte b = 123;
-    2. 123 本身是 int 类型(Java中的数值默认是int类型)，byte类型的范围为-128~127
-    3. 所以，123 可以直接赋值给 byte类型(自动转为byte类型)。
-3. 溢出
-    1. int m = 1000000000;  int y = 20;
-    2. int t = m * y; --&gt; 负数(溢出导致)
-    3. long t = m * (long)y; --&gt; 20000000000
-4. TreeMap与TreeSet
-    1. TreeMap：红黑二叉树的典型实现，按照key自增长的方向排序；
-    2. TreeSet：内部维持了一个简化版的TreeMap，通过key存储Set的元素；
-    3. 如果存储的是对象，此对象应实现 Comparable 接口，以便于对其进行排序。
-5. 多线程之Callable
-    1. Callable是一个接口，包含方法call()，接收一个泛型，默认是Object，作为call()的
-    返回值类型
-    public class CLoader implements Callable&lt;Boolean&gt; {  --&gt; 泛型指定为Boolean
-        public Boolean call() throw Exception {
-            ...... //执行任务
-            return true
-        }
-    }
-    CLoader cd1 = new CLoader(); CLoader cd2 = new CLoader();
-    2. 使用线程池，创建服务
-    ExecutorService es = Executors.newFixedThreadPool(2);
-    3. 提交执行
-    Future&lt;Boolean&gt; ft1 = es.submit(cd1);  Future&lt;Boolean&gt; ft2 = es.submit(cd2);
-    4. 获取结果
-    boolean re1 = ft1.get();  boolean re2 = ft2.get();
-    5. 关闭服务
-    es.shutdownNow();
-    6. 与Thread/Runnable的 run() 相比，call()可以抛出异常，而 run() 不能抛出异常，只能
-    try-catch捕获。
-6. lambda表达式
-    1. 针对的是只包含一个方法的接口，如Runnable
-    new Thread(new Runnable(){
-        public void run(){ System.out.println(&quot;start Run&quot;); }
-    }).start();
-    new Thread(()-&gt; {
-        System.out.println(&quot;start Run&quot;);
-    }).start();
-    2. Thread是Runnable的代理对象(静态代理)。
-7. 静态代理
-    1. 代理对象和原对象都实现同一个接口
-    interface Task {  void work();  }
-    2. 原对象
-    class Stuff implements Sask {
-        public void work() { }
-    }
-    3. 静态代理对象
-    class StaticProxy implements Task {
-        private Task target;
-        public StaticProxy(Task target) {
-            this.target = target;
-        }
-        public void work() {
-            this.start();
-            this.target.work();
-            this.end();
-        }
-        private void start(){ }
-        private void end(){ }
-    }
-    4. 通过代理对象，执行原对象的任务方法
-    new StaticProxy(new Stuff()).work();
-</code></pre><hr>
+        <h2 id="Ip相关的类：InetAddress"><a href="#Ip相关的类：InetAddress" class="headerlink" title="Ip相关的类：InetAddress"></a>Ip相关的类：InetAddress</h2><pre><code>1. 获取本机的Ip、hostname
+    InetAddress addr = InetAddress.getLocalHost();
+    String ip = addr.getHostAddress();
+    String hostName = addr.getHostName(); //计算机名
+2. 根据域名获取Ip、hostname
+    InetAddress addr = InetAddress.getByName(&quot;www.baidu.com&quot;); //内部是NDS解析
+    String ip = addr.getHostAddress(); //Ip
+    String hostName = addr.getHostName(); //域名www.baidu.com
+3. 如果getByName(&quot;Ip地址&quot;)，getHostName()获取的仍是Ip，而不是域名；
+4. 子类：Inet4Address、Inet6Address
+</code></pre><h2 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h2><pre><code>1. 端口号表示一个16位的二进制整数，2个字节，对应十进制0-65535
+    1. 公认端口0-1023，如80是http协议的默认端口
+    2. 注册端口1024-49151(分配给用户进程/应用程序)
+    3. 动态/私有端口49152-65535
+2. windows命令
+    1. netstat -ano  ---&gt; 查看所有的端口号
+    2. netstat -ano|findstr &quot;808&quot;  ---&gt; 查看指定端口号
+    3. tasklist|findstr &quot;808&quot;  ---&gt; 查看指定进程
+</code></pre><ol start="3">
+<li>InetSocketAddress：包含端口号，用于socket通信<br> InetSocketAddress s = new InetSocketAddress(“127.0.0.1/localhost”, 8080);<br> s.getHostName();  s.getAddress();  s.getPort();<h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><ol>
+<li>URL和URN都是URI的子集<ol>
+<li>URI：统一资源标识符，表示一个资源，比如一个具体的人</li>
+<li>URL：统一资源定位符，用地址定位一个资源，比如XX省XX市XX区…XX单元XX室的主人</li>
+<li>URN：统一资源名称，用名称定位一个资源，但不明确资源的位置，比如身份证号+姓名去找人</li>
+</ol>
+</li>
+<li>网络三大基石：HTML、HTTP、URL</li>
+<li>URL由4部分组成：协议、资源所在的主机域名、端口号、资源文件名</li>
+<li>URL url = new URL(“<a href="http://www.baidu.com:80/index.html#aa?xx=xxx&quot;)" target="_blank" rel="noopener">http://www.baidu.com:80/index.html#aa?xx=xxx&quot;)</a>;<ol>
+<li>url.getProtocol()：协议名</li>
+<li>url.getDefaultPort()：获取与此URL关联的协议的默认端口号</li>
+<li>url.getHost()：主机名/域名</li>
+<li>url.getFile()：端口号后的所有内容</li>
+<li>url.getPath()：端口号后、参数前的内容</li>
+<li>url.getQuery()：参数部分</li>
+<li>url.getRef()：锚点</li>
+</ol>
+</li>
+<li>相对路径构建URL<br> URL u1 = new URL(“<a href="http://www.baidu.com/aa/&quot;)" target="_blank" rel="noopener">http://www.baidu.com/aa/&quot;)</a>;<br> URL u2 = new URL(u, “b.html”); –&gt; <a href="http://www.baidu.com/aa/b.html" target="_blank" rel="noopener">http://www.baidu.com/aa/b.html</a></li>
+<li>发起请求<ol>
+<li>抓取网络数据，非浏览器访问<br>InputStream is = url.openStream();<br>BufferedReader br = new BufferedReader(new InputStreamReader(is, “UTF-8”));<br>String msg = null;<br>while(null != (msg=br.readLine())) {<br> System.out.println(msg);<br>}<br>br.close();</li>
+<li>模拟浏览器访问<br>HttpURLConnection conn = (HttpURLConnection) url.openConnection();<br>conn.setRequestMethod(“GET”);  –&gt;设置请求方式<br>conn.setRequestProperty(“User-Agent”, “value”); –&gt;设置请求头<br>BufferedReader br = new BufferedReader(<br> new InputStreamReader(conn.getInputStream(), “GBK”));<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2></li>
+</ol>
+</li>
+<li>DatagramSocket：用于发送/接受数据包的套接字；</li>
+<li>DatagramPacket：数据包；</li>
+<li>发送端<br> DatagramSocket client = new DatagramSocket(8888);<br> String data = “Hello I’m Client”;<br> byte[] bys = data.getBytes();<br> //发送给”127.0.0.1:9999”<br> DatagramPacket packet = new DatagramPacket(bys, 0, bys.length, <pre><code>new InetSocketAddress(&quot;127.0.0.1&quot;, 9999));
+</code></pre> client.send(packet);<br> client.close();</li>
+<li>接收端<br> DatagramSocket server = new DatagramSocket(9999); –&gt; 监听端口9999<br> byte[] container = new byte[1024*60];<br> DatagramPacket packet = new DatagramPacket(container, 0, container.length);<br> server.receive(packet);<br> byte[] bys = packet.getData();<br> int len = packet.getLength();<br> String data = new String(bys, 0, len);<br> server.close();<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2></li>
+<li>服务端：ServerSocket<br> ServerSocket server = new ServerSocket(8889);<br> Socket client = server.accept(); –&gt;阻塞式，等待客户端连接<br> DataInputStream dis = new DataInputStream(client.getInputStream());<br> String data = dis.readUTF(); –&gt;客户端的数据<br> dis.close();<br> client.close();<br> server.close();<ol>
+<li>通过每一次连接的client，向对应的客户端响应数据<br>DataOutputStream dos = new DataOutputStream(client.getOutputStream());<br>dos.writeUTF(“hello I’m Server”); –&gt;向客户端响应数据<br>dos.flush();<br>dos.close();</li>
+</ol>
+</li>
+<li>客户端：Socket<br> //指定服务端的Ip和端口号，发起连接请求<br> Socket client = new Socket(“127.0.0.1”, 8889);<br> DataOutputStream dos = new DataOutputStream(client.getOutputStream());<br> dos.writeUTF(“hello I’m Client”); –&gt;向服务端写入数据<br> dos.flush();<br> dos.close();<br> client.close();<ol>
+<li>client接收服务端的响应数据<br>DataInputStream dis = new DataInputStream(client.getInputStream());<br>String data = dis.readUTF(); –&gt;接收响应数据<br>dis.close();</li>
+</ol>
+</li>
+<li>HTTP底层正是TCP，浏览器作为客户端，也可以直接访问TCP服务器端.</li>
+</ol>
+</li>
+</ol>
+<hr>
 
       
     </div>
@@ -425,14 +414,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/01/03/Java多线程/" rel="next" title="Java多线程">
+                <i class="fa fa-chevron-left"></i> Java多线程
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/01/03/Java多线程/" rel="prev" title="Java多线程">
-                Java多线程 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/01/06/Java动态性/" rel="prev" title="Java动态性">
+                Java动态性 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -510,7 +503,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -565,7 +558,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ip相关的类：InetAddress"><span class="nav-number">1.</span> <span class="nav-text">Ip相关的类：InetAddress</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#端口号"><span class="nav-number">2.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL"><span class="nav-number">3.</span> <span class="nav-text">URL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP"><span class="nav-number">4.</span> <span class="nav-text">UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP"><span class="nav-number">5.</span> <span class="nav-text">TCP</span></a></li></ol></div>
             
 
           </div>

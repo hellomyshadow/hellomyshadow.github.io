@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="Koa脚手架1. 全局安装脚手架：npm install koa-generator -g 2. 创建项目：koa demo01  --&amp;gt; cd demo01  --&amp;gt; npm install 3. 运行项目：npm start 4. 脚手架创建的项目已经实现了路由的模块化，即项目的模块化。 路由模块化1. 与Express的路由模块化类似，把不同功能的路由拆分到不同的js文件中，然后">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-10T11:19:09.549Z">
+<meta property="og:updated_time" content="2019-02-26T12:35:49.667Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Koa-2">
 <meta name="twitter:description" content="Koa脚手架1. 全局安装脚手架：npm install koa-generator -g 2. 创建项目：koa demo01  --&amp;gt; cd demo01  --&amp;gt; npm install 3. 运行项目：npm start 4. 脚手架创建的项目已经实现了路由的模块化，即项目的模块化。 路由模块化1. 与Express的路由模块化类似，把不同功能的路由拆分到不同的js文件中，然后">
@@ -411,7 +411,7 @@
         }
     })
     3. 在art模板中使用过滤器，格式化传递的变量time：&lt;div&gt;{{time | dateFormat}}&lt;/div&gt;
-4. ajax请求返回JSON的中间件：npm install koa-jsonp --save
+4. koa-jsonp：ajax请求返回JSON的中间件，npm install koa-jsonp --save
     1. let jsonp = require(&apos;koa-jsonp&apos;);  ---&gt; 同时支持处理JSON和jsonp
     2. 配置jsonp中间件：app.use(jsonp());
     3. 一个简单的JSON数据接口：
@@ -430,7 +430,6 @@
 &lt;/form&gt;
 1. koa-multer：用于处理 multipart/form-data 类型的表单数据，主要用于上传文件；
 2. koa-multer基于 multer 模块：npm i koa-multer --save
-3. 配置multer
     let multer = require(&apos;koa-multer&apos;);
     let storage = multer.diskStorage({
         destination: function(req, file, cb) {
@@ -442,13 +441,15 @@
         }
     });
     let upload = multer({storage: storage});
-4. 处理上传文件
+3. 处理上传文件
     router.post(&apos;/doUpload&apos;, upload.single(&apos;pic&apos;), async (ctx)=&gt;{
         let filename = ctx.req.file.filename;  ---&gt; 上传的文件名
         let form = ctx.req.body; ---&gt; form表单的其他数据
     })
-5. upload.single(&apos;pic&apos;)：pic与&lt;input type=&quot;file&quot; name=&quot;pic&quot; /&gt;的name保持一致；
-6. koa-multer也支持多个文件上传，在github上的multer模块中有更多配置信息。
+4. upload.single(&apos;pic&apos;)：pic与&lt;input type=&quot;file&quot; name=&quot;pic&quot; /&gt;的name保持一致；
+5. koa-multer也支持多个文件上传，在github上的multer模块中有更多配置信息；
+6. koa-body：用于取代 koa-bodyparser 和 koa-multer
+</code></pre><h3 id="路由鉴权"><a href="#路由鉴权" class="headerlink" title="路由鉴权"></a>路由鉴权</h3><pre><code>1. koa-jwt：用于路由鉴权、token验证
 </code></pre><h3 id="富文本编辑器"><a href="#富文本编辑器" class="headerlink" title="富文本编辑器"></a>富文本编辑器</h3><pre><code>1. ueditor：百度的轻量级、可定制富文本web编辑器，开源基于MIT协议，允许自由使用和修改代码
 2. ueditor官方虽然没有提供NodeJs版本，但官方推荐的第三方插件里有nodeJs版本；
     1. 第三方插件直接支持express，不支持koa2
@@ -735,7 +736,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -790,7 +791,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Koa脚手架"><span class="nav-number">1.</span> <span class="nav-text">Koa脚手架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由模块化"><span class="nav-number">2.</span> <span class="nav-text">路由模块化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多补充"><span class="nav-number">3.</span> <span class="nav-text">更多补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件上传"><span class="nav-number">3.1.</span> <span class="nav-text">文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#富文本编辑器"><span class="nav-number">3.2.</span> <span class="nav-text">富文本编辑器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SEO优化"><span class="nav-number">4.</span> <span class="nav-text">SEO优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API接口"><span class="nav-number">5.</span> <span class="nav-text">API接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#跨域问题"><span class="nav-number">5.1.</span> <span class="nav-text">跨域问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTful-API"><span class="nav-number">5.2.</span> <span class="nav-text">RESTful API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布线上"><span class="nav-number">6.</span> <span class="nav-text">发布线上</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx配置"><span class="nav-number">6.1.</span> <span class="nav-text">nginx配置</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Koa脚手架"><span class="nav-number">1.</span> <span class="nav-text">Koa脚手架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由模块化"><span class="nav-number">2.</span> <span class="nav-text">路由模块化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多补充"><span class="nav-number">3.</span> <span class="nav-text">更多补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件上传"><span class="nav-number">3.1.</span> <span class="nav-text">文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由鉴权"><span class="nav-number">3.2.</span> <span class="nav-text">路由鉴权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#富文本编辑器"><span class="nav-number">3.3.</span> <span class="nav-text">富文本编辑器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SEO优化"><span class="nav-number">4.</span> <span class="nav-text">SEO优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API接口"><span class="nav-number">5.</span> <span class="nav-text">API接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#跨域问题"><span class="nav-number">5.1.</span> <span class="nav-text">跨域问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTful-API"><span class="nav-number">5.2.</span> <span class="nav-text">RESTful API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布线上"><span class="nav-number">6.</span> <span class="nav-text">发布线上</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx配置"><span class="nav-number">6.1.</span> <span class="nav-text">nginx配置</span></a></li></ol></li></ol></div>
             
 
           </div>

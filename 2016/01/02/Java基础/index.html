@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaEE,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta name="keywords" content="JavaEE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基础">
+<meta property="og:url" content="http://yoursite.com/2016/01/02/Java基础/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-03-02T05:31:53.922Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java基础">
+<meta name="twitter:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/02/Java基础/">
+
+
+
+
+
+  <title>Java基础 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/02/Java基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-02T00:00:00+08:00">
+                2016-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h2><pre><code>1. 浮点数的精确计算：BigDecimal，java.math包中的类
+    1. 相减
+    BigDecimal db1 = BigDecimal.valueOf(1.0);  --&gt; 浮点数1.0
+    db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&gt; 1.0 - 0.1
+    2. 相除
+    BigDecimal db2 = BigDecimal.valueOf(0.1);
+    BigDecimal db3 = BigDecimal.valueOf(1.0/10.0);
+    System.out.println(db2.equals(db3)); --&gt; true
+2. 自动类型转换：容量小的类型自动向容量大的类型转换
+    1. 特例：byte b = 123;
+    2. 123 本身是 int 类型(Java中的数值默认是int类型)，byte类型的范围为-128~127
+    3. 所以，123 可以直接赋值给 byte类型(自动转为byte类型)。
+3. 溢出
+    1. int m = 1000000000;  int y = 20;
+    2. int t = m * y; --&gt; 负数(溢出导致)
+    3. long t = m * (long)y; --&gt; 20000000000
+4. Java5提供了可变长参数
+    public void print(int n, String... args){
+        for(String temp: args){ } --&gt;遍历可变长参数
+    }
+    print(2, &quot;a&quot;);  print(2, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;);
+5. TreeMap与TreeSet
+    1. TreeMap：红黑二叉树的典型实现，按照key自增长的方向排序；
+    2. TreeSet：内部维持了一个简化版的TreeMap，通过key存储Set的元素；
+    3. 如果存储的是对象，此对象应实现 Comparable 接口，以便于对其进行排序。
+6. lambda表达式：JDK8新特性
+    1. 针对的是只包含一个方法的接口，如Runnable
+    new Thread(new Runnable(){
+        public void run(){ System.out.println(&quot;start Run&quot;); }
+    }).start();
+    new Thread(()-&gt; {
+        System.out.println(&quot;start Run&quot;);
+    }).start();
+    2. Thread是Runnable的代理对象(静态代理)。
+7. 静态代理
+    1. 代理对象和原对象都实现同一个接口
+    interface Task {  void work();  }
+    2. 原对象
+    class Stuff implements Sask {
+        public void work() { }
+    }
+    3. 静态代理对象
+    class StaticProxy implements Task {
+        private Task target;
+        public StaticProxy(Task target) {
+            this.target = target;
+        }
+        public void work() {
+            this.start();
+            this.target.work();
+            this.end();
+        }
+        private void start(){ }
+        private void end(){ }
+    }
+    4. 通过代理对象，执行原对象的任务方法
+    new StaticProxy(new Stuff()).work();
+8. 多线程之Callable
+    1. Callable是一个接口，包含方法call()，接收一个泛型，默认是Object，作为call()的
+    返回值类型
+    public class CLoader implements Callable&lt;Boolean&gt; {  --&gt; 泛型指定为Boolean
+        public Boolean call() throw Exception {
+            ...... //执行任务
+            return true
+        }
+    }
+    CLoader cd1 = new CLoader(); CLoader cd2 = new CLoader();
+    2. 使用线程池，创建服务
+    ExecutorService es = Executors.newFixedThreadPool(2);
+    3. 提交执行
+    Future&lt;Boolean&gt; ft1 = es.submit(cd1);  Future&lt;Boolean&gt; ft2 = es.submit(cd2);
+    4. 获取结果
+    boolean re1 = ft1.get();  boolean re2 = ft2.get();
+    5. 关闭服务
+    es.shutdownNow();
+    6. 与Thread/Runnable的 run() 相比，call()可以抛出异常，而 run() 不能抛出异常，只能
+    try-catch捕获。
+</code></pre><h2 id="JDK10新特性"><a href="#JDK10新特性" class="headerlink" title="JDK10新特性"></a>JDK10新特性</h2><pre><code>1. 局部变量类型推断
+    1. var：保留类型(不是关键字)，只针对局部变量
+    public void test() {
+        var i = 10;
+        var s = &quot;abc&quot;;
+        var list = new ArrayList&lt;&gt;();
+        var user = new User();
+    }
+    2. 不允许对var变量赋值null，编译器认为毫无意义，因为null就是null类型
+    var a = null; --&gt; 编译器报错
+    3. 不允许对方法的参数使用var，因为参数没有值，无法推断类型
+2. 垃圾收集器的优化
+    1. JDK9：新生代使用ParNew收集器，老年代使用Parallel Obl收集器
+    2. JDK10：G1(Garbage-First) 全收集器
+3. 新增73个新功能扩展API
+    1. java.util.list/Set/Map新增静态方法copyOf()，按照其迭代顺序返回一个不可修改的集合
+    var list = new ArrayList&lt;String&gt;();  list.add(&quot;a&quot;);  list.add(&quot;b&quot;);
+    var cl = List.copyOf(list);
+    2. java.io.ByteArrayOutputStream新增方法toString(charset)，通过指定的字符集编码，
+    将缓冲区的内容转为字符串
+    3. java.io.PrintStream/PrintWriter，新增三个构造方法，方法参数上可以指定字符集
+    4. java.io.Reader新增transferTo()，将Reader中读取的所有字符串，按照读取的顺序写入给
+    指定Writer
+    var r = new BufferedReader(new InputStreamReader(
+        new FileInputStream(&quot;d:/a.txt&quot;), &quot;GBK&quot;));
+    var p = new PrintWriter(new File(&quot;d:/c.txt&quot;));
+    r.transferTo(p);
+    p.flush();  p.close();  r.close();
+    5. java.util.Formatter/Scanner 新增三个构造器，需要一个charset参数，解决乱码问题
+</code></pre><h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><pre><code>1. XML：可扩展标记语言
+2. XML声明：定义XML的版本和编码信息
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+3. 注释：&lt;!-- 注释 --&gt;
+4. DTD：Document Type Definition，用于约束XML的文档格式
+5. XSD：XML Schema，DTD的替代者，XSD本身也是XML
+</code></pre><h3 id="XML解析"><a href="#XML解析" class="headerlink" title="XML解析"></a>XML解析</h3><pre><code>1. DOM解析：官方解析方式，基于XML树，会加载整个文档，比较消耗资源，适用于多次访问XML
+2. SAX解析：基于事件的流式解析，自顶向下，不会加载整个文档，解析速度快，占用内存少；
+    1. SAX无法知道父子标签，也无法随机访问某个标签；只能读取XML，不能修改；
+    2. SAXParserFactory、SAXParser、继承DefaultHandler自定义解析器、定义对应的JavaBean
+    3. DOM和SAX都是原生解析方式，JDOM和DOM4J是第三方解析框架
+3. JDOM：比DOM更快，仅使用具体类，而不使用接口
+4. dom4j：JDOM的升级版，功能强大，性能优异，使用接口，而不使用实现类
+</code></pre><h2 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h2><pre><code>1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口；
+2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API；
+3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现；
+4. ORM框架：Hibernate、mybatis
+</code></pre><h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><pre><code>1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱动
+    1. 装载MySql驱动
+    Class.forName(&quot;com.mysql.jdbc.Driver&quot;); --&gt; MySQL5.0
+    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;); --&gt; MySQL6.0+
+2. DriverManager：JDBC的管理层，作用于用户和驱动程序之间，在数据库和驱动程序之间建立连接
+3. Connection：与特定数据库的连接会话，执行SQL语句并返回结果
+    1. 连接MySQL5.0数据库
+    Connection conn = DriverManager.getConnection(
+        &quot;jdbc:mysql://host:port/database&quot;, &quot;username&quot;, &quot;password&quot;);
+    2. 连接MySQL6.0+数据库，需要指定时区serverTimezone
+    jdbc:mysql://host:port/database?useUnicode=true&amp;characterEncoding=UTF-8
+    &amp;serverTimezone=Asia/Shanghai
+    &amp;useSSL=false&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
+    3. 连接的建立是比较耗时的，内部包含Socket，实际上是建立一个Socket远程连接;
+    4. 关闭连接：conn.close();
+4. Statement：执行静态SQL语句并返回结果的对象
+    1. Statement用于发送简单的SQL语句(不带参数)，执行SQL时需要拼接参数，有SQL注入的危险
+    Statement stat = conn.createStatement();
+    2. PreparedStatement：继承Statement，用于发送含有任意多个参数的SQL语句，会预编译，
+    所以效率比Statement高，且防SQL注入；
+    String sql = &quot;insert into users(name, time) values(?, ?)&quot;; --&gt; ? 表示占位符
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setString(1, &quot;Mack&quot;);  --&gt; 设置字符串类型的占位符，占位符索引从1开始
+    stat.setDate(2, new java.sql.Date(System.currentTimeMillis())); -&gt;设置日期时间
+    stat.execute();  --&gt; 执行SQL语句
+    3. 如果不想关心字段类型，则使用 setObject()
+    4. CallableStatement：继承自PreparedStatement，由 conn.prepareCall(sql) 创建，
+    用于调用存储过程。
+5. 常用方法
+    1. execute()：运行语句，返回是否有结果集(true/false)
+    2. executeQuery()：运行select语句，返回 ResultSet 结果集
+    3. executeUpdate()：运行insert/update/delete操作，返回更新的行数
+    4. close(); 关闭
+6. ResultSet
+    String sql = &quot;select * from users where id&gt;?&quot;;
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setInt(1, 10);
+    ResultSet rs = stat.executeQuery();
+    while (rs.next()) {
+        int id = rs.getInt(1); --&gt; 获取第一列的数据，且字段类型为int
+        String name = rs.getString(2); --&gt; 获取第二列的数据，且字段类型为String
+    }
+    rs.close();  stat.close(); --&gt;关闭
+    1. 如果不想关心数据类型，则使用 getObject()
+    2. rs.next()：迭代下一行数据，如果没有了，则返回false
+7. 时间相关
+    1. java.sql.Date(年月日)
+    2. java.sql.Time(时分秒)
+    3. java.sql.Timestamp(年月日时分秒)
+8. Properties
+    1. 读取和处理配置资源文件中的信息，如数据库url、database、username、password等信息
+    2. 如db.properties文件，用于存储数据的配置信息：
+    driver=com.mysql.cj.jdbc.Driver
+    url=jdbc:mysql://localhost:3306/db_test?serverTimezone=Asia/Shanghai
+    user=root
+    password=123456
+    3. 加载db.properties文件
+    static Properties pros = null;
+    static {
+        pros = new Properties();
+        pros.load(Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream(&quot;db.properties&quot;));
+    }
+    4. 使用db.properties中的配置信息
+    Class.forName(pros.getProperty(&quot;driver&quot;));
+</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><pre><code>1. PreparedStatement的预编译空间有限，数据量特别大时会发生异常，所以建议使用Statement
+2. JDBC中的事务默认是自动提交，还需要设置为手动提交
+    conn.setAutoCommit(false); --&gt; 禁止自动提交
+    Statement stat = conn.createStatement();
+    for(int i=0; i&lt;20000; i++) {
+        stat.addBatch(&quot;insert into ...&quot;); --&gt;一次性插入20000条数据
+    }
+    stat.executeBatch();
+    conn.commit(); //手动提交事务
+</code></pre><h3 id="大数据量处理"><a href="#大数据量处理" class="headerlink" title="大数据量处理"></a>大数据量处理</h3><pre><code>1. CLOB：Character Large Object，用于存储大文本数据
+    1. 不同数据库对大文本(大字段)有不同的处理方式，通常以流的方式处理；
+    2. MySQL中的相关类型及其最大长度(字符)：TINYTEXT(2^8-1)，TEXT(2^16-1)，
+    MEDIUMTEXT(2^24-1)，LONGTEXT(2^32-1或4GB)
+2. JDBC操作大文本
+    1. 存储
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setClob(3, new FileReader(&quot;d:/a.txt&quot;)); //接受一个流对象
+    2. 读取
+    ResultSet rs = ...
+    while (rs.next()) {
+        Clob c = rs.getClob(&quot;desc&quot;); --&gt; 指定字段名获取值
+        Reader r = c.getCharacterStream(); --&gt; 获取大文本流
+    }
+3. BLOB：Byte Large Object，用于存储大二进制数据
+    1. 不同数据库对大二进制数据(大字段)有不同的处理方式，通常以流的方式处理；
+    2. MySQL中的相关类型及其最大长度(字符)：TINYBLOB(2^8-1)，BLOB(2^16-1)
+    MEDIUMBLOB(2^24-1)，LONGBLOB(2^32-1或4GB)
+4. JDBC操作大二进制数据
+    1. 存储
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setBlob(3, new FileInputStream(&quot;d:/b.jpg&quot;)); //接受一个流对象
+    2. 读取
+    ResultSet rs = ...
+    while (rs.next()) {
+        Blob b = rs.getBlob(&quot;avatar&quot;); --&gt; 指定字段名获取值
+        InputStream is = b.getBinaryStream(); --&gt;获取大二进制流
+    }
+</code></pre><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><pre><code>1. 事务：一组要么同时执行成功，要么同时执行失败的SQL语句，是数据库操作的一个执行单元；
+2. 事务开始于：
+    1. 连接数据库，并执行一条DML语句(INSERT、UPDATE、DELETE)
+    2. 前一个事务结束后，又输入另一条DML语句
+3. 事务结束于：
+    1. 执行COMMIT或ROLLBACK语句；
+    2. 执行一条DDL语句，如CREATE TABLE，这种情况会自动执行COMMIT语句；
+    3. 执行一条DCL语句，如GRANT，这种情况也会自动执行COMMIT语句；
+    4. 断开与数据库的连接；
+    5. 执行一条DML语句，但却失败了，这种情况会执行ROLLBACK语句。
+4. 四大特性：
+    1. 原子性：一个事务内的所有操作是一个整体，要么全部成功，要么全部失败；
+    2. 一致性：一个事务内有一个操作失败时，所有更改过的数据都必须回滚到初始状态；
+    3. 隔离性：查看数据状态时，要么是另一个事务修改之前的状态，要么是修改之后的状态，不会
+    出现中间状态的数据，级别：读取未提交&lt;读取已提交&lt;可重复读&lt;序列化，通常是读取已提交；
+    4. 持久性：对于系统的影响是永久性的；
+    conn.setAutoCommit(false); --&gt; 禁止事务自动提交
+    conn.commit(); --&gt; 手动提交事务
+    conn.rollback(); --&gt; 提交失败后(发生异常)，执行数据回滚
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaEE/" rel="tag"># JavaEE</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/03/Java多线程/" rel="prev" title="Java多线程">
+                Java多线程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK10新特性"><span class="nav-number">2.</span> <span class="nav-text">JDK10新特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XML"><span class="nav-number">3.</span> <span class="nav-text">XML</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#XML解析"><span class="nav-number">3.1.</span> <span class="nav-text">XML解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDBC"><span class="nav-number">4.</span> <span class="nav-text">JDBC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口"><span class="nav-number">4.1.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#批量处理"><span class="nav-number">4.2.</span> <span class="nav-text">批量处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大数据量处理"><span class="nav-number">4.3.</span> <span class="nav-text">大数据量处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">4.4.</span> <span class="nav-text">事务</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
