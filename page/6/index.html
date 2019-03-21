@@ -533,6 +533,360 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/08/JavaEE之Servlet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/08/JavaEE之Servlet/" itemprop="url">JavaEE之Servlet</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-08T00:00:00+08:00">
+                2016-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="servlet"><a href="#servlet" class="headerlink" title="servlet"></a>servlet</h2><pre><code>1. HTTP的特点：快速连接、灵活、无连接、无状态；
+    1. 无连接：限制每次连接只处理一个请求，可以节省传输时间；
+    2. 无状态：HTTP协议是无状态协议，对于事物处理没有记忆能力，如果第二次请求用到了第一次
+    请求响应的数据，仍然需要重新传递。
+2. HTTP1.1版本后支持可持续连接：连接不立即断开，而是一段时间内没任何请求时，才会断开通道；
+3. HTTP的请求方式
+    1. HTTP1.0定义三种请求方法：GET、POST、HEAD
+    2. HTTP1.1新增5种：OPTIONS、PUT、DELETE、TRACE、CONNECT
+4. Tomcat
+    1. 目录结构：bin(可执行文件目录)、conf(服务器配置文件目录)、lib(jar包目录)、log(日志)
+    temp(缓存文件目录)、webapps(存放web应用的目录)、work(存放JSP转换后的servlet文件)
+    2. windows系统启动Tomcat：bin/startup.bat，默认IP和端口号为localhost:8080
+    3. Tomcat的运行依赖JDK，必须配置JDK环境。
+5. log4j：打印日志，引入log4j.jar后，把log4j.properties放在项目的src目录下；
+6. 在原生的HTML中，使用 &lt;frame&gt; 引入公共的html文件
+    &lt;frameset cols=&quot;25%,50%,25%&quot;&gt;
+        &lt;frame src=&quot;left.html&quot; /&gt;
+        &lt;frame src=&quot;content.html&quot; /&gt;
+        &lt;frame src=&quot;right.html&quot; /&gt;
+    &lt;/frameset&gt;
+    1. 在存在层级关系的HTML页面中，window.self表示自身的window对象;
+    2. window.parent表示父级HTML的window对象;
+    3. window.top表示最顶级HTML的window对象.
+</code></pre><h3 id="Servlet技术"><a href="#Servlet技术" class="headerlink" title="Servlet技术"></a>Servlet技术</h3><pre><code>1. Servlet是Java实现的一个接口，任何实现Servlet接口的类都可以成为Servlet；
+2. Servlet运行于支持Java的应用服务器中，理论上可以响应任何类型的请求，但一般只用于扩展基于
+   HTTP协议的Web服务器；
+3. Servlet的特点
+    1. 运行在支持Java的应用服务器上，简单方便、可移植性强；
+    2. 服务器会自动根据请求调用对应的Servlet，进行请求的处理。
+4. Servlet的使用(MyEclipse)
+    1. 继承HttpServlet，覆写service()，处理请求、响应数据；
+    public class ServletTest extends HttpServlet {
+        protected void service(HttpServletRequest req, HttpServletResponse resp) {
+            // super.service(req, resp); -----&gt; 务必注释掉，否则会报405
+            resp.getWriter().write(&quot;Hello ServletTest&quot;);
+        }
+    }
+    2. 在WebRoot/WEB-INF/web.xml中，配置servlet
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;ServletTest&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;it.test.cn.ServletTest&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ServletTest&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/test&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+    3. 在Tomcat/webapps下新建目录servtest，把WebRoot目录中的文件复制到servtest目录中
+    4. 启动Tomcat，访问ServletTest：http://localhost:8080/servtest/test
+    5. webapps下的项目文件夹名称，又叫虚拟项目名；servlet的url-pattern又称为servlet别名
+    6. 除了在web.xml中配置Servlet，还可以使用注解配置
+    @WebServlet(name = &quot;ServletTest&quot;, urlPatterns=&quot;/test&quot;)
+    public class ServletTest extends HttpServlet { ... }
+    7. Servlet3.0部署 web.xml 的根节点 &lt;web-app&gt; 时，metadata-complete默认值为false，
+    表示启用注解支持；设置为true时，表示只依赖 web.xml，忽略所有注解。
+5. Servlet的生命周期
+    1. Servlet的初始化函数：init()，第一次访问此Servlet时加载进内存，执行初始化，一直到
+    关闭Tomcat服务，无论接受多少请求，都只会执行一次，即使删除本地文件，也能正常访问；
+    2. service()：处理请求的方法，每次接收到请求都会执行；
+    3. destory()：Servlet销毁的方法，关闭Tomcat服务时执行；
+    4. 在 web.xml 中，在&lt;servlet&gt;中配置子节点&lt;load-on-startup&gt;1&lt;/load-on-startup&gt;，
+    那么此Servlet将在启动Tomcat服务时，加载进内存，执行 init() 初始化。
+6. doGet()、doPost()
+    1. doGet() 处理Get请求，doPost() 处理Post请求，service() 可以同时处理这两种请求;
+    2. 如果Servlet中同时配置了 doGet()、doPost()、service()，那么优先执行service();
+    3. service()中的 super.service() 会根据当前的请求方式，再去调用doGet()、doPost()
+    所以在覆写 service() 时，通常注释掉super.service(); 否则会报405
+7. HttpServletRequest：请求对象
+    1. getMethod()：获取请求方法；
+    2. getRequestURL()：获取请求的完整地址；
+    3. getRequestURI()：请求接口地址，不包含域名和端口号；
+    4. getHeader(&quot;key&quot;)：根据请求行的键获取值；
+    5. Enumeration&lt;String&gt; e = req.getHeaderNames(); 所有请求行的键的枚举
+    while(e.hasMoreElements()) {
+        String s = e.nextElement();  --&gt; 键
+    }
+    6. getParameter(&quot;key&quot;)：获取用户数据(Get和Post)；
+    7. getParameterValues(&quot;key&quot;)：类似Checkbox的一键多值；
+8. HttpServletResponse：响应对象
+    1. setHeader(&quot;key&quot;, &quot;value&quot;)：设置响应头，同键覆盖；
+    2. addHeader(&quot;key&quot;, &quot;value&quot;)：添加响应头，同键不会覆盖；
+    3. sendError(200, &quot;OK&quot;)：设置响应状态码；
+    4. res.getWriter().write(...)：设置响应体；
+    5. 中文乱码问题：
+    res.setHeader(&quot;content-type&quot;, &quot;text/html;charset=utf-8&quot;);
+    或 res.setContentType(&quot;text/html;charset=utf-8&quot;);
+    6. text/html：表示响应体是HTML，让浏览器按照HTML进行解析；
+    7. text/plain：响应体是普通字符串；
+    8. text/xml：响应体是XML
+</code></pre><h2 id="响应处理"><a href="#响应处理" class="headerlink" title="响应处理"></a>响应处理</h2><pre><code>1. 请求乱码问题
+    1. 浏览器默认是iso8859-1编码，用户提交的数据为中文时，可能出现乱码，需要转为utf-8
+    String a = new String(b.getBytes(&quot;iso8859-1&quot;), &quot;utf-8&quot;); --&gt; 通用解决方式
+    2. GET请求的扩展方式：req.setCharacterEncoding(&quot;utf-8&quot;);
+    同时配置Tomcat/conf/server.xml：&lt;Connector useBodyEncodingForURI=&quot;true&quot; .../&gt;
+    3. POST请求的扩展方式：req.setCharacterEncoding(&quot;utf-8&quot;);
+2. 请求转发
+    1. 特点：一次请求，浏览器地址栏的信息不变；
+    2. req.getRequestDispatcher(&quot;转发的地址&quot;).forward(req, resp);
+    3. 在转发过程中，因为是同一个HttpServletRequest对象，可以从当前Servlet向目的Servlet
+    传递数据：
+    req.setAttribute(&quot;key&quot;, value); ---&gt; 当前Servlet设置数据
+    value = req.getAttribute(&quot;key&quot;); ---------------------&gt; 目的Servlet获取数据
+    4. session.removeAttribute(&quot;key&quot;); 移除键值数据。
+3. 请求重定向
+    1. 特点：两次请求，两个Request对象，浏览器地址栏信息改变；
+    2. resp.sendRedirect(&quot;地址&quot;);
+    3. 既然是两个Request对象，要实现数据传递，只能借助Session
+</code></pre><h3 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h3><pre><code>1. Cookie是浏览器端的数据存储，在服务器端响应数据时，告诉浏览器存储Cookie
+2. 在服务器端声明Cookie
+    Cookie ck = new Cookie(&quot;key&quot;, &quot;value&quot;);
+    resp.addCookie(ck);
+    1. 如果需要存储多个key-value，则创建多个Cookie对象；
+    2. 默认情况下，Cookie临时存储在浏览器内存中，一旦关闭浏览器，Cookie将消失；
+    3. 设置Cookie的有效期：ck.setMaxAge(3*24*3600); --&gt; 3天
+    4. 设置有效期的Cookie会存储在浏览器本地，即使关闭了浏览器，只要未过期、就不会消失。
+3. 默认情况下，每次请求都会携带当前域名下的Cookie，除非设置有效路径
+    1. ck.setPath(&quot;/abc/xxx&quot;);
+    2. 只有在请求 /abc/xxx 时才会携带此Cookie
+4. 在服务器端获取请求对象中携带的Cookie
+    Cookie[] cks = req.getCookies();
+    for(Cookie c: cks) {
+        String name = c.getName();
+        String value = c.getValue();
+    }
+</code></pre><h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><pre><code>1. 同一用户、不同请求的数据共享，如重定向的两个Servlet，可以使用Session存储共享数据；
+2. Session存储在服务器端，标识不同用户的Session的唯一ID，会以Cookie的形式存储在浏览器端
+    用户第一次访问服务器 --&gt; 服务器创建Session，并将此Session对象的JSESSIONID以Cookie
+    的形式存储到浏览器中 --&gt; 同一个用户再次访问时，会携带此JSESSIONID --&gt; 通过JSESSIONID
+    查找此用户的Session数据
+3. Session的特点：存储在服务器端、由服务器端创建、依赖Cookie技术、一次会话
+4. 创建/获取Session
+    1. HttpSession hs = req.getSession();  --&gt; 没有Session对象则创建，有则获取
+    2. 创建Session之后，会自动把JSESSIONID作为Cookie返回给浏览器存储；
+    2. hs.getId(); --&gt; 获取Session的唯一标识JSESSIONID
+5. JSESSIONID默认是临时存储，关闭浏览器则失效；
+6. Session的默认存储时间是30分钟
+    1. 关闭浏览器，JSESSIONID就失效了，但服务器并不知道，所以就不能及时删除对应的Session，
+    这就需要设置Session的过期时间了，以免服务器端的Session数据过多；
+    1. 设置Session的有效期：hs.setMaxInactiveInterval(60); --&gt; 60秒
+    2. 不管是默认值还是自定义有效期，只要在有效期内发起了请求，Session有效期都会重新计时；
+    3. hs.invalidate(); --&gt; 强制失效
+    4. 如果Session失效了，req.getSession() 还会重新创建Session，并将ID存储到浏览器
+7. Session的数据存储
+    1. hs.setAttribute(&quot;key&quot;, value); --&gt; 在一个Servlet中存储Session数据
+    2. value = hs.getAttribute(&quot;key&quot;);  ----&gt; 在其他Servlet中获取Session中的数据
+8. 配置Session的默认有效期
+    1. 在Tomcat/conf/web.xml中
+    &lt;session-config&gt; &lt;session-timeout&gt;30&lt;/session-timeout&gt; &lt;/session-config&gt;
+    2. 此配置对Tomcat下部署的所有项目有效；
+    3. 在项目下的web.xml中配置 &lt;session-config&gt; , 只对本项目有效。
+</code></pre><h3 id="ServletContext"><a href="#ServletContext" class="headerlink" title="ServletContext"></a>ServletContext</h3><pre><code>1. ServletContext：一个项目只有一个ServletContext对象；
+2. ServletContext的生命周期：从服务器启动到结束；
+3. 三种获取方式：
+    1. ServletContext sc = this.getServletContext();
+    2. ServletContext sc = this.getServletConfig().getServletContext();
+    3. ServletContext sc = req.getSession().getServletContext();
+4. 不同用户可以共享ServletContext数据
+    1. sc.setAttribute(&quot;key&quot;, value);  --&gt; 设置
+    2. value = sc.getAttribute(&quot;key&quot;); --&gt; 获取
+5. 获取项目 web.xml 的全局配置数据
+    1. 配置全局数据
+    &lt;web-app ...&gt;
+        &lt;context-param&gt;  ---&gt; 一组&lt;context-param&gt;只能存储一对键值数据，可以声明多组
+            &lt;param-name&gt;key&lt;/param-name&gt;
+            &lt;param-value&gt;value&lt;/param-value&gt;
+        &lt;/context-param&gt;
+    2. String param = sc.getInitParameter(&quot;key&quot;);
+    3. sc.getInitParameterNames();  --&gt; 键的枚举
+    4. 作用：将静态数据和代码进行解耦
+6. 获取项目WebRoot目录下的资源路径(MyEclipse环境，WebRoot目录下文件会复制到Tomcat中)
+    1. 在WebRoot下创建doc目录，在doc下新建文件a.txt
+    2. String doca = sc.getRealPath(&quot;/doc/a.txt&quot;);  --&gt; 获取a.txt的路径
+    3. InputStream is = sc.getResourceAsStream(&quot;/doc/a.txt&quot;);  --&gt; 获取流对象
+    4. ServletContext只能获取资源文件，不能获取class文件(需要类加载器)
+7. 比如，统计一段时间内的访问次数，可以使用ServletContext
+</code></pre><h3 id="ServletConfig"><a href="#ServletConfig" class="headerlink" title="ServletConfig"></a>ServletConfig</h3><pre><code>1. ServletConfig是Servlet的专属配置对象，每个Servlet都单独拥有一个ServletConfig对象；
+2. ServletConfig用于获取 web.xml 中的Servlet配置信息；
+3. 获取Servlet的ServletConfig对象：
+    ServletConfig config = this.getServletConfig();
+4. 在 web.xml 的 &lt;servlet&gt; 下配置：
+    &lt;init-param&gt;
+        &lt;param-name&gt;key&lt;/param-name&gt;
+        &lt;param-value&gt;value&lt;/param-value&gt;
+    &lt;/init-param&gt;
+5. 获取Servlet配置的键-值数据：String value = config.getInitParameter(&quot;key&quot;);
+</code></pre><h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><pre><code>1. Tomcat/conf/web.xml 与 Web项目/web.xml
+    1. Tomcat下的web.xml为全局配置，对所有web项目有效，配置公共信息；
+    2. web项目/web.xml为局部配置，只对当前项目有效；
+    3. 对于相同的配置内容，web项目/web.xml的优先级更高。
+2. web.xml的核心配置：
+    1. 全局上下文ServletContext、Servlet配置context-param、过滤器filter、监听器listener
+    2. 排列顺序是任意的，但加载顺序是固定的：
+    ServletContext --&gt; context-param --&gt; listener --&gt; filter --&gt; Servlet
+    3. web.xml都是在服务器启动时加载
+</code></pre><h3 id="server-xml"><a href="#server-xml" class="headerlink" title="server.xml"></a>server.xml</h3><pre><code>1. Tomcat/conf/server.xml，核心节点&lt;Service&gt;，一个&lt;Server&gt;节点下可以配置多个&lt;Service&gt;
+    1. HTTP协议的端口号配置
+    &lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot; 
+        connectionTimeout=&quot;20000&quot; redirectPort=&quot;8443&quot; /&gt;
+    2. 服务器集群配置
+    &lt;Connector port=&quot;8009&quot; protocol=&quot;AJP/1.3&quot; redirectPort=&quot;8443&quot; /&gt;
+2. 引擎节点：&lt;Engine name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot;&gt;
+    1. 一个&lt;Service&gt;节点下只能配置一个&lt;Engine&gt;节点
+    2. &lt;Host name=&quot;localhost&quot;  appBase=&quot;webapps&quot; ...&gt;，appBase属性指定项目所在的目录
+    3. &lt;Engine&gt;的defaultHost属性指定了默认的host，指向子节点&lt;Host name=&quot;localhost&quot; ...&gt;
+    4. 浏览器访问Tomcat服务器时，如果输入的host在&lt;Engine&gt;下没有配置，如本机的私有地址
+    192.168.xxx.xxx，则执行默认的host
+3. 在&lt;Host&gt;节点下配置热部署
+    &lt;Context path=&quot;/abc&quot; reloadable=&quot;true&quot; docBase=&quot;F:/WebTest&quot; /&gt;
+    1. path：项目的虚拟目录名；
+    2. reloadable：是否自动加载；
+    3. docBase：项目所在的绝对路径；
+    4. 热部署不需要在Tomcat/webapps下为项目创建文件夹(项目的虚拟目录)，所以如果项目删除，
+    对应的&lt;Context/&gt;也必须删除，否则Tomcat启动会报错。
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/06/Java动态性/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1951,7 +2305,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

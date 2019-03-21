@@ -2397,7 +2397,9 @@
     height:100%; width:0px; vertical-align:middle; } --&gt;垂直居中，作为参考基线
     #wrap img { vertical-align:middle; } --&gt;图片水平垂直居中
     2. &lt;img /&gt;会参考伪元素，实现水平居中，在使用vertical-align实现垂直居中；
-    3. &lt;img /&gt;和&lt;input /&gt;都是具有内联块特性的元素，所以这种居中方式对内联块元素都有效。
+    3. 图片和文字排列在一行时，默认它们的基线对齐，要让文字与图片的中间对齐：
+    img { vertical-align: middle; }
+    &lt;span&gt;文字文字文字&lt;/span&gt; &lt;img src=&quot;...&quot; /&gt; &lt;span&gt;文字文字文字&lt;/span&gt;
 </code></pre><h2 id="水平垂直居中"><a href="#水平垂直居中" class="headerlink" title="水平垂直居中"></a>水平垂直居中</h2><pre><code>1. 水平居中：margin: auto; 浏览器渲染时仍解析为margin:0 auto; 浮动/定位时auto失效；
 2. CSS2.1的标准没有直接垂直居中的属性，所以只能间接实现盒子的垂直居中；
     &lt;div id=&quot;wrap&quot;&gt; &lt;div id=&quot;inner&quot;&gt;Test&lt;/div&gt; &lt;/div&gt;
@@ -3301,7 +3303,7 @@ HTML是一种用于制作网页的语言，由一个个标签组成，文件的�
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

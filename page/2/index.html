@@ -473,8 +473,8 @@
     实际引用的是foo/index.js
 4. 通过 npm 下载第三方模块时，也会自动下载到node_modules目录中，下载的其实也是目录；
     1. npm i md5-node --save 与 --save-dev：都会把md5-node写入package.json中；
-    2. --save：写入到package.json中的 &quot;dependencies&quot; 中；
-    3. --save-dev：写入到package.json中的 &quot;devDependencies&quot; 中；
+    2. --save：同-S，写入到package.json中的 &quot;dependencies&quot; 中；
+    3. --save-dev：同-D，写入到package.json中的 &quot;devDependencies&quot; 中；
 5. &quot;dependencies&quot; 与 &quot;devDependencies&quot; 的区别：
     1. 正常执行 cnpm install 时，dependencies和devDependencies中的模块都会下载；
     2. --save：运行时依赖，如vue、react等，没有这些依赖，打包的项目无法运行；
@@ -3512,7 +3512,7 @@ var obj=new Object(); obj=null; --&gt; GC将回收该对象
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

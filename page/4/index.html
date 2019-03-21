@@ -739,7 +739,8 @@ OCR：光学文字识别，将图像翻译成文字的技术，Tesseract就是�
     4. //div//a：从任意节点开始匹配div节点，然后匹配&lt;div&gt;下任意层级的子节点&lt;a&gt;；
     5. //div//a[@class=&quot;thie&quot;]/@href：获取匹配&lt;a&gt;的href属性值；
     6. //div//@href：直接匹配&lt;div&gt;下的所有节点的href属性值；
-    7. .：选取当前节点；    ..：选取当前节点的父节点；    *：选取所有节点；    |：多选。
+    7. //div[@class=&quot;li_txt&quot;]/h3/text()：获取&lt;h3&gt;的文本内容
+    8. .：选取当前节点；    ..：选取当前节点的父节点；    *：选取所有节点；    |：多选。
 2. lxml：将HTML文档解析为HTML DOM模型，即把HTML转为XML；该模块需要手动安装；
     1. from lxml import etree
     2. html = urllib2.urlopen(request).read()
@@ -3684,7 +3685,7 @@ Spider：蜘蛛，爬虫，也就是一个客户端，接收一个链接地址�
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
