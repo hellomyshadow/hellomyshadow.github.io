@@ -533,6 +533,608 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/10/JavaEE之过滤监听/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/10/JavaEE之过滤监听/" itemprop="url">JavaEE之过滤监听</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-10T00:00:00+08:00">
+                2016-01-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2><pre><code>1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;
+    1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...
+    2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。
+2. 使用Filter
+    1. 实现Filter接口，覆写 init()、doFilter()、destroy()
+    2. 在 web.xml 中配置过滤器
+    &lt;filter&gt;
+        &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;it.test.cn.TestFilter&lt;/filter-name&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+    3. /*：拦截访问此项目的所有请求;
+    4. *.do：拦截以 .do 结尾的请求，一般用于模块拦截处理;
+    5. /to.do：拦截 /to.do 的请求，针对某个具体的Servlet请求进行拦截，保护Servlet;
+    6. 如果同时配置了三个过滤器，那么在执行Filter的过程，匹配范围越大，优先级越高.
+    /* --&gt; *.do --&gt; /to.do
+3. 过滤器会拦截请求，不会到达Servlet，需要手动给予放行，才能达到Servlet
+    public void doFilter(ServletRequest request, ServletResponse response, 
+        FilterChain chain) {
+        chain.doFilter(request, response);  ---&gt; 放行
+    }
+    1. chain.doFilter() 表示放行当前的请求，交给Servlet进行处理；
+    2. Servlet发送响应数据之后，会先达到Filter，执行 chain.doFilter() 之后的代码逻辑，
+    然后才会响应给浏览器.
+4. 生命周期：从服务器启动(Filter init())，到服务器关闭(Filter destroy())
+</code></pre><h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><pre><code>1. 统一编码格式设置
+    public void doFilter(request, response, chain) {
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setContentType(&quot;text/html;charset=utf-8&quot;);
+        chain.doFilter(request, response);
+    }
+2. session管理
+    public void doFilter(request, response, chain) {
+        HttpSession hs = ((HttpServletRequest)request).getSession();
+        //判断Session是否过期
+        if(hs.getAttribute(&quot;user&quot;) == null) {
+            //过期则重定向到登录页
+            ((HttpServletResponse)response).sendRedirect(&quot;/login.jsp&quot;);
+        } else {
+            chain.doFilter(request, response);
+        }
+    }
+3. 权限管理，资源管理(统一水印、和谐词汇...) ...
+</code></pre><h2 id="监听器"><a href="#监听器" class="headerlink" title="监听器"></a>监听器</h2><pre><code>1. Servlet监听器：监听数据流转的过程，比如作用域对象的创建与销毁，数据的存取、变化、删除；
+2. 监听的作用域对象包括request、session、application
+3. 比如session销毁时，在线人数-1
+4. 在 web.xml 中配置监听器
+    &lt;listener&gt;
+        &lt;listener-class&gt;it.test.cn.TestListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+</code></pre><h3 id="request-Listener"><a href="#request-Listener" class="headerlink" title="request Listener"></a>request Listener</h3><pre><code>1. ServletRequestListener：实现此接口，监听request的创建销毁;
+    1. 接收到一个请求，则创建request对象；响应结束，销毁request对象;
+    2. 创建时触发requestInitialized(sre)，销毁时触发requestDestroyed(sre);
+    3. 获取当前正在监听的的Servlet Request对象：sre.getServletRequest();
+2. ServletRequestAttributeListener：实现此接口，监听request对象中的Attribute数据;
+    1. req.setAttribute(&quot;key&quot;, value); 第一次添加数据时，触发 attributeAdded(srea);
+    2. req.setAttribute(&quot;key&quot;, value); 重复添加同键的数据，则触发attributeReplaced(srea);
+    3. req.removeAttribute(&quot;key&quot;); 移除数据，则触发：attributeRemoved(srea);
+    4. 获取当前正在变化的Attribute数据：srea.getName(); srea.getValue();
+</code></pre><h3 id="session-Listener"><a href="#session-Listener" class="headerlink" title="session Listener"></a>session Listener</h3><pre><code>1. HttpSessionListener：实现此接口，监听session的创建与销毁;
+    1. req.getSession(); 第一次获取Session表示创建，则触发sessionCreated(se);
+    2. Session被销毁时，触发sessionDestroyed(se);
+    3. 获取当前正在监听的Session对象：se.getSession();
+2. HttpSessionAttributeListener：实现此接口，监听session中的attribute数据;
+    1. session.setAttribute(&quot;key&quot;, value);  获取/重置Session Attribute数据;
+    2. session.removeAttribute(&quot;key&quot;);  移除Session Attribute数据;
+    3. 覆写方法：attributeAdded(hsbe)、attributeReplaced(hsbe)、attributeRemoved(hsbe);
+    4. hsbe.getName();  hsbe.getValue();  分别获取正在变化的Attribute数据的键、值.
+</code></pre><h3 id="application-Listener"><a href="#application-Listener" class="headerlink" title="application Listener"></a>application Listener</h3><pre><code>1. ServletContextListener：实现此接口，监听ServletContext的创建与销毁;
+    1. 服务器启动/关闭时，分别触发 contextInitialized(sce); contextDestroyed(sce);
+    2. 获取当前正在监听的ServletContext对象：sce.getServletContext();
+2. ServletContextAttributeListener：监听application中的attribute数据;
+    1. attributeAdded(scae)、attributeReplaced(scae)、attributeRemoved(scae);
+    2. scae.getName();  scae.getValue();
+</code></pre><h3 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h3><pre><code>1. 统计当前在线人数
+2. 统计网页浏览次数
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/09/JavaEE之JSP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/09/JavaEE之JSP/" itemprop="url">JavaEE之JSP</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-09T00:00:00+08:00">
+                2016-01-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="JSP"><a href="#JSP" class="headerlink" title="JSP"></a>JSP</h2><pre><code>1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet
+2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet
+3. Tomcat/conf/web.xml 对jsp访问的配置
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;jsp&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.apache.jasper.servlet.JspServlet&lt;/servlet-class&gt;
+        ...
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;jsp&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jspx&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+4. JSP的访问有一个转译的过程，所以JSP文件的修改不需要重启服务器。
+5. JSP的三种注释：前端注释、Java语言注释、JSP注释
+    1. 前端注释会被转译，也会被发送给浏览器，但不会执行；
+    2. Java语言注释会被转译，但不会被Servlet执行；
+    3. JSP注释不会被转译：&lt;%-- JSP注释 --%&gt;
+</code></pre><h3 id="page指令"><a href="#page指令" class="headerlink" title="page指令"></a>page指令</h3><pre><code>1. page指令：配置JSP转译的相关参数
+    &lt;%@ page 属性名=&quot;属性值&quot; 属性名=&quot;属性值&quot; ... %&gt;
+2. language：声明JSP被转译的语言，如language=&quot;java&quot;
+3. import：使用什么语言，就需要导入什么语言的包，不同的包以&quot;,&quot;隔开，也可以导入项目中的类
+    import=&quot;java.util.*,java.lang.*,it.test.cn.modal.*&quot;
+4. pageEncoding：文件保存的编码，如pageEncoding=&quot;utf-8&quot;
+    1. 对于高版本的JSP，pageEncoding可以同时指定响应的编码；
+    2. 对于低版本的JSP，还需要指定响应的编码：contentType=&quot;text/html;charset=UTF-8&quot;
+5. session：设置转译的Servlet中是否支持Session，默认开启，不开启则设置session=&quot;false&quot;
+6. errorPage：配置错误页面的路径，errorPage=&quot;error.jsp&quot;
+7. extends：设置JSP转译的Servlet要继承的父类(全类名)
+</code></pre><h3 id="JSP逻辑代码"><a href="#JSP逻辑代码" class="headerlink" title="JSP逻辑代码"></a>JSP逻辑代码</h3><pre><code>1. JSP的局部代码块
+    &lt;%
+        int num = 1;
+        if(num &gt; 0) {
+    %&gt;
+            &lt;div&gt;num大于0&lt;/div&gt;
+    &lt;% } else { %&gt;
+            &lt;div&gt;另作处理&lt;/div&gt;
+    &lt;% } %&gt;
+    1. 转译到Servlet中
+    int num = 1;
+    if(num &gt; 0) {
+        out.write(&quot;\r\n&quot;);
+        out.write(&quot;\t\t&lt;div&gt;num大于0&lt;/div&gt;\r\n&quot;);
+    } else {
+        out.write(&quot;\t\t&lt;div&gt;另作处理&lt;/div&gt;\r\n&quot;);
+    }
+    2. 在JSP中写逻辑代码，编码困难，可阅读性和可维护性极差，所以尽量在Servlet中处理逻辑，
+    JSP只负责展示内容。
+2. JSP的全局代码块
+    1. 声明Servlet的成员方法和成员变量
+    &lt;%!
+        int num = 1;
+        public void test(){ ... }
+    %&gt;
+    2. 全局代码块声明的属性和方法，只能在局部代码块中使用。
+3. JSP脚本段语句
+    1. &lt;%= num %&gt;
+    2. &lt;%= test() %&gt;  ==&gt;方法要有返回值
+</code></pre><h3 id="JSP的引入与转发"><a href="#JSP的引入与转发" class="headerlink" title="JSP的引入与转发"></a>JSP的引入与转发</h3><pre><code>1. 静态引入： &lt;%@include file=&quot;header.jsp&quot; %&gt;
+    1. 两个JSP文件会合并成一个Servlet文件;
+    2. 静态引入的JSP不会单独转为一个Servlet;
+    3. 两个JSP文件不能声明同名的Java变量.
+2. 动态引入： &lt;jsp:include page=&quot;active.jsp&quot;&gt;&lt;/jsp:include&gt;
+    1. 动态引入的JSP文件也会单独转为一个Servlet;
+    2. 在当前JSP文件转译的Servlet中，会调用动态引入的JSP文件转译的Servlet;
+    3. 允许在两个JSP文件中声明同名的Java变量.
+3. JSP转发标签
+    &lt;jsp:forward page=&quot;target.jsp&quot;&gt;&lt;/jsp:forward&gt;
+    1. 一次请求，浏览器地址栏信息不变;
+    2. 在&lt;jsp:forward&gt;标签中只能写&lt;jsp:param name=&quot;xxx&quot; value=&quot;xxx&quot;/&gt;，向目的JSP页面
+    传递参数，而不能有其他任何字符，甚至是空格也不行，否则就会报错;
+    &lt;jsp:forward page=&quot;target.jsp&quot;&gt;
+        &lt;jsp:param name=&quot;user&quot; value=&quot;Mack&quot; /&gt;
+    &lt;/jsp:forward&gt;
+    3. 以GET形式转发参数：转发路径?user=Mack
+    4. 在目的JSP页面获取参数：&lt;%= request.getParameter(&quot;user&quot;) %&gt;
+</code></pre><h3 id="JSP的内置对象"><a href="#JSP的内置对象" class="headerlink" title="JSP的内置对象"></a>JSP的内置对象</h3><pre><code>1. 九大内置对象：JSP文件转译为Servlet时自动生成并声明的对象，可以在JSP文件中直接使用；
+2. 内置对象只能在局部代码块和脚本段语句中使用；
+1. pageContext：JSP的页面上下文对象，内部封装了另外8个内置对象；
+    1. PageContext封存了当前JSP的运行信息，每个JSP文件都有一个PageContext对象；
+    2. 每次请求都会重新创建一个PageContext对象，存储当前页面内的数据。
+2. application
+    ServletContext application = pageContext.getServletContext();
+3. config
+    ServletConfig application = pageContext.getServletConfig();
+4. out
+    JspWriter out = pageContext.getOut();
+    1. JSP内部使用的响应对象，带有缓冲区，效率高于response
+5. session：一次会话的Session对象，存储同一用户、不同请求的共享数据；
+    1. 要使用Session对象，必须先在page指令中开启，session=&quot;true&quot;
+    session = pageContext.getSession();
+6. request，response：分别是当前的请求对象、响应对象；
+7. page：this，当前JSP对象(Servlet对象);
+8. exception：存储当前运行的异常信息，先在page指令中使用 isErrorPage=&quot;true&quot; 开启;
+9. 数据流转
+    1. pageContext：当前页面内的数据共享，获取其他内置对象;
+    2. request：一次请求的数据共享，通过请求转发，把数据流转给下一个Servlet;
+    3. session：一次会话，同一用户、不同请求的数据共享，将数据从一次请求流转给其他请求;
+    4. application：项目内的数据，不同用户的数据共享，将数据从一个用户流转给其他用户.
+</code></pre><h3 id="JSP的资源路径"><a href="#JSP的资源路径" class="headerlink" title="JSP的资源路径"></a>JSP的资源路径</h3><pre><code>1. 在JSP中使用相对路径时，资源位置不可随意更改；
+2. 绝对路径：&lt;a href=&quot;/servtest/a.jsp&quot;&gt;，
+    1. 第一个 &quot;/&quot; 表示服务器根目录(Tomcat/webapps)，&quot;/servtest&quot; 表示服务器的项目根目录，
+    servtest是项目在Tomcat/webapps下的虚拟目录名。
+3. 在JSP中声明全局路径
+    &lt;%
+        String path = request.getContextPath();
+        String basePath = request.getScheme()+&quot;://&quot;+request.getServerName()+&quot;:&quot;
+        +request.getServerPort()+path+&quot;/&quot;;
+    %&gt;
+    &lt;html&gt;
+        &lt;head&gt;
+            &lt;base href=&quot;&lt;%=basePath%&gt;&quot;&gt;
+    1. 那么，在JSP文件中引入资源时，资源路径会自动加上 Ip:Port/项目虚拟目录名/
+    2. &lt;a href=&quot;a.jsp&quot;&gt; 跳转到 http://Ip:Port/servtest/a.jsp
+4. 重定向到 main目录下的main.jsp
+    resp.sendRedirect(&quot;/servtest/main/main.jsp&quot;);
+    1. 重定向时，尽量使用绝对路径取代资源路径：/项目虚拟目录名/资源路径;
+    2. 假定当前的Servlet的别名带有目录，如&lt;url-pattern&gt;/user/abc&lt;/url-pattern&gt;
+    3. 如果使用相对路径，如resp.sendRedirect(&quot;main/main.jsp&quot;);  那么跳转的main.jsp的
+    路径为 /项目虚拟目录名/user/main/main.jsp;
+    4. 而main.jsp的真实路径是 /项目虚拟目录名/main/main.jsp ，那么就会报404错误.
+5. 转发到一个JSP页面
+    req.getRequestDispatcher(&quot;/login.jsp&quot;).forward(req, resp);
+    1. 与请求重定向不同，请求转发的第一个 &quot;/&quot; 表示项目根目录，而不是服务器根目录，所以不用
+    加项目的虚拟目录名.
+</code></pre><h2 id="EL表达式"><a href="#EL表达式" class="headerlink" title="EL表达式"></a>EL表达式</h2><pre><code>1. EL：Expression Language，一种写法非常简洁的表达式，灵感来源于ES和XPath;
+2. EL表达式用于简化在JSP中获取作用域数据和请求数据，不需要导入相关的类(包);
+3. 传统的获取方式
+    1. 在Servlet中处理请求之后，通过请求转发到JSP页面：req.setAttribute(&quot;key&quot;, Object);
+    2. 在JSP页面中获取数据：&lt;%= request.getAttribute(&quot;key&quot;) %&gt;
+    3. 在JSP页面中获取请求参数：&lt;%= request.getParameter(&quot;key&quot;) %&gt;
+4. 语法结构：${expression}
+    1. 获取请求参数
+    ${ param.key } --&gt; 单个值
+    ${ paramvalues.key } --&gt; 同键不同值如Checkbox
+    2. 获取 req.setAttribute(&quot;key&quot;, Object) 传递的数据：${ Object }
+    3. ${} 只获取 pageContext、request、session、application四个对象中的数据;
+    &lt;%  String uname = &quot;Java&quot;;  %&gt;
+    &lt;h3&gt;${ uname }&lt;/h3&gt;
+    4. 如果在四大对象中找不到uname，不报错，也不显示内容，但决不理会页面中定义的变量uname;
+5. EL查找作用域数据的默认顺序：pageContext --&gt; request --&gt; session --&gt; application
+    &lt;%
+        pageContext.setAttribute(&quot;uname&quot;, &quot;aaaa&quot;);
+        request.setAttribute(&quot;uname&quot;, &quot;bbbb&quot;);
+        session.setAttribute(&quot;uname&quot;, &quot;cccc&quot;);
+        application.setAttribute(&quot;uname&quot;, &quot;dddd&quot;);
+    %&gt;
+    &lt;div&gt;${ uname }&lt;/div&gt; ===&gt; aaaa
+    1. 除了默认顺序，还可以手动指定查找方向
+    request：${ requestScope.uname }，pageContext：${ pageScope.uname }
+    session：${ sessionScope.uname }，application：${ applicationScope.uname }
+6. EL支持简单的逻辑运算：算术表达式、关系表达式、逻辑表达式(&amp;&amp; || !)、三元表达式
+    ${ 1+3 } =&gt; 4，${ 1&gt;3 } =&gt; false，${ flag==0?&quot;正确&quot;:&quot;错误&quot; }
+    1. EL表达式中不允许做字符串连接
+    ${ 1+&quot;4&quot; } =&gt; 5，${ 1+&quot;a&quot; } =&gt; 报错
+7. EL的空值判断：${ empty key }，空字符串、空集合都返回true，但是对象返回false
+8. EL获取请求头数据：${ header }
+    1. 单个值：${ header[&quot;key&quot;] }，如${ header[&quot;user-agent&quot;] }
+    2. 数组：${ headerValues[&quot;key&quot;] }，同键不同值
+9. EL获取Cookie数据：${ cookie }
+    1. 获取一条Cookie数据，如sessionID：${ cookie.JSESSIONID }
+    2. 获取这条Cookie数据的键值：
+    ${ cookie.JSESSIONID.name }，${ cookie.JSESSIONID.value }
+</code></pre><h2 id="JSTL标签库"><a href="#JSTL标签库" class="headerlink" title="JSTL标签库"></a>JSTL标签库</h2><pre><code>1. JSTL是 Apache 对EL表达式的扩展，JSTL依赖于EL，使用时需要导包，并指定标签库；
+    1. MyEclipse会在lib目录下自动存放jstl.jar
+    2. JSTL的标签库：核心库、格式化库、SQL库、函数库、XML库
+2. JSTL标签库能够提升JSP页面编写逻辑代码的效率，可阅读性更强；
+</code></pre><h3 id="JSTL核心标签库"><a href="#JSTL核心标签库" class="headerlink" title="JSTL核心标签库"></a>JSTL核心标签库</h3><pre><code>1. 导入jar包，声明jstl核心标签库的引入
+    &lt;%@taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+2. 输出：&lt;c:out&gt; 类似于 &lt;%=xxx %&gt;
+    &lt;%  request.setAttribute(&quot;uname&quot;, &quot;Java&quot;);  %&gt;
+    &lt;c:out value=&quot;${uname}&quot; default=&quot;xxx&quot;&gt;&lt;/c:out&gt;
+    1. 结合EL表达式输出，如果uname不存在，则输出默认值default
+3. 向作用域中存储键值： &lt;c:set var=&quot;key&quot; value=&quot;xxx&quot;&gt;&lt;c:set&gt;
+    1. 默认存储在pageContext中，也可以手动指定存储的作用域对象
+    &lt;c:set var=&quot;key&quot; value=&quot;xxx&quot; scope=&quot;page/request/session/application&quot;&gt;&lt;c:set&gt;
+4. 删除作用域的数据：&lt;c:remove&gt;
+    &lt;c:remove var=&quot;uname&quot; /&gt;
+    1. 默认把4个作用域对象中的uname都删除，scope属性指定作用域
+    &lt;c:remove var=&quot;uname&quot; scope=&quot;page/request/session/application&quot; /&gt;
+5. 逻辑标签：依赖于EL表达式
+    1. 单个判断
+    &lt;c:set var=&quot;score&quot; value=&quot;66&quot;&gt;&lt;c:set&gt;
+    &lt;c:if test=&quot;${score&gt;60}&quot;&gt;
+        &lt;div&gt;条件通过&lt;/div&gt;
+    &lt;/c:if&gt;
+    2. 多重判断
+    &lt;c:choose&gt;
+        &lt;c:when test=&quot;${score&gt;=90}&quot;&gt;
+            &lt;li&gt;11111111&lt;/li&gt;
+        &lt;/c:when&gt;
+        &lt;c:when test=&quot;${score&lt;90 &amp;&amp; score&gt;=70}&quot;&gt;
+            &lt;li&gt;2222222&lt;/li&gt;
+        &lt;/c:when&gt;
+        &lt;c:when test=&quot;${score&lt;70 &amp;&amp; score&gt;=60}&quot;&gt;
+            &lt;li&gt;3333333&lt;/li&gt;
+        &lt;/c:when&gt;
+        &lt;c:otherwise&gt;
+            &lt;li&gt;4444444&lt;/li&gt;
+        &lt;/c:otherwise&gt;
+    &lt;/c:choose&gt;
+6. 常量循环
+    &lt;c:forEach begin=&quot;1&quot; end=&quot;4&quot; step=&quot;1&quot; varStatus=&quot;vs&quot;&gt;  ==&gt; 循环4次
+        &lt;li&gt;${vs.index} -- ${vs.count} -- ${vs.first} -- ${vs.last}&lt;/li&gt;
+    &lt;/c:forEach&gt;
+    1. step属性设置每次循环的自增步数，默认自增1
+    2. varStatus属性保存当前循环的状态
+        1. vs.index：当前循环的角标
+        2. vs.count：当前是第几次循环
+        3. vs.first/vs.last：当前是不是第一次/最后一次循环，true/false
+7. 动态循环
+    &lt;%
+        ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
+        list.add(&quot;111&quot;);
+        request.setAttribute(&quot;list&quot;, list);
+        HashMap&lt;String, String&gt; map = new HashMap&lt;&gt;();
+        map.put(&quot;a&quot;, &quot;11&quot;);
+        request.setAttribute(&quot;map&quot;, map);
+    %&gt;
+    1. 遍历List集合
+    &lt;c:forEach items=&quot;${list}&quot; var=&quot;v&quot;&gt;
+        &lt;li&gt;${v}&lt;/li&gt;
+    &lt;/c:forEach&gt;
+    2. var属性是每次循环的元素值;
+    3. 遍历Map集合
+    &lt;c:forEach items=&quot;${map}&quot; var=&quot;v&quot;&gt;
+        &lt;li&gt;${v.key} -- ${v.value}&lt;/li&gt;
+    &lt;/c:forEach&gt;
+    4. v 表示每次循环的一条Map元素，v.key、v.value 分别表示这条数据的键、值。
+</code></pre><h3 id="JSTL格式化标签库"><a href="#JSTL格式化标签库" class="headerlink" title="JSTL格式化标签库"></a>JSTL格式化标签库</h3><pre><code>1. 声明jstl核心标签库的引入
+    &lt;%@taglib prefix=&quot;fmt&quot; uri=&quot;http://java.sun.com/jsp/jstl/fmt&quot; %&gt;
+2. 可以格式化输入文本、日期、时间、数字
+    1. &lt;fmt:formatNumber&gt;：使用指定的格式或精度格式化数字;
+    2. &lt;fmt:parseNumber&gt;：解析一个代表着数字/货币/百分比的字符串;
+    3. &lt;fmt:formatDate&gt;：使用指定的风格或模式格式化日期和时间;
+    4. &lt;fmt:parseDate&gt;：解析一个代表着日期或时间的字符串;
+    5. &lt;fmt:requestEncoding&gt;：设置request的字符编码;
+    6. &lt;fmt:timeZone&gt;：指定时区，供其它标签使用;
+    7. &lt;fmt:setTimeZone&gt;：复制一个时区对象至指定的作用域.
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/08/JavaEE之Servlet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -838,6 +1440,360 @@ Esc：退出编辑模式或末行模式；
     3. docBase：项目所在的绝对路径；
     4. 热部署不需要在Tomcat/webapps下为项目创建文件夹(项目的虚拟目录)，所以如果项目删除，
     对应的&lt;Context/&gt;也必须删除，否则Tomcat启动会报错。
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/07/Java数据库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/07/Java数据库/" itemprop="url">Java数据库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-07T00:00:00+08:00">
+                2016-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h2><pre><code>1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口；
+2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API；
+3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现；
+4. ORM框架：Hibernate、mybatis
+</code></pre><h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><pre><code>1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱动
+    1. 装载MySql驱动
+    Class.forName(&quot;com.mysql.jdbc.Driver&quot;); --&gt; MySQL5.0
+    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;); --&gt; MySQL6.0+
+2. DriverManager：JDBC的管理层，作用于用户和驱动程序之间，在数据库和驱动程序之间建立连接
+3. Connection：与特定数据库的连接会话，执行SQL语句并返回结果
+    1. 连接MySQL5.0数据库
+    Connection conn = DriverManager.getConnection(
+        &quot;jdbc:mysql://host:port/database&quot;, &quot;username&quot;, &quot;password&quot;);
+    2. 连接MySQL6.0+数据库，需要指定时区serverTimezone
+    jdbc:mysql://host:port/database?useUnicode=true&amp;characterEncoding=UTF-8
+    &amp;serverTimezone=Asia/Shanghai
+    &amp;useSSL=false&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
+    3. 连接的建立是比较耗时的，内部包含Socket，实际上是建立一个Socket远程连接;
+    4. 关闭连接：conn.close();
+4. Statement：执行静态SQL语句并返回结果的对象
+    1. Statement用于发送简单的SQL语句(不带参数)，执行SQL时需要拼接参数，有SQL注入的危险
+    Statement stat = conn.createStatement();
+    2. PreparedStatement：继承Statement，用于发送含有任意多个参数的SQL语句，会预编译，
+    所以效率比Statement高，且防SQL注入；
+    String sql = &quot;insert into users(name, time) values(?, ?)&quot;; --&gt; ? 表示占位符
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setString(1, &quot;Mack&quot;);  --&gt; 设置字符串类型的占位符，占位符索引从1开始
+    stat.setDate(2, new java.sql.Date(System.currentTimeMillis())); -&gt;设置日期时间
+    stat.execute();  --&gt; 执行SQL语句
+    3. 如果不想关心字段类型，则使用 setObject()
+    4. CallableStatement：继承自PreparedStatement，由 conn.prepareCall(sql) 创建，
+    用于调用存储过程。
+5. 常用方法
+    1. execute()：运行语句，返回是否有结果集(true/false)
+    2. executeQuery()：运行select语句，返回 ResultSet 结果集
+    3. executeUpdate()：运行insert/update/delete操作，返回更新的行数
+    4. close(); 关闭
+6. ResultSet
+    String sql = &quot;select * from users where id&gt;?&quot;;
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setInt(1, 10);
+    ResultSet rs = stat.executeQuery();
+    while (rs.next()) {
+        int id = rs.getInt(1); --&gt; 获取第一列的数据，且字段类型为int
+        String name = rs.getString(2); --&gt; 获取第二列的数据，且字段类型为String
+    }
+    rs.close();  stat.close(); --&gt;关闭
+    1. 如果不想关心数据类型，则使用 getObject()
+    2. rs.next()：迭代下一行数据，如果没有了，则返回false
+7. 时间相关
+    1. java.sql.Date(年月日)
+    2. java.sql.Time(时分秒)
+    3. java.sql.Timestamp(年月日时分秒)
+8. Properties
+    1. 读取和处理配置资源文件中的信息，如数据库url、database、username、password等信息
+    2. 如db.properties文件，用于存储数据的配置信息：
+    driver=com.mysql.cj.jdbc.Driver
+    url=jdbc:mysql://localhost:3306/db_test?serverTimezone=Asia/Shanghai
+    user=root
+    password=123456
+    3. 加载db.properties文件
+    static Properties pros = null;
+    static {
+        pros = new Properties();
+        pros.load(Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream(&quot;db.properties&quot;));
+    }
+    4. 使用db.properties中的配置信息
+    Class.forName(pros.getProperty(&quot;driver&quot;));
+</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><pre><code>1. PreparedStatement的预编译空间有限，数据量特别大时会发生异常，所以建议使用Statement
+2. JDBC中的事务默认是自动提交，还需要设置为手动提交
+    conn.setAutoCommit(false); --&gt; 禁止自动提交
+    Statement stat = conn.createStatement();
+    for(int i=0; i&lt;20000; i++) {
+        stat.addBatch(&quot;insert into ...&quot;); --&gt;一次性插入20000条数据
+    }
+    stat.executeBatch();
+    conn.commit(); //手动提交事务
+</code></pre><h3 id="大数据量处理"><a href="#大数据量处理" class="headerlink" title="大数据量处理"></a>大数据量处理</h3><pre><code>1. CLOB：Character Large Object，用于存储大文本数据
+    1. 不同数据库对大文本(大字段)有不同的处理方式，通常以流的方式处理；
+    2. MySQL中的相关类型及其最大长度(字符)：TINYTEXT(2^8-1)，TEXT(2^16-1)，
+    MEDIUMTEXT(2^24-1)，LONGTEXT(2^32-1或4GB)
+2. JDBC操作大文本
+    1. 存储
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setClob(3, new FileReader(&quot;d:/a.txt&quot;)); //接受一个流对象
+    2. 读取
+    ResultSet rs = ...
+    while (rs.next()) {
+        Clob c = rs.getClob(&quot;desc&quot;); --&gt; 指定字段名获取值
+        Reader r = c.getCharacterStream(); --&gt; 获取大文本流
+    }
+3. BLOB：Byte Large Object，用于存储大二进制数据
+    1. 不同数据库对大二进制数据(大字段)有不同的处理方式，通常以流的方式处理；
+    2. MySQL中的相关类型及其最大长度(字符)：TINYBLOB(2^8-1)，BLOB(2^16-1)
+    MEDIUMBLOB(2^24-1)，LONGBLOB(2^32-1或4GB)
+4. JDBC操作大二进制数据
+    1. 存储
+    PreparedStatement stat = conn.prepareStatement(sql);
+    stat.setBlob(3, new FileInputStream(&quot;d:/b.jpg&quot;)); //接受一个流对象
+    2. 读取
+    ResultSet rs = ...
+    while (rs.next()) {
+        Blob b = rs.getBlob(&quot;avatar&quot;); --&gt; 指定字段名获取值
+        InputStream is = b.getBinaryStream(); --&gt;获取大二进制流
+    }
+</code></pre><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><pre><code>1. 事务：一组要么同时执行成功，要么同时执行失败的SQL语句，是数据库操作的一个执行单元；
+2. 事务开始于：
+    1. 连接数据库，并执行一条DML语句(INSERT、UPDATE、DELETE)
+    2. 前一个事务结束后，又输入另一条DML语句
+3. 事务结束于：
+    1. 执行COMMIT或ROLLBACK语句；
+    2. 执行一条DDL语句，如CREATE TABLE，这种情况会自动执行COMMIT语句；
+    3. 执行一条DCL语句，如GRANT，这种情况也会自动执行COMMIT语句；
+    4. 断开与数据库的连接；
+    5. 执行一条DML语句，但却失败了，这种情况会执行ROLLBACK语句。
+4. 四大特性：
+    1. 原子性：一个事务内的所有操作是一个整体，要么全部成功，要么全部失败；
+    2. 一致性：一个事务内有一个操作失败时，所有更改过的数据都必须回滚到初始状态；
+    3. 隔离性：查看数据状态时，要么是另一个事务修改之前的状态，要么是修改之后的状态，不会
+    出现中间状态的数据，级别：读取未提交&lt;读取已提交&lt;可重复读&lt;序列化，通常是读取已提交；
+    4. 持久性：对于系统的影响是永久性的；
+    conn.setAutoCommit(false); --&gt; 禁止事务自动提交
+    conn.commit(); --&gt; 手动提交事务
+    conn.rollback(); --&gt; 提交失败后(发生异常)，执行数据回滚
+</code></pre><h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><pre><code>1. Redis是内存级数据库，当Redis服务器重启，数据可能会丢失，实现持久化则需要保存在硬盘中;
+2. Redis持久化机制：ROB、AOF
+3. ROB：默认方式，无需配置，对内存IO性能影响较小；
+    1. 在一定的时间间隔内，检测key的变化情况，然后持久化数据；
+    2. 在Redis的配置文件中，默认持久化的时间间隔;
+    save 900 1   ---&gt; 15分钟后，至少有1个key发生变化，则持久化一次
+    save 300 10  ---&gt; 5分钟后，至少有10个key发生变化，则持久化一次
+    save 60 10000  --&gt; 60秒后，至少有10000个key发生变化，则持久化一次
+    3. 修改配置文件的时间间隔，手动设置持久化的频率;
+    save 10 5  --&gt; 10秒后，有5个key发生了变化，就持久化一次
+    4. 持久化频率的配置取决于Redis服务器的性能和具体的业务需求。
+4. AOF：日志纪录方式
+    1. 会纪录每一条命令的操作，且每一次命令操作后，持久化数据；
+    2. 在配置文件中，默认关闭AOF机制：appendonly no
+    3. 开启：appendonly yes，配置AOF持久化的频率，三选一
+    # appendfsync always  ---&gt; 每次操作都进行数据持久化
+    # appendfsync everysec  --&gt; 每隔1秒进行一次持久化
+    # appendfsync no  --&gt; 不执行持久化
+5. Redis虽然提供了数据持久化机制，但并不能保证数据一定是安全的，还需要配置关系型数据库。
+</code></pre><h3 id="Jedis"><a href="#Jedis" class="headerlink" title="Jedis"></a>Jedis</h3><pre><code>1. Jedis：Java操作Redis数据库的工具，导入相关jar包；
+2. 建立连接，
+    Jedis jedis = new Jedis(&quot;IP&quot;, port);  --&gt; 默认IP：localhost，默认port：6379
+    1. 操作字符串数据
+    jedis.set(&quot;username&quot;, &quot;Mack&quot;);
+    String uname = jedis.get(&quot;username&quot;);
+    2. 关闭连接：jedis.close();
+    3. 指定过期时间，如20s后过期删除
+    jedis.setex(&quot;username&quot;, 20, &quot;Mack&quot;);
+3. 哈希类型的数据：key-Map格式
+    jedis.hset(&quot;user&quot;, &quot;name&quot;, &quot;Mack&quot;);
+    jedis.hset(&quot;user&quot;, &quot;age&quot;, &quot;20&quot;);
+    1. 参数1表示一条数据的键，参数2和参数3是这条数据的值，Map类型
+    2. 获取单条数据的Map
+    Map&lt;String, String&gt; user = jedis.hgetAll(&quot;key&quot;);
+    3. 获取单条数据中的Map，同时根据Map的键获取值
+    String name = jedis.hget(&quot;user&quot;, &quot;name&quot;);
+4. 列表类型的数据：key-LinkedList格式，类似于管道，有序，支持重复数据
+    jedis.lpush(&quot;mylist&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;); --&gt;从左边存一组数据，顺序为 c b a
+    jedis.rpush(&quot;mylist&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;); --&gt;从右边存一组数据，顺序为 a b c
+    1. 参数1表示这条数据的键，其后的参数都是列表中的值；
+    2. 从左边开始取数据：
+    List&lt;String&gt; mylist = jedis.lrange(&quot;mylist&quot;, 0, -1);
+    3. 参数1表示一条数据的键，参数2和参数3分别表示起始角标，-1表示取到最后一个；
+    [&quot;c&quot;, &quot;b&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
+    4. 弹出元素，相当于从Redis中删除
+    String leftEle = jedis.lpop(&quot;mylist&quot;);  --&gt; 从左边弹出一个元素，&quot;c&quot;
+    String rightEle = jedis.rpop(&quot;mylist&quot;); --&gt; 从右边弹出一个元素，&quot;c&quot;
+5. 集合类型的数据：key-Set格式，无序，不支持重复元素
+    jedis.sadd(&quot;myset&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;);
+    Set&lt;String&gt; myset = jedis.smembers(&quot;myset&quot;);
+6. 有序集合的数据：key-sortedset格式，不允许重复元素，元素可以排序
+    jedis.zadd(&quot;myzset&quot;, 10, &quot;aa&quot;);
+    jedis.zadd(&quot;myzset&quot;, 2, &quot;bb&quot;);
+    jedis.zadd(&quot;myzset&quot;, 30, &quot;cc&quot;);
+    1. 参数1表示一条数据的键，参数2表示排序的依据，数值越小，顺序越靠前，参数3是元素值;
+    2. 获取一条数据
+    Set&lt;String&gt; myzset = jedis.zrange(&quot;myzset&quot;, 0, -1);  --&gt;[&quot;bb&quot;, &quot;aa&quot;, &quot;cc&quot;]
+</code></pre><h3 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h3><pre><code>1. Jedis自带连接池：JedisPool
+    JedisPool pool = new JedisPool(); --&gt; 默认ip：localhost，默认port：6397
+    Jedis jedis = pool.getResource(); --&gt; 获取Jedis对象
+2. 连接池的配置对象JedisPoolConfig
+    JedisPoolConfig config = new JedisPoolConfig();
+    config.setMaxTotal(50);  --&gt; 最大连接数50个
+    config.setMaxIdle(10);  --&gt; 最大空闲连接10个
+    JedisPool pool = new JedisPool(config, ...);
+3. 通过properties文件，配置数据库信息
+    1. 在src目录下创建 jedis.properties
+        host=127.0.0.1
+        port=6379
+        maxTotal=50
+        maxIdle=10
+    2. 在工具类JedisPoolUtil.java中加载配置文件
+    static {
+        InputStream is = JedisPoolUtil.class.getClassLoader()
+            .getResourceAsStream(&quot;jedis.properties&quot;);
+        Properties prop = new Properties();
+        prop.load(is);
+        JedisPoolConfig config = new JedisPoolConfig();
+        int total = Integer.parseInt(prop.getProperty(&quot;maxTotal&quot;));
+        config.setMaxTotal(total);
+        int idle = Integer.parseInt(prop.getProperty(&quot;maxIdle&quot;));
+        config.setMaxIdle(idle);
+    }
+</code></pre><h3 id="缓存优化"><a href="#缓存优化" class="headerlink" title="缓存优化"></a>缓存优化</h3><pre><code>1. 第一次从Redis查询数据时，如果不存在，则去MySQL中查询，并把查询结果存入Redis
+2. 第二次从Redis查询数据时，Redis中已经存在了，不需要再去MySQL中查询了；
+3. Redis只适合缓存一些不经常变化的数据；
+4. MySQL中的数据一旦发生了变化，在其增删改的方法中，及时更新Reids中的缓存数据。
 </code></pre><hr>
 
           
@@ -2094,131 +3050,6 @@ Esc：退出编辑模式或末行模式；
     3. DOM和SAX都是原生解析方式，JDOM和DOM4J是第三方解析框架
 3. JDOM：比DOM更快，仅使用具体类，而不使用接口
 4. dom4j：JDOM的升级版，功能强大，性能优异，使用接口，而不使用实现类
-</code></pre><h2 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h2><pre><code>1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口；
-2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API；
-3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现；
-4. ORM框架：Hibernate、mybatis
-</code></pre><h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><pre><code>1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱动
-    1. 装载MySql驱动
-    Class.forName(&quot;com.mysql.jdbc.Driver&quot;); --&gt; MySQL5.0
-    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;); --&gt; MySQL6.0+
-2. DriverManager：JDBC的管理层，作用于用户和驱动程序之间，在数据库和驱动程序之间建立连接
-3. Connection：与特定数据库的连接会话，执行SQL语句并返回结果
-    1. 连接MySQL5.0数据库
-    Connection conn = DriverManager.getConnection(
-        &quot;jdbc:mysql://host:port/database&quot;, &quot;username&quot;, &quot;password&quot;);
-    2. 连接MySQL6.0+数据库，需要指定时区serverTimezone
-    jdbc:mysql://host:port/database?useUnicode=true&amp;characterEncoding=UTF-8
-    &amp;serverTimezone=Asia/Shanghai
-    &amp;useSSL=false&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
-    3. 连接的建立是比较耗时的，内部包含Socket，实际上是建立一个Socket远程连接;
-    4. 关闭连接：conn.close();
-4. Statement：执行静态SQL语句并返回结果的对象
-    1. Statement用于发送简单的SQL语句(不带参数)，执行SQL时需要拼接参数，有SQL注入的危险
-    Statement stat = conn.createStatement();
-    2. PreparedStatement：继承Statement，用于发送含有任意多个参数的SQL语句，会预编译，
-    所以效率比Statement高，且防SQL注入；
-    String sql = &quot;insert into users(name, time) values(?, ?)&quot;; --&gt; ? 表示占位符
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setString(1, &quot;Mack&quot;);  --&gt; 设置字符串类型的占位符，占位符索引从1开始
-    stat.setDate(2, new java.sql.Date(System.currentTimeMillis())); -&gt;设置日期时间
-    stat.execute();  --&gt; 执行SQL语句
-    3. 如果不想关心字段类型，则使用 setObject()
-    4. CallableStatement：继承自PreparedStatement，由 conn.prepareCall(sql) 创建，
-    用于调用存储过程。
-5. 常用方法
-    1. execute()：运行语句，返回是否有结果集(true/false)
-    2. executeQuery()：运行select语句，返回 ResultSet 结果集
-    3. executeUpdate()：运行insert/update/delete操作，返回更新的行数
-    4. close(); 关闭
-6. ResultSet
-    String sql = &quot;select * from users where id&gt;?&quot;;
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setInt(1, 10);
-    ResultSet rs = stat.executeQuery();
-    while (rs.next()) {
-        int id = rs.getInt(1); --&gt; 获取第一列的数据，且字段类型为int
-        String name = rs.getString(2); --&gt; 获取第二列的数据，且字段类型为String
-    }
-    rs.close();  stat.close(); --&gt;关闭
-    1. 如果不想关心数据类型，则使用 getObject()
-    2. rs.next()：迭代下一行数据，如果没有了，则返回false
-7. 时间相关
-    1. java.sql.Date(年月日)
-    2. java.sql.Time(时分秒)
-    3. java.sql.Timestamp(年月日时分秒)
-8. Properties
-    1. 读取和处理配置资源文件中的信息，如数据库url、database、username、password等信息
-    2. 如db.properties文件，用于存储数据的配置信息：
-    driver=com.mysql.cj.jdbc.Driver
-    url=jdbc:mysql://localhost:3306/db_test?serverTimezone=Asia/Shanghai
-    user=root
-    password=123456
-    3. 加载db.properties文件
-    static Properties pros = null;
-    static {
-        pros = new Properties();
-        pros.load(Thread.currentThread().getContextClassLoader()
-        .getResourceAsStream(&quot;db.properties&quot;));
-    }
-    4. 使用db.properties中的配置信息
-    Class.forName(pros.getProperty(&quot;driver&quot;));
-</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><pre><code>1. PreparedStatement的预编译空间有限，数据量特别大时会发生异常，所以建议使用Statement
-2. JDBC中的事务默认是自动提交，还需要设置为手动提交
-    conn.setAutoCommit(false); --&gt; 禁止自动提交
-    Statement stat = conn.createStatement();
-    for(int i=0; i&lt;20000; i++) {
-        stat.addBatch(&quot;insert into ...&quot;); --&gt;一次性插入20000条数据
-    }
-    stat.executeBatch();
-    conn.commit(); //手动提交事务
-</code></pre><h3 id="大数据量处理"><a href="#大数据量处理" class="headerlink" title="大数据量处理"></a>大数据量处理</h3><pre><code>1. CLOB：Character Large Object，用于存储大文本数据
-    1. 不同数据库对大文本(大字段)有不同的处理方式，通常以流的方式处理；
-    2. MySQL中的相关类型及其最大长度(字符)：TINYTEXT(2^8-1)，TEXT(2^16-1)，
-    MEDIUMTEXT(2^24-1)，LONGTEXT(2^32-1或4GB)
-2. JDBC操作大文本
-    1. 存储
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setClob(3, new FileReader(&quot;d:/a.txt&quot;)); //接受一个流对象
-    2. 读取
-    ResultSet rs = ...
-    while (rs.next()) {
-        Clob c = rs.getClob(&quot;desc&quot;); --&gt; 指定字段名获取值
-        Reader r = c.getCharacterStream(); --&gt; 获取大文本流
-    }
-3. BLOB：Byte Large Object，用于存储大二进制数据
-    1. 不同数据库对大二进制数据(大字段)有不同的处理方式，通常以流的方式处理；
-    2. MySQL中的相关类型及其最大长度(字符)：TINYBLOB(2^8-1)，BLOB(2^16-1)
-    MEDIUMBLOB(2^24-1)，LONGBLOB(2^32-1或4GB)
-4. JDBC操作大二进制数据
-    1. 存储
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setBlob(3, new FileInputStream(&quot;d:/b.jpg&quot;)); //接受一个流对象
-    2. 读取
-    ResultSet rs = ...
-    while (rs.next()) {
-        Blob b = rs.getBlob(&quot;avatar&quot;); --&gt; 指定字段名获取值
-        InputStream is = b.getBinaryStream(); --&gt;获取大二进制流
-    }
-</code></pre><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><pre><code>1. 事务：一组要么同时执行成功，要么同时执行失败的SQL语句，是数据库操作的一个执行单元；
-2. 事务开始于：
-    1. 连接数据库，并执行一条DML语句(INSERT、UPDATE、DELETE)
-    2. 前一个事务结束后，又输入另一条DML语句
-3. 事务结束于：
-    1. 执行COMMIT或ROLLBACK语句；
-    2. 执行一条DDL语句，如CREATE TABLE，这种情况会自动执行COMMIT语句；
-    3. 执行一条DCL语句，如GRANT，这种情况也会自动执行COMMIT语句；
-    4. 断开与数据库的连接；
-    5. 执行一条DML语句，但却失败了，这种情况会执行ROLLBACK语句。
-4. 四大特性：
-    1. 原子性：一个事务内的所有操作是一个整体，要么全部成功，要么全部失败；
-    2. 一致性：一个事务内有一个操作失败时，所有更改过的数据都必须回滚到初始状态；
-    3. 隔离性：查看数据状态时，要么是另一个事务修改之前的状态，要么是修改之后的状态，不会
-    出现中间状态的数据，级别：读取未提交&lt;读取已提交&lt;可重复读&lt;序列化，通常是读取已提交；
-    4. 持久性：对于系统的影响是永久性的；
-    conn.setAutoCommit(false); --&gt; 禁止事务自动提交
-    conn.commit(); --&gt; 手动提交事务
-    conn.rollback(); --&gt; 提交失败后(发生异常)，执行数据回滚
 </code></pre><hr>
 
           
@@ -2305,7 +3136,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-02T05:31:53.922Z">
+<meta property="og:updated_time" content="2019-03-22T11:43:59.164Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java基础">
 <meta name="twitter:description" content="Java基础1. 浮点数的精确计算：BigDecimal，java.math包中的类     1. 相减     BigDecimal db1 = BigDecimal.valueOf(1.0);  --&amp;gt; 浮点数1.0     db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&amp;gt; 1.0 - 0.1     2. 相除     BigDe">
@@ -441,131 +441,6 @@
     3. DOM和SAX都是原生解析方式，JDOM和DOM4J是第三方解析框架
 3. JDOM：比DOM更快，仅使用具体类，而不使用接口
 4. dom4j：JDOM的升级版，功能强大，性能优异，使用接口，而不使用实现类
-</code></pre><h2 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h2><pre><code>1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口；
-2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API；
-3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现；
-4. ORM框架：Hibernate、mybatis
-</code></pre><h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><pre><code>1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱动
-    1. 装载MySql驱动
-    Class.forName(&quot;com.mysql.jdbc.Driver&quot;); --&gt; MySQL5.0
-    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;); --&gt; MySQL6.0+
-2. DriverManager：JDBC的管理层，作用于用户和驱动程序之间，在数据库和驱动程序之间建立连接
-3. Connection：与特定数据库的连接会话，执行SQL语句并返回结果
-    1. 连接MySQL5.0数据库
-    Connection conn = DriverManager.getConnection(
-        &quot;jdbc:mysql://host:port/database&quot;, &quot;username&quot;, &quot;password&quot;);
-    2. 连接MySQL6.0+数据库，需要指定时区serverTimezone
-    jdbc:mysql://host:port/database?useUnicode=true&amp;characterEncoding=UTF-8
-    &amp;serverTimezone=Asia/Shanghai
-    &amp;useSSL=false&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
-    3. 连接的建立是比较耗时的，内部包含Socket，实际上是建立一个Socket远程连接;
-    4. 关闭连接：conn.close();
-4. Statement：执行静态SQL语句并返回结果的对象
-    1. Statement用于发送简单的SQL语句(不带参数)，执行SQL时需要拼接参数，有SQL注入的危险
-    Statement stat = conn.createStatement();
-    2. PreparedStatement：继承Statement，用于发送含有任意多个参数的SQL语句，会预编译，
-    所以效率比Statement高，且防SQL注入；
-    String sql = &quot;insert into users(name, time) values(?, ?)&quot;; --&gt; ? 表示占位符
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setString(1, &quot;Mack&quot;);  --&gt; 设置字符串类型的占位符，占位符索引从1开始
-    stat.setDate(2, new java.sql.Date(System.currentTimeMillis())); -&gt;设置日期时间
-    stat.execute();  --&gt; 执行SQL语句
-    3. 如果不想关心字段类型，则使用 setObject()
-    4. CallableStatement：继承自PreparedStatement，由 conn.prepareCall(sql) 创建，
-    用于调用存储过程。
-5. 常用方法
-    1. execute()：运行语句，返回是否有结果集(true/false)
-    2. executeQuery()：运行select语句，返回 ResultSet 结果集
-    3. executeUpdate()：运行insert/update/delete操作，返回更新的行数
-    4. close(); 关闭
-6. ResultSet
-    String sql = &quot;select * from users where id&gt;?&quot;;
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setInt(1, 10);
-    ResultSet rs = stat.executeQuery();
-    while (rs.next()) {
-        int id = rs.getInt(1); --&gt; 获取第一列的数据，且字段类型为int
-        String name = rs.getString(2); --&gt; 获取第二列的数据，且字段类型为String
-    }
-    rs.close();  stat.close(); --&gt;关闭
-    1. 如果不想关心数据类型，则使用 getObject()
-    2. rs.next()：迭代下一行数据，如果没有了，则返回false
-7. 时间相关
-    1. java.sql.Date(年月日)
-    2. java.sql.Time(时分秒)
-    3. java.sql.Timestamp(年月日时分秒)
-8. Properties
-    1. 读取和处理配置资源文件中的信息，如数据库url、database、username、password等信息
-    2. 如db.properties文件，用于存储数据的配置信息：
-    driver=com.mysql.cj.jdbc.Driver
-    url=jdbc:mysql://localhost:3306/db_test?serverTimezone=Asia/Shanghai
-    user=root
-    password=123456
-    3. 加载db.properties文件
-    static Properties pros = null;
-    static {
-        pros = new Properties();
-        pros.load(Thread.currentThread().getContextClassLoader()
-        .getResourceAsStream(&quot;db.properties&quot;));
-    }
-    4. 使用db.properties中的配置信息
-    Class.forName(pros.getProperty(&quot;driver&quot;));
-</code></pre><h3 id="批量处理"><a href="#批量处理" class="headerlink" title="批量处理"></a>批量处理</h3><pre><code>1. PreparedStatement的预编译空间有限，数据量特别大时会发生异常，所以建议使用Statement
-2. JDBC中的事务默认是自动提交，还需要设置为手动提交
-    conn.setAutoCommit(false); --&gt; 禁止自动提交
-    Statement stat = conn.createStatement();
-    for(int i=0; i&lt;20000; i++) {
-        stat.addBatch(&quot;insert into ...&quot;); --&gt;一次性插入20000条数据
-    }
-    stat.executeBatch();
-    conn.commit(); //手动提交事务
-</code></pre><h3 id="大数据量处理"><a href="#大数据量处理" class="headerlink" title="大数据量处理"></a>大数据量处理</h3><pre><code>1. CLOB：Character Large Object，用于存储大文本数据
-    1. 不同数据库对大文本(大字段)有不同的处理方式，通常以流的方式处理；
-    2. MySQL中的相关类型及其最大长度(字符)：TINYTEXT(2^8-1)，TEXT(2^16-1)，
-    MEDIUMTEXT(2^24-1)，LONGTEXT(2^32-1或4GB)
-2. JDBC操作大文本
-    1. 存储
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setClob(3, new FileReader(&quot;d:/a.txt&quot;)); //接受一个流对象
-    2. 读取
-    ResultSet rs = ...
-    while (rs.next()) {
-        Clob c = rs.getClob(&quot;desc&quot;); --&gt; 指定字段名获取值
-        Reader r = c.getCharacterStream(); --&gt; 获取大文本流
-    }
-3. BLOB：Byte Large Object，用于存储大二进制数据
-    1. 不同数据库对大二进制数据(大字段)有不同的处理方式，通常以流的方式处理；
-    2. MySQL中的相关类型及其最大长度(字符)：TINYBLOB(2^8-1)，BLOB(2^16-1)
-    MEDIUMBLOB(2^24-1)，LONGBLOB(2^32-1或4GB)
-4. JDBC操作大二进制数据
-    1. 存储
-    PreparedStatement stat = conn.prepareStatement(sql);
-    stat.setBlob(3, new FileInputStream(&quot;d:/b.jpg&quot;)); //接受一个流对象
-    2. 读取
-    ResultSet rs = ...
-    while (rs.next()) {
-        Blob b = rs.getBlob(&quot;avatar&quot;); --&gt; 指定字段名获取值
-        InputStream is = b.getBinaryStream(); --&gt;获取大二进制流
-    }
-</code></pre><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><pre><code>1. 事务：一组要么同时执行成功，要么同时执行失败的SQL语句，是数据库操作的一个执行单元；
-2. 事务开始于：
-    1. 连接数据库，并执行一条DML语句(INSERT、UPDATE、DELETE)
-    2. 前一个事务结束后，又输入另一条DML语句
-3. 事务结束于：
-    1. 执行COMMIT或ROLLBACK语句；
-    2. 执行一条DDL语句，如CREATE TABLE，这种情况会自动执行COMMIT语句；
-    3. 执行一条DCL语句，如GRANT，这种情况也会自动执行COMMIT语句；
-    4. 断开与数据库的连接；
-    5. 执行一条DML语句，但却失败了，这种情况会执行ROLLBACK语句。
-4. 四大特性：
-    1. 原子性：一个事务内的所有操作是一个整体，要么全部成功，要么全部失败；
-    2. 一致性：一个事务内有一个操作失败时，所有更改过的数据都必须回滚到初始状态；
-    3. 隔离性：查看数据状态时，要么是另一个事务修改之前的状态，要么是修改之后的状态，不会
-    出现中间状态的数据，级别：读取未提交&lt;读取已提交&lt;可重复读&lt;序列化，通常是读取已提交；
-    4. 持久性：对于系统的影响是永久性的；
-    conn.setAutoCommit(false); --&gt; 禁止事务自动提交
-    conn.commit(); --&gt; 手动提交事务
-    conn.rollback(); --&gt; 提交失败后(发生异常)，执行数据回滚
 </code></pre><hr>
 
       
@@ -682,7 +557,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -737,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK10新特性"><span class="nav-number">2.</span> <span class="nav-text">JDK10新特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XML"><span class="nav-number">3.</span> <span class="nav-text">XML</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#XML解析"><span class="nav-number">3.1.</span> <span class="nav-text">XML解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDBC"><span class="nav-number">4.</span> <span class="nav-text">JDBC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口"><span class="nav-number">4.1.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#批量处理"><span class="nav-number">4.2.</span> <span class="nav-text">批量处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大数据量处理"><span class="nav-number">4.3.</span> <span class="nav-text">大数据量处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">4.4.</span> <span class="nav-text">事务</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java基础"><span class="nav-number">1.</span> <span class="nav-text">Java基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK10新特性"><span class="nav-number">2.</span> <span class="nav-text">JDK10新特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XML"><span class="nav-number">3.</span> <span class="nav-text">XML</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#XML解析"><span class="nav-number">3.1.</span> <span class="nav-text">XML解析</span></a></li></ol></li></ol></div>
             
 
           </div>
