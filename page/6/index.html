@@ -232,6 +232,378 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/26/python基础1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/26/python基础1/" itemprop="url">python基础1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-26T00:00:00+08:00">
+                2017-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>1. py为扩展名的文件编写python代码；
+2. python/python3：分别进入python2与python3环境的交互模式，测试python的语法；
+3. ipython、ipython3：进入交互模式，不仅支持python语法，而且支持Linux命令。
+4. 注释
+    1. #... ：单行注释，Python解释器会忽略单行注释的内容；
+    2. &apos;&apos;&apos; ... &apos;&apos;&apos; / &quot;&quot;&quot; ... &quot;&quot;&quot; ：（三个单引号/双引号）多行注释；
+    3. 多行注释其实是一种特殊的字符串，Python解释器会加载到内存中，如果多行注释
+    的内容特别大，可能会造成内存崩溃。
+5. python2的中文报错，在文件第一行声明：#coding=utf-8 或 #-*- coding:utf-8 -*-
+6. 字符编码
+    1. python3的字符串使用Unicode，直接支持多语言；
+    2. b&apos;ABC&apos;与&apos;ABC&apos;：前者是bytes类型，每个字符占1个字节，用于网络传输/保存在磁盘；
+    后者是一个Unicode编码的字符串；
+    3. python源代码包含中文时，必须指定保存为UTF-8编码，为了让python解释器按UTF-8
+    读取源代码，通常在文件开头指定：
+    1. #!/usr/bin/env python3 ==&gt; 告诉Linux/OS X系统，这是一个python可执行程序；
+    2. # -*- coding: utf-8 -*- ==&gt; 以utf-8保存/读取。
+</code></pre><h2 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h2><h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><pre><code>Python是动态语言，定义变量不需要声明类型；但是，Python仍然区分数据类型。
+</code></pre><h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h3><pre><code>输入语句：raw_input()、input()
+1. input()
+    name = input(&quot;请输入名字：&quot;)，在python3中，返回输入的内容，赋值给name；
+    而在python2中执行，只是作为一个语句执行；
+2. raw_input()：python2中的输入函数，python3没有，其功能与python3中input()相同；
+3. 输入函数的返回值都是字符串类型；
+4. python2中的input()
+    1. 输入 “ 1+2 ”，相当于 name = 1+2；
+    2. 输入 “ abc ”，相当于 name = abc，abc 被当作变量，但是又没有定义该变量，
+    所以会报no defined；
+    3. 输入 lambda 表达式，相当于定义函数，name指向 lambda 表达式的函数体。
+</code></pre><h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><pre><code>输出语句：print()
+1. %d：整数，age = 20，print(&quot;年龄：%d&quot; % age) ==&gt; 年龄：20；
+2. %s：字符串，如果不清楚输出的数据类型，%s永远有效；
+3. %f：浮点数，height = 1.75，print(&quot;身高：%0.2f&quot;%height)
+    0.2：0表示1.75前面没有占位符，2表示小数点后保留2位，Python默认保留6位。
+4. 输出多个参数：print(&quot;名字：%s，年龄：%d，身高：%0.2f&quot; % (name, age, height))
+</code></pre><p><img src="http://i.imgur.com/G7bMLwW.png" alt></p>
+<pre><code>5. print(&quot;abcd&quot;, end=&quot;&quot;)：执行输出之后不换行；
+    1. end 是print() 的缺省参数，用于控制执行输出后的操作，默认值为换行符&quot;\n&quot;；
+    2. end=&quot;&quot; ： 表示执行输出后，不再执行任何操作；
+    3. end=&quot;,&quot; ： 表示执行输出后，加一个逗号&quot;,&quot;。
+6. print(&quot;百分比:%d%%&quot;%age)：20%
+    当输出语句中有%d、%f 等定向输出时，必须使用两个% 才能输出一个%，避免影响定向输出。
+6. \n：换行，字符串中包含\n，\n后面的内容会换行显示；
+7. \t：制表符；
+8. \r：输出时，其后面的内容会从左边顶行输出；
+</code></pre><p><img src="http://i.imgur.com/Yr5Dm3j.jpg" alt></p>
+<pre><code>1. &quot;abcd\r12&quot;：\r后面的&quot;12&quot;会从左边顶行输出，覆盖前面的&quot;ab&quot;；
+2. end=&quot;&quot;：表示每次输出不换行；\r：因为每次输出都不换行，\r后面的内容左起顶行输出，
+所以每次输出的内容只有计算的rate在变化，可用于实时显示传输数据的进度。
+</code></pre><h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><p><img src="http://i.imgur.com/dCJxhSO.png" alt></p>
+<pre><code>1. type(x)：查看x的数据类型；
+2. int(x)/float(x)/str(x)：将x转换为一个整数/浮点数/字符串；
+3. isinstance()：类型检查，返回值是boolean型；
+    isinstance(x, (int, float))：x是int/float型，则返回True
+</code></pre><h3 id="特有的运算符"><a href="#特有的运算符" class="headerlink" title="特有的运算符"></a>特有的运算符</h3><pre><code>1. a//b：取商；    a%b：取余数；
+2. a**b：a 的 b 次方；
+3. &quot;abc&quot; *3：&quot;abcabcabc&quot;；
+4. &lt;&gt;：phthon2中的运算符，等效于 !=；
+5. or/and：或/与运算；    not x：非运算；
+6. is 与 ==
+    1. ==：判断值是否相等；
+    2. is：判断两个引用指向的地址是否相同。
+7. 复合赋值运算符：+=、%=、**=、//= 等；
+8. a, b = 3, 4：python中特有的赋值方式
+    1. 交换两个变量的值：a, b = b, a
+    2. 这种方式交换两个变量的值，比使用第三方变量的方式更高效。
+9. 空字符串，None，0，空列表，空字典，空元组，都表示False；其他都表示True。
+</code></pre><h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><pre><code>1. while 循环
+    1. while - else：
+    while循环结束后会执行else，如果while循环中执行了break，则不会执行else；
+    2. 死循环 while 1 比 while True 更高效
+    python底层是C语言编写的，C语言中并没有boolean类型，False和True其实是按照 0 和 1
+    存储的，每次循环判断时，True都需要在底层转换，而 1 不会，所以 while 1 的效率更高。
+2. for循环：for...in
+    1. 用于遍历可迭代对象的元素，比如 name = &quot;abcdef&quot;
+    2. for temp in name：每个循环的字符存入temp；
+    3. for...in - else：for结束后会执行else语句，如果for中有break，则不会执行else。
+3. break/continue：跳出循环/结束本次循环。
+</code></pre><h3 id="随机数"><a href="#随机数" class="headerlink" title="随机数"></a>随机数</h3><pre><code>import random：random.randint(0, 9)：随机生成一个0~9之间的整数。
+</code></pre><h2 id="字符串：str"><a href="#字符串：str" class="headerlink" title="字符串：str"></a>字符串：str</h2><pre><code>1. 单引号和双引号都表示字符串；
+2. 在内存中的存储方式
+    1. 一个字节存储的最大数值是255，比如，数值100是用一个字节存储的；
+    2. 字符串存储时，会把字符串拆分成一组字符，每个字符占一个字节；在底层C语言存储字符串时，
+    会在字符串的末尾加一个&apos;\0&apos;。
+3. str(x)：将x转换成一个字符串，列表、元组、字典、集合等都可以转为字符串；
+4. len(str)：获取字符串的长度；
+5. 拼接字符串
+    1. + 号连接两个字符串，拼接的必须是字符串类型，否则会报异常；
+    2. % 拼接字符串：a = &quot;abc&quot;，b = &quot;OK&quot;，c = &quot;==%s==&quot;%(a+b)，c：&quot;==abcOK==&quot;。
+6. 下标：name = &quot;abc&quot;
+    1. 正向：name[0]--&gt;&apos;a&apos;，name[len(name)-1]--&gt;&apos;c&apos;；
+    2. 反向：name[-1]--&gt;&apos;c&apos;，name[-len(name)]--&gt;&apos;a&apos;；
+    3. 下标的方式只能获取对应的字符，但不能通过下标修改字符； name[0]=&quot;w&quot; 会报异常。
+7. b&apos;AB&apos; --&gt; 二进制数据，r&apos;AB\tAB&apos; --&gt; 不允许对字符串转义，u&apos;AB&apos; --&gt; Unicode字符串
+</code></pre><h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><pre><code>切片：name = &quot;abcdefABCDEF&quot;
+1. name[开始角标:结束角标]：取字符串的一部分，左开右闭的原则；name[2:5]--&gt;&quot;cde&quot;；
+2. name[2:-1]，等效于 name[2:len(name)-1] --&gt; &quot;cdefABCDE&quot;
+3. 省略开始角标，默认为 0；name[:5]，等效于name[0:5]--&gt;&quot;abcde&quot;；
+4. 省略结束角标，默认为len[name]；name[6:]--&gt;&quot;ABCDEF&quot;；
+5. name[开始角标:结束角标:步长]：步长是取元素时跳过的个数，name[2:9:2]--&gt;&quot;ceAC&quot;，
+   步长为1时，等效于name[2:9]，步长默认为1，但步长不能为0；
+6. 逆序1：name[-1::-1] --&gt; &quot;FEDCBAfedcba&quot;，结束角标取决于步长；
+    1. 如果步长是负数，则取到第一个字符，name[-1::-2] --&gt;FDBfdb；
+    2. 如果步长为正数，则取到最后一个，即取到的字符串始终为&quot;F&quot;。
+7. 逆序2：name[:]--&gt;&quot;abcdefABCDEF&quot;，相当于复制字符串；
+    name[::-1]--&gt;&quot;FEDCBAfedcba&quot;，逆序。
+</code></pre><h3 id="字符串的常见操作"><a href="#字符串的常见操作" class="headerlink" title="字符串的常见操作"></a>字符串的常见操作</h3><pre><code>1. 查找
+    find(子串)/rfind(子串)：正向/反向查找指定的子串，返回子串首字母的下标，-1表示不存在；
+    index()、rindex()：与find()的区别是，如果查找失败，则抛出异常；
+2. count(子串)：返回指定子串的出现次数。
+3. 替换
+    replace(子串A，子串B)：用B替换字符串中所有的A，返回一个新的字符串，不会改变原字符串；
+    replace(子串A，子串B，num)：num表示要替换的个数。
+4. split(子串)：切割字符串，返回一个列表；
+    split()：不加参数时，默认会按照空格、&apos;\t&apos;、&apos;\n&apos;进行切割；
+</code></pre><p><img src="http://i.imgur.com/MTdw3qn.png" alt></p>
+<pre><code>    splitlines()：按照行切割，即字符串中的&apos;\n&apos;。
+5. 字母大小写
+    capitalize()：把字符串的首字母大写；
+    title()：把每个单词的首字母大写；
+    lower()/upper()：所有大/小写字母都变成小/大写。
+6. startswith(子串)/endswith(子串)：是否以指定子串开头/结束，返回True/false；
+7. 指定位置
+     center(num)：居中，num表示宽度，小于字符串长度时无效；
+     ljust(num)/rjust(num)：左/右对齐。
+8. 去除字符串的空格
+     strip()：同时去除左右空格；
+     lstrip()/rstrip()：去除左/右边的空格；
+9. partition(子串)：以字符串中的第一个子串为中心，将字符串拆分成3部分，返回一个元组；
+    rpartition()：反向查找出匹配子串，拆分字符串；
+10. 判断字符串类型
+     isalpha()：字符串是纯字母（a~z和A~Z），返回True；
+     isdigit()：字符串是纯数字时，返回True；
+     isalnum()：字符串是纯字母、纯数字，或者字母和数字的组合时，返回True；
+     isspace()：字符串是纯空格，则返回True。
+11. join(iterable)：以调用者为中间字符，连接iterable中的元素，组成一个新的字符串。
+    iterable是指可迭代对象，如字符串，元组，列表，字典，集合 ...
+    1. 元组，列表和集合的元素，以及字典的键，必须是字符串类型才能连接；
+    2. 对于字符串，连接的是每个字符；对于字典，连接的是每个键；
+    3. join() 连接字符串的效率要比 “ + ” 更高。
+</code></pre><h2 id="列表：list"><a href="#列表：list" class="headerlink" title="列表：list"></a>列表：list</h2><pre><code>1. 定义：list = [ 元素1，元素2，元素3 ]，可以是不同数据类型的元素；
+2. 交互模式下，help(list)，可以查看列表的文档；
+3. len(list)：返回列表的长度，即元素个数；
+4. list(iterable)：把iterable型的数据转为列表；
+    1. 如果是字符串，会把字符串拆开，每个字符当作列表元素；
+    2. 如果是字典，则把键当作列表元素。
+5. 列表支持负角标，也支持切片。
+</code></pre><h3 id="常见操作"><a href="#常见操作" class="headerlink" title="常见操作"></a>常见操作</h3><pre><code>1. append(x)：添加一个新元素，添加在列表最后；
+    如果添加的元素是一个列表，则该列表会被看作是一个元素，而不会被拆开。
+2. insert(index，x)：在指定位置index插入元素；
+    python 的列表其实是一个数组，查找快，insert()插入的效率比append()低。
+3. extend()：将两个列表合并成一个列表；两个列表相加，也可以合并成一个新的列表；
+4. pop()：删除最后一个元素；    pop(index)：按照角标删除元素；
+5. remove(x)：删除指定的元素，只删第一个；
+6. del list[index]：根据下标删除；
+7. list[index] = y：修改指定元素；
+8. 查询：in、 not in
+    if x in list：x 在列表 list 中；
+    if x not in list：x 不在列表 list 中。
+9. index(x)：获取元素的角标，如果该元素不存在，会抛出异常；
+10. 排序
+    1. sort()、sort(reverse=True)：从小到大排序、从大到小排序，对纯数值元素的列表有效；
+    2. reverse()：反向列表，对纯数值元素的列表有效。
+11. for...in：遍历列表的元素；
+    迭代过程中不能删除列表的元素，因为删除后，列表的元素会发生移动，但迭代指针不会随之移动，
+从而造成元素遗漏；
+</code></pre><p><img src="http://i.imgur.com/eDBYpOn.jpg" alt></p>
+<pre><code>解决的一种方式：创建一个列表Flag，保存要删除的元素；然后再迭代Flag，删除lists的元素。
+</code></pre><h3 id="列表生成式"><a href="#列表生成式" class="headerlink" title="列表生成式"></a>列表生成式</h3><pre><code>1. range(start, stop, step)
+   生成一个int型的列表，start 列表的第一个元素，stop-1 最后一个元素，step 表示步长；
+2. range(5) 等效于 range(0, 5) --&gt; [0, 1, 2, 3, 4]；
+3. python2：如果 stop 的值足够大，会内存溢出；所以，python2中的range()是有风险的；
+4. python3：range() 并不会立刻生成一个列表，而是作为一个生成器，需要某个元素时再生成；
+   所以，range()不会内存溢出；
+5. python3下，list(range(5)) 会将生成器转化为列表：[0, 1, 2, 3, 4]
+6. xrange() 在python2和python3环境下都是一个生成器，不会造成内存溢出；
+7. [i for i in range(5)] --&gt; [0, 1, 2, 3, 4]
+    for 语句只用于控制循环的次数，每次循环都会改变i的值，for前面的参数表示每次循环之后、
+    存入列表的元素；
+8. for - if：筛选生成的元素
+      [i for i in range(10) if i%2==0]：只生成偶数的元素，[0, 2, 4, 6, 8]。
+9. 多层for循环
+    1. [i for i in range(3) for j in range(2)]：
+    外层for循环一次，内层for会循环2次(0，1)，生成列表：[0, 0, 1, 1, 2, 2]；
+    2. [(i, j) for i in range(3) for j in range(2)]：用元组存储一次生成的多个子元素，
+    生成列表：[(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]。
+</code></pre><h2 id="字典：dict"><a href="#字典：dict" class="headerlink" title="字典：dict"></a>字典：dict</h2><pre><code>1. 定义：dict = {键:值，键:值，键:值}，以键值对形式存储数据；
+2. 键的类型可以是字符串，数值，元组，但不能是列表；
+   因为字典元素的存储地址，是对键进行哈希算法计算的，所以键一定要是不可变的类型，
+   而列表是可变类型，计算的值会根据列表的变化而改变；
+3. len(dict)：返回字典的长度，即元素个数；
+</code></pre><h3 id="常见操作-1"><a href="#常见操作-1" class="headerlink" title="常见操作"></a>常见操作</h3><pre><code>1. 添加/修改： dict[&quot;name&quot;] = &quot;Make&quot;；
+2. 指定键进行删除：del dict[键]，pop(key)
+3. 查询
+     dict[键]：获取值，但是如果该键不存在，将报出异常；
+     get(键[, defaultValue])：获取值，如果键不存在，默认返回None，也可以设置默认值。
+4. keys()：python2返回键的列表，python3返回一个生成器：dict_keys([键1, 键2])；
+5. values()：python2返回值的列表，python3返回一个生成器：dict_values([值1, 值2])；
+6. items()：dict = {&quot;name&quot;:&quot;DD&quot;, &quot;age&quot;:20}
+    python2中：[(&apos;age&apos;, 20), (&apos;name&apos;, &apos;DD&apos;)]，是一个列表；
+    python3中：dict_items([(&apos;name&apos;, &apos;DD&apos;), (&apos;age&apos;, 20)])，是一个生成器对象。
+</code></pre><p><img src="http://i.imgur.com/xPbLLEo.jpg" alt></p>
+<pre><code>7. for temp in dict：遍历的是字典的键。
+</code></pre><h2 id="元组：tuple"><a href="#元组：tuple" class="headerlink" title="元组：tuple"></a>元组：tuple</h2><pre><code>1. 定义：tuple = (元素1，元素2，元素3)
+2. 与列表的区别：元组的元素是不可变的，只能查看，不能修改；
+3. 如果元组只有一个元素，必须在元素后加逗号：(20, )
+4. tuple(iterable)：把iterable型的数据转为元组；
+5. len(tuple)：获取元组的长度，即元素的个数；
+6. 元组支持负角标，也支持切片；
+7. 获取元组的值：a = (10, 12)
+    1. 下标的方式：tuple[0]--&gt;10
+    2. 拆包：b, c = a --&gt; b：10，c：12
+8.  index(x)：返回元素x第一次出现的角标，如果元素不存在，会抛出异常；
+9.  count(x)：计算元素x在元组中出现的个数。
+10.  zip(list1, list2)：
+    1.  zip([1, 2], [&apos;A&apos;, &apos;B&apos;]) --&gt; [(1, &apos;A&apos;), (2, &apos;B&apos;)]
+    2.  zip([1, 2, 3, 4], [&apos;A&apos;, &apos;B&apos;]) --&gt; [(1, &apos;A&apos;), (2, &apos;B&apos;)]，多余元素被忽略
+</code></pre><h2 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h2><pre><code>1. 定义：set = { 元素1, 元素2, 元素3 }
+2. set与dict类似，也是一组key的集合，但不存储value；同理，key不能重复、不能是可变的；
+3. False和True是按照 0 和 1 存储的，所以，False和0、True和1，也被视为重复元素；
+4. len(set)：获取集合的长度，即元素的个数；
+5. set(iterable)：把iterable型的数据转为集合，并去除重复元素；
+6. 常见操作：add(x) 添加一个元素；pop() 删除第一个元素；remove(x) 删除元素x。
+7. for...in 的方式遍历，字典和集合的效率比列表要高；
+8. 集合A，集合B
+     A &amp; B：交集；A | B：并集
+     A - B：A 的差集，A 中有，B 中没有的元素；同理，B-A：B的差集；
+     A ^ B：对称差集，等效于 A-B 与 B-A 的并集；
+9. 应用场景：集合A 表示上个月浏览的用户，集合B 表示这个月浏览的用户
+A &amp; B 过滤出老用户；A | B 统计出所有用户；A - B 统计丢失的用户；B - A 统计新用户
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/25/linux命令入门/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -533,7 +905,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/10/JavaEE之过滤监听/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/05/JavaEE之过滤监听/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -552,7 +924,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/01/10/JavaEE之过滤监听/" itemprop="url">JavaEE之过滤监听</a></h1>
+                <a class="post-title-link" href="/2016/02/05/JavaEE之过滤监听/" itemprop="url">JavaEE之过滤监听</a></h1>
         
 
         <div class="post-meta">
@@ -564,8 +936,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-10T00:00:00+08:00">
-                2016-01-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-05T00:00:00+08:00">
+                2016-02-05
               </time>
             
 
@@ -754,7 +1126,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/09/JavaEE之JSP/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/03/JavaEE之JSP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -773,7 +1145,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/01/09/JavaEE之JSP/" itemprop="url">JavaEE之JSP</a></h1>
+                <a class="post-title-link" href="/2016/02/03/JavaEE之JSP/" itemprop="url">JavaEE之JSP</a></h1>
         
 
         <div class="post-meta">
@@ -785,8 +1157,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-09T00:00:00+08:00">
-                2016-01-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-03T00:00:00+08:00">
+                2016-02-03
               </time>
             
 
@@ -1135,7 +1507,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/08/JavaEE之Servlet/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/01/JavaEE之Servlet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -1154,7 +1526,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/01/08/JavaEE之Servlet/" itemprop="url">JavaEE之Servlet</a></h1>
+                <a class="post-title-link" href="/2016/02/01/JavaEE之Servlet/" itemprop="url">JavaEE之Servlet</a></h1>
         
 
         <div class="post-meta">
@@ -1166,8 +1538,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-08T00:00:00+08:00">
-                2016-01-08
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-01T00:00:00+08:00">
+                2016-02-01
               </time>
             
 
@@ -1441,6 +1813,195 @@ Esc：退出编辑模式或末行模式；
     4. 热部署不需要在Tomcat/webapps下为项目创建文件夹(项目的虚拟目录)，所以如果项目删除，
     对应的&lt;Context/&gt;也必须删除，否则Tomcat启动会报错。
 </code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/10/Java之Maven/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/10/Java之Maven/" itemprop="url">Java之Maven</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-10T00:00:00+08:00">
+                2016-01-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><pre><code>1. Maven是一个项目管理工具，它包含了：
+    1. 一个项目对象模型(POM)，一组标准集合，一个项目生命周期，一个依赖管理系统，
+    和 用来运行定义在生命周期阶段中插件目标的逻辑。
+2. 依赖管理(jar包管理)
+    1. Maven项目中的jar包在一个jar包仓库中，以依赖的形式存在于项目中，在代码编译时，
+    再根据依赖到仓库中找到jar包；
+    2. 大大减少了磁盘空间，而且避免了jar包冲突；
+    3. 实现了代码可重用。
+3. 项目的一键构建
+    1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都交给Maven进行管理；
+    2. 一个Maven命令就可以实现构建，所以在maven/lib目录中一定集成了Tomcat插件。
+4. Maven依赖于JDK，还需要配置环境变量，然后测试是否安装配置成功：mvn -v
+</code></pre><h2 id="Maven仓库"><a href="#Maven仓库" class="headerlink" title="Maven仓库"></a>Maven仓库</h2><pre><code>1. 本地仓库、远程仓库(私服)、中央仓库
+2. 本地仓库
+    1. 在 Maven/conf/settings.xml 中，本地仓库的默认配置为 ${user.home}/.m2/repository
+    2. user.home 表示C盘下的个人目录
+    3. 考虑到C盘通常是系统盘，所以会自定义本地仓库的路径，如D盘下
+    &lt;localRepository&gt;D:\local\repo&lt;/localRepository&gt;
+3. 远程仓库(私服)：
+    1. 在公司内有专门的局域网服务器作为jar包的远程仓库，又称为私服；
+    2. 如果本地仓库没有需要的jar包，默认会联外网从中央仓库下载，配置了远程仓库之后，就可以在
+    局域网内快速下载需要的jar包；
+    3. 如果远程仓库中没有需要的jar包，则由远程仓库向中央仓库请求下载；
+    4. 通常也会预先从本地上传常用的jar包到远程仓库。
+4. 中央仓库：Maven的云服务器jar包仓库，存放了几乎所有的开源jar包。
+</code></pre><h2 id="标准目录结构"><a href="#标准目录结构" class="headerlink" title="标准目录结构"></a>标准目录结构</h2><pre><code>1. Maven项目的目录可分为四大部分：核心代码、配置文件、测试代码、测试配置文件
+2. Maven的Java项目
+    1. src/main/java：核心代码
+    2. src/main/resources：配置文件
+    3. src/test/java：测试代码
+    4. src/test/resources：测试配置文件
+4. Maven的Java Web项目
+    1. 除了Java项目的4个目录，还有一个 src/main/webapp，存放页面资源、JS、CSS、图片等等。
+5. Maven常用命令
+    1. mvn clean：清除项目中的编译信息，删除target目录；
+    2. mvn compile：编译src/main/java中的核心代码，生成target目录，存放编译好的class文件
+    3. mvn test：除了编译核心代码，还会编译src/main/test中的测试代码；
+    4. mvn package：打包，除了编译核心代码和测试代码，还会打包成war包；
+    在Maven项目/pom.xml中，默认配置有 &lt;packaging&gt;war&lt;/packaging&gt;，所以打包成war包
+    5. mvn install：安装，编译核心代码和测试代码，打成war包，同时把war包安装到本地仓库中。
+</code></pre><h2 id="Maven的生命周期"><a href="#Maven的生命周期" class="headerlink" title="Maven的生命周期"></a>Maven的生命周期</h2><pre><code>1. mvn clean：独立的一个生命周期，称为清理生命周期；
+2. 编译(compile)、测试(test)、打包(package)、安装(install)、发布(mvn deploy)
+    1. 称为默认生命周期，所以执行越靠后的命令时，会自动执行前面的命令；
+    2. 其中，发布需要额外配置。
+3. 另外，还有一个不常用的站点生命周期；
+</code></pre><h2 id="POM模型"><a href="#POM模型" class="headerlink" title="POM模型"></a>POM模型</h2><pre><code>1. Maven的概念模型POM
+</code></pre><p><img src="/2016/01/10/Java之Maven/uploadImg/Maven.jpg" alt="Maven"></p>
+<hr>
 
           
         
@@ -2304,50 +2865,88 @@ Esc：退出编辑模式或末行模式；
     1. netstat -ano  ---&gt; 查看所有的端口号
     2. netstat -ano|findstr &quot;808&quot;  ---&gt; 查看指定端口号
     3. tasklist|findstr &quot;808&quot;  ---&gt; 查看指定进程
-</code></pre><ol start="3">
-<li>InetSocketAddress：包含端口号，用于socket通信<br> InetSocketAddress s = new InetSocketAddress(“127.0.0.1/localhost”, 8080);<br> s.getHostName();  s.getAddress();  s.getPort();<h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><ol>
-<li>URL和URN都是URI的子集<ol>
-<li>URI：统一资源标识符，表示一个资源，比如一个具体的人</li>
-<li>URL：统一资源定位符，用地址定位一个资源，比如XX省XX市XX区…XX单元XX室的主人</li>
-<li>URN：统一资源名称，用名称定位一个资源，但不明确资源的位置，比如身份证号+姓名去找人</li>
-</ol>
-</li>
-<li>网络三大基石：HTML、HTTP、URL</li>
-<li>URL由4部分组成：协议、资源所在的主机域名、端口号、资源文件名</li>
-<li>URL url = new URL(“<a href="http://www.baidu.com:80/index.html#aa?xx=xxx&quot;)" target="_blank" rel="noopener">http://www.baidu.com:80/index.html#aa?xx=xxx&quot;)</a>;<ol>
-<li>url.getProtocol()：协议名</li>
-<li>url.getDefaultPort()：获取与此URL关联的协议的默认端口号</li>
-<li>url.getHost()：主机名/域名</li>
-<li>url.getFile()：端口号后的所有内容</li>
-<li>url.getPath()：端口号后、参数前的内容</li>
-<li>url.getQuery()：参数部分</li>
-<li>url.getRef()：锚点</li>
-</ol>
-</li>
-<li>相对路径构建URL<br> URL u1 = new URL(“<a href="http://www.baidu.com/aa/&quot;)" target="_blank" rel="noopener">http://www.baidu.com/aa/&quot;)</a>;<br> URL u2 = new URL(u, “b.html”); –&gt; <a href="http://www.baidu.com/aa/b.html" target="_blank" rel="noopener">http://www.baidu.com/aa/b.html</a></li>
-<li>发起请求<ol>
-<li>抓取网络数据，非浏览器访问<br>InputStream is = url.openStream();<br>BufferedReader br = new BufferedReader(new InputStreamReader(is, “UTF-8”));<br>String msg = null;<br>while(null != (msg=br.readLine())) {<br> System.out.println(msg);<br>}<br>br.close();</li>
-<li>模拟浏览器访问<br>HttpURLConnection conn = (HttpURLConnection) url.openConnection();<br>conn.setRequestMethod(“GET”);  –&gt;设置请求方式<br>conn.setRequestProperty(“User-Agent”, “value”); –&gt;设置请求头<br>BufferedReader br = new BufferedReader(<br> new InputStreamReader(conn.getInputStream(), “GBK”));<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2></li>
-</ol>
-</li>
-<li>DatagramSocket：用于发送/接受数据包的套接字；</li>
-<li>DatagramPacket：数据包；</li>
-<li>发送端<br> DatagramSocket client = new DatagramSocket(8888);<br> String data = “Hello I’m Client”;<br> byte[] bys = data.getBytes();<br> //发送给”127.0.0.1:9999”<br> DatagramPacket packet = new DatagramPacket(bys, 0, bys.length, <pre><code>new InetSocketAddress(&quot;127.0.0.1&quot;, 9999));
-</code></pre> client.send(packet);<br> client.close();</li>
-<li>接收端<br> DatagramSocket server = new DatagramSocket(9999); –&gt; 监听端口9999<br> byte[] container = new byte[1024*60];<br> DatagramPacket packet = new DatagramPacket(container, 0, container.length);<br> server.receive(packet);<br> byte[] bys = packet.getData();<br> int len = packet.getLength();<br> String data = new String(bys, 0, len);<br> server.close();<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2></li>
-<li>服务端：ServerSocket<br> ServerSocket server = new ServerSocket(8889);<br> Socket client = server.accept(); –&gt;阻塞式，等待客户端连接<br> DataInputStream dis = new DataInputStream(client.getInputStream());<br> String data = dis.readUTF(); –&gt;客户端的数据<br> dis.close();<br> client.close();<br> server.close();<ol>
-<li>通过每一次连接的client，向对应的客户端响应数据<br>DataOutputStream dos = new DataOutputStream(client.getOutputStream());<br>dos.writeUTF(“hello I’m Server”); –&gt;向客户端响应数据<br>dos.flush();<br>dos.close();</li>
-</ol>
-</li>
-<li>客户端：Socket<br> //指定服务端的Ip和端口号，发起连接请求<br> Socket client = new Socket(“127.0.0.1”, 8889);<br> DataOutputStream dos = new DataOutputStream(client.getOutputStream());<br> dos.writeUTF(“hello I’m Client”); –&gt;向服务端写入数据<br> dos.flush();<br> dos.close();<br> client.close();<ol>
-<li>client接收服务端的响应数据<br>DataInputStream dis = new DataInputStream(client.getInputStream());<br>String data = dis.readUTF(); –&gt;接收响应数据<br>dis.close();</li>
-</ol>
-</li>
-<li>HTTP底层正是TCP，浏览器作为客户端，也可以直接访问TCP服务器端.</li>
-</ol>
-</li>
-</ol>
-<hr>
+3. InetSocketAddress：包含端口号，用于socket通信
+    InetSocketAddress s = new InetSocketAddress(&quot;127.0.0.1/localhost&quot;, 8080);
+    s.getHostName();  s.getAddress();  s.getPort();
+</code></pre><h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><pre><code>1. URL和URN都是URI的子集
+    1. URI：统一资源标识符，表示一个资源，比如一个具体的人
+    2. URL：统一资源定位符，用地址定位一个资源，比如XX省XX市XX区...XX单元XX室的主人
+    3. URN：统一资源名称，用名称定位一个资源，但不明确资源的位置，比如身份证号+姓名去找人
+2. 网络三大基石：HTML、HTTP、URL
+3. URL由4部分组成：协议、资源所在的主机域名、端口号、资源文件名
+4. URL url = new URL(&quot;http://www.baidu.com:80/index.html#aa?xx=xxx&quot;);
+    1. url.getProtocol()：协议名
+    2. url.getDefaultPort()：获取与此URL关联的协议的默认端口号
+    3. url.getHost()：主机名/域名
+    4. url.getFile()：端口号后的所有内容
+    5. url.getPath()：端口号后、参数前的内容
+    6. url.getQuery()：参数部分
+    7. url.getRef()：锚点
+5. 相对路径构建URL
+    URL u1 = new URL(&quot;http://www.baidu.com/aa/&quot;);
+    URL u2 = new URL(u, &quot;b.html&quot;); --&gt; http://www.baidu.com/aa/b.html
+6. 发起请求
+    1. 抓取网络数据，非浏览器访问
+    InputStream is = url.openStream();
+    BufferedReader br = new BufferedReader(new InputStreamReader(is, &quot;UTF-8&quot;));
+    String msg = null;
+    while(null != (msg=br.readLine())) {
+        System.out.println(msg);
+    }
+    br.close();
+    2. 模拟浏览器访问
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod(&quot;GET&quot;);  --&gt;设置请求方式
+    conn.setRequestProperty(&quot;User-Agent&quot;, &quot;value&quot;); --&gt;设置请求头
+    BufferedReader br = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), &quot;GBK&quot;));
+</code></pre><h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><pre><code>1. DatagramSocket：用于发送/接受数据包的套接字；
+2. DatagramPacket：数据包；
+3. 发送端
+    DatagramSocket client = new DatagramSocket(8888);
+    String data = &quot;Hello I&apos;m Client&quot;;
+    byte[] bys = data.getBytes();
+    //发送给&quot;127.0.0.1:9999&quot;
+    DatagramPacket packet = new DatagramPacket(bys, 0, bys.length, 
+        new InetSocketAddress(&quot;127.0.0.1&quot;, 9999));
+    client.send(packet);
+    client.close();
+4. 接收端
+    DatagramSocket server = new DatagramSocket(9999); --&gt; 监听端口9999
+    byte[] container = new byte[1024*60];
+    DatagramPacket packet = new DatagramPacket(container, 0, container.length);
+    server.receive(packet);
+    byte[] bys = packet.getData();
+    int len = packet.getLength();
+    String data = new String(bys, 0, len);
+    server.close();
+</code></pre><h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><pre><code>1. 服务端：ServerSocket
+    ServerSocket server = new ServerSocket(8889);
+    Socket client = server.accept(); --&gt;阻塞式，等待客户端连接
+    DataInputStream dis = new DataInputStream(client.getInputStream());
+    String data = dis.readUTF(); --&gt;客户端的数据
+    dis.close();
+    client.close();
+    server.close();
+    1. 通过每一次连接的client，向对应的客户端响应数据
+    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+    dos.writeUTF(&quot;hello I&apos;m Server&quot;); --&gt;向客户端响应数据
+    dos.flush();
+    dos.close();
+2. 客户端：Socket
+    //指定服务端的Ip和端口号，发起连接请求
+    Socket client = new Socket(&quot;127.0.0.1&quot;, 8889);
+    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+    dos.writeUTF(&quot;hello I&apos;m Client&quot;); --&gt;向服务端写入数据
+    dos.flush();
+    dos.close();
+    client.close();
+    1. client接收服务端的响应数据
+    DataInputStream dis = new DataInputStream(client.getInputStream());
+    String data = dis.readUTF(); --&gt;接收响应数据
+    dis.close();
+3. HTTP底层正是TCP，浏览器作为客户端，也可以直接访问TCP服务器端.
+</code></pre><hr>
 
           
         
@@ -2825,272 +3424,11 @@ Esc：退出编辑模式或末行模式；
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/02/Java基础/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/02/Java基础/" itemprop="url">Java基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-02T00:00:00+08:00">
-                2016-01-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h2><pre><code>1. 浮点数的精确计算：BigDecimal，java.math包中的类
-    1. 相减
-    BigDecimal db1 = BigDecimal.valueOf(1.0);  --&gt; 浮点数1.0
-    db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&gt; 1.0 - 0.1
-    2. 相除
-    BigDecimal db2 = BigDecimal.valueOf(0.1);
-    BigDecimal db3 = BigDecimal.valueOf(1.0/10.0);
-    System.out.println(db2.equals(db3)); --&gt; true
-2. 自动类型转换：容量小的类型自动向容量大的类型转换
-    1. 特例：byte b = 123;
-    2. 123 本身是 int 类型(Java中的数值默认是int类型)，byte类型的范围为-128~127
-    3. 所以，123 可以直接赋值给 byte类型(自动转为byte类型)。
-3. 溢出
-    1. int m = 1000000000;  int y = 20;
-    2. int t = m * y; --&gt; 负数(溢出导致)
-    3. long t = m * (long)y; --&gt; 20000000000
-4. Java5提供了可变长参数
-    public void print(int n, String... args){
-        for(String temp: args){ } --&gt;遍历可变长参数
-    }
-    print(2, &quot;a&quot;);  print(2, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;);
-5. TreeMap与TreeSet
-    1. TreeMap：红黑二叉树的典型实现，按照key自增长的方向排序；
-    2. TreeSet：内部维持了一个简化版的TreeMap，通过key存储Set的元素；
-    3. 如果存储的是对象，此对象应实现 Comparable 接口，以便于对其进行排序。
-6. lambda表达式：JDK8新特性
-    1. 针对的是只包含一个方法的接口，如Runnable
-    new Thread(new Runnable(){
-        public void run(){ System.out.println(&quot;start Run&quot;); }
-    }).start();
-    new Thread(()-&gt; {
-        System.out.println(&quot;start Run&quot;);
-    }).start();
-    2. Thread是Runnable的代理对象(静态代理)。
-7. 静态代理
-    1. 代理对象和原对象都实现同一个接口
-    interface Task {  void work();  }
-    2. 原对象
-    class Stuff implements Sask {
-        public void work() { }
-    }
-    3. 静态代理对象
-    class StaticProxy implements Task {
-        private Task target;
-        public StaticProxy(Task target) {
-            this.target = target;
-        }
-        public void work() {
-            this.start();
-            this.target.work();
-            this.end();
-        }
-        private void start(){ }
-        private void end(){ }
-    }
-    4. 通过代理对象，执行原对象的任务方法
-    new StaticProxy(new Stuff()).work();
-8. 多线程之Callable
-    1. Callable是一个接口，包含方法call()，接收一个泛型，默认是Object，作为call()的
-    返回值类型
-    public class CLoader implements Callable&lt;Boolean&gt; {  --&gt; 泛型指定为Boolean
-        public Boolean call() throw Exception {
-            ...... //执行任务
-            return true
-        }
-    }
-    CLoader cd1 = new CLoader(); CLoader cd2 = new CLoader();
-    2. 使用线程池，创建服务
-    ExecutorService es = Executors.newFixedThreadPool(2);
-    3. 提交执行
-    Future&lt;Boolean&gt; ft1 = es.submit(cd1);  Future&lt;Boolean&gt; ft2 = es.submit(cd2);
-    4. 获取结果
-    boolean re1 = ft1.get();  boolean re2 = ft2.get();
-    5. 关闭服务
-    es.shutdownNow();
-    6. 与Thread/Runnable的 run() 相比，call()可以抛出异常，而 run() 不能抛出异常，只能
-    try-catch捕获。
-</code></pre><h2 id="JDK10新特性"><a href="#JDK10新特性" class="headerlink" title="JDK10新特性"></a>JDK10新特性</h2><pre><code>1. 局部变量类型推断
-    1. var：保留类型(不是关键字)，只针对局部变量
-    public void test() {
-        var i = 10;
-        var s = &quot;abc&quot;;
-        var list = new ArrayList&lt;&gt;();
-        var user = new User();
-    }
-    2. 不允许对var变量赋值null，编译器认为毫无意义，因为null就是null类型
-    var a = null; --&gt; 编译器报错
-    3. 不允许对方法的参数使用var，因为参数没有值，无法推断类型
-2. 垃圾收集器的优化
-    1. JDK9：新生代使用ParNew收集器，老年代使用Parallel Obl收集器
-    2. JDK10：G1(Garbage-First) 全收集器
-3. 新增73个新功能扩展API
-    1. java.util.list/Set/Map新增静态方法copyOf()，按照其迭代顺序返回一个不可修改的集合
-    var list = new ArrayList&lt;String&gt;();  list.add(&quot;a&quot;);  list.add(&quot;b&quot;);
-    var cl = List.copyOf(list);
-    2. java.io.ByteArrayOutputStream新增方法toString(charset)，通过指定的字符集编码，
-    将缓冲区的内容转为字符串
-    3. java.io.PrintStream/PrintWriter，新增三个构造方法，方法参数上可以指定字符集
-    4. java.io.Reader新增transferTo()，将Reader中读取的所有字符串，按照读取的顺序写入给
-    指定Writer
-    var r = new BufferedReader(new InputStreamReader(
-        new FileInputStream(&quot;d:/a.txt&quot;), &quot;GBK&quot;));
-    var p = new PrintWriter(new File(&quot;d:/c.txt&quot;));
-    r.transferTo(p);
-    p.flush();  p.close();  r.close();
-    5. java.util.Formatter/Scanner 新增三个构造器，需要一个charset参数，解决乱码问题
-</code></pre><h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><pre><code>1. XML：可扩展标记语言
-2. XML声明：定义XML的版本和编码信息
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-3. 注释：&lt;!-- 注释 --&gt;
-4. DTD：Document Type Definition，用于约束XML的文档格式
-5. XSD：XML Schema，DTD的替代者，XSD本身也是XML
-</code></pre><h3 id="XML解析"><a href="#XML解析" class="headerlink" title="XML解析"></a>XML解析</h3><pre><code>1. DOM解析：官方解析方式，基于XML树，会加载整个文档，比较消耗资源，适用于多次访问XML
-2. SAX解析：基于事件的流式解析，自顶向下，不会加载整个文档，解析速度快，占用内存少；
-    1. SAX无法知道父子标签，也无法随机访问某个标签；只能读取XML，不能修改；
-    2. SAXParserFactory、SAXParser、继承DefaultHandler自定义解析器、定义对应的JavaBean
-    3. DOM和SAX都是原生解析方式，JDOM和DOM4J是第三方解析框架
-3. JDOM：比DOM更快，仅使用具体类，而不使用接口
-4. dom4j：JDOM的升级版，功能强大，性能优异，使用接口，而不使用实现类
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3136,7 +3474,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3158,7 +3496,7 @@ Esc：退出编辑模式或末行模式；
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
