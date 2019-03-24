@@ -232,269 +232,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2017/08/05/Web服务器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/05/Web服务器/" itemprop="url">Web服务器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-05T00:00:00+08:00">
-                2017-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python/" itemprop="url" rel="index">
-                    <span itemprop="name">Python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h2><pre><code>1. HTTP协议规定的是：客户端与服务器端之间的数据传输规则，也即，规定的是数据内容的格式；
-2. 对于客户端，除了浏览器，一些手机APP，如淘宝，京东等，在访问服务器时，也应用了HTTP协议，
-   也即，HTTP协议已经超越了浏览器网页的应用；
-3. HTTP协议的底层使用的还是TCP协议，也即，服务器的数据处理工作就在clientSocket.recv()与
-   clientSocket.send() 两个函数之间；
-4. HTTP协议规定的换行符是：\r\n
-5. HTTP是无状态的：同一个客户端请求完数据，四次挥手断开链接，再次建立链接时，HTTP并不知道
-   是不是同一个客户端，HTTP服务器并不关心是哪个客户端访问的。
-6. 为了减少TCP的3次握手和4次挥手，HTTP1.1版本开始，默认使用长连接；
-    1. 使用长链接的HTTP协议，会在请求头/响应头加入：Connection: keep-alive
-    2. 但是，keep-alive 并不会永久保持链接性，可以在Server端设置链接的时间；
-    3. 长连接的HTTP虽然复用了传输通道，但仍然是无状态的。
-</code></pre><h3 id="请求头和响应头"><a href="#请求头和响应头" class="headerlink" title="请求头和响应头"></a>请求头和响应头</h3><pre><code>访问百度baidu.com时，客户端发送的请求头与服务器端发送的响应头：
-</code></pre><p><img src="http://i.imgur.com/RoVYhU0.jpg" alt></p>
-<pre><code>1. HTTP四种基本的请求方式：GET、POST、PUT、DELETE，分别对应：查、改、增、删
-2. 增、删、改、查的操作，其实都可以通过GET/POST完成；
-3. 其他请求方式：OPTION(获取选项)、HEAD(获取头) ...
-</code></pre><p><img src="http://i.imgur.com/tnQ9jFK.jpg" alt></p>
-<pre><code>1. 请求头和响应头都是一个字符串，通过&quot;\r\n&quot;实现每一项的换行；
-2. 客户端的请求内容在请求体中，请求体位于请求头下面，中间用一个空行(&quot;\r\n&quot;)进行分割；
-3. 请求头的数据类型是字符串，而且是字典的格式，但请求体的数据类型和数据大小都是不固定的，
-   所以在请求头中，会用&quot;Content-Length&quot;指定请求体的数据大小；
-4. 同理，响应体也在响应头的下面，中间用一个空行(&quot;\r\n&quot;)进行区分。
-</code></pre><h3 id="URL、URI、URN"><a href="#URL、URI、URN" class="headerlink" title="URL、URI、URN"></a>URL、URI、URN</h3><pre><code>URL和URN是URI的子集
-1. URI：Web地址的基本形式，资源标识符；
-2. URL：L代表Location，资源的位置定位，域名后面的部分就是请求的资源在服务器端存放的位置；
-3. URN：N代表Name，资源的名字定位，根据资源的名字查找，不再受资源位置的限制，URL的升级版。
-
-用百度搜索&quot;abc&quot;的地址栏：https://www.baidu.com/s?ie=utf-8&amp;f=8&amp;rsv_bp=0&amp;...
-1. URL：https://www.baidu.com/s，请求的资源在服务器端的 s 目录下；
-2. &quot;?&quot;后面是GET请求方式需要提交给服务器的参数，因为GET请求不会把参数放在请求体中；
-3. &quot;&amp;&quot;：用于连接多个参数;
-4. HTTP协议并没有规定URL的长度，GET请求可提交的数据大小是浏览器与服务器约定的，因为浏览器上的
-   地址栏长度是有限的。
-
-Spider：蜘蛛，爬虫，也就是一个客户端，接收一个链接地址，向链接地址对应的服务器发送HTTP请求，
-    分析响应的数据，获取其中的所有超链接，然后继续向这些超链接地址发送HTTP请求... 通过特定的
-    算法，一层一层地爬遍所有的超链接，获取特定的数据；
-</code></pre><h2 id="Web静态服务器"><a href="#Web静态服务器" class="headerlink" title="Web静态服务器"></a>Web静态服务器</h2><pre><code>早期的Web服务器资源都是静态的，也即，在服务器上存放开发好的HTML网页等资源，供客户端访问；
-静态Web的交互性差；
-
-1. 创建server socket服务
-</code></pre><p><img src="http://i.imgur.com/VIgI32F.jpg" alt></p>
-<pre><code>2. 为客户端服务的进程target=handle_client
-</code></pre><p><img src="http://i.imgur.com/9YDKCAL.jpg" alt></p>
-<pre><code>3. 处理数据的函数handle_data()
-</code></pre><p><img src="http://i.imgur.com/hPqiJpI.jpg" alt></p>
-<pre><code>1. 在当前项目的res目录下，创建index.html文件，并把res目录设置为静态网页的根目录；
-2. 在本机上访问：127.0.0.1:8899，设置为访问默认主页，等效于：127.0.0.1:8899/index.html
-</code></pre><h3 id="文件读写方式的区别"><a href="#文件读写方式的区别" class="headerlink" title="文件读写方式的区别"></a>文件读写方式的区别</h3><pre><code>open() 规定的读写模式：&quot;r&quot;/&quot;w&quot; 表示文本方式打开/写入，&quot;rb&quot;/&quot;wb&quot; 表示二进制方式打开/写入；
-不同系统的换行符可能是不同的：
-    1. Unix/Linux： \n
-    2. Mac：老版本是 \r，新版本是 \n
-    3. windows： \r\n
-1. 文本方式写入(w)时，会识别数据中的换行符，并替换成当前系统的换行符，比如写入数据&quot;HI\nDD&quot;，
-在windows系统下，数据中&quot;\n&quot;会被替换成&quot;\r\n&quot;；虽然以文本方式读取(r)时，&quot;\r\n&quot;又被转为&quot;\n&quot;，
-也即，读取的数据仍是&quot;HI\nDD&quot;，但以二进制方式读取(rb)时，可以发现数据却是&quot;HI\r\nDD&quot;；
-2. 二进制方式写入(wb)是，则不会识别任何转义字符，统一作为二进制流进行读写。
-</code></pre><h2 id="Web动态服务器"><a href="#Web动态服务器" class="headerlink" title="Web动态服务器"></a>Web动态服务器</h2><pre><code>1. URL地址请求的不再是一个静态网页，而是运行一个python脚本，生成响应的数据；
-2. 为了让python-web服务器便于统一调用，python脚本的编写必须符合WSGI规范。
-3. WSGI：Python Web Server Gateway Interface
-    1. 用于约束python-web服务器和python-web框架的对接规则；
-    2. 所有的现代python-web框架都已具备了WSGI接口，web服务器也必须具备WSGI接口，才能确保在
-       不修改服务器代码的情况下，可以让web服务器和不同的web架构协同工作。
-</code></pre><p><img src="http://i.imgur.com/6qhfqDi.jpg" alt></p>
-<pre><code>python脚本中，WSGI标准的HTTP处理函数：
-</code></pre><p><img src="http://i.imgur.com/XGFDuaI.jpg" alt></p>
-<pre><code>1. 函数的参数：
-    environ：必须是字典类型，脚本程序可能需要一些客户端的请求数据，比如客户端的请求方式、提交
-            的参数等等，web服务器解析请求数据之后，组织成一个字典，传递给该函数；
-    start_response：一个定义在web服务器中的WSGI接口函数，用于接收python脚本传递的响应码和
-                部分响应头，从而在web服务器中组织成完整的响应头；
-        形参1：响应的状态码，必须是字符串类型
-        形参2：部分响应头，必须是一个列表[(键, 值), (键, 值), ...]
-2. 函数必须要有返回值，作为响应体；
-3. application() 函数就是由web服务器调用的接口，它把底层web服务器的解析部分和应用程序的逻辑
-   部分进行分离，只专注于处理程序的逻辑，而程序的逻辑又决定了响应码、部分响应头、以及响应体；
-4. 函数名和参数名都是自定义的，但所代表的意义必须符合WSGI标准，web服务器才能正确调用；
-5. application() 不一定是函数，重写类中的 __call__() 方法，类对象也可以像调用函数一样使用。
-</code></pre><h3 id="改造静态Web"><a href="#改造静态Web" class="headerlink" title="改造静态Web"></a>改造静态Web</h3><pre><code>在静态web服务器的基础上，增加WSGI标准的接口，判断客户端请求的资源是不是一个python脚本，改造成
-一个动态Web服务器：
-1. 在Web服务器的根目录下，创建存放python脚本的目录wsgipy，并设置 ./wsgipy 目录为脚本资源的
-   根目录；在wsgipy目录下创建一个python脚本m_time.py，提供WSGI标准的接口：
-</code></pre><p><img src="http://i.imgur.com/E4HrXkT.jpg" alt></p>
-<pre><code>2. 在Web服务器中提供WSGI标准的接口，用于拼接完整的响应头：
-</code></pre><p><img src="http://i.imgur.com/fVMI2AL.jpg" alt></p>
-<pre><code>3. 在Web服务器中处理请求数据时，先判断请求的资源是哪种类型：python脚本，html网页
-   如果是python脚本，表示客户端访问的是动态web数据；如果是html网页，表示访问的是静态web数据
-</code></pre><p><img src="http://i.imgur.com/dKrFHI4.jpg" alt></p>
-<pre><code>在本机的浏览器上输入：127.0.0.1:8899/m_time.py，访问一个动态的web
-</code></pre><h2 id="Web框架的编写"><a href="#Web框架的编写" class="headerlink" title="Web框架的编写"></a>Web框架的编写</h2><pre><code>1. 一个web服务器下可能有很多个python脚本和静态HTML网页，每个资源脚本又都有自己的WSGI接口，
-   web框架也是python脚本，它提供了WSGI接口，作为所有资源文件的入口；
-2. web服务器不关心web框架的实现过程，只需要解析客户端的请求数据，把请求方式、请求的资源路径、
-   提交的参数等数据组装成一个字典，并提供WSGI接口，就可以调用web框架的接口，获取响应数据；
-
-4. web框架使用一个类作为WSGI接口，重写类的 __call__()方法，就可以把类的对象改造成一个标准的
-   WSGI接口函数；
-5. 为了便于区分脚本资源和静态资源，在客户端访问web服务器的静态资源时，资源路径必须以/static为
-   根路径，比如：127.0.0.1:8899/static/index.html；
-</code></pre><h3 id="web框架"><a href="#web框架" class="headerlink" title="web框架"></a>web框架</h3><p><img src="http://i.imgur.com/o1Nq0Pu.jpg" alt></p>
-<p><img src="http://i.imgur.com/DVcxCnM.jpg" alt></p>
-<p><img src="http://i.imgur.com/VXJ4DyE.jpg" alt></p>
-<pre><code>1. 客户端访问脚本文件时，指定为 urls 中的路径即可，比如：127.0.0.1:8899/ctime；
-2. web服务器需要增加新的脚本文件时，只需要在web框架中增加相应的处理函数，并在 urls 中添加相应
-   的路径即可，不需要再创建新的脚本，也不需要修改web服务器和web框架的接口Application。
-</code></pre><h3 id="web服务器"><a href="#web服务器" class="headerlink" title="web服务器"></a>web服务器</h3><pre><code>面向对象的方式设计web服务器：
-</code></pre><p><img src="http://i.imgur.com/e9rpJ2A.jpg" alt></p>
-<p><img src="http://i.imgur.com/RfCqlMf.jpg" alt></p>
-<pre><code>启动web服务器：
-</code></pre><p><img src="http://i.imgur.com/iYtZQR1.jpg" alt></p>
-<pre><code>1. getattr(object, name, [default])：反射机制，获取对象object中的成员；
-    1. object：一个对象，动态导入的模块，也被看做是一个对象；
-    2. name：字符串类型，object中的成员；
-    3. default：可选参数，默认为None，用于设置默认值。
-2. hasattr(object, name)：判断object中是否存在成员name；
-3. setattr(object, name, value)：设置成员name的值为value。
-</code></pre><h3 id="不同web框架的启动"><a href="#不同web框架的启动" class="headerlink" title="不同web框架的启动"></a>不同web框架的启动</h3><pre><code>1. 运行python程序时，可以动态传递参数：python3 python.py arg1 arg2 arg3 ...
-2. import sys： sys.argv，获取所有参数[&quot;python.py&quot;, &quot;arg1&quot;, &quot;arg2&quot;, &quot;arg3&quot;, ...]
-3. 在启动web服务器时，把web框架的模块名和接口对象名作为参数，就可以在不修改web服务器的情况下，
-   运行不同的web框架：
-</code></pre><p><img src="http://i.imgur.com/rrSE7Kp.jpg" alt></p>
-<hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2017/08/04/python正则表达式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3233,11 +2970,383 @@ time.ctime()：获取当前格式化后的日期和时间，字符串类型。
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2017/07/26/python基础1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/26/python基础1/" itemprop="url">python基础1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-26T00:00:00+08:00">
+                2017-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>1. py为扩展名的文件编写python代码；
+2. python/python3：分别进入python2与python3环境的交互模式，测试python的语法；
+3. ipython、ipython3：进入交互模式，不仅支持python语法，而且支持Linux命令。
+4. 注释
+    1. #... ：单行注释，Python解释器会忽略单行注释的内容；
+    2. &apos;&apos;&apos; ... &apos;&apos;&apos; / &quot;&quot;&quot; ... &quot;&quot;&quot; ：（三个单引号/双引号）多行注释；
+    3. 多行注释其实是一种特殊的字符串，Python解释器会加载到内存中，如果多行注释
+    的内容特别大，可能会造成内存崩溃。
+5. python2的中文报错，在文件第一行声明：#coding=utf-8 或 #-*- coding:utf-8 -*-
+6. 字符编码
+    1. python3的字符串使用Unicode，直接支持多语言；
+    2. b&apos;ABC&apos;与&apos;ABC&apos;：前者是bytes类型，每个字符占1个字节，用于网络传输/保存在磁盘；
+    后者是一个Unicode编码的字符串；
+    3. python源代码包含中文时，必须指定保存为UTF-8编码，为了让python解释器按UTF-8
+    读取源代码，通常在文件开头指定：
+    1. #!/usr/bin/env python3 ==&gt; 告诉Linux/OS X系统，这是一个python可执行程序；
+    2. # -*- coding: utf-8 -*- ==&gt; 以utf-8保存/读取。
+</code></pre><h2 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h2><h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><pre><code>Python是动态语言，定义变量不需要声明类型；但是，Python仍然区分数据类型。
+</code></pre><h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h3><pre><code>输入语句：raw_input()、input()
+1. input()
+    name = input(&quot;请输入名字：&quot;)，在python3中，返回输入的内容，赋值给name；
+    而在python2中执行，只是作为一个语句执行；
+2. raw_input()：python2中的输入函数，python3没有，其功能与python3中input()相同；
+3. 输入函数的返回值都是字符串类型；
+4. python2中的input()
+    1. 输入 “ 1+2 ”，相当于 name = 1+2；
+    2. 输入 “ abc ”，相当于 name = abc，abc 被当作变量，但是又没有定义该变量，
+    所以会报no defined；
+    3. 输入 lambda 表达式，相当于定义函数，name指向 lambda 表达式的函数体。
+</code></pre><h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><pre><code>输出语句：print()
+1. %d：整数，age = 20，print(&quot;年龄：%d&quot; % age) ==&gt; 年龄：20；
+2. %s：字符串，如果不清楚输出的数据类型，%s永远有效；
+3. %f：浮点数，height = 1.75，print(&quot;身高：%0.2f&quot;%height)
+    0.2：0表示1.75前面没有占位符，2表示小数点后保留2位，Python默认保留6位。
+4. 输出多个参数：print(&quot;名字：%s，年龄：%d，身高：%0.2f&quot; % (name, age, height))
+</code></pre><p><img src="http://i.imgur.com/G7bMLwW.png" alt></p>
+<pre><code>5. print(&quot;abcd&quot;, end=&quot;&quot;)：执行输出之后不换行；
+    1. end 是print() 的缺省参数，用于控制执行输出后的操作，默认值为换行符&quot;\n&quot;；
+    2. end=&quot;&quot; ： 表示执行输出后，不再执行任何操作；
+    3. end=&quot;,&quot; ： 表示执行输出后，加一个逗号&quot;,&quot;。
+6. print(&quot;百分比:%d%%&quot;%age)：20%
+    当输出语句中有%d、%f 等定向输出时，必须使用两个% 才能输出一个%，避免影响定向输出。
+6. \n：换行，字符串中包含\n，\n后面的内容会换行显示；
+7. \t：制表符；
+8. \r：输出时，其后面的内容会从左边顶行输出；
+</code></pre><p><img src="http://i.imgur.com/Yr5Dm3j.jpg" alt></p>
+<pre><code>1. &quot;abcd\r12&quot;：\r后面的&quot;12&quot;会从左边顶行输出，覆盖前面的&quot;ab&quot;；
+2. end=&quot;&quot;：表示每次输出不换行；\r：因为每次输出都不换行，\r后面的内容左起顶行输出，
+所以每次输出的内容只有计算的rate在变化，可用于实时显示传输数据的进度。
+</code></pre><h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><p><img src="http://i.imgur.com/dCJxhSO.png" alt></p>
+<pre><code>1. type(x)：查看x的数据类型；
+2. int(x)/float(x)/str(x)：将x转换为一个整数/浮点数/字符串；
+3. isinstance()：类型检查，返回值是boolean型；
+    isinstance(x, (int, float))：x是int/float型，则返回True
+</code></pre><h3 id="特有的运算符"><a href="#特有的运算符" class="headerlink" title="特有的运算符"></a>特有的运算符</h3><pre><code>1. a//b：取商；    a%b：取余数；
+2. a**b：a 的 b 次方；
+3. &quot;abc&quot; *3：&quot;abcabcabc&quot;；
+4. &lt;&gt;：phthon2中的运算符，等效于 !=；
+5. or/and：或/与运算；    not x：非运算；
+6. is 与 ==
+    1. ==：判断值是否相等；
+    2. is：判断两个引用指向的地址是否相同。
+7. 复合赋值运算符：+=、%=、**=、//= 等；
+8. a, b = 3, 4：python中特有的赋值方式
+    1. 交换两个变量的值：a, b = b, a
+    2. 这种方式交换两个变量的值，比使用第三方变量的方式更高效。
+9. 空字符串，None，0，空列表，空字典，空元组，都表示False；其他都表示True。
+</code></pre><h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><pre><code>1. while 循环
+    1. while - else：
+    while循环结束后会执行else，如果while循环中执行了break，则不会执行else；
+    2. 死循环 while 1 比 while True 更高效
+    python底层是C语言编写的，C语言中并没有boolean类型，False和True其实是按照 0 和 1
+    存储的，每次循环判断时，True都需要在底层转换，而 1 不会，所以 while 1 的效率更高。
+2. for循环：for...in
+    1. 用于遍历可迭代对象的元素，比如 name = &quot;abcdef&quot;
+    2. for temp in name：每个循环的字符存入temp；
+    3. for...in - else：for结束后会执行else语句，如果for中有break，则不会执行else。
+3. break/continue：跳出循环/结束本次循环。
+</code></pre><h3 id="随机数"><a href="#随机数" class="headerlink" title="随机数"></a>随机数</h3><pre><code>import random：random.randint(0, 9)：随机生成一个0~9之间的整数。
+</code></pre><h2 id="字符串：str"><a href="#字符串：str" class="headerlink" title="字符串：str"></a>字符串：str</h2><pre><code>1. 单引号和双引号都表示字符串；
+2. 在内存中的存储方式
+    1. 一个字节存储的最大数值是255，比如，数值100是用一个字节存储的；
+    2. 字符串存储时，会把字符串拆分成一组字符，每个字符占一个字节；在底层C语言存储字符串时，
+    会在字符串的末尾加一个&apos;\0&apos;。
+3. str(x)：将x转换成一个字符串，列表、元组、字典、集合等都可以转为字符串；
+4. len(str)：获取字符串的长度；
+5. 拼接字符串
+    1. + 号连接两个字符串，拼接的必须是字符串类型，否则会报异常；
+    2. % 拼接字符串：a = &quot;abc&quot;，b = &quot;OK&quot;，c = &quot;==%s==&quot;%(a+b)，c：&quot;==abcOK==&quot;。
+6. 下标：name = &quot;abc&quot;
+    1. 正向：name[0]--&gt;&apos;a&apos;，name[len(name)-1]--&gt;&apos;c&apos;；
+    2. 反向：name[-1]--&gt;&apos;c&apos;，name[-len(name)]--&gt;&apos;a&apos;；
+    3. 下标的方式只能获取对应的字符，但不能通过下标修改字符； name[0]=&quot;w&quot; 会报异常。
+7. b&apos;AB&apos; --&gt; 二进制数据，r&apos;AB\tAB&apos; --&gt; 不允许对字符串转义，u&apos;AB&apos; --&gt; Unicode字符串
+</code></pre><h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><pre><code>切片：name = &quot;abcdefABCDEF&quot;
+1. name[开始角标:结束角标]：取字符串的一部分，左开右闭的原则；name[2:5]--&gt;&quot;cde&quot;；
+2. name[2:-1]，等效于 name[2:len(name)-1] --&gt; &quot;cdefABCDE&quot;
+3. 省略开始角标，默认为 0；name[:5]，等效于name[0:5]--&gt;&quot;abcde&quot;；
+4. 省略结束角标，默认为len[name]；name[6:]--&gt;&quot;ABCDEF&quot;；
+5. name[开始角标:结束角标:步长]：步长是取元素时跳过的个数，name[2:9:2]--&gt;&quot;ceAC&quot;，
+   步长为1时，等效于name[2:9]，步长默认为1，但步长不能为0；
+6. 逆序1：name[-1::-1] --&gt; &quot;FEDCBAfedcba&quot;，结束角标取决于步长；
+    1. 如果步长是负数，则取到第一个字符，name[-1::-2] --&gt;FDBfdb；
+    2. 如果步长为正数，则取到最后一个，即取到的字符串始终为&quot;F&quot;。
+7. 逆序2：name[:]--&gt;&quot;abcdefABCDEF&quot;，相当于复制字符串；
+    name[::-1]--&gt;&quot;FEDCBAfedcba&quot;，逆序。
+</code></pre><h3 id="字符串的常见操作"><a href="#字符串的常见操作" class="headerlink" title="字符串的常见操作"></a>字符串的常见操作</h3><pre><code>1. 查找
+    find(子串)/rfind(子串)：正向/反向查找指定的子串，返回子串首字母的下标，-1表示不存在；
+    index()、rindex()：与find()的区别是，如果查找失败，则抛出异常；
+2. count(子串)：返回指定子串的出现次数。
+3. 替换
+    replace(子串A，子串B)：用B替换字符串中所有的A，返回一个新的字符串，不会改变原字符串；
+    replace(子串A，子串B，num)：num表示要替换的个数。
+4. split(子串)：切割字符串，返回一个列表；
+    split()：不加参数时，默认会按照空格、&apos;\t&apos;、&apos;\n&apos;进行切割；
+</code></pre><p><img src="http://i.imgur.com/MTdw3qn.png" alt></p>
+<pre><code>    splitlines()：按照行切割，即字符串中的&apos;\n&apos;。
+5. 字母大小写
+    capitalize()：把字符串的首字母大写；
+    title()：把每个单词的首字母大写；
+    lower()/upper()：所有大/小写字母都变成小/大写。
+6. startswith(子串)/endswith(子串)：是否以指定子串开头/结束，返回True/false；
+7. 指定位置
+     center(num)：居中，num表示宽度，小于字符串长度时无效；
+     ljust(num)/rjust(num)：左/右对齐。
+8. 去除字符串的空格
+     strip()：同时去除左右空格；
+     lstrip()/rstrip()：去除左/右边的空格；
+9. partition(子串)：以字符串中的第一个子串为中心，将字符串拆分成3部分，返回一个元组；
+    rpartition()：反向查找出匹配子串，拆分字符串；
+10. 判断字符串类型
+     isalpha()：字符串是纯字母（a~z和A~Z），返回True；
+     isdigit()：字符串是纯数字时，返回True；
+     isalnum()：字符串是纯字母、纯数字，或者字母和数字的组合时，返回True；
+     isspace()：字符串是纯空格，则返回True。
+11. join(iterable)：以调用者为中间字符，连接iterable中的元素，组成一个新的字符串。
+    iterable是指可迭代对象，如字符串，元组，列表，字典，集合 ...
+    1. 元组，列表和集合的元素，以及字典的键，必须是字符串类型才能连接；
+    2. 对于字符串，连接的是每个字符；对于字典，连接的是每个键；
+    3. join() 连接字符串的效率要比 “ + ” 更高。
+</code></pre><h2 id="列表：list"><a href="#列表：list" class="headerlink" title="列表：list"></a>列表：list</h2><pre><code>1. 定义：list = [ 元素1，元素2，元素3 ]，可以是不同数据类型的元素；
+2. 交互模式下，help(list)，可以查看列表的文档；
+3. len(list)：返回列表的长度，即元素个数；
+4. list(iterable)：把iterable型的数据转为列表；
+    1. 如果是字符串，会把字符串拆开，每个字符当作列表元素；
+    2. 如果是字典，则把键当作列表元素。
+5. 列表支持负角标，也支持切片。
+</code></pre><h3 id="常见操作"><a href="#常见操作" class="headerlink" title="常见操作"></a>常见操作</h3><pre><code>1. append(x)：添加一个新元素，添加在列表最后；
+    如果添加的元素是一个列表，则该列表会被看作是一个元素，而不会被拆开。
+2. insert(index，x)：在指定位置index插入元素；
+    python 的列表其实是一个数组，查找快，insert()插入的效率比append()低。
+3. extend()：将两个列表合并成一个列表；两个列表相加，也可以合并成一个新的列表；
+4. pop()：删除最后一个元素；    pop(index)：按照角标删除元素；
+5. remove(x)：删除指定的元素，只删第一个；
+6. del list[index]：根据下标删除；
+7. list[index] = y：修改指定元素；
+8. 查询：in、 not in
+    if x in list：x 在列表 list 中；
+    if x not in list：x 不在列表 list 中。
+9. index(x)：获取元素的角标，如果该元素不存在，会抛出异常；
+10. 排序
+    1. sort()、sort(reverse=True)：从小到大排序、从大到小排序，对纯数值元素的列表有效；
+    2. reverse()：反向列表，对纯数值元素的列表有效。
+11. for...in：遍历列表的元素；
+    迭代过程中不能删除列表的元素，因为删除后，列表的元素会发生移动，但迭代指针不会随之移动，
+从而造成元素遗漏；
+</code></pre><p><img src="http://i.imgur.com/eDBYpOn.jpg" alt></p>
+<pre><code>解决的一种方式：创建一个列表Flag，保存要删除的元素；然后再迭代Flag，删除lists的元素。
+</code></pre><h3 id="列表生成式"><a href="#列表生成式" class="headerlink" title="列表生成式"></a>列表生成式</h3><pre><code>1. range(start, stop, step)
+   生成一个int型的列表，start 列表的第一个元素，stop-1 最后一个元素，step 表示步长；
+2. range(5) 等效于 range(0, 5) --&gt; [0, 1, 2, 3, 4]；
+3. python2：如果 stop 的值足够大，会内存溢出；所以，python2中的range()是有风险的；
+4. python3：range() 并不会立刻生成一个列表，而是作为一个生成器，需要某个元素时再生成；
+   所以，range()不会内存溢出；
+5. python3下，list(range(5)) 会将生成器转化为列表：[0, 1, 2, 3, 4]
+6. xrange() 在python2和python3环境下都是一个生成器，不会造成内存溢出；
+7. [i for i in range(5)] --&gt; [0, 1, 2, 3, 4]
+    for 语句只用于控制循环的次数，每次循环都会改变i的值，for前面的参数表示每次循环之后、
+    存入列表的元素；
+8. for - if：筛选生成的元素
+      [i for i in range(10) if i%2==0]：只生成偶数的元素，[0, 2, 4, 6, 8]。
+9. 多层for循环
+    1. [i for i in range(3) for j in range(2)]：
+    外层for循环一次，内层for会循环2次(0，1)，生成列表：[0, 0, 1, 1, 2, 2]；
+    2. [(i, j) for i in range(3) for j in range(2)]：用元组存储一次生成的多个子元素，
+    生成列表：[(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]。
+</code></pre><h2 id="字典：dict"><a href="#字典：dict" class="headerlink" title="字典：dict"></a>字典：dict</h2><pre><code>1. 定义：dict = {键:值，键:值，键:值}，以键值对形式存储数据；
+2. 键的类型可以是字符串，数值，元组，但不能是列表；
+   因为字典元素的存储地址，是对键进行哈希算法计算的，所以键一定要是不可变的类型，
+   而列表是可变类型，计算的值会根据列表的变化而改变；
+3. len(dict)：返回字典的长度，即元素个数；
+</code></pre><h3 id="常见操作-1"><a href="#常见操作-1" class="headerlink" title="常见操作"></a>常见操作</h3><pre><code>1. 添加/修改： dict[&quot;name&quot;] = &quot;Make&quot;；
+2. 指定键进行删除：del dict[键]，pop(key)
+3. 查询
+     dict[键]：获取值，但是如果该键不存在，将报出异常；
+     get(键[, defaultValue])：获取值，如果键不存在，默认返回None，也可以设置默认值。
+4. keys()：python2返回键的列表，python3返回一个生成器：dict_keys([键1, 键2])；
+5. values()：python2返回值的列表，python3返回一个生成器：dict_values([值1, 值2])；
+6. items()：dict = {&quot;name&quot;:&quot;DD&quot;, &quot;age&quot;:20}
+    python2中：[(&apos;age&apos;, 20), (&apos;name&apos;, &apos;DD&apos;)]，是一个列表；
+    python3中：dict_items([(&apos;name&apos;, &apos;DD&apos;), (&apos;age&apos;, 20)])，是一个生成器对象。
+</code></pre><p><img src="http://i.imgur.com/xPbLLEo.jpg" alt></p>
+<pre><code>7. for temp in dict：遍历的是字典的键。
+</code></pre><h2 id="元组：tuple"><a href="#元组：tuple" class="headerlink" title="元组：tuple"></a>元组：tuple</h2><pre><code>1. 定义：tuple = (元素1，元素2，元素3)
+2. 与列表的区别：元组的元素是不可变的，只能查看，不能修改；
+3. 如果元组只有一个元素，必须在元素后加逗号：(20, )
+4. tuple(iterable)：把iterable型的数据转为元组；
+5. len(tuple)：获取元组的长度，即元素的个数；
+6. 元组支持负角标，也支持切片；
+7. 获取元组的值：a = (10, 12)
+    1. 下标的方式：tuple[0]--&gt;10
+    2. 拆包：b, c = a --&gt; b：10，c：12
+8.  index(x)：返回元素x第一次出现的角标，如果元素不存在，会抛出异常；
+9.  count(x)：计算元素x在元组中出现的个数。
+10.  zip(list1, list2)：
+    1.  zip([1, 2], [&apos;A&apos;, &apos;B&apos;]) --&gt; [(1, &apos;A&apos;), (2, &apos;B&apos;)]
+    2.  zip([1, 2, 3, 4], [&apos;A&apos;, &apos;B&apos;]) --&gt; [(1, &apos;A&apos;), (2, &apos;B&apos;)]，多余元素被忽略
+</code></pre><h2 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h2><pre><code>1. 定义：set = { 元素1, 元素2, 元素3 }
+2. set与dict类似，也是一组key的集合，但不存储value；同理，key不能重复、不能是可变的；
+3. False和True是按照 0 和 1 存储的，所以，False和0、True和1，也被视为重复元素；
+4. len(set)：获取集合的长度，即元素的个数；
+5. set(iterable)：把iterable型的数据转为集合，并去除重复元素；
+6. 常见操作：add(x) 添加一个元素；pop() 删除第一个元素；remove(x) 删除元素x。
+7. for...in 的方式遍历，字典和集合的效率比列表要高；
+8. 集合A，集合B
+     A &amp; B：交集；A | B：并集
+     A - B：A 的差集，A 中有，B 中没有的元素；同理，B-A：B的差集；
+     A ^ B：对称差集，等效于 A-B 与 B-A 的并集；
+9. 应用场景：集合A 表示上个月浏览的用户，集合B 表示这个月浏览的用户
+A &amp; B 过滤出老用户；A | B 统计出所有用户；A - B 统计丢失的用户；B - A 统计新用户
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3283,7 +3392,7 @@ time.ctime()：获取当前格式化后的日期和时间，字符串类型。
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

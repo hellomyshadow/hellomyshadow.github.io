@@ -232,125 +232,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2019/03/24/uploadImg/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/24/uploadImg/" itemprop="url">uploadImg</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-24T15:47:47+08:00">
-                2019-03-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/09/08/TypeScript-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3559,11 +3440,206 @@ res.cookie(&apos;uname&apos;, &apos;Node&apos;, {domain:&apos;.exa.com&apos;, pa
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/07/02/EventLoop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/02/EventLoop/" itemprop="url">EventLoop</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-02T00:00:00+08:00">
+                2018-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="EventLoop"><a href="#EventLoop" class="headerlink" title="EventLoop"></a>EventLoop</h2><pre><code>1. EventLoop：事件循环，node单线程、异步编程的核心
+2. process.nextTick
+3. setTimeout()/clearTimeout()
+4. setInterval()/clearInterval()
+5. setImmediate()/clearImmediate()
+</code></pre><h3 id="执行栈"><a href="#执行栈" class="headerlink" title="执行栈"></a>执行栈</h3><pre><code>1. node代码都会进入执行栈，主线程不断地轮询执行栈中的任务；
+</code></pre><p><img src="https://i.imgur.com/dGWpPY2.jpg" alt></p>
+<pre><code>2. 解析器会区别对待执行栈中的同步任务和异步任务，并做不同处理；
+3. 同步任务会直接进入主线程进行执行，而异步任务会被推入事件表中；
+4. 异步任务执行完之后，其回调函数会进入事件队列中，主线程执行完同步任务、空闲下来之后，会去
+   轮询事件队列，把其中的回调函数放入主线程进行执行。
+</code></pre><h3 id="异步任务"><a href="#异步任务" class="headerlink" title="异步任务"></a>异步任务</h3><pre><code>1. 主线程空闲之后，开始查看异步任务队列，如果没有异步任务，则程序结束；
+2. 如果有异步任务，主线程会进入事件循环，执行完所有的异步任务之后，程序结束。
+</code></pre><p><img src="https://i.imgur.com/YY1tawg.jpg" alt></p>
+<pre><code>1. 异步任务也分很多种，不同的异步任务执行的次序也是不同的；
+2. 异步任务之Timer
+    1. Timer阶段用于处理所有 setTimeout和setInterval 的回调函数；
+    2. setTimeout的延迟时间不一定准确，如果主线程有耗时的同步任务，如alter()、for循环...
+    会延迟异步回调的执行；
+    3. 如果多个不同类型的异步任务同时执行完成，Timer的优先级是最高的，优先执行其回调函数。
+3. 异步任务之IO
+    1. Pending I/O 阶段：执行I/O回调，包括文件操作、网络操作...
+    2. Idle，Prepare 阶段：内部使用
+    3. Poll 阶段：轮询I/O操作，如等待AJAX是否完成，如果没有则阻塞，但会有超时和基本检测，
+    不会一直阻塞；
+    4. 如果Poll阶段轮询到了I/O回调，则重新进入Pending I/O阶段，执行I/O回调；
+    5. 如果Poll阶段阻塞超时或者没有I/O操作，则进入Check阶段。
+4. 异步任务之Check
+    1. 只处理 setImmediate 的回调函数；
+    2. setImmediate 是IE10的新增特性，标准的浏览器是不支持的，但NodeJs支持。
+5. 异步任务之Close Callback
+    1. 专门处理一些 close 类型的回调，如关闭网络连接、关闭数据库连接...
+    2. Close Callback 是最后一个阶段，然后主线程会去检查是否还有异步任务，如果有，则继续
+    重新轮询，否则程序结束。
+</code></pre><h2 id="宏任务与微任务"><a href="#宏任务与微任务" class="headerlink" title="宏任务与微任务"></a>宏任务与微任务</h2><pre><code>1. 不管同步任务还是异步任务，进入主线程执行的任务又可分为宏任务和微任务，优先执行宏任务
+</code></pre><p><img src="https://i.imgur.com/5Z10bBQ.jpg" alt></p>
+<pre><code>1. 宏任务：主体script脚本，setTimeout，setInterval
+2. 微任务：Promise，process.nextTick
+3. Promise并不是属于异步任务，不会被推入事件轮询表中
+    console.log(&apos;start&apos;); ---&gt; 宏任务
+    setTimeout(() =&gt; { ------&gt; 异步任务EventLoop
+        console.log(&apos;set timeout&apos;); ---&gt; 宏任务
+    }, 0);
+    new Promise(resolve =&gt; {
+        console.log(111); ---&gt; 属于宏任务
+        resolve();
+    }).then(() =&gt; {
+        console.log(222); ---&gt; 属于微任务
+    }).then(() =&gt; {
+        console.log(333); ---&gt; 属于微任务
+    });
+    console.log(&apos;end&apos;); ---&gt; 宏任务
+4. 执行过程：同步代码 =&gt;宏任务 --&gt; 微任务 ==&gt; Event Loop(异步任务) =&gt;宏任务 --&gt; 微任务
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3609,7 +3685,7 @@ res.cookie(&apos;uname&apos;, &apos;Node&apos;, {domain:&apos;.exa.com&apos;, pa
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
