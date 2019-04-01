@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="过滤器1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;     1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...     2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。 2. 使用Filter     1. 实现Filter接口，覆写 init()、doFilter()、d">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-23T08:56:04.560Z">
+<meta property="og:updated_time" content="2019-03-29T12:54:55.957Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaEE之过滤监听">
 <meta name="twitter:description" content="过滤器1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;     1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...     2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。 2. 使用Filter     1. 实现Filter接口，覆写 init()、doFilter()、d">
@@ -336,10 +336,13 @@
         &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
     &lt;/filter-mapping&gt;
-    3. /*：拦截访问此项目的所有请求;
-    4. *.do：拦截以 .do 结尾的请求，一般用于模块拦截处理;
-    5. /to.do：拦截 /to.do 的请求，针对某个具体的Servlet请求进行拦截，保护Servlet;
-    6. 如果同时配置了三个过滤器，那么在执行Filter的过程，匹配范围越大，优先级越高.
+    3. 注解的方式配置
+    @WebFilter(&quot;/*&quot;)
+    public class TestFilter implements Filter { ... }
+    4. /*：拦截访问此项目的所有请求;
+    5. *.do：拦截以 .do 结尾的请求，一般用于模块拦截处理;
+    6. /to.do：拦截 /to.do 的请求，针对某个具体的Servlet请求进行拦截，保护Servlet;
+    7. 如果同时配置了三个过滤器，那么在执行Filter的过程，匹配范围越大，优先级越高.
     /* --&gt; *.do --&gt; /to.do
 3. 过滤器会拦截请求，不会到达Servlet，需要手动给予放行，才能达到Servlet
     public void doFilter(ServletRequest request, ServletResponse response, 
@@ -442,8 +445,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/01/Mybatis/" rel="prev" title="Mybatis">
+                Mybatis <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -521,7 +524,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -543,7 +546,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

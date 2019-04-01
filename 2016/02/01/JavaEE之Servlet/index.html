@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="servlet1. HTTP的特点：快速连接、灵活、无连接、无状态；     1. 无连接：限制每次连接只处理一个请求，可以节省传输时间；     2. 无状态：HTTP协议是无状态协议，对于事物处理没有记忆能力，如果第二次请求用到了第一次     请求响应的数据，仍然需要重新传递。 2. HTTP1.1版本后支持可持续连接：连接不立即断开，而是一段时间内没任何请求时，才会断开通道； 3. HTT">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-23T08:55:18.748Z">
+<meta property="og:updated_time" content="2019-03-31T11:19:43.454Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaEE之Servlet">
 <meta name="twitter:description" content="servlet1. HTTP的特点：快速连接、灵活、无连接、无状态；     1. 无连接：限制每次连接只处理一个请求，可以节省传输时间；     2. 无状态：HTTP协议是无状态协议，对于事物处理没有记忆能力，如果第二次请求用到了第一次     请求响应的数据，仍然需要重新传递。 2. HTTP1.1版本后支持可持续连接：连接不立即断开，而是一段时间内没任何请求时，才会断开通道； 3. HTT">
@@ -371,10 +371,11 @@
     3. 在Tomcat/webapps下新建目录servtest，把WebRoot目录中的文件复制到servtest目录中
     4. 启动Tomcat，访问ServletTest：http://localhost:8080/servtest/test
     5. webapps下的项目文件夹名称，又叫虚拟项目名；servlet的url-pattern又称为servlet别名
-    6. 除了在web.xml中配置Servlet，还可以使用注解配置
+    6. 除了在web.xml中配置Servlet，servlet3.0开始支持注解配置
     @WebServlet(name = &quot;ServletTest&quot;, urlPatterns=&quot;/test&quot;)
     public class ServletTest extends HttpServlet { ... }
-    7. Servlet3.0部署 web.xml 的根节点 &lt;web-app&gt; 时，metadata-complete默认值为false，
+    7. url-pattern支持正则表达式，如/user/*，可以匹配/user/find，/user/add ...
+    8. Servlet3.0部署 web.xml 的根节点 &lt;web-app&gt; 时，metadata-complete默认值为false，
     表示启用注解支持；设置为true时，表示只依赖 web.xml，忽略所有注解。
 5. Servlet的生命周期
     1. Servlet的初始化函数：init()，第一次访问此Servlet时加载进内存，执行初始化，一直到
@@ -654,7 +655,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -676,7 +677,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

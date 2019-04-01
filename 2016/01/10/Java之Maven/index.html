@@ -88,7 +88,7 @@
 <meta property="og:description" content="Maven1. Maven是一个项目管理工具，它包含了：     1. 一个项目对象模型(POM)，一组标准集合，一个项目生命周期，一个依赖管理系统，     和 用来运行定义在生命周期阶段中插件目标的逻辑。 2. 依赖管理(jar包管理)     1. Maven项目中的jar包在一个jar包仓库中，以依赖的形式存在于项目中，在代码编译时，     再根据依赖到仓库中找到jar包；     2.">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg">
-<meta property="og:updated_time" content="2019-03-24T08:58:20.870Z">
+<meta property="og:updated_time" content="2019-04-01T12:53:23.125Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java之Maven">
 <meta name="twitter:description" content="Maven1. Maven是一个项目管理工具，它包含了：     1. 一个项目对象模型(POM)，一组标准集合，一个项目生命周期，一个依赖管理系统，     和 用来运行定义在生命周期阶段中插件目标的逻辑。 2. 依赖管理(jar包管理)     1. Maven项目中的jar包在一个jar包仓库中，以依赖的形式存在于项目中，在代码编译时，     再根据依赖到仓库中找到jar包；     2.">
@@ -341,7 +341,7 @@
     1. 在 Maven/conf/settings.xml 中，本地仓库的默认配置为 ${user.home}/.m2/repository
     2. user.home 表示C盘下的个人目录
     3. 考虑到C盘通常是系统盘，所以会自定义本地仓库的路径，如D盘下
-    &lt;localRepository&gt;D:\local\repo&lt;/localRepository&gt;
+    &lt;localRepository&gt;D:/local/repo&lt;/localRepository&gt;
 3. 远程仓库(私服)：
     1. 在公司内有专门的局域网服务器作为jar包的远程仓库，又称为私服；
     2. 如果本地仓库没有需要的jar包，默认会联外网从中央仓库下载，配置了远程仓库之后，就可以在
@@ -371,7 +371,107 @@
 3. 另外，还有一个不常用的站点生命周期；
 </code></pre><h2 id="POM模型"><a href="#POM模型" class="headerlink" title="POM模型"></a>POM模型</h2><pre><code>1. Maven的概念模型POM
 </code></pre><p><img src="//hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg" alt="Maven"></p>
-<hr>
+<h2 id="idea集成Maven"><a href="#idea集成Maven" class="headerlink" title="idea集成Maven"></a>idea集成Maven</h2><pre><code>1. 下载并解压Maven，配置环境变量(必须有JDK环境)：
+    1. 新建环境变量MAVEN_HOME：D:\maven\apache-maven-3.6.0
+    2. 配置Path：%MAVEN_HOME%\bin
+2. idea：Settings --&gt; Maven
+    1. 配置Maven路径
+    Maven home directory: D:\maven\apache-maven-3.6.0
+    User settings file: D:\maven\apache-maven-3.6.0\conf\settings.xml
+    Local repository: D:\maven\maven_repository
+    2. 如果Maven项目骨架(模板)已经下载过了，不要再下载了：Maven --&gt; Runner
+    VM Options: archetypeCatalog=internal
+3. 使用Maven骨架(模板)创建Java项目
+    1. New Project --&gt; Maven --&gt; 勾选Create... --&gt; 选择maven-archetype-quickstart
+    2. 一个jar包的坐标由三个基本元素构成：
+        GroupId(公司或组织的名称): com.test  ---&gt;作为项目的包名
+        ArtifactId(项目名称): maven_test
+        Version(版本号): 1.0-SNAPSHOT
+    3. Next --&gt; 确认当前使用的Maven环境，与Settings--&gt;Maven中的配置一致；
+    4. 如果第一次使用此骨架，会联网下载；
+    5. 默认只会创建使用到的目录，不会把Maven标准目录结构都创建；
+    6. 创建main/resources目录，右键 --&gt; Mark Directory As --&gt; Resources Root
+    7. 刚创建的项目不能运行，点击右下角的 Import Changes 或 Enable Auto-Import
+    Add Configurations -&gt; + Application(自定义名字) -&gt; Main class(选择入口文件) -&gt; OK
+4. 不适用骨架的Java项目
+    1. 目录结构：src/main/java，src/main/resources
+    2. 与使用骨架相比，目录结构更接近Maven项目的标准目录，文件也更干净。
+</code></pre><h3 id="创建JavaWeb项目"><a href="#创建JavaWeb项目" class="headerlink" title="创建JavaWeb项目"></a>创建JavaWeb项目</h3><pre><code>1. 选择骨架：maven-archetype-webapp
+2. 默认只有一个main/webapp目录，并没有main/java目录；
+3. 新建java目录，右击 --&gt; Mark Directory as --&gt; Sources Root
+4. 点击右下角的 Import Changes 或 Enable Auto-Import
+5. 在项目的 pom.xml 中添加Servlet相关的依赖，在maven中央仓库搜索需要的jar包
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+            &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+            &lt;version&gt;4.0.1&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.servlet.jsp&lt;/groupId&gt;
+            &lt;artifactId&gt;javax.servlet.jsp-api&lt;/artifactId&gt;
+            &lt;version&gt;2.3.3&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    1. 如果本地仓库没有这些依赖，idea会自动联网下载；
+    2. 创建一个Servlet，配置web.xml
+    3. 打开右侧的Maven面板 --&gt; 点击上面带有&quot;m&quot;的小图标 --&gt; 输入 tomcat:run 命令运行项目
+</code></pre><h3 id="运行web项目的问题"><a href="#运行web项目的问题" class="headerlink" title="运行web项目的问题"></a>运行web项目的问题</h3><pre><code>1. jar冲突问题：xxxServlet cannot be cast to javax.servlet.Servlet
+    1. Tomcat中自带servlet-api.jar和jsp-api.jar，项目中又引入了这两个jar包，所以在运行时
+    抛出jar包此冲突异常；
+    2. &lt;scope&gt;provided&lt;/scope&gt;：设置当前jar包的作用范围，provided 表示只在编译期和测试时
+    有效，在运行时忽略此jar包，解决运行时冲突问题；
+2. 对于测试jar包junit的&lt;scope&gt;设置：&lt;scope&gt;test&lt;/scope&gt;，表示只在测试时有效；
+    &lt;dependency&gt;
+        &lt;groupId&gt;junit&lt;/groupId&gt;
+        &lt;artifactId&gt;junit&lt;/artifactId&gt;
+        &lt;version&gt;4.11&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+3. &lt;scope&gt;
+    1. &lt;scope&gt;compile&lt;/scope&gt;：默认值，在编译、测试、运行三个时期都起作用；
+    2. &lt;scope&gt;runtime&lt;/scope&gt;：只在测试期和运行时有效，常见于JDBC驱动的依赖；
+    3. &lt;scope&gt;system&lt;/scope&gt;：只在编译期和测试时有效。
+4. Tomcat版本与JDK版本不匹配问题：Unable to compile class for JSP
+    1. tomcat:run 运行项目时，Maven默认使用的是Tomcat6，它与JDK8配合时无法转化JSP
+    2. 在 pom.xml 中配置tomcat7的插件
+        &lt;build&gt;
+            ......
+            &lt;pluginManagement&gt;
+                &lt;plugins&gt;
+                    ......
+                    &lt;plugin&gt;
+                        &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
+                        &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
+                        &lt;version&gt;2.2&lt;/version&gt;
+                    &lt;/plugin&gt;
+                &lt;/plugins&gt;
+            &lt;/pluginManagement&gt;
+        &lt;/build&gt;
+    3. 使用Tomcat7运行web项目：tomcat7:run
+    4. Tomcat的默认端口号都是8080，可以修改Tomcat7的端口号；
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
+            &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;2.2&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;port&gt;8888&lt;/port&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    5. 这样就可以同时运行tomcat6和tomcat7
+5. 同理，还可以配置使用的JDK插件
+    &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+            &lt;target&gt;1.8&lt;/target&gt;  ===&gt;使用JDK1.8编译
+            &lt;source&gt;1.8&lt;/source&gt;  ===&gt;编译后的class文件也使用JDK1.8
+            &lt;encoding&gt;UTF-8&lt;/encoding&gt;  ==&gt;编码
+        &lt;/configuration&gt;
+    &lt;/plugin&gt;
+</code></pre><hr>
 
       
     </div>
@@ -491,7 +591,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -513,7 +613,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -546,7 +646,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven"><span class="nav-number">1.</span> <span class="nav-text">Maven</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven仓库"><span class="nav-number">2.</span> <span class="nav-text">Maven仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准目录结构"><span class="nav-number">3.</span> <span class="nav-text">标准目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven的生命周期"><span class="nav-number">4.</span> <span class="nav-text">Maven的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POM模型"><span class="nav-number">5.</span> <span class="nav-text">POM模型</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven"><span class="nav-number">1.</span> <span class="nav-text">Maven</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven仓库"><span class="nav-number">2.</span> <span class="nav-text">Maven仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准目录结构"><span class="nav-number">3.</span> <span class="nav-text">标准目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven的生命周期"><span class="nav-number">4.</span> <span class="nav-text">Maven的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POM模型"><span class="nav-number">5.</span> <span class="nav-text">POM模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#idea集成Maven"><span class="nav-number">6.</span> <span class="nav-text">idea集成Maven</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建JavaWeb项目"><span class="nav-number">6.1.</span> <span class="nav-text">创建JavaWeb项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行web项目的问题"><span class="nav-number">6.2.</span> <span class="nav-text">运行web项目的问题</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="JDBC1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口； 2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API； 3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现； 4. ORM框架：Hibernate、mybatis 接口1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-22T12:59:07.689Z">
+<meta property="og:updated_time" content="2019-04-01T12:17:05.423Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java数据库">
 <meta name="twitter:description" content="JDBC1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口； 2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API； 3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现； 4. ORM框架：Hibernate、mybatis 接口1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱">
@@ -336,11 +336,10 @@
     Connection conn = DriverManager.getConnection(
         &quot;jdbc:mysql://host:port/database&quot;, &quot;username&quot;, &quot;password&quot;);
     2. 连接MySQL6.0+数据库，需要指定时区serverTimezone
-    jdbc:mysql://host:port/database?useUnicode=true&amp;characterEncoding=UTF-8
-    &amp;serverTimezone=Asia/Shanghai
-    &amp;useSSL=false&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
-    3. 连接的建立是比较耗时的，内部包含Socket，实际上是建立一个Socket远程连接;
-    4. 关闭连接：conn.close();
+    jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
+    3. 如果host和port都是默认值，可以省略：jdbc:mysql:///database?...
+    4. 连接的建立是比较耗时的，内部包含Socket，实际上是建立一个Socket远程连接;
+    5. 关闭连接：conn.close();
 4. Statement：执行静态SQL语句并返回结果的对象
     1. Statement用于发送简单的SQL语句(不带参数)，执行SQL时需要拼接参数，有SQL注入的危险
     Statement stat = conn.createStatement();
@@ -654,7 +653,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -676,7 +675,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
