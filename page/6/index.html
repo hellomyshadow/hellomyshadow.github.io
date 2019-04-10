@@ -707,7 +707,8 @@ Esc：退出编辑模式或末行模式；
             select * from user  ---&gt;findAll()执行的SQL语句
         &lt;/select&gt;
     &lt;/mapper&gt;
-    6. 在Mybatis中，把持久层的操作接口名称和映射文件称为Mapper，所以IUserDao也通常命名
+    6. resultType属性指定 findAll() 的返回值类型，每条数据封装在实体类User对象中；
+    7. 在Mybatis中，把持久层的操作接口名称和映射文件称为Mapper，所以IUserDao也通常命名
     为IUserMapper
 4. 把log4j.properties放在resources目录下，开始使用Mybatis
     1. 获取配置文件路径的两种方式：类加载器、ServletContext的getRealPath()
@@ -737,6 +738,131 @@ Esc：退出编辑模式或末行模式；
     &lt;mappers&gt;
         &lt;mapper class=&quot;com.test.dao.IUserDao&quot;/&gt;
     &lt;/mappers&gt;
+</code></pre><h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><pre><code>1. 插入一条数据
+    1. 在接口 IUserDao 中添加插入数据的方法：void saveUser(User user);
+    2. 在 IUserDao.xml 中配置插入的SQL语句
+    &lt;insert id=&quot;saveUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
+        insert into user(name, age) values(#{name}, #{age})
+    &lt;/insert&gt;
+    3. parameterType属性用于指定 saveUser() 的参数类型；
+    4. #{prop}：用于取出参数对象 User 中的属性值；
+    5. 执行插入时，必须手动提交事务，否则数据会回滚，但自增长的ID又会被占用；
+    ......
+    User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
+    dao.saveUser(u);
+    sess.commit();  //手动提交事务
+2. 更新数据
+    void updateUser(User user);
+    &lt;update id=&quot;updateUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
+        update user set name=#{name},age=#{age} where id=#{id}
+    &lt;/update&gt;
+    User u = new User();  u.setId(2);  u.setName(&quot;Python&quot;);  u.setAge(30);
+    dao.updateUser(u);
+    sess.commit();
+3. 删除数据
+    void deleteUser(int id);
+    &lt;delete id=&quot;deleteUser&quot; parameterType=&quot;java.lang.Integer&quot;&gt;
+        delete from user where id=#{id}
+    &lt;/delete&gt;
+    dao.deleteUser(3);
+    sess.commit();
+    1. parameterType 的参数类型不是实体类，#{id} 中的 id 只是占位符，可以任意名称；
+    2. java.lang.Integer、int、INT 是等效的，都可以表示 int 类型。
+4. 聚合函数
+    int findTotal();
+    &lt;select id=&quot;findTotal&quot; resultType=&quot;int&quot;&gt;
+        select count(id) from user
+    &lt;/select&gt;
+    int count = dao.findTotal();
+5. 模糊查询
+    List&lt;User&gt; findByName(String name);
+    &lt;select id=&quot;findByName&quot; parameterType=&quot;string&quot; 
+                                            resultType=&quot;com.test.domain.User&quot;&gt;
+        select * from user where name like #{un}
+    &lt;/select&gt;
+    List&lt;User&gt; us = dao.findByName(&quot;%tho%&quot;);
+    1. 模糊查询的特殊符号(%、_...)在传递参数时，手动指定需要的符号，Mybatis会采用安全的
+    预处理方式加入参数：select * from user where name like ?
+    2. 由Mybatis的源码可知，还有一种配置可以在SQL语句中指定模糊查询的符号：
+        &lt;select id=&quot;findByName&quot; ...&gt;
+            select * from user where name like &apos;%${value}%&apos;
+        &lt;/select&gt;
+        List&lt;User&gt; us = dao.findByName(&quot;tho&quot;);
+    3. ${value} 中的 value 是固定的，由Mybatis的源码绑定，但这种方式采用的是字符串拼接，
+    所以是不安全的：select * from user where name like %tho%
+6. 插入数据时，返回新增用户的主键ID
+    &lt;insert id=&quot;saveUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
+        &lt;selectKey keyProperty=&quot;id&quot; keyColumn=&quot;id&quot; resultType=&quot;int&quot; order=&quot;AFTER&quot;&gt;
+            select last_insert_id();
+        &lt;/selectKey&gt;
+        insert into user(name, age) values(#{name}, #{age})
+    &lt;/insert&gt;
+    User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
+    dao.saveUser(u);
+    sess.commit();
+    int id = u.getId(); //新插入数据的ID字段值
+    1. order=&quot;AFTER&quot; 表示在执行插入之后，再执行此SQL语句select last_insert_id();
+    2. resultType=&quot;int&quot; 声明主键的类型；
+    3. keyColumn=&quot;id&quot; 声明数据库中的主键字段名；
+    4. keyProperty=&quot;id&quot; 声明实体类中对应的主键属性名；
+    5. 插入成功之后，对象类对象 的 id 属性值为数据库中真实的 id 值。
+</code></pre><h3 id="parameterType"><a href="#parameterType" class="headerlink" title="parameterType"></a>parameterType</h3><pre><code>1. OGNL：Object Graphic Navigation Language，对象图导航语言
+    1. OGNL 的作用：通过对象的取值方法来获取属性值，写法上省略了getter方法；
+    2. 比如：获取一个实体类User的属性值时
+        1. 在类中的写法：user.getName()
+        2. OGNL表达式的写法：user.name
+    3. parameterType 为POJO对象(实体类)时，Mybatis使用 OGNL表达式 来解析对象的属性值，
+    所以 #{} 或 ${} 中可以省略getter方法；
+    4. 同时，parameterType 已经指明了属性所属的实体类，所以不需要声明对象#{user.name}，
+    而是直接使用属性名#{name}
+2. parameterType 为POJO(实体类)的包装对象
+    1. 有时候查询条件可能时多个实体类组成，那么就需要把不同的实体类包装成一个对象；
+    2. 创建实体类User 的包装对象QueryVo
+    public class QueryVo {
+        private User user;
+        //getter、setter
+    }
+    3. 在接口 IUserDao 中新增方法：List&lt;User&gt; findByVo(QueryVo vo);
+    4. 在 IUserDao.xml 中配置SQL语句
+    &lt;select id=&quot;findByVo&quot; parameterType=&quot;com.test.domain.QueryVo&quot; 
+                                        resultType=&quot;com.test.domain.User&quot;&gt;
+        select * from user where name like #{user.name}
+    &lt;/select&gt;
+    5. 执行 findByVo()
+    QueryVo vo = new QueryVo();
+    User u = new User();  u.setName(&quot;%tho%&quot;);
+    vo.setUser(u);
+    List&lt;User&gt; us = dao.findByVo(vo);
+</code></pre><h3 id="resultType"><a href="#resultType" class="headerlink" title="resultType"></a>resultType</h3><pre><code>1. MySQL数据库在Windows系统下不区分字段名与属性名的大小写；
+    1. 比如：数据库表中的字段名为username，而实体类中的属性名为userName
+    2. 在执行 findAll() 时，仍然可以把username的字段值映射给userName属性。
+2. 当实体类中的属性名与表中的字段名不匹配时：id--uId，userName--name，userAge--age
+    1. 在查询所有时，使用SQL语句的别名
+    &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.User&quot;&gt;
+        select id as uId, name as userName, age as userAge from user
+    &lt;/select&gt;
+    2. 在插入时，指定属性名
+    &lt;insert id=&quot;saveUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
+        &lt;selectKey keyProperty=&quot;uId&quot; keyColumn=&quot;id&quot; resultType=&quot;int&quot; order=&quot;AFTER&quot;&gt;
+            select last_insert_id();
+        &lt;/selectKey&gt;
+        insert into user(name, age) values(#{userName}, #{userAge})
+    &lt;/insert&gt;
+3. 在Mybatis中，提供了一种没有使用别名高效、但能提高开发效率的方式
+    1. 使用 &lt;resultMap&gt; 配置属性名与字段名的映射关系
+    &lt;mapper namespace=&quot;com.test.dao.IUserDao&quot;&gt;
+        &lt;resultMap id=&quot;userMap&quot; type=&quot;com.test.domain.User&quot;&gt;
+            &lt;id property=&quot;uId&quot; column=&quot;id&quot;&gt;&lt;/id&gt;  ===&gt;主键字段
+            &lt;result property=&quot;userName&quot; column=&quot;name&quot;&gt;&lt;/result&gt;  ==&gt;非主键字段
+            &lt;result property=&quot;userAge&quot; column=&quot;age&quot;&gt;&lt;/result&gt;
+        &lt;/resultMap&gt;
+
+        &lt;select id=&quot;findAll&quot; resultMap=&quot;userMap&quot;&gt;
+            select * from user
+        &lt;/select&gt;
+    &lt;/mapper&gt;
+    2. &lt;resultMap&gt; 的 id 属性为 resultMap 的唯一标识，type 属性为实体类的全类名；
+    3. &lt;select&gt;的 resultType 属性值为实体类时，改为 resultMap=&quot;userMap&quot;
 </code></pre><hr>
 
           
