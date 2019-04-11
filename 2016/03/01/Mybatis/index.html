@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-10T23:52:33.956Z">
+<meta property="og:updated_time" content="2019-04-11T14:20:19.798Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis">
 <meta name="twitter:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
@@ -337,36 +337,38 @@
     1. Mybatis通过XML或注解的方式配置各种Statement，映射成最终要执行的SQL语句；
     2. 采用ORM思想解决实体和数据库映射的问题，将执行SQL返回的结果映射成Java对象。
 2. 使用Maven工程搭建Mybatis环境
-    1. 添加依赖
-        &lt;dependencies&gt;
-            &lt;dependency&gt;  -------------------------&gt;Mybatis
-                &lt;groupId&gt;org.mybatis&lt;/groupId&gt;
-                &lt;artifactId&gt;mybatis&lt;/artifactId&gt;
-                &lt;version&gt;3.4.5&lt;/version&gt;
-            &lt;/dependency&gt;
-            &lt;dependency&gt;  -------------------------&gt;MySQL
-                &lt;groupId&gt;mysql&lt;/groupId&gt;
-                &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-                &lt;version&gt;5.1.6&lt;/version&gt;
-            &lt;/dependency&gt;
-            &lt;dependency&gt;  -------------------------&gt;日志相关
-                &lt;groupId&gt;log4j&lt;/groupId&gt;
-                &lt;artifactId&gt;log4j&lt;/artifactId&gt;
-                &lt;version&gt;1.2.12&lt;/version&gt;
-            &lt;/dependency&gt;
-            &lt;dependency&gt;  -------------------------&gt;单元测试
-                &lt;groupId&gt;junit&lt;/groupId&gt;
-                &lt;artifactId&gt;junit&lt;/artifactId&gt;
-                &lt;version&gt;4.10&lt;/version&gt;
-            &lt;/dependency&gt;
-        &lt;/dependencies&gt;
-    2. 创建实体类，实现Serializable接口
-        public class User implements Serializable { ... }
-    3. 创建数据库操作的接口：com.test.dao.IUserDao
-        public interface IUserDao {
-            List&lt;User&gt; findAll();
-        }
-    4. 在resources目录下创建一个XML文件，如SqlMapConfig.xml，作为Mybatis的主配置文件
+3. 添加依赖
+    &lt;dependency&gt;  -------------------------&gt;Mybatis
+        &lt;groupId&gt;org.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mybatis&lt;/artifactId&gt;
+        &lt;version&gt;3.4.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;  -------------------------&gt;MySQL
+        &lt;groupId&gt;mysql&lt;/groupId&gt;
+        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+        &lt;version&gt;5.1.6&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;  -------------------------&gt;日志相关
+        &lt;groupId&gt;log4j&lt;/groupId&gt;
+        &lt;artifactId&gt;log4j&lt;/artifactId&gt;
+        &lt;version&gt;1.2.12&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;  -------------------------&gt;单元测试
+        &lt;groupId&gt;junit&lt;/groupId&gt;
+        &lt;artifactId&gt;junit&lt;/artifactId&gt;
+        &lt;version&gt;4.10&lt;/version&gt;
+    &lt;/dependency&gt;
+</code></pre><h3 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h3><pre><code>1. 创建实体类，实现Serializable接口
+    public class User implements Serializable {
+        private String name;
+        private int age;
+        //getter、setter
+    }
+2. 创建数据库操作的Dao接口：com.test.dao.IUserDao
+    public interface IUserDao {
+        List&lt;User&gt; findAll();  //查询所有
+    }
+3. 在resources目录下创建一个XML文件：SqlMapConfig.xml，作为Mybatis的主配置文件
     &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
     &lt;!DOCTYPE configuration PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
         &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;   ==&gt;约束
@@ -380,20 +382,19 @@
                 &lt;!-- 配置数据源：连接池，有三种 --&gt;
                 &lt;dataSource type=&quot;POOLED&quot;&gt;
                     &lt;!-- 配置连接数据库的基本信息，5.0和6.0的驱动、URL是不同的 --&gt;
-                    &lt;property name=&quot;driver&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
-                    &lt;property name=&quot;url&quot; 
-                        value=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot;/&gt;
-                    &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
-                    &lt;property name=&quot;password&quot; value=&quot;123456&quot;/&gt;
+                    &lt;property name=&quot;driver&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+                    &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot;/&gt;
+                    &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+                    &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
                 &lt;/dataSource&gt;
             &lt;environment&gt;
         &lt;/environments&gt;
-        &lt;!-- 指定映射配置文件的位置 --&gt;
+        &lt;!-- 指定Dao的映射配置文件 --&gt;
         &lt;mappers&gt;
             &lt;mapper resource=&quot;com/test/dao/IUserDao.xml&quot;/&gt;  =&gt;指向resources目录
         &lt;/mappers&gt;
     &lt;/configuration&gt;
-    5. 映射配置文件是每个Dao的独立配置文件，创建resources/com/test/dao/IUserDao.xml
+4. 映射配置文件是每个Dao的独立配置文件，创建resources/com/test/dao/IUserDao.xml
     &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
     &lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;
                     &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
@@ -403,65 +404,57 @@
             select * from user  ---&gt;findAll()执行的SQL语句
         &lt;/select&gt;
     &lt;/mapper&gt;
-    6. resultType属性指定 findAll() 的返回值类型，每条数据封装在实体类User对象中；
-    7. 在Mybatis中，把持久层的操作接口名称和映射文件称为Mapper，所以IUserDao也通常命名
-    为IUserMapper
-4. 把log4j.properties放在resources目录下，开始使用Mybatis
+    1. resultType属性指定 findAll() 的返回值类型，每条数据封装在实体类User对象中；
+    2. Mybatis把持久层的操作接口名称和映射文件称为Mapper，所以IUserDao也通常命名为IUserMapper
+5. 把log4j.properties放在resources目录下，开始使用Mybatis
     1. 获取配置文件路径的两种方式：类加载器、ServletContext的getRealPath()
-    // 1.读取主配置文件
-    InputStream is = Resources.getResourceAsStream(&quot;SqlMapConfig.xml&quot;);
-    2. 构建者模式
-    // 2.创建SqlSessionFactory工厂
-    SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
-    SqlSessionFactory factory = builder.build(is);
+        // 1.读取主配置文件
+        InputStream is = Resources.getResourceAsStream(&quot;SqlMapConfig.xml&quot;);
+    2. 构建者模式：创建SqlSessionFactory工厂
+        SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory factory = builder.build(is);
     3. 工厂模式
-    // 3.使用工厂生产SqlSession对象
-    SqlSession session = factory.openSession();
-    4. 代理模式
-    // 4.使用SqlSession创建Dao接口的代理对象
-    IUserDao dao = session.getMapper(IUserDao.class);
-    // 5.使用代理对象执行方法，获取SQL语句的结果
-    List&lt;User&gt; users = dao.findAll();
+        SqlSession session = factory.openSession(); //使用工厂生产SqlSession对象
+    4. 代理模式：使用SqlSession创建Dao接口的代理对象
+        IUserDao dao = session.getMapper(IUserDao.class);
+        // 使用代理对象执行方法，获取SQL语句的结果
+        List&lt;User&gt; users = dao.findAll();
     5. 释放资源
-    session.close();
-    is.close();
-5. 把映射配置文件改为注解实现
+        session.close();  is.close();
+6. 把映射配置文件改为注解实现
     1. 删除映射配置文件 resources/com/test/dao/IUserDao.xml
     2. 在接口IUserDao的方法findAll()上使用注解
         @Select(&quot;select * from user&quot;)
         List&lt;User&gt; findAll();
-    3. 更改主配置文件中的&lt;mappers&gt;，指定Dao接口
-    &lt;mappers&gt;
-        &lt;mapper class=&quot;com.test.dao.IUserDao&quot;/&gt;
-    &lt;/mappers&gt;
-</code></pre><h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><pre><code>1. 插入一条数据
+    3. 更改主配置文件SqlMapConfig.xml中的&lt;mappers&gt;，指定Dao接口
+        &lt;mappers&gt;
+            &lt;mapper class=&quot;com.test.dao.IUserDao&quot; /&gt;
+        &lt;/mappers&gt;
+</code></pre><h2 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h2><pre><code>1. 插入一条数据
     1. 在接口 IUserDao 中添加插入数据的方法：void saveUser(User user);
     2. 在 IUserDao.xml 中配置插入的SQL语句
-    &lt;insert id=&quot;saveUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
-        insert into user(name, age) values(#{name}, #{age})
-    &lt;/insert&gt;
+        &lt;insert id=&quot;saveUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
+            insert into user(name, age) values(#{name}, #{age})
+        &lt;/insert&gt;
     3. parameterType属性用于指定 saveUser() 的参数类型；
     4. #{prop}：用于取出参数对象 User 中的属性值；
     5. 执行插入时，必须手动提交事务，否则数据会回滚，但自增长的ID又会被占用；
-    ......
-    User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
-    dao.saveUser(u);
-    sess.commit();  //手动提交事务
+        User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
+        dao.saveUser(u);
+        session.commit();  //手动提交事务
 2. 更新数据
     void updateUser(User user);
     &lt;update id=&quot;updateUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
         update user set name=#{name},age=#{age} where id=#{id}
     &lt;/update&gt;
     User u = new User();  u.setId(2);  u.setName(&quot;Python&quot;);  u.setAge(30);
-    dao.updateUser(u);
-    sess.commit();
+    dao.updateUser(u);  session.commit();
 3. 删除数据
     void deleteUser(int id);
     &lt;delete id=&quot;deleteUser&quot; parameterType=&quot;java.lang.Integer&quot;&gt;
         delete from user where id=#{id}
     &lt;/delete&gt;
-    dao.deleteUser(3);
-    sess.commit();
+    dao.deleteUser(3);  session.commit();
     1. parameterType 的参数类型不是实体类，#{id} 中的 id 只是占位符，可以任意名称；
     2. java.lang.Integer、int、INT 是等效的，都可以表示 int 类型。
 4. 聚合函数
@@ -472,8 +465,7 @@
     int count = dao.findTotal();
 5. 模糊查询
     List&lt;User&gt; findByName(String name);
-    &lt;select id=&quot;findByName&quot; parameterType=&quot;string&quot; 
-                                            resultType=&quot;com.test.domain.User&quot;&gt;
+    &lt;select id=&quot;findByName&quot; resultType=&quot;com.test.domain.User&quot; parameterType=&quot;string&quot;&gt;
         select * from user where name like #{un}
     &lt;/select&gt;
     List&lt;User&gt; us = dao.findByName(&quot;%tho%&quot;);
@@ -494,15 +486,14 @@
         insert into user(name, age) values(#{name}, #{age})
     &lt;/insert&gt;
     User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
-    dao.saveUser(u);
-    sess.commit();
+    dao.saveUser(u);  session.commit();
     int id = u.getId(); //新插入数据的ID字段值
     1. order=&quot;AFTER&quot; 表示在执行插入之后，再执行此SQL语句select last_insert_id();
     2. resultType=&quot;int&quot; 声明主键的类型；
     3. keyColumn=&quot;id&quot; 声明数据库中的主键字段名；
     4. keyProperty=&quot;id&quot; 声明实体类中对应的主键属性名；
     5. 插入成功之后，对象类对象 的 id 属性值为数据库中真实的 id 值。
-</code></pre><h3 id="parameterType"><a href="#parameterType" class="headerlink" title="parameterType"></a>parameterType</h3><pre><code>1. OGNL：Object Graphic Navigation Language，对象图导航语言
+</code></pre><h2 id="parameterType"><a href="#parameterType" class="headerlink" title="parameterType"></a>parameterType</h2><pre><code>1. OGNL：Object Graphic Navigation Language，对象图导航语言
     1. OGNL 的作用：通过对象的取值方法来获取属性值，写法上省略了getter方法；
     2. 比如：获取一个实体类User的属性值时
         1. 在类中的写法：user.getName()
@@ -512,31 +503,31 @@
     4. 同时，parameterType 已经指明了属性所属的实体类，所以不需要声明对象#{user.name}，
     而是直接使用属性名#{name}
 2. parameterType 为POJO(实体类)的包装对象
-    1. 有时候查询条件可能时多个实体类组成，那么就需要把不同的实体类包装成一个对象；
-    2. 创建实体类User 的包装对象QueryVo
-    public class QueryVo {
-        private User user;
-        //getter、setter
-    }
+    1. 有时候查询条件可能由多个实体类组成，那么就需要把不同的实体类包装成一个对象；
+    2. 创建包装对象QueryVo
+        public class QueryVo {
+            private User user;  //包装实体类User
+            //getter、setter
+        }
     3. 在接口 IUserDao 中新增方法：List&lt;User&gt; findByVo(QueryVo vo);
     4. 在 IUserDao.xml 中配置SQL语句
-    &lt;select id=&quot;findByVo&quot; parameterType=&quot;com.test.domain.QueryVo&quot; 
-                                        resultType=&quot;com.test.domain.User&quot;&gt;
+    &lt;select id=&quot;findByVo&quot;
+        parameterType=&quot;com.test.domain.QueryVo&quot; resultType=&quot;com.test.domain.User&quot;&gt;
         select * from user where name like #{user.name}
     &lt;/select&gt;
     5. 执行 findByVo()
-    QueryVo vo = new QueryVo();
-    User u = new User();  u.setName(&quot;%tho%&quot;);
-    vo.setUser(u);
-    List&lt;User&gt; us = dao.findByVo(vo);
-</code></pre><h3 id="resultType"><a href="#resultType" class="headerlink" title="resultType"></a>resultType</h3><pre><code>1. MySQL数据库在Windows系统下不区分字段名与属性名的大小写；
+        QueryVo vo = new QueryVo();
+        User u = new User();  u.setName(&quot;%tho%&quot;);
+        vo.setUser(u);
+        List&lt;User&gt; us = dao.findByVo(vo);
+</code></pre><h2 id="resultType"><a href="#resultType" class="headerlink" title="resultType"></a>resultType</h2><pre><code>1. MySQL数据库在Windows系统下不区分字段名与属性名的大小写；
     1. 比如：数据库表中的字段名为username，而实体类中的属性名为userName
     2. 在执行 findAll() 时，仍然可以把username的字段值映射给userName属性。
 2. 当实体类中的属性名与表中的字段名不匹配时：id--uId，userName--name，userAge--age
     1. 在查询所有时，使用SQL语句的别名
-    &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.User&quot;&gt;
-        select id as uId, name as userName, age as userAge from user
-    &lt;/select&gt;
+        &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.User&quot;&gt;
+            select id as uId, name as userName, age as userAge from user
+        &lt;/select&gt;
     2. 在插入时，指定属性名
     &lt;insert id=&quot;saveUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
         &lt;selectKey keyProperty=&quot;uId&quot; keyColumn=&quot;id&quot; resultType=&quot;int&quot; order=&quot;AFTER&quot;&gt;
@@ -556,9 +547,178 @@
         &lt;select id=&quot;findAll&quot; resultMap=&quot;userMap&quot;&gt;
             select * from user
         &lt;/select&gt;
+
+        &lt;select id=&quot;findByVo&quot; parameterType=&quot;com.test.domain.QueryVo&quot; resultType=&quot;userMap&quot;&gt;
+            select * from user where name like #{user.userName}
+        &lt;/select&gt;
     &lt;/mapper&gt;
     2. &lt;resultMap&gt; 的 id 属性为 resultMap 的唯一标识，type 属性为实体类的全类名；
-    3. &lt;select&gt;的 resultType 属性值为实体类时，改为 resultMap=&quot;userMap&quot;
+    3. &lt;select&gt;的 resultType 属性值为实体类时，改为 resultMap=&quot;userMap&quot;.
+</code></pre><h2 id="更多配置"><a href="#更多配置" class="headerlink" title="更多配置"></a>更多配置</h2><pre><code>1. Mybatis也支持自定义Dao的实现类，SqlSession对象中提供了数据库操作的API
+    public class UserDaoImpl implements IUserDao {
+        private SqlSessionFactory factory;
+
+        public UserDaoImpl(SqlSessionFactory factory) {
+            this.factory = factory;
+        }
+
+        public List&lt;User&gt; findAll() {  //查询所有
+            SqlSession sess = factory.openSession();
+            List&lt;User&gt; us = sess.selectList(&quot;com.test.dao.IUserDao.findAll&quot;);
+            sess.close();
+            return us;
+        }
+
+        public void saveUser(User u) {  //插入一条数据
+            SqlSession sess = factory.openSession();
+            sess.insert(&quot;com.test.dao.IUserDao.saveUser&quot;, u);
+            sess.commit();
+            sess.close();
+        }
+        ......
+    }
+</code></pre><h3 id="properties标签"><a href="#properties标签" class="headerlink" title="properties标签"></a>properties标签</h3><pre><code>1. 在主配置文件 SqlMapConfig.xml 中，使用 &lt;properties&gt; 抽取数据库的连接信息
+    &lt;properties&gt;
+        &lt;!-- 配置JDBC的连接信息 --&gt;
+        &lt;property name=&quot;driver&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
+    &lt;/properties&gt;
+    &lt;environments default=&quot;mysql&quot;&gt;
+        &lt;environment id=&quot;mysql&quot;&gt;
+            &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;transactionManager&gt;
+            &lt;dataSource type=&quot;POOLED&quot;&gt;
+                &lt;!-- 引用 &lt;properties&gt; 标签中配置的信息 --&gt;
+                &lt;property name=&quot;driver&quot; value=&quot;${driver}&quot; /&gt;
+                &lt;property name=&quot;url&quot; value=&quot;${url}&quot; /&gt;
+                &lt;property name=&quot;username&quot; value=&quot;${username}&quot; /&gt;
+                &lt;property name=&quot;password&quot; value=&quot;${password}&quot; /&gt;
+        ......
+2. 除了在标签内配置，&lt;properties&gt;标签还可以引用外部的配置文件
+    1. 在resources目录下创建 jdbcConf.properties，保存数据库的连接信息
+        jdbc.driver=com.mysql.jdbc.Driver
+        jdbc.url=jdbc:mysql://localhost:3306/db_mybatis
+        jdbc.user=root
+        jdbc.password=123456
+    2. 引入resources/jdbcConf.properties，并使用其中的配置信息
+        &lt;properties resource=&quot;jdbcConf.properties&quot;&gt;&lt;/properties&gt;
+        ......
+        &lt;dataSource type=&quot;POOLED&quot;&gt;
+            &lt;property name=&quot;driver&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+            &lt;property name=&quot;url&quot; value=&quot;${jdbc.url}&quot; /&gt;
+            &lt;property name=&quot;username&quot; value=&quot;${jdbc.user}&quot; /&gt;
+            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+3. &lt;properties&gt; 除了 resource 属性可以引入外部文件，还有 url 属性
+    1. resource 属性值是类路径的形式，因为 jdbcConf.properties 和 SqlMapConfig.xml
+    在同一目录，所以不用写包名；
+    2. url 属性值是统一资源定位符，因为是本地文件，所以使用file协议
+    url=&quot;file:///D:/workplace/testibatis/src/main/resources/jdbcConf.properties&quot;
+    3. SqlMapConfig.xml 中的 &lt;mapper&gt; 标签用于引用Dao的映射配置文件，它也有 url 属性，
+    也是统一资源定位符，使用方式与 &lt;properties&gt; 上的 url 属性是相同的。
+</code></pre><h3 id="typeAliases标签"><a href="#typeAliases标签" class="headerlink" title="typeAliases标签"></a>typeAliases标签</h3><pre><code>1. 在使用 parameterType 属性声明基本类型时，不需要区分大小写，int 和 INT、Int、inT 都是
+   等效的，但自定义的实体类却不行，这是因为它把常用基本类型都注册了别名；
+2. 在 SqlMapConfig.xml 中，使用 &lt;typeAliases&gt; 标签可以为自定义的实体类配置别名
+    &lt;configuration&gt;
+        &lt;typeAliases&gt;
+            &lt;typeAlias type=&quot;com.test.domain.User&quot; alias=&quot;user&quot; /&gt;
+        &lt;/typeAliases&gt;
+        ......
+    1. type属性指定实体类的全类名，alias属性自定义别名；
+    2. 指定了别名之后，就不再区分大小写了
+        &lt;insert id=&quot;saveUser&quot; parameterType=&quot;user&quot;&gt;
+        &lt;insert id=&quot;saveUser&quot; parameterType=&quot;USER&quot;&gt;
+3. 但是，如果实体类过多时，使用 &lt;typeAlias&gt; 配置别名也会很繁琐；
+    1. &lt;typeAliases&gt; 还支持配置实体类所在的包名
+        &lt;typeAliases&gt;
+            &lt;package name=&quot;com.test.domain&quot; /&gt;
+        &lt;/typeAliases&gt;
+    2. 配置了实体类的包名之后，实体类的类名就是别名，不再区分大小写.
+4. SqlMapConfig.xml 中的 &lt;mappers&gt; 也有一个子标签为 &lt;package&gt;，用于指定dao接口的包名
+    &lt;mappers&gt;
+        &lt;package name=&quot;com.test.dao&quot;&gt;&lt;/package&gt;  ==&gt;无需再配置&lt;mapper&gt;标签
+    &lt;/mappers&gt;
+</code></pre><h3 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h3><pre><code>1. 连接池就是一个存储连接的容器(线程安全的集合对象)，保证不能让两个线程拿到同一个连接；
+    1. 该集合还必须实现队列的特性：先进后出；
+    2. 连接池能够减少获取连接所消耗的时间。
+2. Mybatis连接池有3种配置方式
+    1. 主配置文件 SqlMapConfig.xml 中的 &lt;dataSource type=&quot;连接池配置&quot;&gt;
+    2. POOLED：采用传统的 javax.sql.DataSource 规范，Mybatis中有针对此规范的实现；
+    3. UNPOOLED：采用传统获取连接的方式，虽然也实现了javax.sql.DataSource接口，但并没有
+    池 的思想；
+    4. JNDI：采用服务器提供的JNDI技术实现，来获取 DataSource 对象，不同的服务器所拿到的
+    DataSource 是不同的；
+    5. 注意：如果不是 Web 或者 maven的war工程，不能使用JNDI；
+    6. 使用Tomcat服务器时，采用的是DBCP连接池.
+3. type=&quot;POOLED&quot;：从连接池中获取一个连接，使用完之后，归还给连接池
+    1. Mybatis准备了2个连接池：空闲池和活动池；
+    2. 当有一个线程获取连接时，先到空闲池中查看是否有连接，有则直接返回一个连接给线程；
+    3. 如果空闲池没有连接，则转去活动池，如果活动池的连接数量已经达到了最大值，则返回其中
+    最老的一个连接(Oldest Connection)
+    4. 线程获取到 Oldest Connection 之后，会重置其相关参数，保证此连接是一个有效的连接.
+4. type=&quot;UNPOOLED&quot;：每次都会创建一个新的连接，使用完之后，关闭连接.
+</code></pre><h3 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h3><pre><code>1. 事物的四大特性：ACID
+2. 不考虑隔离性会产生3个问题，解决办法是4中隔离级别；
+3. Mybatis中，通过 SqlSession 的 commit() 和 rollback() 实现事物的提交和回滚；
+4. SqlSession默认需要手动提交事物，也可以设置自动提交
+    SqlSession session = factory.openSession(true);  //自动提交事物
+</code></pre><h2 id="动态SQL"><a href="#动态SQL" class="headerlink" title="动态SQL"></a>动态SQL</h2><pre><code>1. if标签
+    List&lt;User&gt; findByCond(User u);
+    &lt;select id=&quot;findByCond&quot; resultMap=&quot;userMap&quot; parameterType=&quot;user&quot;&gt;
+        select * from user where 1=1
+        &lt;if test=&quot;userName != null&quot;&gt;
+            and name = #{userName}
+        &lt;/if&gt;
+    &lt;/select&gt;
+    1. &lt;if&gt; 上使用的属性来自于参数User对象；
+    2. where 1=1 中的 1=1 是为了在&lt;if&gt;条件不成立时，保证有一个条件为真的语句；
+    3. &lt;if&gt;条件成立时，拼接上标签内的语句：where 1=1 and name=#{userName}
+2. where标签：替换掉 where 1=1
+    &lt;select id=&quot;findByCond&quot; resultMap=&quot;userMap&quot; parameterType=&quot;user&quot;&gt;
+        select * from user
+        &lt;where&gt;
+            &lt;if test=&quot;userName != null&quot;&gt;
+                and name = #{userName}
+            &lt;/if&gt;
+            &lt;if test=&quot;userAge &gt; 0&quot;&gt;
+                and age = #{userAge}
+            &lt;/if&gt;
+        &lt;/where&gt;
+    &lt;/select&gt;
+3. foreach标签：比如select * from user where id in (1, 3, 6)
+    1. 在包装类 QueryVo 中新增一个集合属性
+        public class QueryVo {
+            private User user;
+            private List&lt;Integer&gt; ids
+            //getter、setter
+        }
+    2. 在 IUserDao 接口中新增方法：List&lt;User&gt; findByIds(QueryVo vo);
+    3. 在映射配置文件 IUserDao.xml 中新增查询语句
+    &lt;select id=&quot;findByIds&quot; resultMap=&quot;userMap&quot; parameterType=&quot;QueryVo的别名&quot;&gt;
+        select * from user
+        &lt;where&gt;
+            &lt;if test=&quot;ids!=null and ids.size()&gt;0&quot;&gt;
+                &lt;foreach collection=&quot;ids&quot; open=&quot;and id in (&quot; close=&quot;)&quot; item=&quot;id&quot;
+                separator=&quot;,&quot;&gt;  #{id}  &lt;/foreach&gt;
+            &lt;/if&gt;
+        &lt;/where&gt;
+    &lt;/select&gt;
+    1. collection：要遍历的集合属性；
+    2. open、close：分别表示语句的开始部分与结束部分
+    3. item：保存每次遍历集合时的元素值；
+    4. separator：分隔符；
+    5. #{id} 中的 id 来自于 item 的属性值；
+    QueryVo vo = new QueryVo();
+    List&lt;Integer&gt; ids = new ArrayList&lt;&gt;();  ids.add(1); ids.add(3); ids.add(6);
+    vo.setIds(ids);
+    List&lt;User&gt; us = dao.findByIds(vo);
+4. sql标签：抽取重复的SQL语句
+    &lt;sql id=&quot;defult&quot;&gt;
+        select * from user
+    &lt;/sql&gt;
+    &lt;select id=&quot;findAll&quot; resultType=&quot;userMap&quot;&gt;
+        &lt;include refid=&quot;defult&quot;&gt;&lt;/include&gt;  ===&gt;引用 id=&quot;default&quot; 的&lt;sql&gt;
+    &lt;/select&gt;
 </code></pre><hr>
 
       
@@ -734,7 +894,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架"><span class="nav-number">1.</span> <span class="nav-text">框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis"><span class="nav-number">2.</span> <span class="nav-text">Mybatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#增删改查"><span class="nav-number">2.1.</span> <span class="nav-text">增删改查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#parameterType"><span class="nav-number">2.2.</span> <span class="nav-text">parameterType</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#resultType"><span class="nav-number">2.3.</span> <span class="nav-text">resultType</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架"><span class="nav-number">1.</span> <span class="nav-text">框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis"><span class="nav-number">2.</span> <span class="nav-text">Mybatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本配置"><span class="nav-number">2.1.</span> <span class="nav-text">基本配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增删改查"><span class="nav-number">3.</span> <span class="nav-text">增删改查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parameterType"><span class="nav-number">4.</span> <span class="nav-text">parameterType</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType"><span class="nav-number">5.</span> <span class="nav-text">resultType</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多配置"><span class="nav-number">6.</span> <span class="nav-text">更多配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#properties标签"><span class="nav-number">6.1.</span> <span class="nav-text">properties标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#typeAliases标签"><span class="nav-number">6.2.</span> <span class="nav-text">typeAliases标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接池"><span class="nav-number">6.3.</span> <span class="nav-text">连接池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事物"><span class="nav-number">6.4.</span> <span class="nav-text">事物</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态SQL"><span class="nav-number">7.</span> <span class="nav-text">动态SQL</span></a></li></ol></div>
             
 
           </div>
