@@ -533,6 +533,378 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/02/Mybatis进阶/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/02/Mybatis进阶/" itemprop="url">Mybatis进阶</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-02T00:00:00+08:00">
+                2016-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h2><pre><code>事物的四大特性：ACID
+1. A：原子性，要么全部被执行，要么全部不执行；
+2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态；
+3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务；
+4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。
+</code></pre><h3 id="并发下的事务"><a href="#并发下的事务" class="headerlink" title="并发下的事务"></a>并发下的事务</h3><pre><code>1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的情况下，会出现各种问题；
+2. 主要有五种问题：第一类丢失更新、第二类丢失更新、脏读、不可重复读、幻读；
+3. 脏读：事务A读到了事务B还没有提交的数据；
+    1. 账户余额1000元，事务A开启事务，此时切换到事务B，事务B开启事务--&gt;取走100元
+    2. 此时又切换回事务A，因为事务B并没有提交，事务A读取的仍是1000元，这就是脏读
+4. 不可重复读：在同一个事务里读取了两次某个数据，结果不一致；
+    1. 事务A开启事务--&gt;查出账户余额为1000元
+    2. 此时切换到事务B，事务B开启事务--&gt;取走100元--&gt;提交，账户余额变为900元
+    3. 此时又切换回事务A，事务A再查一次的账户余额为900元
+    4. 那么对于事务A，在同一个事务内两次读取的数据不一致，这就是不可重复读。
+5. 幻读：在同一个事务里的操作中发现了未被操作的数据；
+    1. 事务A开启事务--&gt;修改所有学生当天签到状况为false
+    2. 此时切换到事务B，事务B开启事务--&gt;插入了一条学生数据
+    3. 此时又切换回事务A，事务A提交时发现了一条自己没有修改过的数据，这就是幻读。
+    4. 幻读出现的前提：并发的事务中有事务发生了插入、删除操作。
+6. 事务隔离级别就是为了解决这几种问题。
+</code></pre><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><pre><code>1. 事务隔离级别越高，在并发下产生的问题就越少，但同时付出的性能消耗也越大，因此很多时候必须
+   在并发性和性能之间做一个权衡；
+2. 设立事务隔离级别的目的：为了让不同的项目可以根据自己的并发情况，选择合适的事务隔离级别；
+   对于在事务隔离级别之外会产生的并发问题，在代码中做补偿；
+3. 事务隔离级别有4种，但是像Spring会提供5种；
+1. DEFAULT：默认隔离级别
+    1. Spring配置事务时，将 isolation 设置为 DEFAULT，则使用数据库的默认事务隔离级别；
+    2. 每种数据库支持的事务隔离级别是不一样的。
+2. READ_UNCOMMITTED：读未提交
+    1. 能够读取到没有被提交的数据，所以无法解决脏读、不可重复读、幻读，很少使用；
+3. READ_COMMITED：读已提交
+    1. 能够读到那些已经提交的数据，所以能防止脏读，但是无法限制不可重复读和幻读；
+    2. 此级别下，写数据只会锁住相应的行。
+4. REPEATABLE_READ：重复读取
+    1. 在数据读出来之后加锁，类似 select * from XXX for update，明确数据读取出来就是为了
+    更新用的，所以要加一把锁，防止别人修改它；
+    2. 读取了一条数据，这个事务不结束，其他事务就不可以修改这条记录，解决了脏读、不可重复读的
+    问题，但无法解决幻读的问题。
+5. SERLALIZABLE：串行化，加锁读，最高的事务隔离级别
+    1. 不管多少事务，必须执行完一个事务的所有子事务之后，才可以执行下一个事务的所有子事务，
+    这样就解决了脏读、不可重复读和幻读的问题了；
+    2. 此级别下，读写数据都会锁住整张表。
+1. 虽然隔离级别越高，越能保证数据的完整性和一致性，但对并发性能的影响也越大；
+2. 一般情况下会设置为READ_COMMITED，此时避免了脏读，并发性也还不错，之后再通过其他手段解决
+   不可重复读和幻读的问题；
+3. MySQL的事务隔离级别
+    1. 对于MySql，其默认事务级别是REPEATABLE_READ，虽然定义上无法解决幻读的问题，但MySql
+    使用了一种 Next key-lock 的算法来实现REPEATABLE_READ，这种算法能够解决幻读问题；
+    2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围
+    锁住，其他事务如果想要在此范围内进行数据操作，那么就会被阻塞，因而MySql在此级别下就已经
+    具备了Serializable级别的事务隔离性。
+    3. 查看事务隔离级别：select @@tx_isolation
+        show variables like &apos;transaction_isolation&apos;;
+    4. 开启一个事务：start transaction;
+    5. 回滚当前事务：rollback;
+    6. 提交当前事务：commit;
+4. MySQL设置当前会话的事务隔离级别：SET session TRANSACTION ISOLATION LEVEL 隔离级别
+    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
+    2. 对于 Mybatis getSqlSession()，只针对本次拿到的Session有效；
+    3. 对于CMD命令行，只在本次窗口有效。
+5. MySQL设置全局事务隔离级别：SET global TRANSACTION ISOLATION LEVEL 隔离级别
+    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
+    2. 修改了全局的事务隔离级别，那么对此后所有的会话都有效，当前已经存在的会话则不受影响.
+</code></pre><h2 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h2><pre><code>1. 表与表之间的关系：一对一、一对多、多对多
+2. 新创建一张表account，外键字段uid 关联user表的主键id
+3. 创建表account的实体类
+    public class Account implements Serializable {
+        private int id;  //主键
+        private int uid;  //外键，关联user表的主键id
+        private double money;
+        // getter、setter
+    }
+4. 同理，新建Dao接口：com.test.dao.IAccountDao
+    public interface IAccountDao {
+        List&lt;Account&gt; findAll();
+    }
+5. 在主配置文件 SqlMapConfig.xml 配置 &lt;typeAliases&gt; 和 &lt;mappers&gt;
+    &lt;typeAliases&gt;
+        &lt;package name=&quot;com.test.domain&quot; /&gt;
+    &lt;/typeAliases&gt;
+    ......
+    &lt;mappers&gt;
+        &lt;package name=&quot;com.test.dao&quot;&gt;&lt;/package&gt;
+    &lt;/mappers&gt;
+6. 创建 resources/com/test/dao/IAccountDao.xml
+    &lt;mapper namespace=&quot;com.test.dao.IAccountDao&quot;&gt;
+        &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.Account&quot;&gt;
+            select * from account
+        &lt;/select&gt;
+    &lt;/mapper&gt;
+</code></pre><h3 id="一对一查询"><a href="#一对一查询" class="headerlink" title="一对一查询"></a>一对一查询</h3><pre><code>1. account表--&gt;user表：一对一的关系
+2. 查询account的所有字段，只查询user表的username字段
+    1. 新增一个实体类AccountUser，继承自Account
+        public class AccountUser extends Account {
+            private String username;  //user表的字段
+            //getter、setter
+        }
+    2. 在 IAccountDao 接口中新增方法：List&lt;AccountUser&gt; findAccount();
+    3. 在 IAccountDao.xml 中配置SQL语句
+        &lt;select id=&quot;findAccount&quot; resultType=&quot;accountuser&quot;&gt;
+            select u.username, a.* from account a, user u where u.id=a.uid
+        &lt;/select&gt;
+3. 但是，这并不是常用的方式，而是将 从表(user) 的实体类封装到 主表(account) 的实体类中
+    public class Account implements Serializable {
+        private User user;  //从表user的实体类属性
+        ......
+    }
+4. 在 IAccountDao.xml 使用 &lt;resultMap&gt; 配置一对一的关系映射
+    &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
+        &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+        &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+        &lt;!-- 一对一的映射关系，配置封装User的属性 --&gt;
+        &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;/association&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
+        &lt;!-- 查询出两张表的所有字段，并对account表的id属性重命名为aid--&gt;
+        select u.*, a.id as aid, a.uid, a.money from account a, user u 
+         where u.id=a.uid
+    &lt;/select&gt;
+    1. &lt;resultMap&gt; 上的 type属性 使用的是实体类的别名；
+    2. SQL语句对account表的主键字段做了重命名(id--&gt;aid)，所以对应&lt;id&gt;上的column属性为aid
+5. &lt;association&gt;标签用于配置一对一的映射关系
+    1. 属性column：主表account的外键字段;
+    2. 属性property：实体类Account 中封装从表实体类User的对象属性user;
+    3. 属性javaType：声明从表实体类User的全类名，也可以使用实体类的别名;
+    4. 标签内配置的是从表(user)字段与实体类(User)属性的映射关系.
+</code></pre><h3 id="一对多查询"><a href="#一对多查询" class="headerlink" title="一对多查询"></a>一对多查询</h3><pre><code>1. user表--&gt;account表：一对多的关系
+2. 在实体类User 中增加实体类Account 的集合
+    public class User implements Serializable {
+        private List&lt;Account&gt; accounts;  //从表user的实体类集合属性
+        ......
+    }
+3. 在 IUserDao.xml 中配置 &lt;resultMap&gt;
+    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;!-- 配置User对象中的实体类集合 --&gt;
+        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+        &lt;/collection&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
+        select * from user u left outer join account a on u.id=a.uid
+    &lt;/select&gt;
+4. &lt;collection&gt;标签用于配置一对多的关系映射
+    1. 属性ofType：从表account的实体类，也可以使用别名；
+    2. 属性property：实体类User 中封装从表实体类Account的集合属性accounts;
+5. Mybatis会对查询到的重复记录去重。
+</code></pre><h3 id="多对多查询"><a href="#多对多查询" class="headerlink" title="多对多查询"></a>多对多查询</h3><pre><code>1. 对于存在多对多关系的两张表，需要引入中间表(也叫做连接表)
+    1. 中间表包含两个实体表的主键，作为外键，建立两张表的联系；
+    2. 中间表的主键，可以使用两个外键作为联合主键，不必新增一个专门的主键字段；
+    3. 中间表也可以有普通字段，此时为了逻辑清晰，则增加一个主键字段。
+2. 角色表role与用户表user具有多对多的关系，同时新建一张中间表user_role
+3. 用户表user和角色表role的实体类中，包含对方的对象集合
+    public class User implements Serializable {
+        private int id;
+        private String username;
+        private List&lt;Role&gt; roles;
+        //getter、setter
+    }
+
+    public class Role implements Serializable {
+        private int id;
+        private String rolename;
+        private List&lt;User&gt; users;
+        //getter、setter
+    }
+4. 查询角色表role时，关联对应的用户表user
+    1. 角色表的Dao接口：IRoleDao
+        public interface IRoleDao {
+            List&lt;Role&gt; findAll();
+        }
+    2. 角色表的映射配置文件 IRoleDao.xml
+        &lt;resultMap id=&quot;roleUserMap&quot; type=&quot;role&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;rid&quot; /&gt;
+            &lt;result property=&quot;rolename&quot; column=&quot;role_name&quot; /&gt;
+            &lt;!-- 配置Role对象中的实体类集合 --&gt;
+            &lt;collection property=&quot;users&quot; ofType=&quot;user&quot;&gt;
+                &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+                &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+            &lt;/collection&gt;
+        &lt;/resultMap&gt;
+        &lt;select id=&quot;findAll&quot; resultMap=&quot;roleUserMap&quot;&gt;
+            select u.*, r.id as rid, r.role_name from role r 
+             left outer join user_role ur on r.id=ur.rid 
+             left outer join user u on u.id=ur.uid
+        &lt;/select&gt;
+5. 查询用户表时，关联对应的角色表数据，IuserDao接口、IUserDao.xml 中的配置同理
+</code></pre><h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><pre><code>1. JNDI：Java Naming and Directory Interface，SUN公司提供的一套标准的命名系统接口；
+2. JNDI也属于JavaEE技术，目的是模仿Windows系统中的注册表，在服务器中注册数据源；
+3. 注册表其实是Map结构，key存放的是路径+名称
+4. Tomcat服务器启动时，也准备了一个这样的Map结构，Key是字符串(路径+名称)，Value是Object
+    1. 路径的directory是固定的，name是可以自定义的；
+    2. value中存放的内容通过配置文件的方式指定。
+</code></pre><h3 id="JavaWeb项目与JNDI"><a href="#JavaWeb项目与JNDI" class="headerlink" title="JavaWeb项目与JNDI"></a>JavaWeb项目与JNDI</h3><pre><code>1. 在JavaWeb项目中使用JNDI，必须在 webapp 目录下创建 META-INF 目录
+    1. 在 META-INF 目录下创建配置文件context.xml
+        &lt;Context&gt;
+            &lt;Resource
+                name=&quot;jdbc/test_ibatis&quot; type=&quot;javax.sql.DataSource&quot; 
+                auth=&quot;Container&quot; 
+                maxActive=&quot;20&quot;
+                maxWait=&quot;10000&quot;
+                maxIdle=&quot;5&quot;
+                username=&quot;root&quot;
+                password=&quot;123456&quot;
+                driverClassName=&quot;com.mysql.jdbc.Driver&quot;
+                url=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot;
+            /&gt;
+        &lt;/Context&gt;
+    2. name：Map结构中key路径的名称部分;
+    3. type：value中存储的对象;
+    4. auth：指定提供者，Container表示容器，此时指Tomcat;
+    5. maxActive：最大活动连接;
+    6. maxWait：最大等待时长;
+    7. maxIdle：最大空闲数;
+    8. 属性username、password、driverClassName、url：数据库的连接信息.
+2. 主配置文件 SqlMapConfig.xml
+    &lt;dataSource type=&quot;JNDI&quot;&gt;
+        &lt;property name=&quot;data_source&quot; value=&quot;java:comp/env/jdbc/test_ibatis&quot; /&gt;
+    &lt;/dataSource&gt;
+    1. java:comp/env/jdbc 就是key路径中固定的directory部分;
+    2. context.xml中已经包含了数据库的连接信息，不需要再额外配置。
+3. 使用Mybatis操作数据库时，必须经过Tomcat，所以只能在Servlet/JSP中使用，测试模块中不能使用.
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/01/Mybatis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -652,16 +1024,6 @@ Esc：退出编辑模式或末行模式；
         &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
         &lt;version&gt;5.1.6&lt;/version&gt;
     &lt;/dependency&gt;
-    &lt;dependency&gt;  -------------------------&gt;日志相关
-        &lt;groupId&gt;log4j&lt;/groupId&gt;
-        &lt;artifactId&gt;log4j&lt;/artifactId&gt;
-        &lt;version&gt;1.2.12&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;  -------------------------&gt;单元测试
-        &lt;groupId&gt;junit&lt;/groupId&gt;
-        &lt;artifactId&gt;junit&lt;/artifactId&gt;
-        &lt;version&gt;4.10&lt;/version&gt;
-    &lt;/dependency&gt;
 </code></pre><h3 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h3><pre><code>1. 创建实体类，实现Serializable接口
     public class User implements Serializable {
         private String name;
@@ -710,9 +1072,9 @@ Esc：退出编辑模式或末行模式；
     &lt;/mapper&gt;
     1. resultType属性指定 findAll() 的返回值类型，每条数据封装在实体类User对象中；
     2. Mybatis把持久层的操作接口名称和映射文件称为Mapper，所以IUserDao也通常命名为IUserMapper
-5. 把log4j.properties放在resources目录下，开始使用Mybatis
+5. 开始使用Mybatis操作数据库
     1. 获取配置文件路径的两种方式：类加载器、ServletContext的getRealPath()
-        // 1.读取主配置文件
+        // 读取主配置文件
         InputStream is = Resources.getResourceAsStream(&quot;SqlMapConfig.xml&quot;);
     2. 构建者模式：创建SqlSessionFactory工厂
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
@@ -746,6 +1108,8 @@ Esc：退出编辑模式或末行模式；
         User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
         dao.saveUser(u);
         session.commit();  //手动提交事务
+    6. 自动提交事物的SqlSession对象
+        SqlSession session = factory.openSession(true);
 2. 更新数据
     void updateUser(User user);
     &lt;update id=&quot;updateUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
@@ -932,6 +1296,7 @@ Esc：退出编辑模式或末行模式；
     2. 指定了别名之后，就不再区分大小写了
         &lt;insert id=&quot;saveUser&quot; parameterType=&quot;user&quot;&gt;
         &lt;insert id=&quot;saveUser&quot; parameterType=&quot;USER&quot;&gt;
+    3. &lt;resultMap&gt;标签上的 type属性也可以使用实体类的别名：type=&quot;user&quot;
 3. 但是，如果实体类过多时，使用 &lt;typeAlias&gt; 配置别名也会很繁琐；
     1. &lt;typeAliases&gt; 还支持配置实体类所在的包名
         &lt;typeAliases&gt;
@@ -947,12 +1312,11 @@ Esc：退出编辑模式或末行模式；
     2. 连接池能够减少获取连接所消耗的时间。
 2. Mybatis连接池有3种配置方式
     1. 主配置文件 SqlMapConfig.xml 中的 &lt;dataSource type=&quot;连接池配置&quot;&gt;
-    2. POOLED：采用传统的 javax.sql.DataSource 规范，Mybatis中有针对此规范的实现；
-    3. UNPOOLED：采用传统获取连接的方式，虽然也实现了javax.sql.DataSource接口，但并没有
-    池 的思想；
+    2. POOLED：采用传统的 javax.sql.DataSource 规范，Mybatis中有针对此规范的实现;
+    3. UNPOOLED：采用传统获取连接的方式，虽然也实现了DataSource接口，但并没有 池 的思想;
     4. JNDI：采用服务器提供的JNDI技术实现，来获取 DataSource 对象，不同的服务器所拿到的
-    DataSource 是不同的；
-    5. 注意：如果不是 Web 或者 maven的war工程，不能使用JNDI；
+    DataSource 是不同的;
+    5. 注意：如果不是 Web 或者 maven的war工程，不能使用JNDI;
     6. 使用Tomcat服务器时，采用的是DBCP连接池.
 3. type=&quot;POOLED&quot;：从连接池中获取一个连接，使用完之后，归还给连接池
     1. Mybatis准备了2个连接池：空闲池和活动池；
@@ -961,11 +1325,6 @@ Esc：退出编辑模式或末行模式；
     最老的一个连接(Oldest Connection)
     4. 线程获取到 Oldest Connection 之后，会重置其相关参数，保证此连接是一个有效的连接.
 4. type=&quot;UNPOOLED&quot;：每次都会创建一个新的连接，使用完之后，关闭连接.
-</code></pre><h3 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h3><pre><code>1. 事物的四大特性：ACID
-2. 不考虑隔离性会产生3个问题，解决办法是4中隔离级别；
-3. Mybatis中，通过 SqlSession 的 commit() 和 rollback() 实现事物的提交和回滚；
-4. SqlSession默认需要手动提交事物，也可以设置自动提交
-    SqlSession session = factory.openSession(true);  //自动提交事物
 </code></pre><h2 id="动态SQL"><a href="#动态SQL" class="headerlink" title="动态SQL"></a>动态SQL</h2><pre><code>1. if标签
     List&lt;User&gt; findByCond(User u);
     &lt;select id=&quot;findByCond&quot; resultMap=&quot;userMap&quot; parameterType=&quot;user&quot;&gt;
@@ -3252,448 +3611,6 @@ Esc：退出编辑模式或末行模式；
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/03/Java多线程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/03/Java多线程/" itemprop="url">Java多线程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-03T00:00:00+08:00">
-                2016-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><pre><code>1. 线程状态
-</code></pre><p><img src="https://i.imgur.com/vLw2xgt.jpg" alt></p>
-<pre><code>    1. Thread.State：线程的状态，NEW(尚未启动的线程)、RUNNABLE、BLOCKED、WAITING、
-    TIMED_WAITING、TERMINATED(已退出的线程)
-    2. RUNNABLE：包含就绪状态和运行状态；
-    3. getState()：获取线程的状态。
-2. 线程的 stop() 方法已经被废弃，因为线程的终止可以通过一个boolean型的标志位变量完成；
-3. sleep() yield() join()
-    1. sleep() 表示休眠，会阻塞线程，且不会释放锁，睡眠时间到了之后，重新进入就绪状态；
-    常用于模拟网络延迟、倒计时...
-    2. yield() 则礼让出CPU的执行权，线程进入就绪状态；
-    3. join() 插队，待此线程执行完成后，再执行其他线程，这段时间内，其他线程处于阻塞状态；
-4. 优先级：线程的优先级并不能决定哪个线程先执行，优先级高的线程被执行的概率相对会高一些；
-    1. setPriority(priority)：设置线程的优先级，范围1-10，在 start() 之前设置有效；
-    2. Thread.MIN_PRIORITY，Thread.MAX_PRIORITY，Thread.NORM_PRIORITY：1，10，5
-5. 线程分为用户线程和守护线程，默认的线程都是用户线程
-    1. 虚拟机JVM会确保所有的用户线程执行完毕，再退出程序，但不会等待守护线程执行完毕；
-    2. 如后台记录操作日志、监控内存使用等
-    3. setDaemon(true)：把线程设置为守护线程，在 start() 之前调用。
-6. Thread.currentThread()：获取当前线程；
-7. isAlive()：线程是否还活着。
-</code></pre><h2 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h2><pre><code>1. 线程同步：synchronized，队列
-    1. 若将一个大的方法声明为synchronized，将会大大影响效率；
-    2. 与大的synchronized方法相比，synchronized块能在一定程度上减少性能的损失；
-    3. 使用 synchronized 的关键在于，第一要锁对目标，第二要取舍synchronized块的面积。
-2. 同步块的锁：
-    1. 同步方法的锁是this，表示当前对象，不可改变；
-    2. 同步块的锁可以指定，锁住的目标更明确，还能减小锁的面积。
-3. 并发容器：CopyOnWriteArrayList，加锁的ArrayList，保证在写入数据时的安全；
-4. 死锁：相互持有对方的锁，需要避免锁的嵌套。
-</code></pre><h3 id="并发协作"><a href="#并发协作" class="headerlink" title="并发协作"></a>并发协作</h3><pre><code>1. 生产者与消费者模式：线程同步问题，生产者和消费者共享同一资源，且生产者和消费者相互依赖；
-    1. synchronized只是阻止并发更新同一共享资源，实现同步，但并不能实现线程间的通信；
-    2. 管程法：利用并发缓冲容器实现；
-    3. 信号灯法：借助标志位实现；
-    4. wait()，notify()，notifyAll()
-2. 管程法
-    1. 容器满了，则生产者等待；容器为空时，则消费者等待；
-    2. 容器中有元素时，唤醒消费者取出；消费者取出元素之后，唤醒生产者存入；
-    class Food {  --&gt; 生产/消费的对象
-        public int count;
-        public Food(int c) { this.count = c; }
-    }
-    3. 容器具备同步的存入和取出方法
-    class Container {
-        private Food[] foodList = new Food[10];  private int count = 0;
-        public synchronized void push(Food f) {  ---&gt; 同步方法的锁默认是this
-            if ((this.foodList.length-1)==count) {
-                this.wait(); --&gt; 容器满了，生产者进入等待
-            }
-            this.foodList[count] = f;  count++;
-            this.notifyAll();   ----&gt; 容器中已经有了元素，唤醒消费者
-        }
-        public synchronized Food pop() {
-            if (count &lt; 1) {
-                this.wait(); --&gt; 容器为空，生产者进入等待
-            }
-            count--;  Food f = this.foodList[count];
-            this.notifyAll();   ----&gt; 消费者取出了元素，唤醒生产者
-            return f;
-        }
-    }
-    4. 生产者和消费者的线程
-    class Producter extends Thread {
-        private Container con;
-        public Producter(Container con) { this.con = con; }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                this.con.push(new Food(i+1)); ---&gt; 生产者向容器中存入元素
-                System.out.println(&quot;生产第 &quot;+(i+1)+&quot; 个&quot;);
-            }
-        }
-    }
-    class Customer extends Thread {
-        private Container con;
-        public Customer(Container con) { this.con = con; }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                Food food = this.con.pop(); ---&gt; 消费者从容器中取出元素
-                System.out.println(&quot;消费第 &quot;+(food.count)+&quot; 个&quot;);
-            }
-        }
-    }
-    5. 生产者和消费者操作的必须是同一个容器
-    Container con = new Container();
-    Producter p = new Producter(con);  Customer c = new Customer(con);
-    p.start();  c.start();
-3. 信号灯法
-    1. 标志位为true，让生产者等待，消费者运行完成后，设置标志位为false，并唤醒生产者；
-    2. 反之，让消费者等待，生产者运行完成后，设置标志位为true，并唤醒消费者；
-    class Tv {
-        private String show;   --&gt; 生产和消费的元素
-        private boolean flag;  --&gt; 标志位
-        public synchronized void play(String show) {
-            if (this.flag) {
-                this.wait();   --&gt; 生产者等待
-            }
-            this.show = show;
-            this.flag = !this.flag;  --&gt; 标志位取反
-            this.notifyAll();  --&gt; 唤醒消费者
-        }
-        public synchronized String watch() {
-            if (!this.flag) {
-                this.wait();   --&gt; 消费者等待
-            }
-            this.flag = !this.flag;  --&gt; 标志位取反
-            this.notifyAll();  --&gt; 唤醒生产者
-            return show;
-        }
-    }
-    3. 生产者和消费者的线程
-    class Actor extends Thread {
-        private Tv tv;
-        public Actor(Tv tv) {  this.tv = tv;  }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                String show = i%2==0?&quot;跳舞&quot;:&quot;唱歌&quot;;
-                this.tv.play(show);
-                System.out.println(&quot;生产者：&quot; + show + &quot;::&quot; + i);
-            }
-        }
-    }
-    class Audience extends Thread {
-        private Tv tv;
-        public Audience(Tv tv) {  this.tv = tv;  }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                System.out.println(&quot;消费者：&quot; + this.tv.watch() + &quot;::&quot; + i);
-            }
-        }
-    }
-    Tv tv = new Tv();
-    Actor actor = new Actor(tv);  Audience audience = new Audience(tv);
-    actor.start();  audience.start();
-</code></pre><h2 id="定时调度"><a href="#定时调度" class="headerlink" title="定时调度"></a>定时调度</h2><pre><code>1. Timer和TimerTask
-    class EvenTask extends TimerTask {  --&gt; 任务线程
-        public void run() { ... }
-    }
-    Timer t = new Timer();  --&gt; 定时器
-    EvenTask task = new EvenTask();
-    1. t.schedule(task, 3000);  ----&gt; 3s后执行一次
-    2. t.schedule(task, 3000, 1000);  ----&gt; 3s后每隔1s执行一次
-    3. t.schedule(task, date);  -----&gt; 指定时间定时执行
-2. 调度框架：quartz
-</code></pre><h2 id="指令重排"><a href="#指令重排" class="headerlink" title="指令重排"></a>指令重排</h2><pre><code>1. HappenBefore：虚拟机优化代码顺序，导致执行顺序可能与编写代码的顺序不一致，称为指令重排
-2. 指令重排是编译器或运行时环境为了优化程序性能而采取的对指令进行重新排序执行的一种手段
-3. CPU执行指令的步骤
-    从内存中获取一条指令 --&gt; 解码指令，取值 --&gt; 操作值，得到结果 --&gt; 把结果写回寄存器中
-4. 编译器和处理器在重排指令时，遵守数据依赖性，不会改变存在数据依赖关系的两个操作的执行顺序
-5. 在虚拟机层面和硬件层面，都可能出现指令重排
-    1. 在虚拟机层面：内存操作速度远慢于CPU运行速度，为了避免CPU空置的影响；
-    2. 在硬件层面：CPU速度比缓存速度快。
-</code></pre><h2 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h2><pre><code>1. volatile保证线程间的可见性，当线程A修改变量X后，其后的其他线程能看到变量X的变动；
-2. 线程有自己的工作内存，且彼此独立、互补可见；
-    1. 工作内存不仅包含了线程内部定义的局部变量，也包含了线程所需要使用的共享变量的副本；
-    2. 为了提高效率，线程并不会每次都从主内存中读取共享变量。
-3. volatile的变量符合两个规则
-    1. 线程对变量修改之后，要立刻写到主内存
-    2. 线程对变量读取的时候，要从主内存中读，而不是缓存(工作内存)
-4. volatile不能保证原子性
-    1. 比如x=x+1分为3步：从内存中获取x，对x加1，再把结果写回内存中
-    2. volatile并不能保证这3步同时发生，只能保证变量x的结果发生变化后，对每个线程都可见
-5. volatile是一个轻量级的synchronized
-    private volatile static int num = 0;
-    new Thread(()-&gt;{
-        while (num==0) {} ---&gt; 不执行任何具体任务
-    }).start();
-    Thread.sleep(1000);
-    num = 1;
-    1. 如果不使用volatile修饰，1s后的num虽然已经置为1，但因为子线程执行空的while循环，
-    造成CPU很繁忙，来不及把变量num同步给子线程的内存空间，所以子线程始终不会结束；
-    2. 一旦while(num==0){}中执行了具体任务，CPU就有可能把num=1同步给子线程的内存空间，
-    结束while循环；
-    3. 变量num使用volatile修饰，子线程中的while(num==0){}每次都从主内存中读取num的值，
-    所以在1s之后，num被置为1，也会立即被子线程的while(num==0)所感知，终止循环。
-6. 单例模式之懒汉式的并发控制：双重检测、指令重排
-    public class LittleBable {
-        //volatile防止new对象的过程中指令重排，造成其他线程访问一个还有初始化完成的对象
-        private static volatile LittleBable instance;
-        private LittleBable() {}
-        public static LittleBable getInstance() {
-            if (null != instance) { return instance; } //双重检测，防止不必要的同步
-            synchronized (LittleBable.class) {
-                if (null == instance) {  instance = new LittleBable(); }
-            }
-            return instance;
-        }
-    }
-</code></pre><h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h2><pre><code>1. ThreadLocal是线程局部变量的存储空间，虽然被多个线程共享，但能使线程安全；
-    private static ThreadLocal&lt;Interger&gt; tl = new ThreadLocal&lt;&gt;();
-    1. JDK建议把ThreadLocal声明为private static
-    2. 泛型为Integer，默认值为null   --&gt; tl.get(); --&gt; null
-    3. 指定默认值
-    new ThreadLocal&lt;&gt;(){ protected Integer initialValue(){ return 20; } };
-    4. JDK8的新特性
-    private static ThreadLocal&lt;Interger&gt; tl = ThreadLocal.withInitial(()-&gt;20);
-    5. 设置新的值：tl.set(100);
-2. 多个线程在获取/设置ThreadLocal时，相互不会影响；
-    tl.set(100); --&gt; 在主线程中修改为100 --&gt; tl.get(); --&gt; 100
-    new Thread(()-&gt;{
-        tl.get(); --&gt; 在子线程中仍是默认值20 --&gt; tl.set(100);  --&gt; tl.get(); --&gt; 100
-    }).start();
-3. 上下文环境问题
-    class TestRun implements Runnable {
-        public TestRun() { tl.set(33); }
-        public void run() { tl.get();  -----&gt; 20 }
-    }
-    new Thread(new TestRun()).start(); --&gt; 在主线程中执行
-    1. 创建对象是在主线程中进行的，所以TestRun的构造函数也是在主线程中，tl.set(33); 设置
-    的是主线程的ThreadLocal变量
-    2. run()才是在子线程中执行的，所以获取ThreadLocal的变量仍是默认值20
-</code></pre><h3 id="InheritableThreadLocal"><a href="#InheritableThreadLocal" class="headerlink" title="InheritableThreadLocal"></a>InheritableThreadLocal</h3><pre><code>1. InheritableThreadLocal：上下文环境的可继承ThreadLocal
-2. 子线程会从当前上下文环境拷贝一份ThreadLocal，重新设置ThreadLocal也不会影响原上下文
-    private static ThreadLocal&lt;Integer&gt; tl = new InheritableThreadLocal&lt;&gt;();
-    tl.set(100);
-    new Thread(()-&gt;{
-        tl.get();  ---&gt; 100
-        tl.set(200);  ---&gt; tl.get(); --&gt; 200
-    }).start();
-    tl.get();  --&gt; 100
-3. ThreadLocal的应用
-    1. 最常见的是为每个线程绑定一个数据库连接，HTTP请求，用户身份信息...
-    2. Hibernate的Session工具类：HibernateUtil
-    3. 通过不同的线程对象设置Bean属性，保证各个线程Bean对象的独立性。
-</code></pre><h2 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h2><pre><code>1. 锁作为保证并发共享数据一致性的工具，大多数内置锁都是可重入的，也就是可以延续使用；
-2. 可重入
-    1. 如果某个线程试图获取一个已经由它自己持有的锁时，那么此请求会立即成功，且会将这个锁
-    的计数值加1；
-    2. 当线程退出同步代码块时，计数器会递减，当计数值为0时，锁释放。
-    3. 如果没有可重入锁的支持，在第二次试图获得锁时，将进入死锁状态；
-    synchronized(this) { --&gt; 第一次获取锁
-        while(true) {
-            synchronized(this) { } --&gt; 第二次获取同一把锁
-        }
-    }
-    public synchronized void testA() { }
-    public synchronized void testB() { }
-    public synchronized void testAll() {
-        this.testA();  --&gt; 第二次获取同一把锁
-        this.testB();
-    }
-3. 不可重入锁
-    class Lock {
-        private boolean isLocked = false;
-        public synchronized void lock() {
-            while(isLocked){ --&gt; 锁已经被占用了，则等待
-                wait();
-            }
-            isLocked = true;
-        }
-        public synchronized void unlock() {
-            isLocked = false;
-            notify();  ---&gt; 释放锁，唤醒一个等待的线程
-        }
-    }
-    Lock lock = new Lock();
-    public void doSomething() {
-        lock.lock();
-        // ......
-        lock.unlock();
-    }
-    public void test() {
-        lock.lock();  --&gt; 上锁
-        doSomething(); --&gt; 内部继续上同一把锁，但lock是不可重入的，所以陷入死锁状态
-        lock.unlock();
-    }
-4. 可重入锁的实现原理
-    class Lock {
-        private boolean isLocked = false;
-        private Thread t = null;
-        private int count = 0; ---&gt; 计数器
-        public synchronized void lock() {
-            //对同一个线程放行，同一个线程可以重复上同一把锁
-            Thread currentT = Thread.currentThread()
-            while(isLocked &amp;&amp; (t!=currentT)){
-                wait();  --&gt; 不是同一个线程，且锁已经被占用时，则等待
-            }
-            isLocked = true;  t = currentT;  count++;
-        }
-        public synchronized void unlock() {
-            if(Thread.currentThread() == t) {
-                count--;
-                if(count == 0) { --&gt; 计数器为0时，当前线程才能释放锁
-                    isLocked = false;
-                    notify();  ---&gt; 唤醒一个等待的线程
-                    t = null;
-                }
-            }
-        }
-    }
-</code></pre><h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><pre><code>1. 悲观锁：synchronized是独占锁(悲观锁)，会导致其他所有线程挂起，等待持有锁的线程释放锁
-2. 乐观锁：完成某项操作时，每次不加锁，而是假设没有冲突，如果因为冲突失败就重试，直至成功
-3. CAS：Compare and Swap，比较并交换，乐观锁的实现，如购物时的秒杀功能
-    1. 有三个值：一个当前内存值V，旧的预期值A，将更新的值B
-    2. 先获取内存中的值V，再将V与原值A比较，如果相等，则修改为B，并返回true，否则不修改，
-    返回false
-    3. CAS是一组原子操作，不会被外部打断；
-    4. CAS属于硬件级别的操作(利用CPU的CAS指令，同时借助JNI来完成的非阻塞算法)，效率比加锁
-    操作高；
-    5. ABA问题：如果变量V初次读取时是A，且在准备赋值时检查到它仍是A，此时并不能保证变量V
-    没被修改过，如果在这期间曾被修改成B，然后又改回A，那CAS操作就会误认为它从来没有修改过。
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3744,7 +3661,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

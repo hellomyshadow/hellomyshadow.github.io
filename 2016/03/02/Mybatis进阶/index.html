@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Mybatis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
+<meta name="keywords" content="Mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis进阶">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/03/02/Mybatis进阶/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-12T15:13:07.757Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis进阶">
+<meta name="twitter:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/03/02/Mybatis进阶/">
+
+
+
+
+
+  <title>Mybatis进阶 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/02/Mybatis进阶/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mybatis进阶</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-02T00:00:00+08:00">
+                2016-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h2><pre><code>事物的四大特性：ACID
+1. A：原子性，要么全部被执行，要么全部不执行；
+2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态；
+3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务；
+4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。
+</code></pre><h3 id="并发下的事务"><a href="#并发下的事务" class="headerlink" title="并发下的事务"></a>并发下的事务</h3><pre><code>1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的情况下，会出现各种问题；
+2. 主要有五种问题：第一类丢失更新、第二类丢失更新、脏读、不可重复读、幻读；
+3. 脏读：事务A读到了事务B还没有提交的数据；
+    1. 账户余额1000元，事务A开启事务，此时切换到事务B，事务B开启事务--&gt;取走100元
+    2. 此时又切换回事务A，因为事务B并没有提交，事务A读取的仍是1000元，这就是脏读
+4. 不可重复读：在同一个事务里读取了两次某个数据，结果不一致；
+    1. 事务A开启事务--&gt;查出账户余额为1000元
+    2. 此时切换到事务B，事务B开启事务--&gt;取走100元--&gt;提交，账户余额变为900元
+    3. 此时又切换回事务A，事务A再查一次的账户余额为900元
+    4. 那么对于事务A，在同一个事务内两次读取的数据不一致，这就是不可重复读。
+5. 幻读：在同一个事务里的操作中发现了未被操作的数据；
+    1. 事务A开启事务--&gt;修改所有学生当天签到状况为false
+    2. 此时切换到事务B，事务B开启事务--&gt;插入了一条学生数据
+    3. 此时又切换回事务A，事务A提交时发现了一条自己没有修改过的数据，这就是幻读。
+    4. 幻读出现的前提：并发的事务中有事务发生了插入、删除操作。
+6. 事务隔离级别就是为了解决这几种问题。
+</code></pre><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><pre><code>1. 事务隔离级别越高，在并发下产生的问题就越少，但同时付出的性能消耗也越大，因此很多时候必须
+   在并发性和性能之间做一个权衡；
+2. 设立事务隔离级别的目的：为了让不同的项目可以根据自己的并发情况，选择合适的事务隔离级别；
+   对于在事务隔离级别之外会产生的并发问题，在代码中做补偿；
+3. 事务隔离级别有4种，但是像Spring会提供5种；
+1. DEFAULT：默认隔离级别
+    1. Spring配置事务时，将 isolation 设置为 DEFAULT，则使用数据库的默认事务隔离级别；
+    2. 每种数据库支持的事务隔离级别是不一样的。
+2. READ_UNCOMMITTED：读未提交
+    1. 能够读取到没有被提交的数据，所以无法解决脏读、不可重复读、幻读，很少使用；
+3. READ_COMMITED：读已提交
+    1. 能够读到那些已经提交的数据，所以能防止脏读，但是无法限制不可重复读和幻读；
+    2. 此级别下，写数据只会锁住相应的行。
+4. REPEATABLE_READ：重复读取
+    1. 在数据读出来之后加锁，类似 select * from XXX for update，明确数据读取出来就是为了
+    更新用的，所以要加一把锁，防止别人修改它；
+    2. 读取了一条数据，这个事务不结束，其他事务就不可以修改这条记录，解决了脏读、不可重复读的
+    问题，但无法解决幻读的问题。
+5. SERLALIZABLE：串行化，加锁读，最高的事务隔离级别
+    1. 不管多少事务，必须执行完一个事务的所有子事务之后，才可以执行下一个事务的所有子事务，
+    这样就解决了脏读、不可重复读和幻读的问题了；
+    2. 此级别下，读写数据都会锁住整张表。
+1. 虽然隔离级别越高，越能保证数据的完整性和一致性，但对并发性能的影响也越大；
+2. 一般情况下会设置为READ_COMMITED，此时避免了脏读，并发性也还不错，之后再通过其他手段解决
+   不可重复读和幻读的问题；
+3. MySQL的事务隔离级别
+    1. 对于MySql，其默认事务级别是REPEATABLE_READ，虽然定义上无法解决幻读的问题，但MySql
+    使用了一种 Next key-lock 的算法来实现REPEATABLE_READ，这种算法能够解决幻读问题；
+    2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围
+    锁住，其他事务如果想要在此范围内进行数据操作，那么就会被阻塞，因而MySql在此级别下就已经
+    具备了Serializable级别的事务隔离性。
+    3. 查看事务隔离级别：select @@tx_isolation
+        show variables like &apos;transaction_isolation&apos;;
+    4. 开启一个事务：start transaction;
+    5. 回滚当前事务：rollback;
+    6. 提交当前事务：commit;
+4. MySQL设置当前会话的事务隔离级别：SET session TRANSACTION ISOLATION LEVEL 隔离级别
+    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
+    2. 对于 Mybatis getSqlSession()，只针对本次拿到的Session有效；
+    3. 对于CMD命令行，只在本次窗口有效。
+5. MySQL设置全局事务隔离级别：SET global TRANSACTION ISOLATION LEVEL 隔离级别
+    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
+    2. 修改了全局的事务隔离级别，那么对此后所有的会话都有效，当前已经存在的会话则不受影响.
+</code></pre><h2 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h2><pre><code>1. 表与表之间的关系：一对一、一对多、多对多
+2. 新创建一张表account，外键字段uid 关联user表的主键id
+3. 创建表account的实体类
+    public class Account implements Serializable {
+        private int id;  //主键
+        private int uid;  //外键，关联user表的主键id
+        private double money;
+        // getter、setter
+    }
+4. 同理，新建Dao接口：com.test.dao.IAccountDao
+    public interface IAccountDao {
+        List&lt;Account&gt; findAll();
+    }
+5. 在主配置文件 SqlMapConfig.xml 配置 &lt;typeAliases&gt; 和 &lt;mappers&gt;
+    &lt;typeAliases&gt;
+        &lt;package name=&quot;com.test.domain&quot; /&gt;
+    &lt;/typeAliases&gt;
+    ......
+    &lt;mappers&gt;
+        &lt;package name=&quot;com.test.dao&quot;&gt;&lt;/package&gt;
+    &lt;/mappers&gt;
+6. 创建 resources/com/test/dao/IAccountDao.xml
+    &lt;mapper namespace=&quot;com.test.dao.IAccountDao&quot;&gt;
+        &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.Account&quot;&gt;
+            select * from account
+        &lt;/select&gt;
+    &lt;/mapper&gt;
+</code></pre><h3 id="一对一查询"><a href="#一对一查询" class="headerlink" title="一对一查询"></a>一对一查询</h3><pre><code>1. account表--&gt;user表：一对一的关系
+2. 查询account的所有字段，只查询user表的username字段
+    1. 新增一个实体类AccountUser，继承自Account
+        public class AccountUser extends Account {
+            private String username;  //user表的字段
+            //getter、setter
+        }
+    2. 在 IAccountDao 接口中新增方法：List&lt;AccountUser&gt; findAccount();
+    3. 在 IAccountDao.xml 中配置SQL语句
+        &lt;select id=&quot;findAccount&quot; resultType=&quot;accountuser&quot;&gt;
+            select u.username, a.* from account a, user u where u.id=a.uid
+        &lt;/select&gt;
+3. 但是，这并不是常用的方式，而是将 从表(user) 的实体类封装到 主表(account) 的实体类中
+    public class Account implements Serializable {
+        private User user;  //从表user的实体类属性
+        ......
+    }
+4. 在 IAccountDao.xml 使用 &lt;resultMap&gt; 配置一对一的关系映射
+    &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
+        &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+        &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+        &lt;!-- 一对一的映射关系，配置封装User的属性 --&gt;
+        &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;/association&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
+        &lt;!-- 查询出两张表的所有字段，并对account表的id属性重命名为aid--&gt;
+        select u.*, a.id as aid, a.uid, a.money from account a, user u 
+         where u.id=a.uid
+    &lt;/select&gt;
+    1. &lt;resultMap&gt; 上的 type属性 使用的是实体类的别名；
+    2. SQL语句对account表的主键字段做了重命名(id--&gt;aid)，所以对应&lt;id&gt;上的column属性为aid
+5. &lt;association&gt;标签用于配置一对一的映射关系
+    1. 属性column：主表account的外键字段;
+    2. 属性property：实体类Account 中封装从表实体类User的对象属性user;
+    3. 属性javaType：声明从表实体类User的全类名，也可以使用实体类的别名;
+    4. 标签内配置的是从表(user)字段与实体类(User)属性的映射关系.
+</code></pre><h3 id="一对多查询"><a href="#一对多查询" class="headerlink" title="一对多查询"></a>一对多查询</h3><pre><code>1. user表--&gt;account表：一对多的关系
+2. 在实体类User 中增加实体类Account 的集合
+    public class User implements Serializable {
+        private List&lt;Account&gt; accounts;  //从表user的实体类集合属性
+        ......
+    }
+3. 在 IUserDao.xml 中配置 &lt;resultMap&gt;
+    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;!-- 配置User对象中的实体类集合 --&gt;
+        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+        &lt;/collection&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
+        select * from user u left outer join account a on u.id=a.uid
+    &lt;/select&gt;
+4. &lt;collection&gt;标签用于配置一对多的关系映射
+    1. 属性ofType：从表account的实体类，也可以使用别名；
+    2. 属性property：实体类User 中封装从表实体类Account的集合属性accounts;
+5. Mybatis会对查询到的重复记录去重。
+</code></pre><h3 id="多对多查询"><a href="#多对多查询" class="headerlink" title="多对多查询"></a>多对多查询</h3><pre><code>1. 对于存在多对多关系的两张表，需要引入中间表(也叫做连接表)
+    1. 中间表包含两个实体表的主键，作为外键，建立两张表的联系；
+    2. 中间表的主键，可以使用两个外键作为联合主键，不必新增一个专门的主键字段；
+    3. 中间表也可以有普通字段，此时为了逻辑清晰，则增加一个主键字段。
+2. 角色表role与用户表user具有多对多的关系，同时新建一张中间表user_role
+3. 用户表user和角色表role的实体类中，包含对方的对象集合
+    public class User implements Serializable {
+        private int id;
+        private String username;
+        private List&lt;Role&gt; roles;
+        //getter、setter
+    }
+
+    public class Role implements Serializable {
+        private int id;
+        private String rolename;
+        private List&lt;User&gt; users;
+        //getter、setter
+    }
+4. 查询角色表role时，关联对应的用户表user
+    1. 角色表的Dao接口：IRoleDao
+        public interface IRoleDao {
+            List&lt;Role&gt; findAll();
+        }
+    2. 角色表的映射配置文件 IRoleDao.xml
+        &lt;resultMap id=&quot;roleUserMap&quot; type=&quot;role&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;rid&quot; /&gt;
+            &lt;result property=&quot;rolename&quot; column=&quot;role_name&quot; /&gt;
+            &lt;!-- 配置Role对象中的实体类集合 --&gt;
+            &lt;collection property=&quot;users&quot; ofType=&quot;user&quot;&gt;
+                &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+                &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+            &lt;/collection&gt;
+        &lt;/resultMap&gt;
+        &lt;select id=&quot;findAll&quot; resultMap=&quot;roleUserMap&quot;&gt;
+            select u.*, r.id as rid, r.role_name from role r 
+             left outer join user_role ur on r.id=ur.rid 
+             left outer join user u on u.id=ur.uid
+        &lt;/select&gt;
+5. 查询用户表时，关联对应的角色表数据，IuserDao接口、IUserDao.xml 中的配置同理
+</code></pre><h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><pre><code>1. JNDI：Java Naming and Directory Interface，SUN公司提供的一套标准的命名系统接口；
+2. JNDI也属于JavaEE技术，目的是模仿Windows系统中的注册表，在服务器中注册数据源；
+3. 注册表其实是Map结构，key存放的是路径+名称
+4. Tomcat服务器启动时，也准备了一个这样的Map结构，Key是字符串(路径+名称)，Value是Object
+    1. 路径的directory是固定的，name是可以自定义的；
+    2. value中存放的内容通过配置文件的方式指定。
+</code></pre><h3 id="JavaWeb项目与JNDI"><a href="#JavaWeb项目与JNDI" class="headerlink" title="JavaWeb项目与JNDI"></a>JavaWeb项目与JNDI</h3><pre><code>1. 在JavaWeb项目中使用JNDI，必须在 webapp 目录下创建 META-INF 目录
+    1. 在 META-INF 目录下创建配置文件context.xml
+        &lt;Context&gt;
+            &lt;Resource
+                name=&quot;jdbc/test_ibatis&quot; type=&quot;javax.sql.DataSource&quot; 
+                auth=&quot;Container&quot; 
+                maxActive=&quot;20&quot;
+                maxWait=&quot;10000&quot;
+                maxIdle=&quot;5&quot;
+                username=&quot;root&quot;
+                password=&quot;123456&quot;
+                driverClassName=&quot;com.mysql.jdbc.Driver&quot;
+                url=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot;
+            /&gt;
+        &lt;/Context&gt;
+    2. name：Map结构中key路径的名称部分;
+    3. type：value中存储的对象;
+    4. auth：指定提供者，Container表示容器，此时指Tomcat;
+    5. maxActive：最大活动连接;
+    6. maxWait：最大等待时长;
+    7. maxIdle：最大空闲数;
+    8. 属性username、password、driverClassName、url：数据库的连接信息.
+2. 主配置文件 SqlMapConfig.xml
+    &lt;dataSource type=&quot;JNDI&quot;&gt;
+        &lt;property name=&quot;data_source&quot; value=&quot;java:comp/env/jdbc/test_ibatis&quot; /&gt;
+    &lt;/dataSource&gt;
+    1. java:comp/env/jdbc 就是key路径中固定的directory部分;
+    2. context.xml中已经包含了数据库的连接信息，不需要再额外配置。
+3. 使用Mybatis操作数据库时，必须经过Tomcat，所以只能在Servlet/JSP中使用，测试模块中不能使用.
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/01/Mybatis/" rel="next" title="Mybatis">
+                <i class="fa fa-chevron-left"></i> Mybatis
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#事物"><span class="nav-number">1.</span> <span class="nav-text">事物</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发下的事务"><span class="nav-number">1.1.</span> <span class="nav-text">并发下的事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务隔离级别"><span class="nav-number">1.2.</span> <span class="nav-text">事务隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多表查询"><span class="nav-number">2.</span> <span class="nav-text">多表查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一对一查询"><span class="nav-number">2.1.</span> <span class="nav-text">一对一查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一对多查询"><span class="nav-number">2.2.</span> <span class="nav-text">一对多查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多对多查询"><span class="nav-number">2.3.</span> <span class="nav-text">多对多查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JNDI"><span class="nav-number">3.</span> <span class="nav-text">JNDI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaWeb项目与JNDI"><span class="nav-number">3.1.</span> <span class="nav-text">JavaWeb项目与JNDI</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

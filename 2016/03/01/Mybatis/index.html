@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-11T14:20:19.798Z">
+<meta property="og:updated_time" content="2019-04-12T13:40:18.149Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis">
 <meta name="twitter:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
@@ -348,16 +348,6 @@
         &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
         &lt;version&gt;5.1.6&lt;/version&gt;
     &lt;/dependency&gt;
-    &lt;dependency&gt;  -------------------------&gt;日志相关
-        &lt;groupId&gt;log4j&lt;/groupId&gt;
-        &lt;artifactId&gt;log4j&lt;/artifactId&gt;
-        &lt;version&gt;1.2.12&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;  -------------------------&gt;单元测试
-        &lt;groupId&gt;junit&lt;/groupId&gt;
-        &lt;artifactId&gt;junit&lt;/artifactId&gt;
-        &lt;version&gt;4.10&lt;/version&gt;
-    &lt;/dependency&gt;
 </code></pre><h3 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h3><pre><code>1. 创建实体类，实现Serializable接口
     public class User implements Serializable {
         private String name;
@@ -406,9 +396,9 @@
     &lt;/mapper&gt;
     1. resultType属性指定 findAll() 的返回值类型，每条数据封装在实体类User对象中；
     2. Mybatis把持久层的操作接口名称和映射文件称为Mapper，所以IUserDao也通常命名为IUserMapper
-5. 把log4j.properties放在resources目录下，开始使用Mybatis
+5. 开始使用Mybatis操作数据库
     1. 获取配置文件路径的两种方式：类加载器、ServletContext的getRealPath()
-        // 1.读取主配置文件
+        // 读取主配置文件
         InputStream is = Resources.getResourceAsStream(&quot;SqlMapConfig.xml&quot;);
     2. 构建者模式：创建SqlSessionFactory工厂
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
@@ -442,6 +432,8 @@
         User u = new User();  u.setName(&quot;Java&quot;);  u.setAge(20);
         dao.saveUser(u);
         session.commit();  //手动提交事务
+    6. 自动提交事物的SqlSession对象
+        SqlSession session = factory.openSession(true);
 2. 更新数据
     void updateUser(User user);
     &lt;update id=&quot;updateUser&quot; parameterType=&quot;com.test.domain.User&quot;&gt;
@@ -628,6 +620,7 @@
     2. 指定了别名之后，就不再区分大小写了
         &lt;insert id=&quot;saveUser&quot; parameterType=&quot;user&quot;&gt;
         &lt;insert id=&quot;saveUser&quot; parameterType=&quot;USER&quot;&gt;
+    3. &lt;resultMap&gt;标签上的 type属性也可以使用实体类的别名：type=&quot;user&quot;
 3. 但是，如果实体类过多时，使用 &lt;typeAlias&gt; 配置别名也会很繁琐；
     1. &lt;typeAliases&gt; 还支持配置实体类所在的包名
         &lt;typeAliases&gt;
@@ -643,12 +636,11 @@
     2. 连接池能够减少获取连接所消耗的时间。
 2. Mybatis连接池有3种配置方式
     1. 主配置文件 SqlMapConfig.xml 中的 &lt;dataSource type=&quot;连接池配置&quot;&gt;
-    2. POOLED：采用传统的 javax.sql.DataSource 规范，Mybatis中有针对此规范的实现；
-    3. UNPOOLED：采用传统获取连接的方式，虽然也实现了javax.sql.DataSource接口，但并没有
-    池 的思想；
+    2. POOLED：采用传统的 javax.sql.DataSource 规范，Mybatis中有针对此规范的实现;
+    3. UNPOOLED：采用传统获取连接的方式，虽然也实现了DataSource接口，但并没有 池 的思想;
     4. JNDI：采用服务器提供的JNDI技术实现，来获取 DataSource 对象，不同的服务器所拿到的
-    DataSource 是不同的；
-    5. 注意：如果不是 Web 或者 maven的war工程，不能使用JNDI；
+    DataSource 是不同的;
+    5. 注意：如果不是 Web 或者 maven的war工程，不能使用JNDI;
     6. 使用Tomcat服务器时，采用的是DBCP连接池.
 3. type=&quot;POOLED&quot;：从连接池中获取一个连接，使用完之后，归还给连接池
     1. Mybatis准备了2个连接池：空闲池和活动池；
@@ -657,11 +649,6 @@
     最老的一个连接(Oldest Connection)
     4. 线程获取到 Oldest Connection 之后，会重置其相关参数，保证此连接是一个有效的连接.
 4. type=&quot;UNPOOLED&quot;：每次都会创建一个新的连接，使用完之后，关闭连接.
-</code></pre><h3 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h3><pre><code>1. 事物的四大特性：ACID
-2. 不考虑隔离性会产生3个问题，解决办法是4中隔离级别；
-3. Mybatis中，通过 SqlSession 的 commit() 和 rollback() 实现事物的提交和回滚；
-4. SqlSession默认需要手动提交事物，也可以设置自动提交
-    SqlSession session = factory.openSession(true);  //自动提交事物
 </code></pre><h2 id="动态SQL"><a href="#动态SQL" class="headerlink" title="动态SQL"></a>动态SQL</h2><pre><code>1. if标签
     List&lt;User&gt; findByCond(User u);
     &lt;select id=&quot;findByCond&quot; resultMap=&quot;userMap&quot; parameterType=&quot;user&quot;&gt;
@@ -760,8 +747,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/02/Mybatis进阶/" rel="prev" title="Mybatis进阶">
+                Mybatis进阶 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -839,7 +826,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -894,7 +881,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架"><span class="nav-number">1.</span> <span class="nav-text">框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis"><span class="nav-number">2.</span> <span class="nav-text">Mybatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本配置"><span class="nav-number">2.1.</span> <span class="nav-text">基本配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增删改查"><span class="nav-number">3.</span> <span class="nav-text">增删改查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parameterType"><span class="nav-number">4.</span> <span class="nav-text">parameterType</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType"><span class="nav-number">5.</span> <span class="nav-text">resultType</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多配置"><span class="nav-number">6.</span> <span class="nav-text">更多配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#properties标签"><span class="nav-number">6.1.</span> <span class="nav-text">properties标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#typeAliases标签"><span class="nav-number">6.2.</span> <span class="nav-text">typeAliases标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接池"><span class="nav-number">6.3.</span> <span class="nav-text">连接池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事物"><span class="nav-number">6.4.</span> <span class="nav-text">事物</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态SQL"><span class="nav-number">7.</span> <span class="nav-text">动态SQL</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架"><span class="nav-number">1.</span> <span class="nav-text">框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis"><span class="nav-number">2.</span> <span class="nav-text">Mybatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本配置"><span class="nav-number">2.1.</span> <span class="nav-text">基本配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增删改查"><span class="nav-number">3.</span> <span class="nav-text">增删改查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parameterType"><span class="nav-number">4.</span> <span class="nav-text">parameterType</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType"><span class="nav-number">5.</span> <span class="nav-text">resultType</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多配置"><span class="nav-number">6.</span> <span class="nav-text">更多配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#properties标签"><span class="nav-number">6.1.</span> <span class="nav-text">properties标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#typeAliases标签"><span class="nav-number">6.2.</span> <span class="nav-text">typeAliases标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接池"><span class="nav-number">6.3.</span> <span class="nav-text">连接池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态SQL"><span class="nav-number">7.</span> <span class="nav-text">动态SQL</span></a></li></ol></div>
             
 
           </div>
