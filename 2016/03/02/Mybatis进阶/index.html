@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-12T15:13:07.757Z">
+<meta property="og:updated_time" content="2019-04-13T10:14:13.122Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis进阶">
 <meta name="twitter:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
@@ -374,7 +374,9 @@
     2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围
     锁住，其他事务如果想要在此范围内进行数据操作，那么就会被阻塞，因而MySql在此级别下就已经
     具备了Serializable级别的事务隔离性。
-    3. 查看事务隔离级别：select @@tx_isolation
+    3. 查看事务隔离级别
+        select @@tx_isolation;  --&gt;旧版MySQL
+        select @@transaction_isolation;  --&gt;旧版MySQL
         show variables like &apos;transaction_isolation&apos;;
     4. 开启一个事务：start transaction;
     5. 回滚当前事务：rollback;
@@ -445,14 +447,22 @@
         &lt;!-- 查询出两张表的所有字段，并对account表的id属性重命名为aid--&gt;
         select u.*, a.id as aid, a.uid, a.money from account a, user u 
          where u.id=a.uid
+        同
+        select u.*, a.id as aid, a.uid, a.money from account a 
+         left join user u on u.id=a.uid
     &lt;/select&gt;
     1. &lt;resultMap&gt; 上的 type属性 使用的是实体类的别名；
-    2. SQL语句对account表的主键字段做了重命名(id--&gt;aid)，所以对应&lt;id&gt;上的column属性为aid
+    2. 如果查询结果中包含两张表的同名字段，则必须对其中一个字段做重命名，如account表的主键
+    字段(id--&gt;aid)，否则查询结果会出现错误；
+    3. SQL语句上重命名了account表的主键字段，所以对应&lt;id&gt;上的column属性也为aid.
 5. &lt;association&gt;标签用于配置一对一的映射关系
     1. 属性column：主表account的外键字段;
     2. 属性property：实体类Account 中封装从表实体类User的对象属性user;
     3. 属性javaType：声明从表实体类User的全类名，也可以使用实体类的别名;
     4. 标签内配置的是从表(user)字段与实体类(User)属性的映射关系.
+6. 连接查询与子查询
+    1. 表的连接查询都可以替换为子查询，但不是所有的子查询都可以替换为表连接查询；
+    2. 数据库对连接查询做了优化，而子查询是多次查询，效率较低，但胜在方便灵活。
 </code></pre><h3 id="一对多查询"><a href="#一对多查询" class="headerlink" title="一对多查询"></a>一对多查询</h3><pre><code>1. user表--&gt;account表：一对多的关系
 2. 在实体类User 中增加实体类Account 的集合
     public class User implements Serializable {
@@ -465,23 +475,30 @@
         &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
         &lt;!-- 配置User对象中的实体类集合 --&gt;
         &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot;&gt;
-            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
             &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
             &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
         &lt;/collection&gt;
     &lt;/resultMap&gt;
     &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
-        select * from user u left outer join account a on u.id=a.uid
+        select u.*, a.id as aid, a.uid, a.money from user u 
+         left join account a on u.id=a.uid
     &lt;/select&gt;
 4. &lt;collection&gt;标签用于配置一对多的关系映射
     1. 属性ofType：从表account的实体类，也可以使用别名；
     2. 属性property：实体类User 中封装从表实体类Account的集合属性accounts;
-5. Mybatis会对查询到的重复记录去重。
+    3. 同理，涉及到两张表的同名字段，要在SQL语句上对字段重命名(id--&gt;aid)
 </code></pre><h3 id="多对多查询"><a href="#多对多查询" class="headerlink" title="多对多查询"></a>多对多查询</h3><pre><code>1. 对于存在多对多关系的两张表，需要引入中间表(也叫做连接表)
     1. 中间表包含两个实体表的主键，作为外键，建立两张表的联系；
     2. 中间表的主键，可以使用两个外键作为联合主键，不必新增一个专门的主键字段；
     3. 中间表也可以有普通字段，此时为了逻辑清晰，则增加一个主键字段。
 2. 角色表role与用户表user具有多对多的关系，同时新建一张中间表user_role
+    create table user_role(
+        uid int,
+        rid int,
+        foreign key(uid) references user(id),
+        foreign key(rid) references role(id),
+        primary key(uid,rid));  -------------&gt;两个外键作为联合主键
 3. 用户表user和角色表role的实体类中，包含对方的对象集合
     public class User implements Serializable {
         private int id;
@@ -503,7 +520,7 @@
         }
     2. 角色表的映射配置文件 IRoleDao.xml
         &lt;resultMap id=&quot;roleUserMap&quot; type=&quot;role&quot;&gt;
-            &lt;id property=&quot;id&quot; column=&quot;rid&quot; /&gt;
+            &lt;id property=&quot;id&quot; column=&quot;rid&quot; /&gt;  ---&gt;SQL语句上重命名了同名字段
             &lt;result property=&quot;rolename&quot; column=&quot;role_name&quot; /&gt;
             &lt;!-- 配置Role对象中的实体类集合 --&gt;
             &lt;collection property=&quot;users&quot; ofType=&quot;user&quot;&gt;
@@ -516,7 +533,7 @@
              left outer join user_role ur on r.id=ur.rid 
              left outer join user u on u.id=ur.uid
         &lt;/select&gt;
-5. 查询用户表时，关联对应的角色表数据，IuserDao接口、IUserDao.xml 中的配置同理
+5. 查询用户表时，关联对应的角色表数据，IuserDao接口、IUserDao.xml 中的配置同理.
 </code></pre><h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><pre><code>1. JNDI：Java Naming and Directory Interface，SUN公司提供的一套标准的命名系统接口；
 2. JNDI也属于JavaEE技术，目的是模仿Windows系统中的注册表，在服务器中注册数据源；
 3. 注册表其实是Map结构，key存放的是路径+名称
@@ -552,6 +569,140 @@
     1. java:comp/env/jdbc 就是key路径中固定的directory部分;
     2. context.xml中已经包含了数据库的连接信息，不需要再额外配置。
 3. 使用Mybatis操作数据库时，必须经过Tomcat，所以只能在Servlet/JSP中使用，测试模块中不能使用.
+</code></pre><h2 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h2><pre><code>1. 延迟加载：在真正使用数据时才发起查询，不用的时候就不查询，这就是按需加载，亦或懒加载；
+    1. 一对多，多对多：通常采用延迟加载；
+    2. 多对一，一对一：通常采用默认的立即加载。
+2. 一对一的延迟加载：表account--&gt;表user
+    1. 在主配置文件 SqlMapConfig.xml 中开启延迟加载
+    &lt;configuration&gt;
+        &lt;settings&gt;
+            &lt;!-- 延迟加载的全局开关 --&gt;
+            &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;
+            &lt;!-- 大于Mybatis3.4.1的默认值为false，表示按需加载每个属性 --&gt;
+            &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
+        &lt;/settings&gt;
+    &lt;/configuration&gt;
+    2. IUserDao接口 与 IUserDao.xml
+        //根据主键 id 查询user表
+        User findById(int id);
+        &lt;select id=&quot;findById&quot; parameterType=&quot;int&quot; resultType=&quot;user&quot;&gt;
+            select * from user where id=#{uid}
+        &lt;/select&gt;
+    3. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
+        &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+            &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot; 
+                    select=&quot;com.test.dao.IUserDao.findById&quot;&gt;&lt;/association&gt;
+        &lt;/resultMap&gt;
+        &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
+            select * from account  ---&gt;不能再使用连接查询，否则延迟加载是无效的
+        &lt;/select&gt;
+    4. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
+3. 一对多的延迟加载：表user--&gt;表account
+    1. IAccountDao接口 与 IAccountDao.xml
+        //根据外键 uid 去查询account表
+        List&lt;Account&gt; findByUid(int uid);
+        &lt;select id=&quot;findByUid&quot; parameterType=&quot;int&quot; resultType=&quot;account&quot;&gt;
+            select * from account where uid=#{uid}
+        &lt;/select&gt;
+    2. IUserDao.xml：配置 &lt;collection&gt; 上的select属性
+    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot; 
+            select=&quot;com.test.dao.IAccountDao.findByUid&quot; column=&quot;id&quot;&gt;&lt;/collection&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
+        select * from user  ---&gt;不能再使用连接查询
+    &lt;/select&gt;
+</code></pre><h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><pre><code>1. 缓存就是存在于内存中的数据，减少与数据库的交互次数，提高执行效率；
+2. 适用于缓存的数据：经常查询的，且不经常改变的，数据的正确与否对最终结果影响不大的；
+3. 一级缓存：SqlSession对象的缓存，无需特殊配置
+    1. 每个SqlSession对象会提供一块独有的Map结构的区域，缓存查询的结果；
+    User u1 = dao.findById(2);  User u2 = dao.findById(2); //连续两次查询同一条数据
+    u1==u2;  --&gt; true
+    2. 手动清空一级缓存：session.clearCache();
+    3. 为了保证数据的一致性，当发生数据的插入/更新/删除，或者调用SqlSession的commit()、
+    close()等方法时，会立即清空当前SqlSession的一级缓存，让后续的SQL重新查询数据库。
+4. 二级缓存：SqlSessionFactory对象的缓存
+    1. 由同一个SqlSessionFactory创建的所有SqlSession对象，共享二级缓存；
+    2. 在主配置文件 SqlMapConfig.xml 中开启全局缓存，默认就是开启的
+        &lt;settings&gt;
+            &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot; /&gt;
+        &lt;/settings&gt;
+    3. 在映射配置文件 IUserDao.xml 中开启user的二级缓存
+        &lt;cache /&gt;
+        &lt;select id=&quot;findById&quot; resultType=&quot;user&quot; useCache=&quot;true&quot;&gt;
+            select * from user where id=#{uid}
+        &lt;/select&gt;
+5. 二级缓存中存储的是散装数据，当使用二级缓存数据时，这些数据会封装成一个新的User对象，
+   所以比较两次查询的结果时，返回false.
+</code></pre><h2 id="注解开发"><a href="#注解开发" class="headerlink" title="注解开发"></a>注解开发</h2><pre><code>1. Mybatis的注解开发：针对的是Dao的映射配置文件，目的是省略映射配置文件
+2. CRUD的对应注解：@Insert、@Select、@Update、@Delete，在Dao接口的方法上使用
+3. 使用注解时，如果resources目录下还存在映射配置文件，不管是否使用了此配置文件，都会报错；
+4. 单表的CRUD：IUserDao接口
+    1. 查询：@Select
+        @Select(&quot;select * from user&quot;)
+        List&lt;User&gt; findAll();
+
+        @Select(&quot;select * from user where name like #{username}&quot;)  或
+        @Select(&quot;select * from user where name like &apos;%${value}%&apos;&quot;)
+        List&lt;User&gt; findByName(String username);
+
+        @Select(&quot;select count(id) from user&quot;)
+        int findTotal();
+    2. 插入：@Insert
+        @Insert(&quot;insert into user(name, age) values(#{username}, #{age})&quot;)
+        void saveUser(User u);
+    3. 更新：@Update
+        @Update(&quot;update user set name=#{username}, age=#{age} where id=#{id}&quot;)
+        void updateUser(User u);
+    4. 删除：@Delete
+        @Delete(&quot;delete from user where id=#{id}&quot;)
+        void deleteUser(int id);
+5. 实体类的属性名与表字段名不匹配：id--&gt;uId，name--&gt;username
+    @Select(&quot;select * from user&quot;)
+    @Results(id=&quot;userMap&quot;, value={
+        @Result(id=true, column=&quot;id&quot;, property=&quot;uId&quot;),
+        @Result(column=&quot;name&quot;, property=&quot;username&quot;)
+    })
+    List&lt;User&gt; findAll();
+
+    @Select(&quot;select * from user where id=#{id}&quot;)
+    @ResultMap(value={&quot;userMap&quot;})  --&gt;复用id命名的@Results，支持多个
+    User findById(int id);
+</code></pre><h3 id="多表的CRUD"><a href="#多表的CRUD" class="headerlink" title="多表的CRUD"></a>多表的CRUD</h3><pre><code>1. 一对一：表account--&gt;表user
+    1. IAccountDao接口
+    @Select(&quot;select * from account&quot;)
+    @Results(id=&quot;accountMap&quot;, value={
+        @Result(id=true, column=&quot;id&quot;, property=&quot;id&quot;),
+        @Result(column=&quot;uid&quot;, property=&quot;uid&quot;),
+        @Result(column=&quot;money&quot;, property=&quot;money&quot;),
+        @Result(column=&quot;uid&quot;, property=&quot;user&quot;, one=@One(
+            select=&quot;com.test.dao.IUserDao.findById&quot;, fetchType=FetchType.EAGER
+        ))
+    })
+    List&lt;Account&gt; findAll();
+    2. @One 用于一对一的关联查询，调用 IUserDao.findById()，接收参数为uid;
+    3. select属性用于指定要调用的全限定方法名，fetchType属性用于配置加载的时机;
+    4. FetchType有3个属性：LAZY(懒加载)、EAGER(立即加载)、DEFAULT.
+2. 一对多：表user--&gt;表account，
+    @Select(&quot;select * from user&quot;)
+    @Results(id=&quot;userMap&quot;, value={
+        @Result(id=true, column=&quot;id&quot;, property=&quot;uId&quot;),
+        @Result(column=&quot;name&quot;, property=&quot;username&quot;),
+        @Result(column=&quot;id&quot;, property=&quot;accounts&quot;, many=@Many(
+            select=&quot;com.test.dao.IAccountDao.findByUid&quot;, fetchType=FetchType.LAZY
+        ))
+    })
+    List&lt;User&gt; findAll();
+3. 配置二级缓存
+    1. 在主配置文件 SqlMapConfig.xml 中开启缓存;
+    2. 在Dao接口上使用注解@CacheNamespace
+    @CacheNamespace(blocking = true)
+    public interface IUserDao { ... }
 </code></pre><hr>
 
       
@@ -727,7 +878,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#事物"><span class="nav-number">1.</span> <span class="nav-text">事物</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发下的事务"><span class="nav-number">1.1.</span> <span class="nav-text">并发下的事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务隔离级别"><span class="nav-number">1.2.</span> <span class="nav-text">事务隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多表查询"><span class="nav-number">2.</span> <span class="nav-text">多表查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一对一查询"><span class="nav-number">2.1.</span> <span class="nav-text">一对一查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一对多查询"><span class="nav-number">2.2.</span> <span class="nav-text">一对多查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多对多查询"><span class="nav-number">2.3.</span> <span class="nav-text">多对多查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JNDI"><span class="nav-number">3.</span> <span class="nav-text">JNDI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaWeb项目与JNDI"><span class="nav-number">3.1.</span> <span class="nav-text">JavaWeb项目与JNDI</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#事物"><span class="nav-number">1.</span> <span class="nav-text">事物</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发下的事务"><span class="nav-number">1.1.</span> <span class="nav-text">并发下的事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务隔离级别"><span class="nav-number">1.2.</span> <span class="nav-text">事务隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多表查询"><span class="nav-number">2.</span> <span class="nav-text">多表查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一对一查询"><span class="nav-number">2.1.</span> <span class="nav-text">一对一查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一对多查询"><span class="nav-number">2.2.</span> <span class="nav-text">一对多查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多对多查询"><span class="nav-number">2.3.</span> <span class="nav-text">多对多查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JNDI"><span class="nav-number">3.</span> <span class="nav-text">JNDI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaWeb项目与JNDI"><span class="nav-number">3.1.</span> <span class="nav-text">JavaWeb项目与JNDI</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#延迟加载"><span class="nav-number">4.</span> <span class="nav-text">延迟加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">5.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注解开发"><span class="nav-number">6.</span> <span class="nav-text">注解开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多表的CRUD"><span class="nav-number">6.1.</span> <span class="nav-text">多表的CRUD</span></a></li></ol></li></ol></div>
             
 
           </div>
