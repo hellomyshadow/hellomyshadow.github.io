@@ -232,6 +232,247 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/05/Java网络编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/05/Java网络编程/" itemprop="url">Java网络编程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-05T00:00:00+08:00">
+                2016-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Ip相关的类：InetAddress"><a href="#Ip相关的类：InetAddress" class="headerlink" title="Ip相关的类：InetAddress"></a>Ip相关的类：InetAddress</h2><pre><code>1. 获取本机的Ip、hostname
+    InetAddress addr = InetAddress.getLocalHost();
+    String ip = addr.getHostAddress();
+    String hostName = addr.getHostName(); //计算机名
+2. 根据域名获取Ip、hostname
+    InetAddress addr = InetAddress.getByName(&quot;www.baidu.com&quot;); //内部是NDS解析
+    String ip = addr.getHostAddress(); //Ip
+    String hostName = addr.getHostName(); //域名www.baidu.com
+3. 如果getByName(&quot;Ip地址&quot;)，getHostName()获取的仍是Ip，而不是域名；
+4. 子类：Inet4Address、Inet6Address
+</code></pre><h2 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h2><pre><code>1. 端口号表示一个16位的二进制整数，2个字节，对应十进制0-65535
+    1. 公认端口0-1023，如80是http协议的默认端口
+    2. 注册端口1024-49151(分配给用户进程/应用程序)
+    3. 动态/私有端口49152-65535
+2. windows命令
+    1. netstat -ano  ---&gt; 查看所有的端口号
+    2. netstat -ano|findstr &quot;808&quot;  ---&gt; 查看指定端口号
+    3. tasklist|findstr &quot;808&quot;  ---&gt; 查看指定进程
+3. InetSocketAddress：包含端口号，用于socket通信
+    InetSocketAddress s = new InetSocketAddress(&quot;127.0.0.1/localhost&quot;, 8080);
+    s.getHostName();  s.getAddress();  s.getPort();
+</code></pre><h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><pre><code>1. URL和URN都是URI的子集
+    1. URI：统一资源标识符，表示一个资源，比如一个具体的人
+    2. URL：统一资源定位符，用地址定位一个资源，比如XX省XX市XX区...XX单元XX室的主人
+    3. URN：统一资源名称，用名称定位一个资源，但不明确资源的位置，比如身份证号+姓名去找人
+2. 网络三大基石：HTML、HTTP、URL
+3. URL由4部分组成：协议、资源所在的主机域名、端口号、资源文件名
+4. URL url = new URL(&quot;http://www.baidu.com:80/index.html#aa?xx=xxx&quot;);
+    1. url.getProtocol()：协议名
+    2. url.getDefaultPort()：获取与此URL关联的协议的默认端口号
+    3. url.getHost()：主机名/域名
+    4. url.getFile()：端口号后的所有内容
+    5. url.getPath()：端口号后、参数前的内容
+    6. url.getQuery()：参数部分
+    7. url.getRef()：锚点
+5. 相对路径构建URL
+    URL u1 = new URL(&quot;http://www.baidu.com/aa/&quot;);
+    URL u2 = new URL(u, &quot;b.html&quot;); --&gt; http://www.baidu.com/aa/b.html
+6. 发起请求
+    1. 抓取网络数据，非浏览器访问
+    InputStream is = url.openStream();
+    BufferedReader br = new BufferedReader(new InputStreamReader(is, &quot;UTF-8&quot;));
+    String msg = null;
+    while(null != (msg=br.readLine())) {
+        System.out.println(msg);
+    }
+    br.close();
+    2. 模拟浏览器访问
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod(&quot;GET&quot;);  --&gt;设置请求方式
+    conn.setRequestProperty(&quot;User-Agent&quot;, &quot;value&quot;); --&gt;设置请求头
+    BufferedReader br = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), &quot;GBK&quot;));
+</code></pre><h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><pre><code>1. DatagramSocket：用于发送/接受数据包的套接字；
+2. DatagramPacket：数据包；
+3. 发送端
+    DatagramSocket client = new DatagramSocket(8888);
+    String data = &quot;Hello I&apos;m Client&quot;;
+    byte[] bys = data.getBytes();
+    //发送给&quot;127.0.0.1:9999&quot;
+    DatagramPacket packet = new DatagramPacket(bys, 0, bys.length, 
+        new InetSocketAddress(&quot;127.0.0.1&quot;, 9999));
+    client.send(packet);
+    client.close();
+4. 接收端
+    DatagramSocket server = new DatagramSocket(9999); --&gt; 监听端口9999
+    byte[] container = new byte[1024*60];
+    DatagramPacket packet = new DatagramPacket(container, 0, container.length);
+    server.receive(packet);
+    byte[] bys = packet.getData();
+    int len = packet.getLength();
+    String data = new String(bys, 0, len);
+    server.close();
+</code></pre><h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><pre><code>1. 服务端：ServerSocket
+    ServerSocket server = new ServerSocket(8889);
+    Socket client = server.accept(); --&gt;阻塞式，等待客户端连接
+    DataInputStream dis = new DataInputStream(client.getInputStream());
+    String data = dis.readUTF(); --&gt;客户端的数据
+    dis.close();
+    client.close();
+    server.close();
+    1. 通过每一次连接的client，向对应的客户端响应数据
+    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+    dos.writeUTF(&quot;hello I&apos;m Server&quot;); --&gt;向客户端响应数据
+    dos.flush();
+    dos.close();
+2. 客户端：Socket
+    //指定服务端的Ip和端口号，发起连接请求
+    Socket client = new Socket(&quot;127.0.0.1&quot;, 8889);
+    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+    dos.writeUTF(&quot;hello I&apos;m Client&quot;); --&gt;向服务端写入数据
+    dos.flush();
+    dos.close();
+    client.close();
+    1. client接收服务端的响应数据
+    DataInputStream dis = new DataInputStream(client.getInputStream());
+    String data = dis.readUTF(); --&gt;接收响应数据
+    dis.close();
+3. HTTP底层正是TCP，浏览器作为客户端，也可以直接访问TCP服务器端.
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/03/Java多线程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -972,7 +1213,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -994,7 +1235,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
