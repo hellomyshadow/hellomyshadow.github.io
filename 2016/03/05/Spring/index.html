@@ -88,7 +88,7 @@
 <meta property="og:description" content="Spring1. Spring是分层的JavaSE/EE应用full-stack(全栈)轻量级开源框架;     1. 目的是解决企业级应用开发的复杂性，简化Java开发，适用于任何Java应用;     2. Spring的成功来源于理念，而不是技术本身，以IoC(控制反转)和AOP(面向切面编程)为核心;     3. 优势：. 2. 发展历程     1. 1997年IBM提出了EJB的思想">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/05/Spring/framework.jpg">
-<meta property="og:updated_time" content="2019-04-14T14:11:14.829Z">
+<meta property="og:updated_time" content="2019-04-16T14:18:10.014Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring">
 <meta name="twitter:description" content="Spring1. Spring是分层的JavaSE/EE应用full-stack(全栈)轻量级开源框架;     1. 目的是解决企业级应用开发的复杂性，简化Java开发，适用于任何Java应用;     2. Spring的成功来源于理念，而不是技术本身，以IoC(控制反转)和AOP(面向切面编程)为核心;     3. 优势：. 2. 发展历程     1. 1997年IBM提出了EJB的思想">
@@ -346,6 +346,304 @@
 2. 核心容器的上面一层是AOP相关的部分；
 3. Data Access：持久层解决方案；
 4. Test：单元测试，也依赖于核心容器才能运行。
+</code></pre><h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><pre><code>1. 耦合：程序间的依赖关系，包括类之间的依赖、方法间的依赖；
+2. 解耦：降低程序间的依赖关系，应做到编译期不依赖，运行时才依赖；
+</code></pre><h3 id="类之间的依赖"><a href="#类之间的依赖" class="headerlink" title="类之间的依赖"></a>类之间的依赖</h3><pre><code>1. 以装载数据库的驱动为例
+    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;);
+    DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+    1. 这两种方式都可以装载驱动，但第一种装载是通过字符串，第二种需要使用具体的类；
+    2. 如果当前没有MySQL的相关依赖包，那么第二种在运行时就会报错，这就是类之间的依赖；
+    3. 而且，如果切换成装载Oracle驱动，仍需要去修改全限定类名的字符串。
+2. 解耦的思路
+    1. 使用反射来创建对象，避免使用 new 关键字；
+    2. 通过读取配置文件来获取类的全限定类名。
+</code></pre><h3 id="工厂模式解耦"><a href="#工厂模式解耦" class="headerlink" title="工厂模式解耦"></a>工厂模式解耦</h3><pre><code>1. 非解耦的持久层Dao与业务层Service
+    1. Dao接口及其实现类
+        public interface IUserDao {
+            void save(User u);
+        }
+        public class UserDaoImpl implements IUserDao {
+            public void save(User u) {
+                //连接数据库，插入一条记录
+            }
+        }
+    2. Service接口及其实现类
+        public interface IUserService {
+            void save(User u);
+        }
+        public class UserServiceImpl implements IUserService {
+            private IUserDao dao = new UserDaoImpl();
+            public void save(User u) {
+                ......//before
+                dao.save(u);  //调用Dao的方法
+                ......//after
+            }
+        }
+    3. App调用Service
+        IUserService service = new UserServiceImpl();
+        service.save(new User());
+2. 工厂模式解耦
+    1. 在resource目录下创建配置文件，如bean.properties，配置Dao与Service的实现类；
+        userService = it.demo.cn.service.impl.UserServiceImpl
+        userDao = it.demo.cn.dao.impl.UserDaoImpl
+    2. Bean工厂：用于反射创建/生产Service和Dao的对象；
+        public class BeanFactory {
+            private static Properties prop;
+            static {
+                try {
+                    prop = new Properties();
+                    //使用类加载器获取resources目录下的文件
+                    InputStream is = BeanFactory.class.getClassLoader()
+                                    .getResourceAsStream(&quot;bean.properties&quot;);
+                    prop.load(is);
+                } catch (Exception e) {
+                    throw new ExceptionInInitializerError(&quot;初始化配置文件失败！&quot;);
+                }
+            }
+            public static Object getBean(String beanName) {
+                //根据Bean的名称获取Bean对象
+                String beanPath = prop.getProperty(beanName);
+                Object bean = Class.forName(beanPath).newInstance();
+                return bean;
+            }
+        }
+    3. 通过Bean工厂创建Dao对象和Service对象
+        public class UserServiceImpl implements IUserService {
+            private IUserDao dao = (IUserDao) BeanFactory.getBean(&quot;userDao&quot;);
+            public void save(User u) {
+                dao.save(u);
+            }
+        }
+    IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot;);
+    service.save(new User());
+3. 但是，这种方式并不能保证Dao和Service对象的单例，需要在Bean工厂中增加一个Map结构的容器，
+   存储Dao和Service的对象；
+    public class BeanFactory {
+        private static Properties prop;
+        private static Map&lt;String, Object&gt; beans;  //Map结构的容器
+        static {
+            try {
+                prop = new Properties();
+                InputStream is = BeanFactory.class.getClassLoader()
+                                .getResourceAsStream(&quot;bean.properties&quot;);
+                prop.load(is);
+                beans = new HashMap&lt;String, Object&gt;();  //实例化容器
+                Enumeration keys = prop.keys();  //取出配置文件中的所有key
+                while (keys.hasMoreElements()) {
+                    //事先创建好配置文件中的对象，存入容器，作为单例对象使用
+                    String k = keys.nextElement().toString();
+                    String beanPath = prop.getProperty(k);
+                    Object val = Class.forName(beanPath).newInstance();
+                    beans.put(k, val);
+                }
+            } catch (Exception e) {
+                throw new ExceptionInInitializerError(&quot;初始化配置文件失败！&quot;);
+            }
+        }
+        public static Object getBean(String beanName) {
+            //直接返回容器中的Bean对象
+            return beans.get(beanName);
+        }
+    }
+</code></pre><h2 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h2><pre><code>private IUserDao dao = new UserDaoImpl(); 与
+private IUserDao dao = (IUserDao) BeanFactory.getBean(&quot;userDao&quot;);
+-----------------------------------------------------------------
+IUserService service = new UserServiceImpl(); 与
+IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot;);
+1. 与new创建对象相比，通过Bean工厂创建对象，切断了App与资源(Dao/Service)的直接联系，
+   交由Bean工厂控制资源、提供资源，这就是IoC;
+2. 之所以称为IoC，而不叫降低解耦，是因为把对象控制的权力交给了工厂(框架)，控制反转不再是
+   面向对象编程的专业术语;
+3. IoC包括依赖注入(DI)和依赖查找(DL);
+4. IoC的作用：消减计算机程序的耦合，并不能完全消除.
+</code></pre><h3 id="Spring的IoC"><a href="#Spring的IoC" class="headerlink" title="Spring的IoC"></a>Spring的IoC</h3><pre><code>1. 添加Spring的IoC依赖
+    &lt;packaging&gt;jar&lt;/packaging&gt;  ---&gt;项目的打包方式为jar
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+            &lt;version&gt;5.1.6.RELEASE&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 在resources目录下创建配置文件，bean.xml
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+        &lt;!--把对象的创建交给Spring来管理--&gt;
+        &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;&lt;/bean&gt;
+        &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
+    &lt;/beans&gt;
+3. 获取Spring的IoC核心容器，根据id获取对象
+    //1. 解析配置文件，获取核心容器对象
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    //2. 根据id获取Bean对象
+    IUserDao dao = (IUserDao) ac.getBean(&quot;userDao&quot;);
+    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
+4. ApplicationContext的三个常用实现类
+    1. ClassPathXmlApplicationContext：加载类路径下的配置文件，配置文件必须在类路径下;
+    2. FileSystemXmlApplicationContext：加载磁盘任意路径下的配置文件，必须有访问权限;
+        new ClassPathXmlApplicationContext(&quot;D:\\workplace\\test\\bean.xml&quot;);
+    3. AnnotationConfigApplicationContext：用于读取注解类创建的容器.
+        new AnnotationConfigApplicationContext(XXXConfig.class);
+5. Spring中，ApplicationContext与BeanFactory的区别
+    1. ApplicationContext：它在构建核心容器时，会立即创建Bean对象，即一旦读取完配置文件，
+    立即创建文件中配置的对象；
+    2. BeanFactory：它是顶层接口，采用延迟加载的方式创建Bean对象，即在根据id获取对象时，
+    才真正的创建Bean对象；
+        Resource res = new ClassPathResource(&quot;bean.xml&quot;);
+        BeanFactory factory = new XmlBeanFactory(res);
+        IUserDao dao = (IUserDao) factory.getBean(&quot;userDao&quot;);
+    3. ApplicationContext适用于单例对象，BeanFactory适用于多例对象。
+</code></pre><h3 id="Spring对Bean的管理"><a href="#Spring对Bean的管理" class="headerlink" title="Spring对Bean的管理"></a>Spring对Bean的管理</h3><pre><code>1. 创建Bean的三种方式
+    1. 使用默认构造函数创建，&lt;bean&gt;上只有id和class属性，此时类中必须要有默认构造函数，
+    否则无法创建Bean对象;
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;&lt;/bean&gt;
+    2. 使用普通工厂中的方法创建Bean对象，并存入Spring的IoC容器;
+        public class ServiceFactory {  //工厂类
+            public IUserService getUserService() {
+                return new UserServiceImpl();
+            }
+        }
+    &lt;bean id=&quot;servFac&quot; class=&quot;cn.test.factory.ServiceFactory&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;userService&quot; factory-bean=&quot;servFac&quot; -----&gt;&gt;引用id为servFac的&lt;bean&gt;
+                            factory-method=&quot;getUserService&quot;&gt;&lt;/bean&gt;
+        //创建Bean对象
+        IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
+    3. 使用工厂中的静态方法创建对象
+        public class ServiceFactory {  //工厂类
+            public static IUserService getUserService() {
+                return new UserServiceImpl();
+            }
+        }
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.factory.ServiceFactory&quot; 
+                                    factory-method=&quot;getUserService&quot;&gt;&lt;/bean&gt;
+    //创建Bean对象
+    IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
+2. Bean的作用范围
+    1. Bean对象默认就是单例的;
+        IUserService us1 = (IUserService) ac.getBean(&quot;userService&quot;);
+        IUserService us2 = (IUserService) ac.getBean(&quot;userService&quot;);
+        us1==us2;  --&gt;true
+    2. &lt;bean&gt;的 scope 属性：用于指定bean的作用范围;
+        1. singleton：默认值，单例;
+        2. prototype：多例，每次 getBean() 时，Spring就会创建一个新的对象;
+        3. request：作用于web应用的请求范围;
+        4. session：作用于web应用的会话范围;
+        5. global-session：作用于集群环境的全局会话范围，如果不是集群，等效于session.
+3. Bean的生命周期
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot; 
+        init-method=&quot;init&quot; destroy-method=&quot;destroy&quot;&gt;&lt;/bean&gt;
+    1. init-method=&quot;init&quot;：指定Bean对象的初始化方法，UserServiceImpl.init();
+    2. destory-method=&quot;destroy&quot;：指定Bean对象的销毁方法，UserServiceImpl.destory();  
+    3. 单例对象：随着容器的创建而创建，随着容器的消亡而消亡;
+        //1. 获取核心容器对象：执行 UserServiceImpl.init()
+        ClassPathXmlApplicationContext ac = 
+                new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+        //2. 根据id获取Bean对象
+        IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
+        //3. 手动销毁容器：执行 UserServiceImpl.destroy()
+        ac.close();
+    4. 多例对象：scope=&quot;prototype&quot;，每次使用对象时由Spring创建，但Spring无法控制销毁，
+    只能由Java垃圾回收器销毁.
+</code></pre><h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><pre><code>1. IoC降低了程序间的耦合(依赖关系)，一个类需要引用另一个类对象时，我们只需要在Spring的
+   配置文件中说明两个类的依赖关系，交由Spring去维护这种依赖关系，这就是依赖注入;
+2. 能注入的数据：基本类型、Bean对象(在配置文件中或者注解配置过的bean)、复杂/集合类型;
+3. 注入的三种方式：使用构造函数、setter、注解
+</code></pre><h4 id="构造函数注入"><a href="#构造函数注入" class="headerlink" title="构造函数注入"></a>构造函数注入</h4><pre><code>public class UserServiceImpl implements IUserService {
+    private String name;  //基本类型
+    private int age;
+    private Date birthday;  //对象
+    private IUserDao dao;
+    public UserServiceImpl(String name, int age, Date birthday, IUserDao dao){
+        this.name = name;  this.age = age;
+        this.birthday = birthday;  this.dao = dao;
+    }
+}
+1. 使用&lt;bean&gt;的子标签 &lt;constructor-arg&gt;，相关属性：
+    1. type：注入数据的类型，也就是构造函数上的某个参数类型;
+    2. index: 参数的索引位置，从 0 开始;
+    3. name：参数名称;
+    4. value：参数值，提供基本数据类型的数据;
+    5. ref：参数值，引用另一个&lt;bean&gt;对象的数据;
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;constructor-arg name=&quot;name&quot; value=&quot;Java&quot;&gt;&lt;constructor-arg&gt;
+        &lt;constructor-arg name=&quot;age&quot; value=&quot;18&quot;&gt;&lt;constructor-arg&gt;
+        &lt;constructor-arg name=&quot;birthday&quot; ref=&quot;now&quot;&gt;&lt;constructor-arg&gt;
+        &lt;constructor-arg name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;now&quot; class=&quot;java.util.Date&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
+2. 弊端：这种方式只能匹配一个固定的构造函数，改变了Bean对象的实例化方式，在创建对象时，
+   即使用不到这些数据，也必须提供，否则Spring无法创建对象.
+</code></pre><h4 id="setter注入"><a href="#setter注入" class="headerlink" title="setter注入"></a>setter注入</h4><pre><code>public class UserServiceImpl implements IUserService {
+    private String name;  //基本类型
+    private int age;
+    private Date birthday;  //对象
+    private IUserDao dao;
+    //setter是必须的，可以没有getter
+}
+1. 使用&lt;bean&gt;的子标签 &lt;property&gt;，相关属性：
+    1. name：setter的方法名，取set后的字母、并把首字母转为小写;
+        age--&gt;setUserAge()--&gt;userAge，
+    2. value、ref
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;property name=&quot;name&quot; value=&quot;Java&quot;&gt;&lt;property&gt;
+        &lt;property name=&quot;age&quot; value=&quot;20&quot;&gt;&lt;property&gt;
+        &lt;property name=&quot;birthday&quot; ref=&quot;now&quot;&gt;&lt;property&gt;
+        &lt;property name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;now&quot; class=&quot;java.util.Date&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
+2. 这种方式解决了构造函数注入的弊端，创建对象时没有明确的限制，直接使用默认构造函数;
+3. 弊端：如果某个成员必须有值(构造函数被重载，存在有参构造函数)，获取对象时可能没有配置
+   此成员的setter，导致此成员没有值.
+</code></pre><h4 id="复杂类型-集合对象的注入"><a href="#复杂类型-集合对象的注入" class="headerlink" title="复杂类型/集合对象的注入"></a>复杂类型/集合对象的注入</h4><pre><code>public class UserServiceImpl implements IUserService {
+    private String[] myArr;  //数组
+    private List&lt;String&gt; myList;  //List集合
+    private Set&lt;String&gt; mySet;  //Set集合
+    private Map&lt;String, String&gt; myMap;  //Map集合
+    private Properties myProp;  //Properties
+    //setter是必须的
+}
+1. 使用&lt;property&gt;的子标签
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;property name=&quot;myArr&quot;&gt;
+            &lt;array&gt;
+                &lt;value&gt;AAA&lt;/value&gt;
+                &lt;value&gt;BBB&lt;/value&gt;
+            &lt;/array&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;myList&quot;&gt;
+            &lt;list&gt;
+                &lt;value&gt;AAA&lt;/value&gt;
+                &lt;value&gt;BBB&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;mySet&quot;&gt;
+            &lt;set&gt;
+                &lt;value&gt;AAA&lt;/value&gt;
+                &lt;value&gt;BBB&lt;/value&gt;
+            &lt;/set&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;myMap&quot;&gt;
+            &lt;map&gt;
+                &lt;!-- 两种配置key-value的方式 --&gt;
+                &lt;entry key=&quot;testA&quot; value=&quot;AAA&quot;&gt;&lt;/entry&gt;
+                &lt;entry key=&quot;testB&quot;&gt;
+                    &lt;value&gt;BBB&lt;/value&gt;
+                &lt;/entry&gt;
+            &lt;/map&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;myProp&quot;&gt;
+            &lt;props&gt;
+                &lt;prop key=&quot;testA&quot;&gt;AAA&lt;/prop&gt;
+                &lt;prop key=&quot;testB&quot;&gt;BBB&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;property&gt;
+    &lt;/bean&gt;
+2. 结构相同，标签是可以互换的，list、array、set是一类，map、props是一类。
 </code></pre><hr>
 
       
@@ -387,8 +685,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/06/Spring注解/" rel="prev" title="Spring注解">
+                Spring注解 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -466,7 +764,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -488,7 +786,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -521,7 +819,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring"><span class="nav-number">1.</span> <span class="nav-text">Spring</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring"><span class="nav-number">1.</span> <span class="nav-text">Spring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解耦"><span class="nav-number">2.</span> <span class="nav-text">解耦</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类之间的依赖"><span class="nav-number">2.1.</span> <span class="nav-text">类之间的依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工厂模式解耦"><span class="nav-number">2.2.</span> <span class="nav-text">工厂模式解耦</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IoC"><span class="nav-number">3.</span> <span class="nav-text">IoC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring的IoC"><span class="nav-number">3.1.</span> <span class="nav-text">Spring的IoC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring对Bean的管理"><span class="nav-number">3.2.</span> <span class="nav-text">Spring对Bean的管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖注入"><span class="nav-number">3.3.</span> <span class="nav-text">依赖注入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数注入"><span class="nav-number">3.3.1.</span> <span class="nav-text">构造函数注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setter注入"><span class="nav-number">3.3.2.</span> <span class="nav-text">setter注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#复杂类型-集合对象的注入"><span class="nav-number">3.3.3.</span> <span class="nav-text">复杂类型/集合对象的注入</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

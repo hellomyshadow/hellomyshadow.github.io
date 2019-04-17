@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="JDBC1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口； 2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API； 3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现； 4. ORM框架：Hibernate、mybatis 接口1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-01T12:17:05.423Z">
+<meta property="og:updated_time" content="2019-04-15T11:53:22.852Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java数据库">
 <meta name="twitter:description" content="JDBC1. JDBC：Java Database Connection，为Java使用数据库提供了统一的编程接口； 2. JDBC由一组Java类和接口组成，是Java程序与数据库系统通信的标准API； 3. 所谓数据库驱动就是数据库厂商对JDBC接口的实现； 4. ORM框架：Hibernate、mybatis 接口1. Driver：由数据库厂商提供，引入相关数据库驱动jar包，装载数据库驱">
@@ -331,6 +331,7 @@
     Class.forName(&quot;com.mysql.jdbc.Driver&quot;); --&gt; MySQL5.0
     Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;); --&gt; MySQL6.0+
 2. DriverManager：JDBC的管理层，作用于用户和驱动程序之间，在数据库和驱动程序之间建立连接
+    DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver()); --&gt;也能加载驱动
 3. Connection：与特定数据库的连接会话，执行SQL语句并返回结果
     1. 连接MySQL5.0数据库
     Connection conn = DriverManager.getConnection(
@@ -653,7 +654,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -675,7 +676,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

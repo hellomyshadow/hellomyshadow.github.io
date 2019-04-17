@@ -232,996 +232,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/09/08/TypeScript-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/08/TypeScript-2/" itemprop="url">TypeScript-2</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-08T00:00:00+08:00">
-                2018-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h2><pre><code>1. 装饰器：在尽可能不改变类结构的情况下，扩展其功能；
-2. 装饰器是一种特殊类型的声明，可以被附加到类声明、属性、方法、参数、访问符上；
-3. 启用装饰器：
-    &quot;compilerOptions&quot;: {
-        &quot;experimentalDecorators&quot;: true
-    }
-4. 装饰器函数
-    1. 要在一个类/方法上使用装饰器，首先需要提供一个装饰器函数；
-    2. 装饰器函数会在该装饰器被调用时调用；
-5. 使用装饰器：在需要被装饰的类/方法前，通过 @装饰器名 来调用装饰器
-    @f
-    class Test { }
-6. 装饰器可以累加，可以排在一行，也可以分为多行。
-</code></pre><h3 id="类装饰器"><a href="#类装饰器" class="headerlink" title="类装饰器"></a>类装饰器</h3><pre><code>1. 类装饰器应用于构造函数，可以用来监视/修改/替换类的定义；
-2. 类的构造函数会作为类装饰器函数的唯一一个参数
-    function fn&lt;T extends {new(...args: any[]): {}}&gt;(constructor: T): T {
-        class Ps extends constructor {
-            age: number = 0;  ---&gt; 扩展一个类型为number的属性age
-        }
-        return Ps;
-    }
-    @fn
-    class Person{ }  --&gt; 装饰之后的Person已经变成了Ps
-3. 装饰器传参：闭包
-    function fn(v: number) {
-        return function&lt;T extends {new(...args: any[]): {}}&gt;(cst: T): T {
-            class Ps extends cst {
-                age: number = v;
-            }
-        }
-    }
-    @fn(10)
-    class Person { }  ---&gt; age:number = 10
-    @fn(20)
-    class Cat { } ---&gt; age:number = 20
-</code></pre><h3 id="方法装饰器"><a href="#方法装饰器" class="headerlink" title="方法装饰器"></a>方法装饰器</h3><pre><code>1. 方法装饰器对类的方法进行装饰，在调用时会传入3个参数：
-    1. 对于静态成员，传入的是类的构造函数；对于实例成员，传入的是类的原型对象；
-    2. 成员的名称；
-    3. 成员属性描述符。
-2. tsconfig.json
-    1. 配置编译系统、编译保存、移除注释...
-    &quot;compileOnSave&quot;: true, --&gt; 自动编译并保存
-    &quot;compilerOptions&quot;: {
-        &quot;moduleResolution&quot;: &quot;node&quot;, --&gt; 按node编译
-        &quot;removeComments&quot;: true, ----&gt; 生成JS代码后，移除注释内容
-        &quot;sourceMap&quot;: true, --&gt; 配合后期调试
-        &quot;emitDecoratorMetadata&quot;: true,  --&gt; 支持元数据，装饰器需要使用
-        &quot;typeRoots&quot;: [] --&gt; 为TS编译器指定检查类型的依据文件
-    }
-3. 
-</code></pre><h3 id="访问器装饰器"><a href="#访问器装饰器" class="headerlink" title="访问器装饰器"></a>访问器装饰器</h3><pre><code>1. 访问器：get、set
-2. 访问器装饰器在调用时传入的参数，与方法装饰器相同
-3. 不允许同时装饰一个成员的get、set访问器；
-4. 一个成员的所有装饰器必须应用在文档顺序的第一个访问器上；
-</code></pre><h3 id="属性装饰器"><a href="#属性装饰器" class="headerlink" title="属性装饰器"></a>属性装饰器</h3><pre><code>1. 属性装饰器声明在一个属性声明之前
-2. 被调用时传入2个参数：
-    1. 对于静态成员，传入的是类的构造函数；对于实例成员，传入的是类的原型对象；
-    2. 成员的名称。
-</code></pre><h3 id="参数装饰器"><a href="#参数装饰器" class="headerlink" title="参数装饰器"></a>参数装饰器</h3><pre><code>1. 参数装饰器声明在一个参数声明之前；
-2. 被调用时传入3个参数
-    1. 对于静态成员，传入的是类的构造函数；对于实例成员，传入的是类的原型对象；
-    2. 成员的名称；
-    3. 参数在函数参数列表上的索引。
-3. 参数装饰器只能用来监视一个方法的参数是否被传入；
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/09/05/TypeScript-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/05/TypeScript-1/" itemprop="url">TypeScript-1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-05T00:00:00+08:00">
-                2018-09-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="TypeScript"><a href="#TypeScript" class="headerlink" title="TypeScript"></a>TypeScript</h2><pre><code>1. TypeScript是微软开发的，基于类的面向对象编程，其文件以 .ts 为后缀名；
-2. TypeScript是JavaScript的超集，完全兼容JavaScript代码；
-3. TypeScript只存活于编译阶段，编译为JavaScript之后，在浏览器/Node环境下才能运行；
-4. 安装TS编译器：npm i typescript -g  ===&gt; tsc ts文件名 [编译后输出目录及文件]
-    1. 默认情况下，编译生成的js文件输出到当前目录下；
-    2. tsc t1.ts --outDir ./dist：编译后的t1.js文件输出到dist目录下。
-</code></pre><h2 id="tsconfig-json"><a href="#tsconfig-json" class="headerlink" title="tsconfig.json"></a>tsconfig.json</h2><pre><code>1. tsconfig.json：用于配置 tsc 的编译配置选项，如js文件的输出目录
-2. 当 tsc 不指定要编译的ts文件时，编译器会从当前目录开始逐级向上查找tsconfig.json
-3. 当指定了编译的ts文件时，tsconfig.json会被忽略；
-4. --project(-p)：指定一个包含 tsconfig.json 的目录来进行编译；
-</code></pre><h3 id="编译选项"><a href="#编译选项" class="headerlink" title="编译选项"></a>编译选项</h3><pre><code>1. compilerOptions：编译选项的配置，在tsconfig.json的第一层
-    { 
-        &quot;compilerOptions&quot;: { }
-    }
-2. 配置输出目录
-    &quot;compilerOptions&quot;: {
-        &quot;outDir&quot;: &quot;./dist&quot;  ---&gt; 指定输出目录：tsconfig.json所在目录/dist
-    }
-    1. 执行 tsc 命令，但不指定任何ts文件，会自动把ts文件编译输出到dist目录。
-3. 合并输出到一个文件，合并的文件顺序为加载和依赖顺序
-    &quot;compilerOptions&quot;: {
-        &quot;outFile&quot;: &quot;./bundle.js&quot;  ---&gt; 把ts文件合并编译输出到bundle.js中
-    }
-4. target：指定编译后的js对应的ECMAScript版本，es3、es5、es6、es2015、es2016 ...
-5. module：编译后的js所使用的模块化系统，none、commonjs、es2015、amd、esnext ...
-</code></pre><h3 id="指定编译文件"><a href="#指定编译文件" class="headerlink" title="指定编译文件"></a>指定编译文件</h3><pre><code>1. 执行 tsc 命令，但不指定任何ts文件时，默认会编译当前项目中的所有ts文件；
-2. include：指定要编译的ts文件目录
-    &quot;include&quot;: [ &quot;./src/&quot; ] ---&gt; 编译tsconfig.json所在目录/src目录下的ts文件
-    1. 使用glob模式，类似于正则表达式，**/ 递归匹配任意子目录；
-    2. * 匹配0或多个字符，? 匹配一个任意字符，但都不包括目录分隔符；
-    3. &quot;./src/*&quot;：只编译src目录下的ts文件，不包括src的子目录；
-    4. &quot;./src/**/*&quot;：递归编译src目录下的ts文件，包括子目录；
-3. exclude：指定不编译的ts文件目录，默认已经排除了 node_modules 和 &lt;outDir&gt; 目录
-</code></pre><h2 id="ts-node"><a href="#ts-node" class="headerlink" title="ts-node"></a>ts-node</h2><pre><code>1. npm i ts-node -D/-g：与 tsc 命令不同的是，它会编译并执行ts文件；
-2. ts-node 命令也会读取 tsconfig.json
-</code></pre><h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><pre><code>1. 语法：let 变量: 类型
-    1. let input: HTMLInputElement = document.querySelector(&apos;uname&apos;);
-    2. let value: number = Number(input.value) + 10;
-    3. let a: string;  a = 1; --&gt; 报错
-2. TS的类型：数字、字符串、布尔型、null、undefined、数组、元组、枚举、void、any、Never
-3. 基本类型与包装类型
-    1. 基本类型：string、number、boolean
-    2. 包装类型：String、Number、Boolean
-    3. 基本类型可以直接赋值给对应的包装类型，但反之不行。
-    let s: String = &apos;nodejs&apos;;
-4. 数组
-    1. 基本语法：let list: number[];  --&gt; 一个number类型的数组，只能存储number
-    2. 泛型方式：let list: Array&lt;number&gt;;
-5. 元组：与数组类似，但可以存储不同类型的元素
-    1. let tup: [number, string, boolean];  --&gt; 定义一个存储三种类型的元组
-    2. 元组的元素顺序必须与定义的类型一一对应，tup[0]=1; tup[1]=&apos;a&apos;; tup[2]=true;
-    3. 对于越界部分的元素，则采用联合类型(三种类型中的任意一种)：tup[3]=&apos;b&apos;;
-    4. 定义联合类型的元组：let tup: string|number; --&gt; 元素类型属于这两种之一即可
-    5. 交叉类型的元组：let tup: string&amp;number; --&gt; 此元组必须包含这两种类型的元素
-6. 枚举：为一组数据赋予友好的名字
-    1. enum Color {Red, Green, Blue};  --&gt;Color.Red，Color.Green，Color.Blue
-    2. 默认情况下，元素的编号从 0 开始，也可以手动指定编号，enum Color {Red=1, ...};
-7. 更多其他类型：null、undefined、void、any、never
-    1. null和undefined的值分别只有null、undefined，所以用处不大；
-    2. let a: undefined = undefined; 不能再赋其他值，只能赋值undefined
-    3. 默认情况下，null和undefined是所以类型的子类型，可以赋值给其他类型；
-    4. 如果采用严格模式，则不允许把null和undefined赋值给其他类型；
-    5. 启用严格模式：tsconfig.json的 compilerOptions 下增加 strictNullChecks
-    &quot;compilerOptions&quot;: {
-        &quot;strictNullChecks&quot;: true
-    }
-    let div1 = document.querySelector(&apos;#div1&apos;);
-    div1.style.color = &apos;red&apos;;  --&gt; ts报错，因为div1可能为null，需要判断不为null
-    6. never：表示那些永不存在的值的类型；
-    7. any：任意类型，在不确定返回类型的情况下使用；
-    8. void：与 any 相反，表示没有任何类型，常见于没有返回值的函数。
-8. 类型推导
-    1. 有时候不一定强制使用类型声明，TS会根据语境进行类型推导；
-    2. TS的变量初始化推导
-    let a;  a=1; --&gt; 变量a 是number类型，不允许再赋予其他类型的值；
-    3. TS的上下文推导
-    btn.onclick = function(e) {} --&gt; e: MouseEvent
-    btn.onkeydown = function(e) {} --&gt; e: KeyboardEvent
-    4. TS会根据当前绑定的事件，推导出回调函数的第一个参数类型MouseEvent/KeyboardEvent
-</code></pre><h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><pre><code>1. 函数声明：function fn(x: Type, y: Type): Type { ... }
-    function fn(x: number, y: number): number { --&gt; 参数为number，返回值为number
-        return x+y;
-    }
-    let fn = function(x: number, y: number): number { return x+y; }
-2. 函数表达式：let fn:(x:Type, y:Type) =&gt; Type = function(x:Type, y:Type){ ... }
-    let fn: (x: number, y: number) =&gt; number = function(x, y) {
-        return x+y;
-    }
-    1. 函数体function的参数类型可以省略，ts会进行类型推导
-3. 类型约束：函数参数、函数返回值、无返回值的类型为void
-4. 可选参数：通过 ? 定义，默认值为undefined(与ES6保持一致)，必须在必传参数之后
-    function fn(x: number, y?: number): void { ... }
-    fn(10); --&gt; 参数y 为可选参数
-5. 默认值：如果手动指定了可选参数的默认值，则不能再使用 ? ，也可以不明确类型
-    function fn(x: number, y=1)
-6. 剩余参数：必须是数组类型
-    function fn(...args: any[]) { ... } --&gt; any表示剩余参数可以是任意类型
-7. 函数重载
-    1. 重载形式
-    function fn(x: number, y: number): number;
-    function fn(x: string, y: string): string;
-    2. 函数实现
-    function fn(x: any, y: any): any { ... } ---&gt; 实现时的类型必须是 any
-    3. 参数x、y 的类型必须同时为number或者string; fn(1, 2);  fn(&apos;a&apos;, &apos;b&apos;);
-8. 函数的this
-    1. ts的函数中，this默认指向 any，ts不能对any类型提示任何属性和方法；
-    2. 在tsconfig.json中，取消 this 默认指向 any 的设置：
-    &quot;compilerOptions&quot;: {
-        &quot;noImplicitThis&quot;: true
-    }
-    3. 对于某些情况，如DOM事件，回调函数的this默认指向DOM对象，TS自动推导。
-</code></pre><h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><pre><code>1. TS的类与ES2015(es6)中的 class 类似，同时新增了一些实用特性；
-2. 成员属性和成员方法：与ES6不同，与Java类似
-    class Person {
-        username: string = &apos;&apos;;  ---&gt; 提前声明成员属性
-        constructor(name: string) {
-            this.username = name;  --&gt; 使用成员属性
-        }
-    }
-    let p1 = new Person(&apos;Mack&apos;); --&gt;TS自动推导出p1的类型为Person
-3. 修饰符：public、protected、private、readonly，控制对成员属性/方法的访问
-    1. public：成员属性和方法的默认修饰符，可以公开访问；
-    2. protected：只能在类中、及其子类中访问；
-    3. private：只能在类的内部直接访问，但可以定义 setter/getter，让外部对象访问；
-    4. readonly：只读，对象只能获取，不能重新赋值。
-    5. 在构造函数的参数上使用修饰符，表示同时在类中创建该属性，该属性不能在类中预定义；
-    constructor(public age: number){ --&gt;为Person创建属性age：public age: number;
-        this.age = age;
-    }
-4. 存取器：setter/getter的简写形式
-    private _age: number = 10;
-    get age(): number {  ------&gt; 访问：p1.age;
-        return this._age;
-    }
-    set age(age: number) {  ---&gt; 访问：p1.age = 20;
-        this._age = age;
-    }
-5. 静态成员：static修饰的属性和方法
-    1. 单例模式
-    class MySql {
-        private constructor(){}  ---&gt; 私有化构造函数
-        public static instance;  ---&gt; 静态属性
-        public static getInstance() {  -----&gt; 静态方法
-            if(!MySql.instance) {
-                MySql.instance = new MySql();
-            }
-            return MySql.instance;
-        }
-    }
-6. 继承：extends实现继承机制，且是单继承
-    1. 与JS相同，如果子类重写了构造函数，必须先调用 super(); 初始化父类的构造函数；
-    class Student extends Person {
-        constructor(name: string) {
-            super(name);
-        }
-    }
-7. 抽象类：abstract修饰的类
-    1. 抽象方法：abstract修饰的方法，且没有方法体，只能定义在抽象类中；
-    abstract class Person {
-        abstract study(): void;
-    }
-    2. 不允许通过 new 创建抽象类的对象；
-    3. 抽象类的子类必须实现所有抽象方法，否则该子类也必须声明为抽象类。
-</code></pre><h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><pre><code>1. 接口用于定义规则，TS的数据检测就是一种规则
-    1. 接口的规则只有抽象描述，属性不能有具体的值，方法不能有具体的实现；
-    interface Options {
-        width: number, height: number
-    }
-    2. 使用规则：width和height都是必须的属性
-    function fn(opts: Options){ ... }
-    fn({ width:100, height:200 });
-    3. TS类型检测器只会检查接口所定义的规则属性是否存在，并不会检查属性的顺序。
-    fn({ height:200, width:100 });
-2. 可选的接口规则：通过 ? 声明
-    interface Options {
-        width: number, height: number,
-        color?: string  ---&gt; 属性color是可选的
-    }
-3. 只读的接口规则：readonly修饰，readonly height?: number
-4. 绕开类型检测
-    1. 断言：as
-    fn({ width: 100 } as Options);  ---&gt; 虽然少了规则，但TS不会报错
-    2. 如果有多余的规则，TS也不允许，则先赋值给一个变量，再作为参数传入规则
-    fn({ width:100, height:200, a:1 });  ---&gt; TS报错
-    let opt = { width:100, height:200, a:1 };
-    fn(opt); --&gt; TS允许
-5. 索引签名：定义一组key-value的数据，这组数据的个数是不确定的，其中key具有某种特性
-    interface Options {
-        [attr: number]: any,  ---&gt; 一组k-v数据：key为number类型，value为任意类型
-        length: number  -----&gt; 非索引属性
-    }
-    fn({
-        0: 100, 1: 200, 2: 300,  ---&gt; 也可以绕开TS的类型检测
-        length: 1
-    });
-    1. 索引 key 的类型只能是string和number
-    2. 在TS的类中，不允许对象直接扩展属性/方法
-    class Person { }
-    let p: Person = new Person();
-    p.fly = function() { }  -------&gt; TS报错，Person类中不存在fly
-    3. 以全局对象 window 为例，通过接口去扩展属性/方法
-    interface Window{  ------&gt; window对象实现了 Window 接口
-        abc: number
-    }
-    window.abc = 1; -----&gt; 通过TS检查
-    4. 由此可见，可以通过接口去扩展Person的属性/方法
-    interface Person {
-        [attr: string]: any
-    }
-    p.fly = function() { }  -------&gt; 通过TS检查
-5. 函数类型的接口规则
-    1. 只包含成员类型为函数的接口，并不是函数类型的接口
-    interface Options {
-        fn: Function
-    }
-    let opt: Options = { fn: function(){} }
-    2. 函数类型的接口描述的是一个函数结构
-    interface IFn {
-        (x: number, y: number): number  --&gt; 两个number类型的参数，返回值为number
-    }
-    let fn: IFn = function(x: number, y: number): number { return x+y; }
-    3. 定义一个MouseEvent类型参数的函数结构
-    interface MouseEback {
-        (e: MouseEvent): any
-    }
-    let fn: MouseEback = function(ex: MouseEvent){}
-    document.onclick = fn; ---&gt; 符合DOM点击事件的回调函数，通过TS的类型检查
-6. 接口的实现：implements，从而让一个类符合某种规则
-    1. 类是单继承的，接口可以多实现，接口之间通过 extends 实现继承；
-    2. 实现接口时，必须实现接口中的定义属性和方法
-    interface ISuper {
-        fly(): void;
-    }
-    class SuperMan implements ISuper {
-        fly() { }
-    }
-</code></pre><h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><pre><code>1. 泛型：把类型变成一个变量，提高复用性；此变量一般使用单个大写字母；
-2. 函数的泛型
-    function fn&lt;T&gt;(x: T): number {
-        return Number(x) * 10;
-    }
-    fn&lt;number&gt;(4);
-    1. 在调用函数的时候再决定类型，从而根据指定的类型去检测；
-    2. 泛型也可以指定多个：
-    function fn&lt;T, S&gt;(a:T, b:S): [T, S] {}
-    3. 数组形式的泛型：
-    function fn&lt;T&gt;(a: T[]): T[] {}
-    function fn&lt;T&gt;(a: Array&lt;T&gt;): Array&lt;T&gt; {}
-3. 类的泛型
-    class Cat &lt;T&gt; {
-        private _data: T[] = [];
-        public push(v: T): number {}
-    }
-    let cat: Cat&lt;string&gt; = new Cat();
-4. 泛型作为一种类型
-    let fn: &lt;T&gt;(x: T, y: T) =&gt; number = function(x, y) {
-        return Number(x) + Number(y);
-    }
-5. 泛型接口
-    interface IFn &lt;T&gt; {
-        (x: T, y: T): number
-    }
-    let fn: IFn&lt;string&gt; = function(x, y) {
-        return Number(x) + Number(y);
-    }
-6. 泛型约束：约束泛型的类型范围，extends
-    1. 约束泛型为HTML节点
-    function fn&lt;T extends HTMLElement&gt; (ele: T) { }
-    2. 配合接口使用
-    interface Len {
-        length: number
-    }
-    function fn&lt;T extends Len&gt; (e: T) { }
-    fn(1);  ---&gt; TS报错：number类型没有实现 Len 接口，也不具备 length 属性
-    fn(&apos;2&apos;); --&gt; string类型实现了 Len 接口
-7. 类类型
-    1. 如何让一个外部函数成为创建对象的工厂
-    function getArray(constructor: Array) {
-        return new constructor();
-    }
-    let arr = getArray(Array);  --&gt; TS报错
-    2. 形参constructor表示Array类型的对象，而不是一个Array的构造函数，所以无法创建对象
-    3. {new()}：表示构造函数类型
-    function getInstance(constructor: {new()}) {
-        return new constructor();
-    }
-    let arr = getInstance(Array);  --&gt; 通过TS检查，创建一个数组对象
-    4. 限制构造函数的类型：
-    function getInstance(ct: {new(): Array&lt;string&gt;}) {
-        return new ct();   --&gt; 只能创建Array&lt;string&gt;类型的对象
-    }
-    function getInstance&lt;T&gt;(ct: {new(): T}) { --&gt; 泛型
-        return new ct();
-    }
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/09/01/Electron/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/01/Electron/" itemprop="url">Electron</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-01T00:00:00+08:00">
-                2018-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="node-GUI"><a href="#node-GUI" class="headerlink" title="node GUI"></a>node GUI</h2><pre><code>1. NW.js和Electron都是基于NodeJs的GUI框架，使用HTML、CSS、JS来构建UI，处理与用户的交互
-2. NW.js和Electron专注于开发桌面跨平台应用，而不是web服务器
-3. NW.js的原称为Node-Webkit，目前由因特尔公司维护，而Electron由Github维护；
-4. NW.js和Electron都使用了开源浏览器Chromium，并使用NodeJs访问系统、文件、网络...
-</code></pre><h3 id="Electron"><a href="#Electron" class="headerlink" title="Electron"></a>Electron</h3><pre><code>1. Electron的原理：将Chromium和Node.js整合到一个运行时环境中，且可以跨平台打包；
-    1. Chromium是一个谷歌开源浏览器，可以调用所有前端相关的API，且不需要考虑兼容性问题；
-    2. 浏览器并不能访问原生的资源，但Node.Js的API支持在页面中和操作系统进行交互。
-2. npm install -g electron：全局安装Electron
-    1. 可以在Github上下载Electron的demo：electron-quick-start
-    2. 进入demo目录，执行 cnpm install 安装依赖，执行 npm start 运行demo
-3. electron-forge：相当于Electron的脚手架，可以快速创建、运行、打包项目；
-    1. npm install -g electron-forge：全局安装
-    2. electron-forge init myDemo：创建项目，默认使用 npm i 安装依赖；
-    3. 如果执行失败，可以删除项目中的node_modules，执行 cnpm i，手动安装依赖；
-4. 手动搭建项目：创建目录，在目录中创建main.js和index.html，执行cnpm init；
-    1. main.js就是主进程，项目运行的入口文件；
-    2. 一个应用只有一个主进程，但可以有多个渲染进程，一个窗口就表示一个渲染进程；
-    3. electron .：运行项目。
-5. 拖放打开文件
-    &lt;textarea id=&quot;container&quot;&gt;&lt;/textarea&gt;
-    1. 调用H5的拖动API，获取拖放文件的路径
-    let box = document.querySelector(&apos;#container&apos;)
-    box.ondragenter=box.ondragover=box.ondragleave = (e) =&gt; {
-        return false; --&gt; 组织默认行为
-    }
-    box.ondrop=(e) =&gt; {
-        e.preventDefault(); --&gt; 阻止默认行为
-        let path = e.dataTransfer.files[0].path; --&gt; 获取文件的路径
-    }
-    2. 使用Node.js的fs模块读取文件，赋值给box.value：let fs = require(&apos;fs&apos;)
-6. 相关模块
-    1. Electron中的模块分为：主进程模块，渲染进程模块，公用模块；
-    2. app：主进程模块，控制应用的生命周期，写法比较固定，注册固定的几个事件；
-    3. BrowserWindow：主进程模块，窗口相关的模块；
-    let win = BrowserWindow.getFocusedWindow();  --&gt;获取当前窗口的对象
-    win.center();  --&gt;把窗口移动到屏幕中央
-    4. remote：渲染进程的模块，用于间接调用部分主进程的模块，如BrowserWindow
-    5. Menu：主进程的菜单模块，包括顶部菜单、右键菜单、系统托盘的右键菜单。
-7. Menu菜单功能必须在窗口加载完成之后才能执行；
-    app.on(&apos;ready&apos;, {
-        ...... //创建窗口BrowserWindow
-        require(&apos;./main/menu.js&apos;) //加载创建菜单的js模块
-    })
-    1. 虽然渲染进程也能通过remote模块调用Menu模块，实现自定义的顶部菜单，但可能会闪现默认
-    的顶部菜单，所以还是建议在主进程中实现顶部菜单。
-</code></pre><h2 id="进程间通信IPC"><a href="#进程间通信IPC" class="headerlink" title="进程间通信IPC"></a>进程间通信IPC</h2><pre><code>1. 被Electron直接运行的脚本(package.json中指定的main节点)称为主进程，有且只有一个；
-2. 用于展示的web界面都运行在一个独立的进程中，称为渲染进程；
-3. 进程间通信的相关模块：ipcMain(主进程)、ipcRenderer(渲染进程)
-</code></pre><h3 id="主进程与渲染进程"><a href="#主进程与渲染进程" class="headerlink" title="主进程与渲染进程"></a>主进程与渲染进程</h3><pre><code>1. 渲染进程向主进程发送异步消息：ipcRenderer.send(&apos;事件名1&apos;, 消息内容)
-    1. 主进程中监听消息：ipcMain.on(&apos;事件名1&apos;, (event, arg) =&gt; { ... })
-    2. 主进程给渲染进程回复消息：event.sender.send(&apos;事件名2&apos;, 消息内容)
-    3. 渲染进程监听回复的消息：ipcRenderer.on(&apos;事件名2&apos;, (event, arg) =&gt; {})
-2. 渲染进程向主进程发送同步消息：
-    1. let msg = ipcRenderer.sendSync(&apos;事件名1&apos;, 消息内容)
-    2. 与异步消息不同，主进程收到同步消息，必须回复，否则渲染进程会阻塞；
-    ipcMain.on(&apos;事件名1&apos;, (event, arg) =&gt; {
-        event.returnValue = &apos;sync reply&apos; ---&gt; 回复给渲染进程
-    }) ----&gt; sendSync()的返回值就是主进程回复的消息内容
-3. 主进程把数据挂载到node的全局对象global上，渲染进程通过 getGlobal() 获取数据
-    1. 主进程：global.username = &apos;abc&apos;;
-    2. 渲染进程：remote.getGlobal(&apos;username&apos;);
-    3. 这种方式污染了全局对象global，并不建议使用。
-</code></pre><h3 id="渲染进程与渲染进程"><a href="#渲染进程与渲染进程" class="headerlink" title="渲染进程与渲染进程"></a>渲染进程与渲染进程</h3><pre><code>1. 渲染进程无法直接通信，最简单的方式是通过localStorage实现；
-2. 通过BrowserWindow和webContents模块实现：
-    1. webContents是一个事件发出者，负责渲染并控制网页，也是BrowserWindow的属性；
-3. 渲染进程1向主进程发送消息，主进程创建渲染进程2，再向渲染进程2发送消息；
-    ipcMain.on(&apos;事件名1&apos;, (event, arg) =&gt; { --&gt; 主进程监听消息事件
-        win = new BrowserWindow({width:400, height:300})
-        win.loadURL(path.join(&apos;file:&apos;, __dirname, &apos;../news.html&apos;))
-        win.webContents.on(&apos;did-finish-load&apos;, () =&gt; { --&gt; 窗口加载完毕
-            win.webContents.send(&apos;事件名2&apos;, arg) --&gt; 向渲染进程2发送事件
-        }) ---&gt; 新的渲染进程中注册&apos;事件名2&apos;
-    })
-4. 渲染进程2向渲染进程1回复消息，则需要把渲染进程1的Id也发送给渲染进程2
-    ipcMain.on(&apos;事件名1&apos;, (event, arg) =&gt; {
-        //必须在新窗口加载之前获取当前窗口的Id，否则获取的新窗口的Id
-        let winId = BrowserWindow.getFocusedWindow().id
-        win = new BrowserWindow({width:400, height:300})
-        win.loadURL(path.join(&apos;file:&apos;, __dirname, &apos;../news.html&apos;))
-        win.webContents.on(&apos;did-finish-load&apos;, () =&gt; {
-            win.webContents.send(&apos;事件名2&apos;, arg, winId)
-        })
-    })
-5. 在新窗口中注册事件，向渲染进程1回复消息，在渲染进程1中监听回复事件
-    ipcRenderer.on(&apos;事件名2&apos;, (event, arg, winId) =&gt; {
-        let win = BrowserWindow.fromId(winId) --&gt;获取渲染进程1的窗口对象
-        win.webContents.send(&apos;事件名3&apos;, &apos;reply the msg&apos;) --&gt;回复消息
-    })
-</code></pre><h3 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h3><pre><code>1. shell模块可以操作用户的默认浏览器，调用资源管理器；
-2. 调用用户的默认浏览器，打开指定网址：shell.openExternal(&apos;https://...&apos;)
-3. shell.showItemInFolder()/openItem()：资源管理器的相关操作；
-4. &lt;webview&gt;：与HTML的&lt;iframe&gt;相似，但webview与应用程序不在同一个进程；
-    1. webview没有渲染进程的权限，并且与应用之间的交互都是异步的，保证应用的安全性不受嵌入
-    内容的影响；
-    2. &lt;webview src=&quot;https://www.baidu.com&quot;&gt;&lt;/webview&gt;
-</code></pre><h3 id="dialog"><a href="#dialog" class="headerlink" title="dialog"></a>dialog</h3><pre><code>1. dialog模块：不仅可以弹出信息提示框，也可以实现本地文件的打开与保存；
-2. 信息提示框
-    1. dialog.showErrorBox(&apos;title&apos;, &apos;content&apos;)：错误信息提示框；
-    2. dialog.showMessageBox({}, (index)=&gt;{...})：信息提示框；
-    3. 异步变同步：let index = dialog.showMessageBox({})
-3. 打开文件/目录：dialog.showOpenDialog({}, (path) =&gt; {...})
-    1. 打开功能只是回调文件/目录的路径，并不能获取文件/目录的内容；
-    2. 操作文件/目录的功能，需要通过nodejs实现。
-4. 保存文件：dialog.showSaveDialog({}, (path) =&gt; {...})
-    1. showSaveDialog()只回调保存路径，并不是真的保存，不会在本地生成任何文件；
-    2. 保存功能需要借助nodejs实现，通过fs模块把内容写入本地。
-5. 打印当前窗口：BrowserWindow.getFocusedWindow().webContents.print()
-6. app.quit()：退出应用，Electron使用的是单例模式，此时不必考虑性能问题。
-</code></pre><h3 id="系统托盘"><a href="#系统托盘" class="headerlink" title="系统托盘"></a>系统托盘</h3><pre><code>1. Tray模块：主进程的系统托盘模块；
-2. 实现系统托盘：let tray = new Tray(path.join(__dirname, &apos;icon.png&apos;))
-3. 设置托盘名称：tray.setToolTip(&apos;title&apos;)，鼠标悬停在托盘图标上弹出；
-4. 创建托盘的右键菜单
-    1. Menu模块创建菜单：let menu = Menu.buildFromTemplate([{...}, {...}])
-    2. 设置托盘的右键菜单：tray.setContextMenu(menu)
-5. 关闭窗口，则隐藏到系统托盘；双击系统托盘，则重新打开窗口
-    1. 关闭窗口
-    let win = BrowserWindow.getFocusedWindow() --&gt; 获取当前的窗口对象
-    win.on(&apos;close&apos;, (e) =&gt; { --&gt; 监听关闭按钮的事件
-        if(win.isFocused()) { --&gt;点击托盘右键菜单上的&apos;退出&apos;，则关闭窗口
-            win = null
-        } else {
-            e.preventDefault() --&gt; 阻止默认的关闭事件
-            win.hide() --&gt; 隐藏窗口到系统托盘
-        }
-    })
-    2. app.quit()会回调&apos;close&apos;事件，所以需要判断当前关闭的窗口是否拥有焦点；
-    3. 如果当前窗口拥有焦点，则隐藏窗口；如果没有焦点，表示窗口已经处于隐藏状态，则关闭窗口
-    4. 打开窗口
-    tray.on(&apos;double-click&apos;, () =&gt; { --&gt; 监听系统托盘的双击事件
-        win.show()
-    })
-6. 托盘图标的闪烁：设置定时器setInterval()，每隔一段时间就重新设置一次图标。
-</code></pre><h3 id="消息通知"><a href="#消息通知" class="headerlink" title="消息通知"></a>消息通知</h3><pre><code>1. Electron的消息通知是通过H5的API实现的，右下方弹出通知框的效果；
-    let option = {
-        title: &apos;通知标题&apos;, body: &apos;通知内容&apos;, icon: &apos;通知图标的路径&apos;
-    }
-    let notification = new window.Notification(option.title, option)
-    notification.onclick = ()=&gt;{...} --&gt; 通知框的点击事件
-2. 监听网络变化：也是通过H5实现
-    1. 网络正常：window.addEventListener(&apos;online&apos;, () =&gt; { ... })
-    2. 网络断开：window.addEventListener(&apos;offline&apos;, () =&gt; { ... })
-</code></pre><h3 id="其他模块"><a href="#其他模块" class="headerlink" title="其他模块"></a>其他模块</h3><pre><code>1. globalShortcut模块：主进程模块，注册全局快捷键，在窗口创建之前注册；
-    app.on(&apos;ready&apos;, () =&gt; {
-        ... //注册全局快捷键 ---&gt; ... //创建窗口 ---&gt; ... //设置菜单
-    })
-    1. 注册全局快捷键：globalShortcut.register(&apos;ctrl+e&apos;, () =&gt; { ... })
-    2. 判断是否注册成功：globalShortcut.isRegistered(&apos;ctrl+e&apos;)
-    3. 窗口关闭时要取消全局快捷键：globalShortcut.unregister(&apos;ctrl+e&apos;)
-    app.on(&apos;will-quit&apos;, () =&gt; { globalShortcut.unregister(&apos;ctrl+e&apos;) })
-2. clipboard模块：公用模块，剪切板事件
-    1. 复制操作：clipboard.writeText(&apos;复制内容&apos;)，系统的Ctrl+C
-    2. 手动获取复制的内容：let text = clipboard.readText()，系统的Ctrl+V
-    3. 除了读取文本，剪切板还能读取HTML、Image、RTF...
-3. nativeImage模块：公用模块，用于读取、传递图片
-    1. nativeImage.createEmpty()：创建一个空的nativeImage对象；
-    2. nativeImage.createFromPath(&apos;路径&apos;)：根据图片路径，创建nativeImage对象
-4. 剪切板无法直接读取图片，需要借助nativeImage模块；
-    let image = nativeImage.createFromPath(&apos;static/back.jpg&apos;)
-    clipboard.writeImage(image) --&gt; 复制图片
-    let data = clipboard.readImage() --&gt; 读取复制的图片，返回nativeImage对象
-    let src = data.toDataURL() --&gt; 转为图片的Base64编码
-    1. 创建一个&lt;img /&gt;：let img = new Image()
-    2. 设置src属性：img.src = src
-    3. 插入到HTML中：document.body.appendChild(img)
-</code></pre><h2 id="Electron-Vue"><a href="#Electron-Vue" class="headerlink" title="Electron-Vue"></a>Electron-Vue</h2><pre><code>1. Electron-Vue：Electron结合Vue开发单页面桌面应用；
-    1. 安装环境：cnpm install electron -g、cnpm install vue-cli -g
-    2. 创建项目：vue init simulatedgreg/electron-vue my-project
-    3. 下载依赖：cd my-project ---&gt; cnpm install
-    4. 运行项目：npm run dev
-2. 在main.js中默认引入了electron，在Vue组件中通过this.$electron能直接使用；
-    1. 主进程模块：src/main/index.js
-    2. 渲染进程模块：src/renderer目录下的所有Vue组件
-3. 在Vue组件中使用Node.js的模块：const path = require(&apos;path&apos;);
-4. 打包后的electron应用无法找到图片
-    1. 对于static目录下的图片：&lt;img :src=&quot;&apos;./static/img/a.png&apos;&quot; /&gt;
-    2. 对于电脑本地的图片，直接使用图片的绝对路径，另外还要关闭窗口的安全模式
-    new BrowserWindow({ webPreferences: { webSecurity: false } });
-</code></pre><h3 id="窗口操作"><a href="#窗口操作" class="headerlink" title="窗口操作"></a>窗口操作</h3><pre><code>1. frame:false：无边框化，去除顶部菜单、最小化、最大化和关闭；
-    let win = new BrowserWindow({..., useContentSize:true, frame:false})
-    1. 无边框化之后，窗口的可拖拽区也随之消失，需要手动设置拖拽区，鼠标可以拖动窗口；
-    2. 设置拖拽区的CSS属性：-webkit-app-region: drag
-    body{ -webkit-app-region: drag } --&gt; 设置整个窗口为拖拽区
-    3. 拖拽区内的按钮必须标记为no-draggable，否则将不可点击；
-    button{ -webkit-app-region: no-drag; }
-2. win.setMenu(null)：只隐藏顶部菜单；
-3. 最大化、最小化、隐藏、关闭窗口
-    1. win.hide()：隐藏窗口； win.isVisible()：窗口是否可见； win.close()：关闭窗口
-    2. win.maximize()：最大化窗口，如果窗口尚未显示，这也将会显示，但不会有焦点；
-    3. win.unmaximize()：取消窗口最大化；  win.isMaximized()：判断窗口是否最大化；
-    5. win.minimize()：最小化窗口；  win.isMinimized()：判断窗口是否最小化；
-    6. win.restore()：将窗口从最小化状态恢复到以前的状态。
-</code></pre><h3 id="NeDB"><a href="#NeDB" class="headerlink" title="NeDB"></a>NeDB</h3><pre><code>1. NeDB：Nodejs实现的一个NoSQL嵌入式数据库；
-    1. 与Android上的Sqlite类似，都是嵌入式数据库，一般用于本地数据的持久化；
-    2. 不同的是，Sqlite是MySql类型的，使用SQL语句操作，而NeDB的操作类似于MongoDB；
-    3. 可以充当内存数据库，也可以用来实现本地存储，甚至可以在浏览器中使用。
-2. 使用方式：
-    1. 安装操作模块：cnpm install nedb --save
-    2. 在src/renderer目录下创建datastore.js，import Datastore from &apos;nedb&apos;
-    import path from &apos;path&apos;  import {remote} from &apos;electron&apos;
-    export default new Datasotre({
-        autoload: true,
-        filename: path.join(remote.app.getPath(&apos;userData&apos;), &apos;/data.db&apos;)
-    })
-    3. 设置NeDB保存在userData目录中，该目录空间专门为应用程序所保留，不会被篡改；
-    4. 在main.js中，把数据库操作对象绑定到原型上：
-    import db from &apos;./datastore&apos;  --&gt; Vue.prototype.$db = db
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/08/17/Koa-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3635,11 +2645,945 @@ res.cookie(&apos;uname&apos;, &apos;Node&apos;, {domain:&apos;.exa.com&apos;, pa
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/07/01/nodejs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/01/nodejs/" itemprop="url">nodejs</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-01T00:00:00+08:00">
+                2018-07-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="NodeJs"><a href="#NodeJs" class="headerlink" title="NodeJs"></a>NodeJs</h2><pre><code>Node.js：一个能够在服务器端运行JavaScript的开源代码、跨平台JavaScript运行环境；
+    1. 采用Google开发的V8引擎运行JS代码，使用事件驱动、非阻塞、异步I/O模型等技术提高性能，
+    可优化应用程序的传输量和规模；
+    2. Node大部分基本模块都是采用JS编写的，由一个高性能的Web服务器形成一个Node生态环境。
+1. Node的服务器是单线程的
+    1. Node处理请求时是单线程，但在后台拥有一个I/O线程池；
+    2. Node有专门处理请求的线程，还有专门处理I/O的线程。
+2. JS没有模块的概念，而Node遵循CommonJS规范，将模块划分为：核心模块、文件模块
+    1. 核心模块：node引擎提供的模块，可以直接引用，不用指定模块路径；
+    2. 文件模块：第三方模块，文件模块的标识就是文件的路径；
+    3. require()：引入外部模块的函数，返回值就是引入模块的对象；
+    4. 如果是相对路径，必须以&quot;./&quot;或&quot;../&quot;开头，如require(&quot;./req.js&quot;)，后缀名&apos;.js&apos;可省略
+3. 模块的作用域：在Node中，每一个JS文件中的JS代码都独立运行在一个函数中，而不是全局作用域
+    1. 模块之间不能直接共享数据，即require()返回的对象无法访问模块内的变量/方法；
+    2. 在执行的模块中使用：console.log(arguments.callee + &quot;&quot;);
+    会发现，当前正在执行的模块代码被node放在了一个函数中：
+    function (exports, require, module, __filename, __dirname) {
+        //模块的JS代码
+    }
+    1. exports：用于将变量/函数暴露到外部的对象，每个模块文件中都有一个exports对象；
+    2. require：用来引入外部模块的函数，只要是作为exports的属性/方法，该函数返回的对象都可
+    以直接访问：req.js：exports.x = &quot;Hello&quot;; exports.fn = function(){}
+    3. 其他模块中引用req.js模块：
+    var r = require(&quot;./req&quot;); ==&gt; r: {x: &apos;Hello&apos;, fn: [Function]}
+    r.fn(); ==&gt;执行模块中的方法，r.x; ==&gt;获取模块中的变量
+    4. module：每个模块都有一个内置的对象属性module，包含了当前模块所拥有的一些信息；
+    5. module的属性信息：id(模块的唯一标识)、filename(文件的路径名)、loaded、children、
+    paths、exports、parent、require() --&gt; require()也来自module对象
+    6. exports是module的属性，即module也可以用于导出：module.exports.x = &quot;Hello&quot;;
+    7. __filename：当前模块的绝对路径； __dirname：当前模块所在目录的绝对路径。
+4. exports与module.exports的区别：
+    1. exports只是一个指向module.exports的引用，module.exports才是一个对象；
+    exports.a=10;  ---&gt; 等同于：module.exports.a=10;
+    2. 真正具有向外暴露能力的是module.exports，而不是exports，比如exports={ a: 10 }
+    --&gt;exports指向了一个新的对象，不再指向module.exports，也就失去了可以向外暴露的能力
+    3. exports只能通过 exports.x 的方式向外暴露，而module.exports={ a: 10 }可以暴露
+    4. require()得到的其实也是module.exports对象的引用。
+5. 在浏览器端的JS中，全局变量/函数都作为window对象的属性/方法保存的；在node中，也有类似于
+   window作用的全局对象：global
+    1. 所谓node环境，也就是ECMAScript，global是ECMAScript标准提供的；
+    2. 本质上，浏览器端的window其实就是扩展自ECMAScript中的global
+6. 包：package，由包结构和包描述文件组成，其实就是一个压缩文件，解压还原为目录；
+    1. 包结构：用于组织包中的各种文件；
+    2. 包描述文件：描述包的相关信息，以供外部读取分析；
+    3. 目录文件包括：描述文件(package.json)、可执行二进制文件(bin)、js代码(lib)
+    doc(文档)、test(单元测试)，其中package.json是必需的；
+    4. package.json是一个JSON格式的文件，不能有任何注释，它是配置文件。
+</code></pre><h2 id="npm"><a href="#npm" class="headerlink" title="npm"></a>npm</h2><pre><code>npm：Node Package Manager，node的包管理器，用于node的第三方模块的发布、安装、依赖等；
+1. 借助npm，Node与第三方模块之间形成了一个很好的生态系统；
+2. npm search 包名：搜索模块包；
+3. npm install/i 包名：在当前目录安装模块包；
+    1. 执行：npm init --&gt; 当前目录会生成一个package.json
+    2. 安装依赖包，如npm install math：math包会在安装到当前目录下；
+    3. 在当前目录下会生成一个node_modules目录，存放安装的模块，使用这些模块时，不需要指定
+    模块路径：var math = require(&quot;math&quot;);
+    4. npm i 包名 --save：在项目或模块包的 package.json 中会生成相关模块的依赖信息；
+    npm i math --save ===&gt; package.json -&gt; &quot;dependencies&quot;: { &quot;math&quot;: &quot;0.0.3&quot; }
+    5. 依赖信息的作用：将当前目录(即项目)上传到开源站时，并不会上传node_modules目录，因为
+    会影响上传/下载的速度，而且不能保证依赖的模块包一定是最新版本；那么下载并使用该项目后，
+    也就不能直接运行，需要先在该项目的根目录下执行：npm install =&gt;安装依赖
+4. npm install/i 包名 -g：全局模式安装模块包，一般都是一些工具；
+    1. npm root -g：查看全局安装的根目录；
+    2. npm list：查看当前目录下已安装的node包；
+    3. npm info 包名：查看包的所有版本；--&gt; npm i jquery@1.8.2：指定版本安装。
+5. npm update：升级依赖包
+6. npm remove/r 包名：删除模块包，同理，--save也会删除package.json中的依赖信息；
+7. 镜像服务器：npm服务器不在国内，所以npm下载时可能会很慢，镜像服务器的作用就是把npm服务器
+   的数据拷贝一份，通过国内的镜像服务器下载模块包，就会很快；
+    1. 淘宝NPM镜像：同步npm服务器数据的频率为10分钟，定制的cnpm代替默认的npm命令；
+    2. npm install -g cnpm --registry=https://registry.npm.taobao.org
+    3. cnpm与npm的命令一模一样，但下载的模块目录结构可能不同，也是为了避免相互覆盖。
+8. require(&quot;math&quot;)的查找路径：当前目录的node_modules--&gt;上一级目录的node_modules
+    --&gt; 再上一级目录的node_modules --&gt; ... --&gt; 磁盘根目录 --&gt; 仍没有则报错
+</code></pre><h3 id="package-json"><a href="#package-json" class="headerlink" title="package.json"></a>package.json</h3><pre><code>1. package.json中的一些节点
+    1. name：包名
+    2. version：版本，x.x.x
+    3. main：包的入口主文件
+    4. scripts：自定义脚本，通过 npm run 脚本名 执行脚本定义的命令
+    5. dependencies：生产环境下必需的依赖包
+    6. devDependencies：只在开发环境下使用的依赖包
+2. dependencies 与 devDependencies 中的依赖包版本：
+    1. ^2.3.4：表示在执行 npm install 时，第一位版本号不变，后两位取最新的；
+    2. ~2.3.4：前两位不变，最后一位取最新；
+    3. *2.3.4：表示全部取最新的。
+</code></pre><h2 id="开发方向"><a href="#开发方向" class="headerlink" title="开发方向"></a>开发方向</h2><pre><code>1. GUI：Graphical User Interface，图形用户界面，如office、vscode、浏览器、播放器...
+2. CLI：Command Line Interface，命令行界面，也称为CUI(字符用户界面)
+    1. 相比于GUI，CLI更节省计算机资源，一般用于服务器环境，如babel、vue-cli、webpack...
+    2. Node第三方命令行框架：commander、chalk、inquirer
+    3. commander：命令行开发工具
+    4. chalk：命令行样式风格控制器
+    5. inquirer：交互式命令行工具
+3. Server：提供服务，如Web Server、IM...
+</code></pre><h2 id="JS模块化"><a href="#JS模块化" class="headerlink" title="JS模块化"></a>JS模块化</h2><pre><code>模块化规范：CommonJs、AMD、CMD、ES6
+1. CommonJs规范
+    1. 在服务器端：模块的加载是运行时同步加载的；
+    2. 在浏览器端：模块需要提前编译打包处理，因为浏览器不识别 require() 的引入模块方式；
+    3. 暴露模块的两种方式：module.exports = value，exports.xxx = value
+    4. 引入模块：let xxx = require(&apos;xxx&apos;);
+    5. 服务器端的实现：Node.js
+    6. 浏览器端的实现：Browserify，用于对js模块的提前打包处理，&lt;script&gt;引入处理后的js
+2. AMD规范：专门用于浏览器端，模块的加载是异步的
+    1. CommonJs最初是基于服务器端的Js模块化规范，AMD针对浏览器端出了一套JS模块化规范之后，
+    CommonJs才有了基于浏览器端的实现；
+    2. 暴露模块--&gt;定义没有依赖的模块：define(function(){ return 模块 })
+    3. 暴露模块--&gt;定义有依赖的模块：
+    define([&apos;module1&apos;, &apos;module2&apos;], function(m1, m2){ --&gt;回调的形参与依赖的模块相对应
+        return 模块
+    })
+    4. 浏览器端的实现：RequireJs，使用时，&lt;script&gt;引入require.js，并指定主模块入口
+    &lt;script data-main=&quot;js/main.js&quot; src=&quot;js/libs/require.js&quot;&gt;&lt;/script&gt;
+    5. 在主模块中声明要引入的其他模块，这样只用一个&lt;script&gt;就能引入所有需要的模块
+3. CMD规范：CMD是阿里的JS规范，也是专门用于浏览器端，后来出售给了国外，很少用；
+    1. CMD规范其实就是把CommonJs和AMD进行结合，定义模块使用AMD，暴露模块使用CommonJS；
+    2. 浏览器端的实现：SeaJs，使用时，一个&lt;script&gt;引入sea.js，一个&lt;script&gt;引入主模块；
+    &lt;script type=&quot;text/javascript&quot; src=&quot;js/libs/sea.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt; seajs.use(&apos;./js/modules/main&apos;) &lt;/script&gt;
+4. ES6规范：依赖模块需要编译打包处理
+    1. 导出模块：export，引入模块：import，Vue.js2.0就是基于ES6规范
+    2. 浏览器端的实现：Babel、Browserify
+    3. Babel：有的浏览器不支持ES6的语法，Babel可以将ES6编译为ES5
+    4. Browserify：用于编译打包JS
+    5. 常规暴露：export { fun1, fun2 }，引入：import {fun1, fun2} from &apos;./module&apos;
+    6. 默认暴露：可以暴露任意数据类型，而且暴露的数据与引入的数据是一致的；
+    export default () =&gt; { ... } ---&gt; 暴露一个方法
+    引入： import fun from &apos;./module&apos; ---&gt; fun就是module.js中默认暴露的方法
+5. 自动化打包工具：webpack、Grunt、Gulp，用于简化编译打包JS/Sass/Less、压缩、合并等过程
+</code></pre><h2 id="CommonJs"><a href="#CommonJs" class="headerlink" title="CommonJs"></a>CommonJs</h2><pre><code>1. CommonJs规范主要是为了弥补JS没有标准的缺陷，终极目标是提供一个类似Python、Ruby和Java的
+   标准库，而不只是停留在小脚本程序的阶段；
+2. CommonJs就是模块化的标准，nodeJs就是CommonJs的一种实现；
+3. NodeJs中的模块分为两类：
+    1. NodeJs本身提供的核心模块，如http、url、fs，可以直接引入使用；
+    2. 自定义模块：依照CommonJs中的规定，实现的第三方模块。
+</code></pre><h3 id="自定义模块的规定"><a href="#自定义模块的规定" class="headerlink" title="自定义模块的规定"></a>自定义模块的规定</h3><pre><code>1. 一个JS文件作为一个模块，通过 exports 或者 module.exports 暴露属性/方法；
+2. 自定义模块的查找过程：
+    1. 如果当前目录下没有，则去当前目录下的node_modules目录中查找；
+    var foo=require(&apos;foo&apos;) --&gt; ./node_modules/foo.js
+    2. 如果node_modules目录中没有foo.js，但有foo文件夹，且foo.js在foo目录中；
+    var foo=require(&apos;foo/foo.js&apos;) --&gt; ./node_modules/foo/foo.js
+3. 如果希望 require(&apos;foo&apos;) 能直接引用 ./node_modules/foo/foo.js
+    1. 在foo目录下执行 npm init --yes，生成package.json文件，--yes表示强制生成；
+    2. require(&apos;foo&apos;)在node_modules中查找到foo目录，那么就查找foo/package.json，
+    如果不存在，则提示没有foo.js模块；
+    3. 如果package.json存在，则查找main节点，此时的foo目录被视为一个模块，main节点表示
+    模块的入口，也就是真正暴露的模块；
+    4. 如果main节点指向 foo.js，则查找foo/foo.js，如果指向 index.js，则require(&apos;foo&apos;)
+    实际引用的是foo/index.js
+4. 通过 npm 下载第三方模块时，也会自动下载到node_modules目录中，下载的其实也是目录；
+    1. npm i md5-node --save 与 --save-dev：都会把md5-node写入package.json中；
+    2. --save：同-S，写入到package.json中的 &quot;dependencies&quot; 中；
+    3. --save-dev：同-D，写入到package.json中的 &quot;devDependencies&quot; 中；
+5. &quot;dependencies&quot; 与 &quot;devDependencies&quot; 的区别：
+    1. 正常执行 cnpm install 时，dependencies和devDependencies中的模块都会下载；
+    2. --save：运行时依赖，如vue、react等，没有这些依赖，打包的项目无法运行；
+    3. --save-dev：开发时依赖，即开发环境所需的依赖，如构建工具，测试工具等等，打包发布时
+    不需要这些工具，如less-loader、webpack、babel
+</code></pre><h3 id="模块的加载机制"><a href="#模块的加载机制" class="headerlink" title="模块的加载机制"></a>模块的加载机制</h3><pre><code>1. 模块的分类：文件模块、文件夹模块、核心模块
+    1. 文件模块其实就是一个JS文件，通过 module.exports 暴露模块的功能；
+    2. 文件夹模块可分为 node_modules Folders 和 global Folders
+    3. global folders 是全局模块，由node的环境变量NODE_PATH控制所在路径。
+2. 路径加载模式：require(&apos;./m3&apos;)引入模块时，以 ./、../、/ 开头，表示路径模块加载模式
+3. 非路径加载模式：require(&apos;m3&apos;)在引入时不指定模块的路径
+    1. module.paths是一个数组，保存的是查找此模块的路径列表；
+    2. 核心模块是node的内置模块，require()引用时也不需要指定路径；
+    3. 但是，如果自定义的模块名与核心模块名相冲突，则默认加载核心模块。
+4. 模块文件的后缀名处理机制：require(&apos;./m3&apos;) --&gt; m3 -&gt; m3.js -&gt; m3.json -&gt; m3.node
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/06/09/JS-ES6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/09/JS-ES6/" itemprop="url">JS-ES6</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T00:00:00+08:00">
+                2018-06-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ES6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h2><pre><code>1. 声明变量：let、const
+    1. let：块级作用域，不能重复声明，不会预处理，不存在变量提升；
+    2. const：与let类似，但它定义的是常量，不能修改；
+2. 变量的结构解析(解构赋值)：从对象/数组中提取数据，并赋值给一个/多个变量；
+    1. 对象：let obj = { name: &apos;Mack&apos;, age: 12 }
+    let {name, age} = obj; --&gt;变量名必须与对象中的属性名保持一致，位置可以任意排列
+    console.log(name, age); --&gt; name=&apos;Mack&apos;, age=12
+    let {name} = obj; --&gt; 需要哪些属性，就获取哪些属性
+    2. 数组：let arr = [ 1, 3, 5, false, &apos;hello&apos; ]
+    let [ a, b ] = arr; --&gt; 变量值与位置有关，与数组的下标对应
+    let [,,, a, b] = arr; --&gt; a=false, b=&apos;hello&apos;
+3. 模板字符串：``和${xxx}
+    1. `` 是模板字符串的标识，${xxx} 是变化的部分，简化字符串的拼接
+    2. let str = `My name is ${obj.name}`  --&gt; &apos;My name is Mack&apos;
+4. 对象属性/方法的简写方式：let name = &apos;Mack&apos;
+    let obj = { name,  ---&gt; 等同于 name: name，同名属性可以省略
+        getName() { ... }, --&gt; 等同于 getName: function() { ... }
+    }
+5. 形参默认值：function test(x=1, y=2, z) { ... }
+</code></pre><h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><pre><code>1. 箭头函数：(arg1, arg2,) =&gt; { ... }，类似于lambda表达式
+    1. 无参数：let fun = () =&gt; console.log(&apos;Hello JS&apos;);
+    fun(); --&gt; fun指向箭头函数，fun()调用箭头函数
+    2. &quot;=&gt;&quot;后是单条语句时，可省略&quot;{}&quot;，且该语句执行的结果会作为函数的返回值；
+    3. 一个参数：let fun = a =&gt; console.log(a);
+    4. 多个参数：let fun = (a, b) =&gt; console.log(a, b);
+    5. 多条语句时，&quot;{}&quot;不能省略，函数的返回值仍默认为undefined
+    let fun = () =&gt; {
+        return &apos;Hello World&apos;;  --&gt; 手动指定返回值
+    }
+2. 箭头函数的this：
+    1. 箭头函数没有自己的this，它的this不是调用时决定的，而是在定义时所处的环境决定的；
+    2. 如果箭头函数直接定义在一个对象/函数中，那么箭头函数的this就是该对象/函数的this，
+    否则，箭头函数的this指向window；
+    3. 也就是说，箭头函数的this取决于箭头函数所定义的外层空间；
+    element.onclick = function() { ...// this就是element对象 }
+    element.onclick = () =&gt; {
+        // 箭头函数定义在全局作用域，也即定义在window中，那么this指向window
+    }
+3. 可变参数：...rest，用于取代arguments
+    1. arguments只是类似于数组，但并不具备数组的方法，如forEach()
+    2. ...rest只接收多余的实参，而且是一个数组；
+    function(a, b, ...rest) { --&gt; 必须放在参数的最后位置
+        rest.forEach((item, index) =&gt; { ... }) --&gt; 遍历多余参数
+    }
+    3. 扩展应用-三点运算符：let arr = [2, 3, 4];
+    let arr2 = [1, ...arr, 5] --&gt; [1, 2, 3, 4, 5]
+    console.log(...arr2) --&gt; 1 2 3 4 5，三点运算符会自动遍历数组元素
+    4. 三点运算符还可以浅拷贝复制数组和对象
+    let copyArr = [...arr]
+    let obj = { name:&apos;Mack&apos; } ---&gt; let copyObj = { ...obj }
+</code></pre><h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><pre><code>1. Promise对象：表示未来某个将要发生的事件，通常是一个异步操作；
+2. Promise可以将异步操作以同步的方式表达出来，避免了层层嵌套的回调(回调地狱)；
+3. 使用Promise：Promise是ES6的一个构造函数
+    1. 创建Promise对象：
+    let promise = new Promise((resolve, reject) =&gt; {
+        //Promise为初始化状态：pending
+        ...... //执行异步操作
+        if(异步操作成功) { resolve(value); } --&gt;修改Promise为成功状态：fullfilled
+        else { reject(errMsg); } --&gt; 修改Promise为失败状态：rejected
+    });
+    2. 调用Promise的then()
+    promise.then(result =&gt; { --&gt;执行resolve()，则回调then()的第一个函数
+            console.log(result);
+        }, errMsg =&gt; {  --&gt; 执行reject()，则回调then()的第二个函数
+            console.log(errMsg);
+        }
+    ) --&gt; 回调参数result、errMsg分别是resolve()、reject()传递的value、errMsg
+    3. 封装AJAX请求：
+    fuction getNews(url) {
+        let promise = new Promise((resolve, reject) =&gt; {
+            let http = new XMLHttpResponse();
+            http.onreadystatechange = function() {
+                if(http.readyState!==4) return;
+                if(http.status == 200) {
+                    resolve(http.responseText); --&gt;请求成功，修改状态
+                } else {
+                    reject(&apos;暂时没有数据&apos;); ---&gt;请求失败，修改状态
+                }
+            };
+            http.open(&apos;GET&apos;, url);  http.send(); --&gt;发送请求
+        })；
+        return promise;
+    }
+    getNews(&apos;http://&apos;).then(res =&gt; { ······
+            return getNews(res.url); --&gt;发送第二次AJAX请求，必须返回一个
+        }, error =&gt; { ······ }   --------&gt; Promise对象，then()可以链式回调;
+    ).then(res =&gt; {  ----&gt; 回调第二次AJAX的结果
+        ······
+    }, error =&gt; { ······ });
+</code></pre><h2 id="Symbol属性"><a href="#Symbol属性" class="headerlink" title="Symbol属性"></a>Symbol属性</h2><pre><code>1. ES5中对象的属性名都是字符串，容易重名，污染环境；
+2. Symbol是ES6新增的一种数据类型，它对应的值是唯一的；
+3. 不能与其他数据计算，包括字符串拼接，for-in/for-of不会遍历Symbol属性；
+    let sym = Symbol();  --&gt; Symbol不是构造函数，不用new创建
+    let obj = { name: &apos;Mack&apos; }
+    obj[sym] = &apos;Hello&apos;; --&gt; 为对象添加Symbol属性，其属性值为&apos;Hello&apos;
+4. 创建Symbol时还可以传递参数，作为Symbol的标识；
+    let sym = Symbol(&apos;Hello&apos;)
+    const SYM = Symbol(&apos;key&apos;) ---&gt; 定义为常量
+5. ES6还提供了11个内置的Symbol值，指向内部使用方法，如Symbol.iterator
+</code></pre><h3 id="Iterator"><a href="#Iterator" class="headerlink" title="Iterator"></a>Iterator</h3><pre><code>1. Iterator：一种接口机制，为各种不同的数据结构提供统一的访问机制；
+2. ES6提供了一种新的遍历方式：for-of，Iterator主要供for-of消费；
+3. 模拟Iterator的原理：let arr = [1, 4, 27, &apos;abc&apos;]
+    function myIterator(arr) {
+        let index = 0;  ---&gt; 记录指针的位置
+        return {  -----&gt; 遍历器对象
+            next: function() {
+                return index &lt; arr.length ? {value:arr[index++], done:false}
+                 : { value: undefined, done: true }
+            }
+        }
+    }
+    let iter = myIterator(arr);
+    console.log(iter.next()); --&gt; { value: 1, done: false }
+    ......
+    console.log(iter.next()); --&gt; { value: &apos;abc&apos;, done: false }
+    console.log(iter.next()); --&gt; { value: undefined, done: true }
+4. 将Iterator接口部署到指定的数据类型上，则可以用for-of遍历；
+    1. JS的原生数据类型中具备Iterator接口的有：String、Array、arguments、Set、Map
+    2. for(let i of [1,2,3]) { ...//i就是每次循环的元素 }
+5. Symbol.iterator
+    1. String、Array、arguments等对象具备Iterator接口，但普通对象并没有Iterator接口，
+    所以不能使用for-of遍历；
+    2. 为普通对象添加Symbol.iterator属性，指向其默认遍历器方法，for-of就能遍历该对象；
+    3. Symbol.iterator属性添加给对象，就等同于为该对象部署了Iterator接口；
+    let data = {
+        [Symbol.iterator]: function() {
+            let index = 0; ---&gt; 记录指针的位置
+            return { ... } ---&gt; 遍历器对象
+        }
+    }
+    4. 三点运算符和解构赋值，默认调用的就是Iterator接口。
+</code></pre><h3 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h3><pre><code>1. Generator函数：ES6提供的解决异步编程的方案之一；
+    function* test() {
+        yield &apos;test1&apos;
+        yield &apos;test2&apos;
+    }
+2. 调用Generator函数，返回一个指针对象，由该对象调用next()，遇到yield返回；
+    let gen = test();
+    console.log(gen.next());  --&gt; {value: &quot;test1&quot;, done: false}
+    console.log(gen.next());  --&gt; {value: &quot;test2&quot;, done: false}
+    console.log(gen.next());  --&gt; {value: undefined, done: true}
+3. 为普通对象添加Symbol.iterator属性，指向一个Generator函数；
+    let obj = { name: &apos;Mack&apos; }
+    obj[Symbol.iterator] = function* gen() { --&gt;为对象部署Iterator接口
+        yield 1
+        yield 2
+    }
+    for(let i of obj) {  ---&gt; 具备Iterator接口的对象，for-of都可以遍历
+        console.log(i)  --&gt; 1 2
+    }
+4. let result = yield &apos;test1&apos;  --&gt; yield的返回值默认是undefined
+5. next(arg)：参数arg会先赋值给当前指针所在的yield，再向下移动；
+    function getNews(url) {
+        $.get(url, function(data) { --&gt; jQuery-GET请求成功的回调
+            HTTP.next(data.url);  ---&gt; 获取新的URL，发送第二次请求
+        });
+    }
+    function* sendHttp() {
+        let url = yield getNews(&apos;http://...&apos;) --&gt; 第一次next()
+        yield getNews(url)  --&gt; 第二次next()，需要传递参数
+    }
+    let HTTP = sendHttp(); ---&gt; 获取遍历器对象
+    HTTP.next();  --&gt; 发送第一次GET请求
+</code></pre><h2 id="async"><a href="#async" class="headerlink" title="async"></a>async</h2><pre><code>1. async函数：真正意义上解决回调地狱的问题，同步的方式表达异步操作；
+2. async函数的本质是Generator的语法糖，源自ES2016(ES7)；
+    1. async函数返回的总是Promise对象，用then()进行下一步操作；
+    async function test() {  ---&gt; 函数test变成一个异步函数
+        return &apos;hello async&apos;;
+    }
+    test().then(res=&gt;{
+        console.log(res); --&gt;hello async
+    })
+    2. async取代Generator函数的&quot;*&quot;，await取代Generator函数的yield；
+    async function test() {
+        await 异步操作; --------&gt; 该异步操作总是返回一个Promise对象
+        await 异步操作;
+    }
+    3. async函数不需要像Generator函数那样去调用next()，遇到await就会等待，当前的异步操作
+    完成后，则继续向下执行。
+3. async的使用方式
+    1. 基本使用
+    async function test() { return &apos;hello async&apos;; }
+    async function exec() {
+        let t = await test(); --&gt; 阻塞程序，等待异步方法test() 执行完成
+        console.log(t)
+    }
+    2. async函数返回一个Pormise对象，await总是配合Promise使用，返回值由resolve()决定
+    async function test() {
+        let res = await new Promise((resolve, reject) =&gt; {
+                setTimeout(() =&gt; { resolve(&apos;Mack&apos;); }, 2000);
+            })
+        console.log(res); --&gt; 2000ms之后打印 Mack
+    }
+    3. await语句默认返回undefined，resolve()可以为awiat传递参数，reject()表示异步任务
+    失败，会终止继续向下执行。
+4. 发送AJAX请求：
+    function getNews(url) {
+        return new Promise((resolve, reject) =&gt; {
+            $.ajax({ method: &apos;GET&apos;, url,
+                success: data =&gt; resolve(data), --&gt; GET请求成功
+                error: error =&gt; resolve(error) --&gt; 请求失败不使用reject()
+            }) ------&gt; 那么await会继续向下执行，由此判断成功还是失败
+        })
+    }
+    async function sendHttp() {
+        let res = await getNews(&apos;http://...&apos;)
+        if(res) { --&gt; 判断res的状态
+            res = await getNews(res.url) --&gt; 继续执行异步任务
+        } else { alert(&apos;请求失败&apos;) --&gt; 请求失败，则提示给用户 }
+    }
+    sendHttp();
+</code></pre><h2 id="其他新增"><a href="#其他新增" class="headerlink" title="其他新增"></a>其他新增</h2><pre><code>1. class：可以定义类、实现类的继承，通过类中的constructor定义构造方法；
+    1. new 创建类的实例对象，extends实现类的继承，super调用父类的构造方法；
+    class Person {
+        constructor(name, age) {  ---&gt; 构造函数
+            this.name = name;  this.age = age; --&gt; 定义属性
+        }
+        showName() {   -------------&gt; 类的方法必须是简写形式
+            console.log(this.name);
+        }
+        static run() {  -----------------&gt; 静态方法
+            console.log(&apos;static method&apos;);
+        }
+    }
+    2. 创建实例对象：let p = new Person(&apos;Mack&apos;, 18)
+    3. 静态方法可以直接通过类名调用：Person.run();
+    4. extends：类的继承
+    class Stu extends Person {
+        constructor(name, age, job) {
+            super(name, age);  ------&gt; 必须先初始化父类的构造方法
+            this.job = job;
+        }
+        showName() {  ...... } ---&gt; 重写父类的方法
+    }
+2. 字符串的扩展
+    1. includes(str)：判断是否包含某个字符串；
+    2. startsWidth(str)/endsWidth(str)：判断是否以某个字符串开头/结尾；
+    3. repeat(count)：把当前字符串拼接count次，并返回；
+3. number的扩展
+    1. 二进制与八进制的数值表示：0b、0o
+    2. Number.isFinite(num)：判断num是否是一个有限大的是数字；
+    3. Number.isNaN(num)/isInteger(num)：判断num是否是NaN/整数；
+    4. Number.parseInt(str)：把字符串转为数值；
+    5. Math.trunc(num)：取整，去除小数部分。
+4. Array的扩展
+    1. Array.from(v)：将伪数组/可遍历对象转为真实的数组，包括Set、Map、字符串
+    低于ES6的版本：Array.prototype.slice.call(v)
+    2. Array.of(v1, v2, v3)：将一系列的值转为一个数组[v1, v2, v3]
+    3. find/findIndex((value, index, arr) =&gt; { return true })
+    查找第一个满足条件返回true的元素/元素下标：let arr = [2, 3, 5, 7, 1]
+    let res = arr.find(function(v, i) { return v &gt; 4 }) --&gt; 5
+5. 对象方法的扩展
+    1. Object.is(v1, v2)：判断2个数据是否完全相等；，Object.is(NaN, NaN) --&gt;true
+    Object.is(0, -0) --&gt; false，其实该方法是按照字符串的标准比较的
+    2. Object.assign(target, s1,s2,...)：将源对象s1、s2...的属性复制给目标对象target
+    let s1 = { name:&apos;Mack&apos;, job:&apos;Teacher&apos; };  let s2 = { name:&apos;JJJ&apos;, age:20 };
+    let target1 = {}
+    let target2 = Object.assign(target, s1,s2); ---&gt; s2的name属性会覆盖s1的name属性
+    --&gt; target1和target2：{ name:&apos;JJJ&apos;, age:20, job:&apos;Teacher&apos; }
+    3. 直接操作隐式原型__proto__，ES6之前不能访问隐式原型。
+6. 深度克隆
+    1. 浅拷贝：拷贝的是引用，修改拷贝后的数据，会影响原数据；
+    2. 深拷贝对象/数组：JSON.parse(JSON.stringify(data))
+    3. 三点运算符、Object.assign(target, s1,s2) 都是浅拷贝
+</code></pre><h2 id="Set、Map"><a href="#Set、Map" class="headerlink" title="Set、Map"></a>Set、Map</h2><pre><code>1. Set：无序、不可重复的、多个value的集合体；
+    1. let set = new Set(); --&gt; set.size：value的个数
+    2. let set = new Set(array); --&gt;会去除array中的重复数据；
+    3. 添加、删除、清空：add(value)、delete(value)、clear()
+    4. has(value)：判断value是否存在。
+2. Map：无序的、key不重复的、多个key-value的集合体；
+    1. let map = new Map(); --&gt; set.size：key的个数
+    2. new Map([[1], [4,5], [7,8,9]]) --&gt;{ 1=&gt;undefined, 4=&gt;5, 7=&gt;8 }
+    3. 添加/修改、获取value、删除：set(key, value)、get(key)、delete(key)
+    4. has(key)：判断key是否存在；  clear()：清空。
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2018/06/07/JS-新特性/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/07/JS-新特性/" itemprop="url">JS-新特性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-07T00:00:00+08:00">
+                2018-06-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ES"><a href="#ES" class="headerlink" title="ES"></a>ES</h2><pre><code>JS包含三个部分：ECMAScript(核心)、扩展浏览器端、扩展服务器端
+1. ECMAScript：2009年发布ES5，2015年发布ES6，2016年发布ES7
+2. 扩展浏览器端：BOM(浏览器对象模型)、DOM(文档对象模型)
+3. 扩展服务器端：Node.js
+</code></pre><h3 id="ES5"><a href="#ES5" class="headerlink" title="ES5"></a>ES5</h3><pre><code>1. 严格模式：除了正常运行模型(混杂模型)，ES5增加了严格模式(strict mode)
+    1. 消除JS语法的一些不合理、不严谨、不安全之处，减少一些怪异行为；
+    2. 使用：在全局/函数的首行定义&apos;use strict&apos;; 即使不支持，也没有任何副作用；
+2. 严格模式的语法和行为：
+    1. 变量必须用var声明，混杂模式下，如果不使用，则升级为全局变量，即添加给window
+    2. 禁止自定义函数中的this指向window
+    function Person(name) { this.name = name; }
+    Person(&apos;Mack&apos;) --&gt; 直接调用构造函数，则this指向window，严格模式不允许
+    new Person(&apos;Mack&apos;) --&gt; 创建实例对象，则this指向当前的实例对象
+    3. 创建eval作用域：var str = &apos;Mack&apos;;
+    eval(&apos;var str = &quot;Any&quot;; alert(str);&apos;); --&gt; var str = &quot;Any&quot;; alert(str);
+    alert(str); --&gt; 非严格模式下，str=&apos;Any&apos;，那么就可以借助eval()攻击
+    4. 对象不能有重名的属性。
+3. 为Object扩展一些静态方法，如create()、defineProperties()、defineProperty()
+    var obj = { name: &apos;Mack&apos;, age: 30 }
+    1. create(prototype, [descriptors])：以指定对象为原型，创建新的对象；
+    var obj2 = {};  var obj4 = {};
+    obj2 = Object.create(obj); --&gt; obj2仍是空的，但其隐式原型指向obj
+    obj4 = Object.create(obj, {
+        sex: {  --------------&gt; 扩展属性
+            value: &apos;Male&apos;, ---&gt; 属性值
+            writale: true, ---&gt; 当前属性值是否可修改，默认为false
+            configurable: true, ---&gt; 当前属性是否能被删除，默认为false
+            enumerable: true ------&gt; 当前属性能否被for-in遍历，默认为false
+        }
+    })
+    2. defineProperties(object, props)：为指定对象定义扩展属性。
+    Object.defineProperties(obj, {
+        job: { ---&gt; 扩展新的属性
+            get: function() {  --&gt; 访问扩展属性时回调，计算当前属性值
+                return this.name + &apos;:&apos; + this.age;
+            },
+            set: function(data) { --&gt; 修改属性时回调，用于监视属性的变化
+                var n = data.split(&apos;:&apos;)
+                this.name = n[0];  this.age = n[1]
+            },
+        }
+    })
+    console.log(obj.job) --&gt; 回调get()：&apos;Mack:30&apos;
+    obj.job = &apos;Any:16&apos; --&gt; 回调set()：name=&apos;Any&apos;，age=16
+    2. getter和setter都是惰性执行的，只有在访问/修改属性时才会调用，直接打印obj并不会
+    直接显示job的属性值。
+    3. 对象本身也有getter和setter，其实defineProperties()中调用的也是它们；
+    var obj = { name: &apos;Mack&apos;, age: 30,
+        get job() {
+            return this.name + &apos;:&apos; + this.age;
+        },
+        set job(data) {
+            var n = data.split(&apos;:&apos;)
+            this.name = n[0];  this.age = n[1]
+        }
+    }
+    4. defineProperty(obj, prop, descriptor)：参数3为将被定义或修改的属性描述符
+4. 数组Array扩展的方法
+    1. indexOf(value)/lastIndexOf(value)：返回元素的索引；
+    2. forEach(function(item, index){ ... })：遍历数组；
+    3. map(callback)：计算每一个数组元素，并不会影响原数组，而是返回一个新的数组；
+    4. reduce(function(arg1, arg2){ ... })：两两计算，返回最终结果；
+    5. filter(callback)：过滤数组的元素，返回一个新的数组。
+5. 函数扩展的方法：call()，apply()，bind()
+    1. call/apply/bind()都能修改函数中的this指向；
+    2. bind(obj)：让函数内的this指向obj，但不会执行函数，而是将函数返回；
+    3. bind()传递参数的方式与call()相同，通常用于修改回调函数中的this指向。
+</code></pre><h2 id="ES7"><a href="#ES7" class="headerlink" title="ES7"></a>ES7</h2><pre><code>1. 指数运算符：3**3 = 27
+2. Array.prototype.includes(value)：判断数组中是否包含value
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3685,7 +3629,7 @@ res.cookie(&apos;uname&apos;, &apos;Node&apos;, {domain:&apos;.exa.com&apos;, pa
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3707,7 +3651,7 @@ res.cookie(&apos;uname&apos;, &apos;Node&apos;, {domain:&apos;.exa.com&apos;, pa
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
