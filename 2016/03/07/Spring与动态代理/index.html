@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="事务问题public class Account {  //账户实体类     private int id;     private String name;     private double money;     //setter、getter } public AccountServiceImpl implements IAccountService {     private IAcc">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-18T14:16:50.436Z">
+<meta property="og:updated_time" content="2019-04-19T12:04:47.438Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring与动态代理">
 <meta name="twitter:description" content="事务问题public class Account {  //账户实体类     private int id;     private String name;     private double money;     //setter、getter } public AccountServiceImpl implements IAccountService {     private IAcc">
@@ -502,17 +502,17 @@ public AccountServiceImpl implements IAccountService {
     1. 创建动态代理
     IProducer proxyProducer = (IProducer)Proxy.newProxyInstance(
             p.getClass().getClassLoader(), p.getClass().getInterfaces(), 
-    new InvocationHandler() {
-        public Object invoke(Object proxy, Method method, Object[] args) {
-            Object leftMoney = null;
-            Float money = (Float)args[0];
-            if(&quot;sale&quot;.equals(method.getName())) {
-                //购买时，代理商提取20%的回扣
-                leftMoney = method.invoke(p, money*0.8f);
+        new InvocationHandler() {
+            public Object invoke(Object proxy, Method method, Object[] args) {
+                Object leftMoney = null;
+                Float money = (Float)args[0];
+                if(&quot;sale&quot;.equals(method.getName())) {
+                    //购买时，代理商提取20%的回扣
+                    leftMoney = method.invoke(p, money*0.8f);
+                }
+                return leftMoney;
             }
-            return leftMoney;
-        }
-    });
+        });
     2. 消费者通过代理对象实现购买与服务
     proxyProducer.sale(10000f);  //生产商销售产品，拿到钱：8000
 </code></pre><h3 id="基于子类的动态代理"><a href="#基于子类的动态代理" class="headerlink" title="基于子类的动态代理"></a>基于子类的动态代理</h3><pre><code>1. 为一个普通的类创建动态代理：
@@ -559,6 +559,12 @@ public AccountServiceImpl implements IAccountService {
         public List&lt;Account&gt; findAll() {
             return dao.findAll();
         }
+        public Account findByName(String name) {
+            return dao.findByName(name);
+        }
+        public void update(Account account) {
+            dao.update(account);
+        }
         ......
     }
 2. 创建Service的代理对象的工厂
@@ -568,11 +574,11 @@ public AccountServiceImpl implements IAccountService {
         ......//setter
         public IAccountService getAccountService() {
             return (IAccountService) Proxy.newProxyInstance(
-        service.getClass().getClassLoader(), service.getClass().getInterfaces(), 
+            service.getClass().getClassLoader(), service.getClass().getInterfaces(), 
             new InvocationHandler(){
                 public Object invoke(Object proxy, Method method, Object[] args)  {
                     object rtValue = null;
-                    try { //增强方法，加入事务
+                    try { //增强方法: 在执行Service的方法时, 加入事务
                         manager.beginTransaction();
                         rtValue = method.invoke(service, args);
                         manager.commit();
@@ -643,8 +649,8 @@ public AccountServiceImpl implements IAccountService {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/08/Spring与AOP/" rel="prev" title="Spring与AOP">
+                Spring与AOP <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -722,7 +728,7 @@ public AccountServiceImpl implements IAccountService {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
