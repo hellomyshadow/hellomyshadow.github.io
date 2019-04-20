@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="IoC注解1. @Component：创建对象，&amp;lt;bean&amp;gt;标签的功能，把类对象存入Spring容器中     @Component(&amp;quot;userService&amp;quot;)  ---&amp;gt;@Component(value=&amp;quot;userService&amp;quot;)     public class UserServiceImpl implements IUserSer">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-17T14:23:36.255Z">
+<meta property="og:updated_time" content="2019-04-20T06:46:54.334Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring注解">
 <meta name="twitter:description" content="IoC注解1. @Component：创建对象，&amp;lt;bean&amp;gt;标签的功能，把类对象存入Spring容器中     @Component(&amp;quot;userService&amp;quot;)  ---&amp;gt;@Component(value=&amp;quot;userService&amp;quot;)     public class UserServiceImpl implements IUserSer">
@@ -343,7 +343,7 @@
     3. 通过注解创建对象
     ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
     IUserService us = (IUserService)ac.getBean(&quot;userService&quot;);
-2. 还有三个与 Component 功能相同的衍生注解，只是Spring为了三层架构更加清晰
+2. Spring为了三层架构更加清晰, 还有三个与 Component 功能相同的衍生注解
     1. Controller：一般用于表现层；
     2. Service：一般用于表现层；
     3. Repository：一般用在持久层。
@@ -681,6 +681,7 @@
 4. @RunWith：Junit提供的注解，把 main() 替换成Spring提供的;
 5. @ContextConfiguration：告知Spring的运行器，创建IoC容器使用的是XML还是注解，并指定其位置;
     1. locations属性：指定XML文件的位置，使用classpath关键字，表示在类路径下;
+        @ContextConfiguration(locations=&quot;classpath:bean.xml&quot;)
     2. classes属性：指定注解类所在的位置；
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(classes=SpringConfiguration.class)
@@ -814,7 +815,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

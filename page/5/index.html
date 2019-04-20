@@ -232,6 +232,565 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/09/Spring事务控制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/09/Spring事务控制/" itemprop="url">Spring事务控制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-09T00:00:00+08:00">
+                2016-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="JdbcTemplate"><a href="#JdbcTemplate" class="headerlink" title="JdbcTemplate"></a>JdbcTemplate</h2><pre><code>1. JdbcTemplate是Spring提供的一个对象，对原始JDBC的一层简单封装；
+    1. 操作关系型数据库：JdbcTemplate、HibernateTemplate
+    2. 操作NoSQL数据库：RedisTemplate
+    3. 操作消息队列：JmsTemplate
+</code></pre><p><img src="//hellomyshadow.github.io/2016/03/09/Spring事务控制/持久层.jpg" alt="持久层"></p>
+<pre><code>2. JdbcTemplate的依赖包：spring-jdbc，除此之外，还有事务相关的依赖：spring-tx
+    spring-context、spring-jdbc、spring-tx、mysql-connector-java
+3. JdbcTemplate的简单使用
+    1. 实体类Account
+        public class Account {
+            private int id;  private String name;  private float money;
+            //setter、getter
+        }
+    2. Spring的内置数据源DriverManagerDataSource
+        DriverManagerDataSource ds = new DriverManagerDataSource();
+        ds.setDriverClassName(&quot;com.mysql.cj.jdbc.Driver&quot;);
+        ds.setUrl(&quot;jdbc:mysql://...&quot;);
+        ds.setUsername(&quot;root&quot;);  ds.setPassword(&quot;123456&quot;);
+        JdbcTemplate jt = new JdbcTemplate();
+        jt.setDataSource(ds);
+        jt.execute(&quot;insert into account(name, money) values(&apos;Java&apos;, 1000)&quot;);
+4. JdbcTemplate的CRUD
+    1. 插入一条数据
+        jt.update(&quot;insert into account(name, money) values(?, ?)&quot;, &apos;AAA&apos;, 1000);
+    2. 修改/删除
+        jt.update(&quot;update/delete ...&quot;, ...);
+    3. 查询
+        jt.query(String sql, Object[] args, RowMapper&lt;T&gt; rowMapper); //通用方式
+        jt.query(String sql, RowMapper&lt;T&gt; rowMapper, Object... args); //JDK1.5+
+    4. RowMapper：接口，泛型就是实体类，其方法 mapRow() 用于把数据封装到实体类对象中
+        class AccountRowMapper implements RowMapper&lt;Account&gt; {
+            public Account mapRow(ResultSet rs, int rowNum) {
+                Account account = new Account();
+                account.setId(rs.getInt(&quot;id&quot;));
+                account.setName(rs.getString(&quot;name&quot;));
+                account.setMoney(rs.getFloat(&quot;money&quot;));
+                return account;
+            }
+        }
+    List&lt;Account&gt; accounts =
+         jt.query(&quot;select * from account where money&gt;?&quot;, new AccountRowMapper(), 1000f);
+    5. Spring也提供了RowMapper的实现类：BeanPropertyRowMapper
+    jt.query(&quot;select * from account&quot;, new BeanPropertyRowMapper&lt;Account&gt;(Account.class));
+5. 聚合函数
+Integer count = 
+    jt.queryForObject(&quot;select count(id) from account where money&gt;?&quot;, Integer.class, 1000f);
+</code></pre><h3 id="基于Spring-IoC"><a href="#基于Spring-IoC" class="headerlink" title="基于Spring IoC"></a>基于Spring IoC</h3><pre><code>1. Dao层的接口及其实现类：IAccountDao、AccountDaoImpl
+    public class AccountDaoImpl implements IAccountDao {
+        private JdbcTemplate jt;
+        ......//setter、CRUD
+    }
+2. IoC配置文件bean.xml
+    &lt;bean id=&quot;accountDao&quot; class=&quot;cn.test.dao.impl.AccountDaoImpl&quot;&gt;
+        &lt;property name=&quot;jt&quot; ref=&quot;jt&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;jt&quot; class=&quot;org.springframework.jdbc.core.JdbcTemplate&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;ds&quot; class=&quot;org.springframework.jdbc.datasource.DriverManagerDataSource&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.cj.jdbc.Driver&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://...&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;password&quot; value=&quot;123456&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+3. 直接使用Dao层操作数据库
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IAccountDao dao = ac.getBean(&quot;accountDao&quot;, IAccountDao.class);
+</code></pre><h3 id="JdbcDaoSupport"><a href="#JdbcDaoSupport" class="headerlink" title="JdbcDaoSupport"></a>JdbcDaoSupport</h3><pre><code>1. 如果有多个Dao，那么每个Dao中都会有属性JdbcTemplate及其setter，需要抽取其中的重复代码
+    1. 定义一个Dao层的父类JdbcDaoSupport
+        public class JdbcDaoSupport {
+            private JdbcTemplate jdbcTemplate;
+            //创建无参的JdbcTemplate对象
+            public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+                this.jdbcTemplate = jdbcTemplate;
+            }
+            public JdbcTemplate getJdbcTemplate() {
+                return this.jdbcTemplate;
+            }
+            //创建带参DataSource的JdbcTemplate对象
+            public void setDataSource(DataSource dataSource) {
+                if(this.jdbcTemplate == null) {
+                    this.jdbcTemplate = this.createJdbcTemplate(dataSource);
+                }
+                this.jdbcTemplate = jdbcTemplate;
+            }
+            private JdbcTemplate createJdbcTemplate(DataSource dataSource) {
+                return new JdbcTemplate(dataSource);
+            }
+        }
+    2. Dao层继承JdbcDaoSupport
+    public class AccountDaoImpl extends JdbcDaoSupport implements IAccountDao {
+        ......//CRUD
+    }
+    3. 在为 AccountDaoImpl 注入数据时，可以选择使用无参的JdbcTemplate还是有参的JdbcTemplate
+        &lt;bean id=&quot;accountDao&quot; class=&quot;cn.test.dao.impl.AccountDaoImpl&quot;&gt;
+            &lt;!-- 使用无参的JdbcTemplate对象 --&gt;
+            &lt;property name=&quot;jdbcTemplate&quot; ref=&quot;jt&quot;&gt;&lt;/property&gt;
+            &lt;!-- 使用有参DataSource的JdbcTemplate对象，二选一 --&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
+        &lt;/bean&gt;
+        ......// jt、ds
+2. 另外，Spring提供了一个JdbcDaoSupport，功能和XML注入方式都与自定义的JdbcDaoSupport类似;
+3. JdbcDaoSupport是Spring的内置类，一旦Dao层继承它，那么就只能用配置文件的方式实现注入，
+   不能再使用 @Autowired 实现注入了。
+</code></pre><h2 id="注解AOP实现事务"><a href="#注解AOP实现事务" class="headerlink" title="注解AOP实现事务"></a>注解AOP实现事务</h2><pre><code>1. 连接的工具类
+    @Commonent(&quot;connUtils&quot;)
+    public class ConnectionUtils {
+        private ThreadLocal&lt;Connection&gt; tl = new ThreadLocal&lt;&gt;();
+        @Autowired
+        private DataSource dataSource;
+
+        public Connection getThreadConn() {
+            Connection conn = tl.get();
+            if(conn == null) { //从数据源中获取一个连接，并存入连接池
+                conn = dataSource.getConnection();
+                tl.set(conn);
+            }
+            return conn;
+        }
+        public void removeConn() {
+            // 移除ThreadLocal中当前线程的连接
+            tl.remove();
+        }
+    }
+2. 事务管理的工具类，声明为切面类
+    @Commonent(&quot;manager&quot;)
+    @Aspect
+    public class TransactionManager {
+        @Autowired
+        private ConnectionUtils connUtils;
+        @Pointcut(&quot;execution(* it.bank.service.impl.*.*(..))&quot;)
+        private void pt1() {}
+        @Before(&quot;pt1()&quot;)
+        public void beginTransaction() {  //开启手动提交事务
+            connUtils.getThreadConn().setAutoCommit(false);
+        }
+        @AfterReturning(&quot;pt1()&quot;)
+        public void commit() {  //手动提交事务
+            connUtils.getThreadConn().commit();
+        }
+        @AfterThrowing(&quot;pt1()&quot;)
+        public void rollback() {  //回滚
+            connUtils.getThreadConn().rollback();
+        }
+        @After(&quot;pt1()&quot;)
+        public void release() {  //释放连接，并还给连接池
+            connUtils.getThreadConn().close();
+            connUtils.removeConn();
+        }
+    }
+3. 但是在AOP注解中，通知方法的执行顺序有致命问题：Before --&gt; After --&gt; AfterReturning
+    1. 最终通知优先于后置通知执行，导致连接已经被关闭了，事务无法正确提交！
+    2. 连接关闭并还给连接池后，提交时又会从连接池中获取一个新的连接，但此连接又没有开启过事务，
+    导致提交异常。
+4. 使用环绕通知
+    @Commonent(&quot;manager&quot;)
+    @Aspect
+    public class TransactionManager {
+        @Autowired
+        private ConnectionUtils connUtils;
+        @Pointcut(&quot;execution(* it.bank.service.impl.*.*(..))&quot;)
+        private void pt1() {}
+
+        public void beginTransaction() { ... }
+        public void commit() { ... }
+        public void rollback() { ... }
+        public void release() { ... }
+
+        @Around(&quot;pt1()&quot;)
+        public Object aroundPrint(ProceedingJoinPoint pjp) {
+            Object rtValue = null;
+            try {
+                //1.获取切入点方法执行所需的参数
+                Object[] args = pjp.getArgs();
+                //2.开启事务
+                this.beginTransaction();
+                //3.明确调用切入点方法
+                rtValue = pjp.proceed(args);
+                //4.提交事务
+                this.commit();
+                //5.返回结果
+                return rtValue;
+            } catch(Throwable t) {
+                this.rollback();
+                throw new RuntimeException(t);
+            } finally {
+                this.release();
+            }
+        }
+    }
+</code></pre><h2 id="Spring的事务控制"><a href="#Spring的事务控制" class="headerlink" title="Spring的事务控制"></a>Spring的事务控制</h2><pre><code>1. TransactionManager是自定义的事务管理，Spring也有自己的事务控制；
+    1. JavaEE体系进行分层开发时，事务控制位于业务层，Spring提供了业务层的事务控制方案；
+    2. Spring提供了一组事务控制的接口，这些API就在spring-tx中；
+    3. Spring的事务控制都是基于AOP的，它既可以使用编程式实现，也可以使用配置实现。
+2. 相关依赖：spring-context、spring-jdbc、spring-tx、mysql-connector-java、aspectjweaver
+</code></pre><h3 id="事务控制的API"><a href="#事务控制的API" class="headerlink" title="事务控制的API"></a>事务控制的API</h3><pre><code>1. PlatformTransactionManager：提供事务操作的接口
+    1. getTransaction(TransactionDefinition d)：获取事务的状态信息;
+    2. commit(TransactionStatus status)：提交事务;
+    3. rollback(TransactionStatus status)：回滚事务;
+    4. 实现类：DataSourceTransactionManager、HibernateTransactionManager;
+    5. DataSourceTransactionManager：用于Spring JDBC 或 iBatis;
+    6. HibernateTransactionManager：用于hibernate.
+2. TransactionDefinition：事务的定义信息
+    1. getName()：获取事务的名称;
+    2. getIsolationLevel()：获取事务的隔离级别;
+    3. getPropagationBehavior()：获取事务的传播行为;
+    4. 传播行为：何时才需要事务(增删改)，何时不需要事务(查询);
+    5. getTimeout()：事务的超时时间，提交和回滚何时过期，可以配置为永不过期;
+    6. isReadOnly()：事务是否只读，读写型事务(增删改)、只读型事务(查询);
+3. 事务的隔离级别
+    1. ISOLATION_DEFAULT：使用数据库的默认隔离级别;
+    2. ISOLATION_READ_UNCOMMITTED：读未提交;
+    3. ISOLATION_READ_COMMITTED：读已提交，Oracle的默认级别;
+    4. ISOLATION_REPEATABLE_READ：不可重读，MySQL的默认隔离级别;
+    5. ISOLATION_SERIALIZABLE：最高级别.
+4. 事务的传播行为
+    1. REQUIRED：默认值，如果当前没有事务，则新建一个，如果已存在一个事务，则加入到该事务中;
+    2. SUPPORTS：支持当前事务，如果当前没有事务，则以非事务的方式执行(有就用，没有就不用);
+    3. MANDATORY、REQUERS_NEW、NOT_SUPPORTED、NEVER、NESTED
+5. 超时时间：以秒为单位，默认值-1，表示没有超时限制;
+6. TransactionStatus：描述某个时间点上事务对象的状态信息;
+    1. flush()：刷新事务;
+    2. hasSavepoint()：是否存在存储点，将一个事务按步提交，如果某一步失败，只回滚到这一步前，
+    而不是从头开始;
+    3. isCompleted()：事务是否完成;
+    4. isNewTransaction()：当前事务是不是一个新事务;
+    5. isRollbackOnly()：事务是否回滚;
+    6. setRollbackOnly()：设置事务回滚;
+</code></pre><h3 id="声明式事务控制"><a href="#声明式事务控制" class="headerlink" title="声明式事务控制"></a>声明式事务控制</h3><pre><code>1. Dao层：IAccountDao、AccountDaoImpl(继承Spring的JdbcDaoSupport)
+2. Service层：IAccountService、AccountServiceImpl
+    public class AccountServiceImpl implements IAccountService {
+        private IAccountDao dao; //setter
+        public Account findById(int id) {
+            return dao.findById(id);
+        }
+        public void transfer(String sourceName, String targetName, Float money) {
+            Account source = dao.findByName(sourceName);
+            Account target = dao.findByName(targetName);
+            source.setMoney(source.getMoney() - money);
+            target.setMoney(target.getMoney() + money);
+            //更新数据库
+            dao.updateAccount(source);
+            int i = 1/0;  //发生异常，不再向下执行
+            dao.updateAccount(target);
+        }
+    }
+3. bean.xml：加入事务、AOP的约束
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx
+            https://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop
+            https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+        &lt;bean id=&quot;accountService&quot; class=&quot;cn.test.service.impl.AccountServiceImpl&quot;&gt;
+            &lt;property name=&quot;dao&quot; ref=&quot;accountDao&quot;&gt;&lt;/property&gt;
+        &lt;/bean&gt;
+        &lt;bean id=&quot;accountDao&quot; class=&quot;cn.test.dao.impl.AccountDaoImpl&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
+        &lt;/bean&gt;
+        &lt;bean id=&quot;ds&quot; class=&quot;org.springframework.jdbc.datasource.DriverManagerDataSource&quot;&gt;
+            ......
+        &lt;/bean&gt;
+4. 配置事务管理器：DataSourceTransactionManager
+    &lt;bean id=&quot;manager&quot; 
+        class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+5. &lt;tx:advice&gt;：配置事务通知，关联事务管理器;
+    &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
+        &lt;tx:attributes&gt;
+            &lt;tx:method name=&quot;transfer&quot; propagation=&quot;REQUIRED&quot; read-only=&quot;false&quot; /&gt;
+        &lt;/tx:attributes&gt;
+    &lt;/tx:advice&gt;
+6. &lt;tx:method&gt;：配置事务管理的方法;
+    1. name属性：用于指定方法名，支持正则通配符*
+        1. name=&quot;find*&quot;：匹配以 find 开头的方法;
+        2. 配置多个&lt;tx:method&gt;，为不同的方法设置不同的参数，name的范围越小，优先级越高;
+        &lt;tx:method name=&quot;transfer&quot; propagation=&quot;REQUIRED&quot; read-only=&quot;false&quot; /&gt;
+        &lt;tx:method name=&quot;find*&quot; propagation=&quot;SUPPORTS&quot; read-only=&quot;true&quot; /&gt;
+        3. 查询方法以 find 开头，设置为只读，且不使用事务.
+    2. propagation：配置事务的传播行为;
+        1. REQUIRED：默认值，表示一定会有事务，用于增删改;
+        2. SUPPORTS：用于查询方法，通知数据库没必要加锁(事务)，提高效率.
+    3. isolation：配置隔离级别，默认值DEFAULT，表示使用数据库的默认隔离级别;
+    4. read-only：指定事务是否只读，默认为false，表示读写，只有查询方法才能设置为true;
+    5. timeout：事务的超时时间，以秒为单位，默认值为-1，表示永不超时;
+    6. rollback-for：指定一个异常，当产生该异常时，事务回滚，产生其他异常时，事务不会滚;
+    7. no-rollback-for：与 rollback-for 相反，发生指定的异常时不回滚，发生其他异常时回滚;
+    8. rollback-for 和 no-rollback-for 都没有默认值，不指定异常时，表示任何异常都回滚.
+7. 配置AOP：建立事务通知与切入点表达式的关系
+    &lt;aop:config&gt;
+        &lt;aop:pointcut id=&quot;pt1&quot; 
+            expression=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:pointcut&gt;
+        &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut-ref=&quot;pt1&quot;&gt;&lt;/aop:advisor&gt;
+    &lt;/aop:config&gt;
+8. 测试
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
+    service.transfer(&quot;AAA&quot;, &quot;BBB&quot;, 100f);
+</code></pre><h4 id="注解的声明式事务控制"><a href="#注解的声明式事务控制" class="headerlink" title="注解的声明式事务控制"></a>注解的声明式事务控制</h4><pre><code>1. bean.xml：加入AOP、事务、context的约束，开启Spring对注解事务的支持
+    &lt;beans aop、tx、context...相关约束&gt;
+        &lt;!-- Spring创建IoC容器时要扫描的包 --&gt;
+        &lt;context:component-scan base-package=&quot;cn.test&quot;&gt;&lt;/context:component-scan&gt;
+        &lt;bean id=&quot;jt&quot; class=&quot;org.springframework.jdbc.core.JdbcTemplate&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
+        &lt;/bean&gt;
+        &lt;bean id=&quot;ds&quot; class=&quot;org.springframework.jdbc.datasource.DriverManagerDataSource&quot;&gt;
+            ......
+        &lt;/bean&gt;
+        &lt;!-- 配置事务管理器 --&gt;
+        &lt;bean id=&quot;manager&quot; 
+            class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
+        &lt;/bean&gt;
+        &lt;!-- 开启Spring支持注解事务 --&gt;
+        &lt;tx:annotation-driven transaction-manager=&quot;manager&quot;&gt;&lt;/tx:annotation-driven&gt;
+    &lt;/beans&gt;
+2. Dao层不再继承Spring的JdbcDaoSupport
+    @Repository(&quot;accountDao&quot;)
+    public class AccountDaoImpl implements IAccountDao {
+        @Autowired
+        private JdbcTemplate jt;
+        ......
+    }
+3. 在Service层，在需要事务控制的类/方法上使用 @Transactional，并配置事务的相关属性;
+    @Service(&quot;accountService&quot;)
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)  --&gt;对所有方法有效
+    public class AccountServiceImpl implements IAccountService {
+        @Autowired
+        private IAccountDao dao;
+
+        public Account findById(int id) { ... }
+
+        @Transactional(propagation=Propagation.REQUIRED, readOnly=false) --&gt;单独配置
+        public void transfer(String sourceName, String targetName, Float money) { ... }
+    }
+</code></pre><h4 id="纯注解取代XML"><a href="#纯注解取代XML" class="headerlink" title="纯注解取代XML"></a>纯注解取代XML</h4><pre><code>在java目录下创建包config，存放配置类;
+1. JDBC相关的配置类
+    public class JdbcConfig {
+        @Value(&quot;${jdbc.driver}&quot;)
+        private String driver;
+        ......//url、username、password
+
+        @Bean(name=&quot;jt&quot;)
+        public JdbcTemplate createJdbcTemplate(DataSource ds) {
+            return new JdbcTemplate(ds);
+        }
+        @Bean(name=&quot;ds&quot;)
+        public DataSource createDataSource() {
+            DriverManagerDataSource ds = new DriverManagerDataSource();
+            ds.setDriverClassName(driver);
+            ds.setUrl(url);
+            ds.setUsername(username);
+            ds.setPassword(password);
+            return ds;
+        }
+    }
+2. resources/jdbcConf.properties：数据库的连接信息
+    jdbc.driver=com.mysql.cj.jdbc.Driver
+    jdbc.url=jdbc:mysql://...
+    jdbc.username=root
+    jdbc.password=123456
+3. 事务管理器相关的配置类
+    public class TransactionConfig {
+        @Bean(name=&quot;manager&quot;)
+        public PlatformTransactionManager createTransactionManager(DataSource ds) {
+            return new DataSourceTransactionManager(ds);
+        }
+    }
+4. @EnableTransactionManagement：开启Spring支持注解事务
+5. 主配置类SpringConfiguration
+    @Configuration
+    @ComponentScan(&quot;cn.test&quot;)
+    @Import({JdbcConfig.class, TransactionConfig.class})
+    @PropertySource(&quot;jdbcConf.properties&quot;)
+    @EnableTransactionManagement
+    public class SpringConfiguration { }
+</code></pre><h3 id="编程式事务控制"><a href="#编程式事务控制" class="headerlink" title="编程式事务控制"></a>编程式事务控制</h3><pre><code>1. bean.xml：配置Dao、Service、DataSource、事务管理器DataSourceTransactionManager
+2. 除此之外，还需要使用事务模板对象TransactionTemplate，所以也要配置;
+    &lt;bean id=&quot;transactionTemplate&quot; 
+        class=&quot;org.springframework.transaction.support.TransactionTemplate&quot;&gt;
+        &lt;property name=&quot;transactionManager&quot; ref=&quot;manager&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+3. 在Service中使用TransactionTemplate
+    public class AccountServiceImpl implements IAccountService {
+        private IAccountDao dao;
+        private TransactionTemplate transactionTemplate;
+        ......//setter
+
+        public Account findById(int id) {
+            return transactionTemplate.execute(new TransactionCallback&lt;Account&gt;() {
+                public Account doInTransaction(TransactionStatus status) {
+                    return dao.findById(id);
+                }
+            });
+        }
+        public void transfer(String sourceName, String targetName, Float money) {
+            transactionTemplate.execute(new TransactionCallback&lt;Object&gt;() {
+                public Object doInTransaction(TransactionStatus status) {
+                    Account source = dao.findByName(sourceName);
+                    Account target = dao.findByName(targetName);
+                    source.setMoney(source.getMoney() - money);
+                    target.setMoney(target.getMoney() + money);
+                    dao.updateAccount(source);
+                    int i = 1/0;  //发生异常，不再向下执行
+                    dao.updateAccount(target);
+                    return null;
+                }
+            });
+        }
+    }
+    4. 每一个需要事务管理的方法里都要使用TransactionTemplate去管理，增加了大量的重复代码。
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/08/Spring与AOP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1149,7 +1708,7 @@ public AccountServiceImpl implements IAccountService {
     3. 通过注解创建对象
     ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
     IUserService us = (IUserService)ac.getBean(&quot;userService&quot;);
-2. 还有三个与 Component 功能相同的衍生注解，只是Spring为了三层架构更加清晰
+2. Spring为了三层架构更加清晰, 还有三个与 Component 功能相同的衍生注解
     1. Controller：一般用于表现层；
     2. Service：一般用于表现层；
     3. Repository：一般用在持久层。
@@ -1487,6 +2046,7 @@ public AccountServiceImpl implements IAccountService {
 4. @RunWith：Junit提供的注解，把 main() 替换成Spring提供的;
 5. @ContextConfiguration：告知Spring的运行器，创建IoC容器使用的是XML还是注解，并指定其位置;
     1. locations属性：指定XML文件的位置，使用classpath关键字，表示在类路径下;
+        @ContextConfiguration(locations=&quot;classpath:bean.xml&quot;)
     2. classes属性：指定注解类所在的位置；
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(classes=SpringConfiguration.class)
@@ -4007,295 +4567,6 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/10/Java之Maven/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/10/Java之Maven/" itemprop="url">Java之Maven</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-10T00:00:00+08:00">
-                2016-01-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><pre><code>1. Maven是一个项目管理工具，它包含了：
-    1. 一个项目对象模型(POM)，一组标准集合，一个项目生命周期，一个依赖管理系统，
-    和 用来运行定义在生命周期阶段中插件目标的逻辑。
-2. 依赖管理(jar包管理)
-    1. Maven项目中的jar包在一个jar包仓库中，以依赖的形式存在于项目中，在代码编译时，
-    再根据依赖到仓库中找到jar包；
-    2. 大大减少了磁盘空间，而且避免了jar包冲突；
-    3. 实现了代码可重用。
-3. 项目的一键构建
-    1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都交给Maven进行管理；
-    2. 一个Maven命令就可以实现构建，所以在maven/lib目录中一定集成了Tomcat插件。
-4. Maven依赖于JDK，还需要配置环境变量，然后测试是否安装配置成功：mvn -v
-</code></pre><h2 id="Maven仓库"><a href="#Maven仓库" class="headerlink" title="Maven仓库"></a>Maven仓库</h2><pre><code>1. 本地仓库、远程仓库(私服)、中央仓库
-2. 本地仓库
-    1. 在 Maven/conf/settings.xml 中，本地仓库的默认配置为 ${user.home}/.m2/repository
-    2. user.home 表示C盘下的个人目录
-    3. 考虑到C盘通常是系统盘，所以会自定义本地仓库的路径，如D盘下
-    &lt;localRepository&gt;D:/local/repo&lt;/localRepository&gt;
-3. 远程仓库(私服)：
-    1. 在公司内有专门的局域网服务器作为jar包的远程仓库，又称为私服；
-    2. 如果本地仓库没有需要的jar包，默认会联外网从中央仓库下载，配置了远程仓库之后，就可以在
-    局域网内快速下载需要的jar包；
-    3. 如果远程仓库中没有需要的jar包，则由远程仓库向中央仓库请求下载；
-    4. 通常也会预先从本地上传常用的jar包到远程仓库。
-4. 中央仓库：Maven的云服务器jar包仓库，存放了几乎所有的开源jar包。
-</code></pre><h2 id="标准目录结构"><a href="#标准目录结构" class="headerlink" title="标准目录结构"></a>标准目录结构</h2><pre><code>1. Maven项目的目录可分为四大部分：核心代码、配置文件、测试代码、测试配置文件
-2. Maven的Java项目
-    1. src/main/java：核心代码
-    2. src/main/resources：配置文件
-    3. src/test/java：测试代码
-    4. src/test/resources：测试配置文件
-4. Maven的Java Web项目
-    1. 除了Java项目的4个目录，还有一个 src/main/webapp，存放页面资源、JS、CSS、图片等等。
-5. Maven常用命令
-    1. mvn clean：清除项目中的编译信息，删除target目录；
-    2. mvn compile：编译src/main/java中的核心代码，生成target目录，存放编译好的class文件
-    3. mvn test：除了编译核心代码，还会编译src/main/test中的测试代码；
-    4. mvn package：打包，除了编译核心代码和测试代码，还会打包成war包；
-    在Maven项目/pom.xml中，默认配置有 &lt;packaging&gt;war&lt;/packaging&gt;，所以打包成war包
-    5. mvn install：安装，编译核心代码和测试代码，打成war包，同时把war包安装到本地仓库中。
-</code></pre><h2 id="Maven的生命周期"><a href="#Maven的生命周期" class="headerlink" title="Maven的生命周期"></a>Maven的生命周期</h2><pre><code>1. mvn clean：独立的一个生命周期，称为清理生命周期；
-2. 编译(compile)、测试(test)、打包(package)、安装(install)、发布(mvn deploy)
-    1. 称为默认生命周期，所以执行越靠后的命令时，会自动执行前面的命令；
-    2. 其中，发布需要额外配置。
-3. 另外，还有一个不常用的站点生命周期；
-</code></pre><h2 id="POM模型"><a href="#POM模型" class="headerlink" title="POM模型"></a>POM模型</h2><pre><code>1. Maven的概念模型POM
-</code></pre><p><img src="//hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg" alt="Maven"></p>
-<h2 id="idea集成Maven"><a href="#idea集成Maven" class="headerlink" title="idea集成Maven"></a>idea集成Maven</h2><pre><code>1. 下载并解压Maven，配置环境变量(必须有JDK环境)：
-    1. 新建环境变量MAVEN_HOME：D:\maven\apache-maven-3.6.0
-    2. 配置Path：%MAVEN_HOME%\bin
-2. idea：Settings --&gt; Maven
-    1. 配置Maven路径
-    Maven home directory: D:\maven\apache-maven-3.6.0
-    User settings file: D:\maven\apache-maven-3.6.0\conf\settings.xml
-    Local repository: D:\maven\maven_repository
-    2. 如果Maven项目骨架(模板)已经下载过了，不要再下载了：Maven --&gt; Runner
-    VM Options: archetypeCatalog=internal
-3. 使用Maven骨架(模板)创建Java项目
-    1. New Project --&gt; Maven --&gt; 勾选Create... --&gt; 选择maven-archetype-quickstart
-    2. 一个jar包的坐标由三个基本元素构成：
-        GroupId(公司或组织的名称): com.test  ---&gt;作为项目的包名
-        ArtifactId(项目名称): maven_test
-        Version(版本号): 1.0-SNAPSHOT
-    3. Next --&gt; 确认当前使用的Maven环境，与Settings--&gt;Maven中的配置一致；
-    4. 如果第一次使用此骨架，会联网下载；
-    5. 默认只会创建使用到的目录，不会把Maven标准目录结构都创建；
-    6. 创建main/resources目录，右键 --&gt; Mark Directory As --&gt; Resources Root
-    7. 刚创建的项目不能运行，点击右下角的 Import Changes 或 Enable Auto-Import
-    Add Configurations -&gt; + Application(自定义名字) -&gt; Main class(选择入口文件) -&gt; OK
-4. 不适用骨架的Java项目
-    1. 目录结构：src/main/java，src/main/resources
-    2. 与使用骨架相比，目录结构更接近Maven项目的标准目录，文件也更干净。
-</code></pre><h3 id="创建JavaWeb项目"><a href="#创建JavaWeb项目" class="headerlink" title="创建JavaWeb项目"></a>创建JavaWeb项目</h3><pre><code>1. 选择骨架：maven-archetype-webapp
-2. 默认只有一个main/webapp目录，并没有main/java目录；
-3. 新建java目录，右击 --&gt; Mark Directory as --&gt; Sources Root
-4. 点击右下角的 Import Changes 或 Enable Auto-Import
-5. 在项目的 pom.xml 中添加Servlet相关的依赖，在maven中央仓库搜索需要的jar包
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
-            &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
-            &lt;version&gt;4.0.1&lt;/version&gt;
-            &lt;scope&gt;provided&lt;/scope&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;javax.servlet.jsp&lt;/groupId&gt;
-            &lt;artifactId&gt;javax.servlet.jsp-api&lt;/artifactId&gt;
-            &lt;version&gt;2.3.3&lt;/version&gt;
-            &lt;scope&gt;provided&lt;/scope&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-    1. 如果本地仓库没有这些依赖，idea会自动联网下载；
-    2. 创建一个Servlet，配置web.xml
-    3. 打开右侧的Maven面板 --&gt; 点击上面带有&quot;m&quot;的小图标 --&gt; 输入 tomcat:run 命令运行项目
-</code></pre><h3 id="运行web项目的问题"><a href="#运行web项目的问题" class="headerlink" title="运行web项目的问题"></a>运行web项目的问题</h3><pre><code>1. jar冲突问题：xxxServlet cannot be cast to javax.servlet.Servlet
-    1. Tomcat中自带servlet-api.jar和jsp-api.jar，项目中又引入了这两个jar包，所以在运行时
-    抛出jar包此冲突异常；
-    2. &lt;scope&gt;provided&lt;/scope&gt;：设置当前jar包的作用范围，provided 表示只在编译期和测试时
-    有效，在运行时忽略此jar包，解决运行时冲突问题；
-2. 对于测试jar包junit的&lt;scope&gt;设置：&lt;scope&gt;test&lt;/scope&gt;，表示只在测试时有效；
-    &lt;dependency&gt;
-        &lt;groupId&gt;junit&lt;/groupId&gt;
-        &lt;artifactId&gt;junit&lt;/artifactId&gt;
-        &lt;version&gt;4.11&lt;/version&gt;
-        &lt;scope&gt;test&lt;/scope&gt;
-    &lt;/dependency&gt;
-3. &lt;scope&gt;
-    1. &lt;scope&gt;compile&lt;/scope&gt;：默认值，在编译、测试、运行三个时期都起作用；
-    2. &lt;scope&gt;runtime&lt;/scope&gt;：只在测试期和运行时有效，常见于JDBC驱动的依赖；
-    3. &lt;scope&gt;system&lt;/scope&gt;：只在编译期和测试时有效。
-4. Tomcat版本与JDK版本不匹配问题：Unable to compile class for JSP
-    1. tomcat:run 运行项目时，Maven默认使用的是Tomcat6，它与JDK8配合时无法转化JSP
-    2. 在 pom.xml 中配置tomcat7的插件
-        &lt;build&gt;
-            ......
-            &lt;pluginManagement&gt;
-                &lt;plugins&gt;
-                    ......
-                    &lt;plugin&gt;
-                        &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
-                        &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
-                        &lt;version&gt;2.2&lt;/version&gt;
-                    &lt;/plugin&gt;
-                &lt;/plugins&gt;
-            &lt;/pluginManagement&gt;
-        &lt;/build&gt;
-    3. 使用Tomcat7运行web项目：tomcat7:run
-    4. Tomcat的默认端口号都是8080，可以修改Tomcat7的端口号；
-        &lt;plugin&gt;
-            &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
-            &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;2.2&lt;/version&gt;
-            &lt;configuration&gt;
-                &lt;port&gt;8888&lt;/port&gt;
-            &lt;/configuration&gt;
-        &lt;/plugin&gt;
-    5. 这样就可以同时运行tomcat6和tomcat7
-5. 同理，还可以配置使用的JDK插件
-    &lt;plugin&gt;
-        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-        &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
-        &lt;configuration&gt;
-            &lt;target&gt;1.8&lt;/target&gt;  ===&gt;使用JDK1.8编译
-            &lt;source&gt;1.8&lt;/source&gt;  ===&gt;编译后的class文件也使用JDK1.8
-            &lt;encoding&gt;UTF-8&lt;/encoding&gt;  ==&gt;编码
-        &lt;/configuration&gt;
-    &lt;/plugin&gt;
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4346,7 +4617,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
