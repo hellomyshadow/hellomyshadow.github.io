@@ -88,7 +88,7 @@
 <meta property="og:description" content="JdbcTemplate1. JdbcTemplate是Spring提供的一个对象，对原始JDBC的一层简单封装；     1. 操作关系型数据库：JdbcTemplate、HibernateTemplate     2. 操作NoSQL数据库：RedisTemplate     3. 操作消息队列：JmsTemplate  2. JdbcTemplate的依赖包：spring-jdbc，除此之外">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/09/Spring事务控制/持久层.jpg">
-<meta property="og:updated_time" content="2019-04-20T15:16:24.358Z">
+<meta property="og:updated_time" content="2019-04-21T01:33:52.915Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring事务控制">
 <meta name="twitter:description" content="JdbcTemplate1. JdbcTemplate是Spring提供的一个对象，对原始JDBC的一层简单封装；     1. 操作关系型数据库：JdbcTemplate、HibernateTemplate     2. 操作NoSQL数据库：RedisTemplate     3. 操作消息队列：JmsTemplate  2. JdbcTemplate的依赖包：spring-jdbc，除此之外">
@@ -444,8 +444,7 @@ Integer count =
             return conn;
         }
         public void removeConn() {
-            // 移除ThreadLocal中当前线程的连接
-            tl.remove();
+            tl.remove();  // 移除ThreadLocal中当前线程的连接
         }
     }
 2. 事务管理的工具类，声明为切面类
@@ -782,8 +781,8 @@ Integer count =
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/11/Spring5新特性/" rel="prev" title="Spring5新特性">
+                Spring5新特性 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -861,7 +860,7 @@ Integer count =
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -872,7 +871,7 @@ Integer count =
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -883,7 +882,7 @@ Integer count =
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

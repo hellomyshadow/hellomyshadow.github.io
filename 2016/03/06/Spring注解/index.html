@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="IoC注解1. @Component：创建对象，&amp;lt;bean&amp;gt;标签的功能，把类对象存入Spring容器中     @Component(&amp;quot;userService&amp;quot;)  ---&amp;gt;@Component(value=&amp;quot;userService&amp;quot;)     public class UserServiceImpl implements IUserSer">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-20T06:46:54.334Z">
+<meta property="og:updated_time" content="2019-04-21T01:29:51.997Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring注解">
 <meta name="twitter:description" content="IoC注解1. @Component：创建对象，&amp;lt;bean&amp;gt;标签的功能，把类对象存入Spring容器中     @Component(&amp;quot;userService&amp;quot;)  ---&amp;gt;@Component(value=&amp;quot;userService&amp;quot;)     public class UserServiceImpl implements IUserSer">
@@ -434,27 +434,7 @@
         6. batch()：执行批处理.
     4. ResultSetHandle：封装数据的策略对象，将封装结果集中的数据转换到另一个对象。
 2. c3p0：连接池，为了提高应用程序与数据库之间的访问效率，简单易用、连接复用、连接管理;
-3. 引入依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
-        &lt;version&gt;5.1.6.RELEASE&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;commons-dbutils&lt;/groupId&gt;
-        &lt;artifactId&gt;commons-dbutils&lt;/artifactId&gt;
-        &lt;version&gt;1.7&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;com.mchange&lt;/groupId&gt;
-        &lt;artifactId&gt;c3p0&lt;/artifactId&gt;
-        &lt;version&gt;0.9.5.4&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;mysql&lt;/groupId&gt;
-        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-        &lt;version&gt;8.0.15&lt;/version&gt;
-    &lt;/dependency&gt;
+3. 引入依赖：spring-context、commons-dbutils、c3p0、mysql-connector-java
 4. 持久层、业务层
     1. 实体类：com.test.domain.User
         public class User {
@@ -665,19 +645,7 @@
 2. Junit并不关心Spring框架;
     1. 在执行测试方法时，Junit也不会关心Spring的配置文件/配置类，更不会创建IoC容器;
     2. 没有IoC容器，在测试类中使用 @Autowired，也无法实现注入.
-3. spring-test：Spring整合junit测试框架
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
-        &lt;version&gt;5.1.6.RELEASE&lt;/version&gt;
-        &lt;scope&gt;test&lt;/scope&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;junit&lt;/groupId&gt;
-        &lt;artifactId&gt;junit&lt;/artifactId&gt;
-        &lt;version&gt;4.12&lt;/version&gt;
-        &lt;scope&gt;test&lt;/scope&gt;
-    &lt;/dependency&gt;
+3. spring-test：Spring整合junit测试框架; 加入依赖：spring-test、junit
 4. @RunWith：Junit提供的注解，把 main() 替换成Spring提供的;
 5. @ContextConfiguration：告知Spring的运行器，创建IoC容器使用的是XML还是注解，并指定其位置;
     1. locations属性：指定XML文件的位置，使用classpath关键字，表示在类路径下;
@@ -815,7 +783,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -826,7 +794,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -837,7 +805,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

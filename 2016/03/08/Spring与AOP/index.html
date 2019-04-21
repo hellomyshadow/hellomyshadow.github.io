@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="AOP1. AOP：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护；     1. 简单来说：在运行期，利用动态代理技术，在不修改源码的情况下，对已有方法进行增强；     2. AOP是OOP的延续，是函数式编程的一种衍生范型；     3. 利用AOP可以分离业务逻辑的各个部分，从而降低耦合，提高程序的可重用性和开发效率。 2. Joinpoint：连接点，指那些被拦截的点">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-19T13:01:45.446Z">
+<meta property="og:updated_time" content="2019-04-21T01:32:52.311Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring与AOP">
 <meta name="twitter:description" content="AOP1. AOP：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护；     1. 简单来说：在运行期，利用动态代理技术，在不修改源码的情况下，对已有方法进行增强；     2. AOP是OOP的延续，是函数式编程的一种衍生范型；     3. 利用AOP可以分离业务逻辑的各个部分，从而降低耦合，提高程序的可重用性和开发效率。 2. Joinpoint：连接点，指那些被拦截的点">
@@ -358,17 +358,7 @@
     1. Spring采用动态代理织入，而AspectJ采用编译期织入和类装载期织入.
 8. Proxy：一个类被AOP织入增强后，就产生一个代理类；
 9. Aspect：切面，是切入点和通知/引介的结合。
-</code></pre><h3 id="Spring的AOP"><a href="#Spring的AOP" class="headerlink" title="Spring的AOP"></a>Spring的AOP</h3><pre><code>1. 添加依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
-        &lt;version&gt;5.1.6.RELEASE&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.aspectj&lt;/groupId&gt;  --&gt;解析切入点表达式
-        &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;
-        &lt;version&gt;1.9.3&lt;/version&gt;
-    &lt;/dependency&gt;
+</code></pre><h3 id="Spring的AOP"><a href="#Spring的AOP" class="headerlink" title="Spring的AOP"></a>Spring的AOP</h3><pre><code>1. 添加依赖：spring-context、aspectjweaver(解析切入点表达式)
 2. 业务层Service
     public class AccountServiceImpl implements IAccountService {
         public void save() {  //无参无返回值
@@ -675,7 +665,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -686,7 +676,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -697,7 +687,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
