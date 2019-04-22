@@ -2619,6 +2619,13 @@ Esc：退出编辑模式或末行模式；
             &lt;url-pattern&gt;/&lt;/url-pattern&gt;
         &lt;/servlet-mapping&gt;
     &lt;/web-app&gt;
+    1. &lt;init-param&gt;：配置当前对象创建时的初始化参数;
+    2. &lt;load-on-startup&gt;：标记容器是否在启动时就加载当前的Servlet(创建并调用其init()方法);
+    3. 一般情况下，Servlet在第一次收到请求时由服务器创建并初始化，&lt;load-on-startup&gt; 可以让它
+    根据自己的需要改变加载的优先级;
+    4. &lt;load-on-startup&gt;n&lt;/load-on-startup&gt;：n 必须是一个整数，表示Servlet应该被加载的顺序;
+    5. 当 n&gt;=0 时，表示在容器(服务器)启动时就加载并初始化这个Servlet，值越小，优先级越高;
+    6. 当 n 的值相同时，由容器自己选择优先加载哪个Servlet.
 4. 创建控制类：cn.test.controller.HelloController，使用 @Controller 修饰
     @Controller
     public class HelloController {
@@ -2657,9 +2664,7 @@ Esc：退出编辑模式或末行模式；
         @RequestMapping(path=&quot;/user&quot;)  ---&gt;一级目录
         public class HelloController {
             @RequestMapping(path=&quot;/hello&quot;)  ---&gt;二级目录
-            public String say() {
-                return &quot;success&quot;;
-            }
+            public String say() { ... }
         }
         &lt;a href=&quot;user/hello&quot;&gt;To User Hello&lt;/a&gt;
     2. value属性：指定请求的URL，作用和 path 属性相同;
@@ -2670,6 +2675,243 @@ Esc：退出编辑模式或末行模式；
         2. params={&quot;money=100&quot;}，则请求参数中的money必须是100.
         &lt;a href=&quot;user/hello?money=100&quot;&gt;
     5. headers：限制请求头的条件，如headers={&quot;Accept&quot;}，请求头中必须包含Accept;
+</code></pre><h2 id="请求参数的绑定"><a href="#请求参数的绑定" class="headerlink" title="请求参数的绑定"></a>请求参数的绑定</h2><pre><code>1. 绑定机制
+    1. 表单提交的参数都是 key-value 形式，如username=Java&amp;password=123;
+        &lt;a href=&quot;hello?username=Java&amp;password=123&quot;&gt;to hello&lt;/a&gt;
+        @RequestMapping(path=&quot;/hello&quot;)
+        public String say(String username, String password) {
+            System.out.println(username + &quot;, &quot; + password);  //Java, 123
+            return &quot;success&quot;;
+        }
+    2. SpringMVC的参数绑定过程是，把表单提交的参数作为控制器中方法的参数进行绑定的;
+    3. 表单提交的key和参数的名称是一致的，且区分大小写.
+2. 支持的参数类型：基本类型、实体类、集合类型;
+    1. 提交表单的key和实体类中的属性名必须一致;
+    2. 如果实体类中还有其他引用类型，那么表单中key的形式为：对象.属性，如address.name;
+3. 绑定基本类型、实体类、集合类型
+    private class User implements Serializable {
+        private String uname;  private int age;
+        ...... //setter、getter
+    }
+    private class Account implements Serializable {
+        private String username;  private String password;  private double money;
+        private User user;  //包含引用类型
+        private List&lt;User&gt; list;  //List集合
+        private Map&lt;String, User&gt; map;  //Map集合
+        ...... //setter、getter
+    }
+    1. form表单：key必须与实体类Account的属性保持一致
+        &lt;form action=&quot;hello&quot; method=&quot;post&quot;&gt;
+            &lt;!-- 基本类型 --&gt;
+            &lt;input type=&quot;text&quot; name=&quot;username&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;password&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;money&quot; /&gt;
+            &lt;!-- 实体类 --&gt;
+            &lt;input type=&quot;text&quot; name=&quot;user.uname&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;user.age&quot; /&gt;
+            &lt;!-- 集合类型 --&gt;
+            &lt;input type=&quot;text&quot; name=&quot;list[0].uname&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;list[0].age&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;map[&apos;one&apos;].uname&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;map[&apos;one&apos;].age&quot; /&gt;
+            &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
+        &lt;/form&gt;
+    2. 把请求参数封装到JavaBean中
+        @RequestMapping(path=&quot;/hello&quot;)
+        public String say(Account account) {
+            System.out.println(account);
+            return &quot;success&quot;;
+        }
+4. 参数中文乱码：在 web.xml 中配置Spring的过滤器，并初始化参数encoding=UTF-8
+    &lt;web-app&gt;
+        ......
+        &lt;filter&gt;
+            &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
+            &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+            &lt;init-param&gt;
+                &lt;param-name&gt;encoding&lt;/param-name&gt;
+                &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        &lt;/filter&gt;
+        &lt;filter-mapping&gt;
+            &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
+            &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+        &lt;/filter-mapping&gt;
+    &lt;/web-app&gt;
+5. 在控制器中获取Servlet API：直接把 HttpServletRequest、HttpServletResponse 加到方法的参数上;
+    @RequestMapping(path=&quot;/hello&quot;)
+    public String say(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+        ServletContext context = session.getServletContext();
+    }
+</code></pre><h3 id="类型转换器"><a href="#类型转换器" class="headerlink" title="类型转换器"></a>类型转换器</h3><pre><code>1. 在参数传递过程中，key和value其实都是字符串，SpringMVC内部有类型转换器，负责转换参数类型;
+2. 但是，对于一些特殊类型，如日期，SpringMVC并不能识别所有的日期格式，这就需要自定义类型转换器;
+    &lt;input type=&quot;text&quot; /&gt; ==&gt; SpringMVC能识别的格式：2018/11/11 ==&gt; private Date date;
+3. 类型转换器的接口：Converter&lt;S, T&gt;，S和T分别代表接受类型和目标类型
+    public class String2DateConverter implements Converter&lt;String, Date&gt; {
+        public Date convert(String source) {
+            if(source == null) {
+                throw new RuntimeException(&quot;请传入参数&quot;);
+            }
+            //字符串转日期的识别类型 yyyy-MM-dd
+            DateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);
+            try {
+                return df.parse(source);
+            } catch(Exception e) {
+                throw new RuntimeException(&quot;类型转换异常&quot;);
+            }
+
+        }
+    }
+4. springmvc.xml：配置自定义的类型转换器
+    &lt;bean id=&quot;csfb&quot; class=&quot;org.springframework.context.support.ConversionServiceFactoryBean&quot;&gt;
+        &lt;property name=&quot;converters&quot;&gt;
+            &lt;set&gt;
+                &lt;bean class=&quot;cn.test.converter.String2DateConverter&quot; /&gt;
+            &lt;/set&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;mvc:annotation-driven conversion-service=&quot;csfb&quot; /&gt;
+    1. &lt;mvc:annotation-driven&gt; 标签开启SpringMVC的注解支持;
+    2. conversion-service属性：让配置的自定义类型转换器生效.
+</code></pre><h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><pre><code>1. @RequestParam：把请求中指定名称的参数，给控制器中的形参赋值;
+    1. value、name属性：请求参数中的名称;
+    2. required：请求参数中是否必须提供此参数，默认为true;
+    @Controller
+    @RequestMapping(&quot;/user&quot;)
+    public class TestController {
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestParam(name=&quot;uname&quot;) String username) {
+            return &quot;success&quot;;
+        }
+    }
+    1. 请求参数中必须提供一个key为 uname 的键值对，uname的值会赋给形参username;
+        &lt;a href=&quot;user/test?name=Java&quot;&gt;Welcome&lt;/a&gt;
+    2. 不使用 @RequestParam 时，形参username 会接收请求参数中key为 username 的值，
+    如果请求参数中没有，则形参username 仍为默认值null.
+2. @RequestBody：用于获取请求体的内容;
+    1. 直接使用时会得到整个请求体的内容：key=value&amp;key=value...
+    2. required属性：是否必须有请求体;
+    3. 不适用于Get请求：required=true时，Get请求会报错; required=false时，Get请求为null;
+        &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
+            &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ==&gt;Java
+            &lt;input type=&quot;text&quot; name=&quot;age&quot; /&gt;  ====&gt;22
+            &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
+        &lt;/form&gt;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestBody String body) {
+            System.out.println(body);  // uname=Java&amp;age=22
+            return &quot;success&quot;;
+        }
+3. @PathVariable：用于绑定url中的占位符，如/delete/{id}，id就是url占位符;
+    1. url支持占位符是在Spring3.0才加入的，它是SpringMVC支持RESTful风格URL的一个重要标志;
+    2. value、name属性：指定URL中占位符的名称;
+    3. required：是否必须提供占位符;
+        @RequestMapping(path=&quot;/test/{uId}&quot;)
+        public String test(@PathVariable(name=&quot;uId&quot;) String id) {
+            System.out.println(id);  // 10
+            return &quot;success&quot;;
+        }
+        &lt;a href=&quot;user/test/10&quot;&gt;Welcome&lt;/a&gt;
+4. HiddentHttpMethodFilter
+    1. 浏览器的form表单只支持GET与POST请求，无法模拟DELETE、PUT等RESTful method;
+    2. Spring3.0提供了一个过滤器，可以将浏览器请求改为指定的请求的方式，再发给控制器方法.
+5. @RequestHeader：获取请求头
+    1. value属性：提供请求头的名称;
+    2. required：是否必须有此请求头;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestHeader(value=&quot;Accept&quot;) String header) {
+            System.out.println(header);
+            return &quot;success&quot;;
+        }
+6. @CookieValue：把指定Cookie名称的值传给控制器方法的参数;
+    1. value属性：指定Cookie的名称;
+    2. required：是否必须有此Cookie;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@CookieValue(value=&quot;JSESSIONID&quot;) String cookieValue) {
+            System.out.println(cookieValue);
+            return &quot;success&quot;;
+        }
+</code></pre><h3 id="ModelAttribute"><a href="#ModelAttribute" class="headerlink" title="ModelAttribute"></a>ModelAttribute</h3><pre><code>1. @ModelAttribute：SpringMVC4.3新特性，可以修饰方法和参数;
+    1. 修饰方法时：当前方法会在控制器的方法执行之前，优先执行;
+    2. 可以修饰没有返回值的方法，也可以修饰有具体返回值的方法;
+    3. 修饰参数时：获取指定的数据，并赋值给参数;
+    4. value属性：获取数据的key，可以是POJO的属性名，也可以是Map结构的key;
+2. 应用：当表单提交参数不是完整的实体类数据时，保证没有提交的字段使用数据库中的原数据;
+    &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
+        &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ===&gt;只提交一个参数uname
+        &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
+    &lt;/form&gt;
+3. 修饰有返回值的方法
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(User user) {
+            System.out.println(user);
+            return &quot;success&quot;;
+        }
+        @ModelAttribute
+        public User initTest(String uname) {
+            User user = new User();
+            user.setUname(uname);
+            ...... //查询数据库，获取age字段
+            user.setAge(20);
+            return user;
+        }
+    1. initTest() 优先执行，形参uname 接收请求参数中的uname，返回一个User对象;
+    2. test() 执行时，形参user 接收 initTest() 返回的User对象.
+4. 修饰无返回值的方法
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@ModelAttribute(&quot;abc&quot;) User user) {
+            System.out.println(user);
+            return &quot;success&quot;;
+        }
+        @ModelAttribute
+        public void initTest(String uname, Map&lt;String, User&gt; map) {
+            User user = new User();
+            user.setUname(uname);
+            ...... //查询数据库，获取age字段
+            user.setAge(20);
+            map.put(&quot;abc&quot;, user);
+        }
+    1. initTest() 优先执行，形参uname 接收请求参数中的uname，把User对象存入Map集合;
+    2. test() 的形参user 通过 @ModelAttribute(&quot;Map集合的key&quot;) 获取Map中的User对象.
+</code></pre><h3 id="SessionAttribute"><a href="#SessionAttribute" class="headerlink" title="SessionAttribute"></a>SessionAttribute</h3><pre><code>1. 在控制器方法的参数上直接使用Servlet API，耦合度太高，如果没有引入相关依赖，编译期就会报错;
+2. 为了解决与Serlvet的耦合度问题，Spring提供了接口Model，并提供了很多实现类;
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test(Model model) {
+        model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt; 存入数据
+        return &quot;success&quot;;
+    }
+    1. Model中存储的数据，会转存到Request域中;
+    2. 在JSP中取值：&lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;
+3. @SessionAttribute：用于多次执行控制器方法间的参数共享，数据被存入Session域中;
+    1. value属性：指定存入数据的名称key;
+    2. type属性：指定存入数据的类型;
+    3. 只能修饰类;
+        @Controller
+        @RequestMapping(&quot;/user&quot;)
+        @SessionAttribute(value={&quot;msg&quot;})  ---&gt;指定key的名称
+        public class TestController {
+            @RequestMapping(path=&quot;/test&quot;)
+            public String test(Model model) {
+                model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt;向Session域中存入值
+                return &quot;success&quot;;
+            }
+
+            @RequestMapping(path=&quot;/get&quot;)
+            public String test(ModelMap map) {
+                String msg = (String)map.get(&quot;msg&quot;);  --&gt;从Session域中获取值
+                return &quot;get&quot;;
+            }
+
+            @RequestMapping(path=&quot;/del&quot;)
+            public String test(SessionStatus status) {
+                status.setComplete();  --&gt;从Session域中删除值
+                return &quot;del&quot;;
+            }
+        }
+    1. 此时Model中存储的数据msg=Java，会存入到Session域中;
+    2. 在JSP中获取数据：
+        &lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;  &lt;h2&gt;${ sessionScope.msg }&lt;/h2&gt;
 </code></pre><hr>
 
           
