@@ -2544,7 +2544,10 @@ Esc：退出编辑模式或末行模式；
 <h2 id="控制流程"><a href="#控制流程" class="headerlink" title="控制流程"></a>控制流程</h2><pre><code>创建Web项目，搭建环境
 1. 引入依赖：版本锁定，统一管理Spring的版本
     &lt;properties&gt;
-        &lt;spring.version&gt;5.1.6.RELEASE&lt;/spring.version&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt; ==&gt;配置编译运行的JDK版本
+        &lt;spring.version&gt;5.1.6.RELEASE&lt;/spring.version&gt;  ===&gt;锁定版本
     &lt;/properties&gt;
     &lt;dependencies&gt;
         &lt;dependency&gt;
@@ -2993,8 +2996,7 @@ Esc：退出编辑模式或末行模式；
     2. Spring的内置数据源DriverManagerDataSource
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName(&quot;com.mysql.cj.jdbc.Driver&quot;);
-        ds.setUrl(&quot;jdbc:mysql://...&quot;);
-        ds.setUsername(&quot;root&quot;);  ds.setPassword(&quot;123456&quot;);
+        ds.setUrl(&quot;jdbc:mysql://...&quot;);  ds.setUsername(&quot;root&quot;);  ds.setPassword(&quot;123456&quot;);
         JdbcTemplate jt = new JdbcTemplate();
         jt.setDataSource(ds);
         jt.execute(&quot;insert into account(name, money) values(&apos;Java&apos;, 1000)&quot;);
@@ -3016,13 +3018,11 @@ Esc：退出编辑模式或末行模式；
                 return account;
             }
         }
-    List&lt;Account&gt; accounts =
-         jt.query(&quot;select * from account where money&gt;?&quot;, new AccountRowMapper(), 1000f);
+    List&lt;Account&gt; ats = jt.query(&quot;select * from account where money&gt;?&quot;, new AccountRowMapper(), 100f);
     5. Spring也提供了RowMapper的实现类：BeanPropertyRowMapper
     jt.query(&quot;select * from account&quot;, new BeanPropertyRowMapper&lt;Account&gt;(Account.class));
 5. 聚合函数
-Integer count = 
-    jt.queryForObject(&quot;select count(id) from account where money&gt;?&quot;, Integer.class, 1000f);
+Integer count = jt.queryForObject(&quot;select count(id) from account where money&gt;?&quot;, Integer.class, 100f);
 </code></pre><h3 id="基于Spring-IoC"><a href="#基于Spring-IoC" class="headerlink" title="基于Spring IoC"></a>基于Spring IoC</h3><pre><code>1. Dao层的接口及其实现类：IAccountDao、AccountDaoImpl
     public class AccountDaoImpl implements IAccountDao {
         private JdbcTemplate jt;
@@ -3067,9 +3067,12 @@ Integer count =
             }
         }
     2. Dao层继承JdbcDaoSupport
-    public class AccountDaoImpl extends JdbcDaoSupport implements IAccountDao {
-        ......//CRUD
-    }
+        public class AccountDaoImpl extends JdbcDaoSupport implements IAccountDao {
+            public List&lt;Account&gt; findAll() {
+                return supper.getJdbcTemplate().query(&quot;select * from account&quot;, ...);
+            }
+            ......//CRUD
+        }
     3. 在为 AccountDaoImpl 注入数据时，可以选择使用无参的JdbcTemplate还是有参的JdbcTemplate
         &lt;bean id=&quot;accountDao&quot; class=&quot;cn.test.dao.impl.AccountDaoImpl&quot;&gt;
             &lt;!-- 使用无参的JdbcTemplate对象 --&gt;
@@ -3079,8 +3082,8 @@ Integer count =
         &lt;/bean&gt;
         ......// jt、ds
 2. 另外，Spring提供了一个JdbcDaoSupport，功能和XML注入方式都与自定义的JdbcDaoSupport类似;
-3. JdbcDaoSupport是Spring的内置类，一旦Dao层继承它，那么就只能用配置文件的方式实现注入，
-   不能再使用 @Autowired 实现注入了。
+3. JdbcDaoSupport是Spring的内置类，一旦Dao层继承它，那么在Service层使用Dao对象时，就只能用配置文件的方式
+   实现注入，而不能再使用 @Autowired 注入 Dao 了。
 </code></pre><h2 id="注解AOP实现事务"><a href="#注解AOP实现事务" class="headerlink" title="注解AOP实现事务"></a>注解AOP实现事务</h2><pre><code>1. 连接的工具类
     @Commonent(&quot;connUtils&quot;)
     public class ConnectionUtils {
@@ -3128,8 +3131,7 @@ Integer count =
     }
 3. 但是在AOP注解中，通知方法的执行顺序有致命问题：Before --&gt; After --&gt; AfterReturning
     1. 最终通知优先于后置通知执行，导致连接已经被关闭了，事务无法正确提交！
-    2. 连接关闭并还给连接池后，提交时又会从连接池中获取一个新的连接，但此连接又没有开启过事务，
-    导致提交异常。
+    2. 连接关闭并还给连接池后，提交时又会从连接池中获取一个新的连接，但此连接又没有开启过事务，导致提交异常。
 4. 使用环绕通知
     @Commonent(&quot;manager&quot;)
     @Aspect
@@ -3148,16 +3150,11 @@ Integer count =
         public Object aroundPrint(ProceedingJoinPoint pjp) {
             Object rtValue = null;
             try {
-                //1.获取切入点方法执行所需的参数
-                Object[] args = pjp.getArgs();
-                //2.开启事务
-                this.beginTransaction();
-                //3.明确调用切入点方法
-                rtValue = pjp.proceed(args);
-                //4.提交事务
-                this.commit();
-                //5.返回结果
-                return rtValue;
+                Object[] args = pjp.getArgs();  //1.获取切入点方法执行所需的参数
+                this.beginTransaction();  //2.开启事务
+                rtValue = pjp.proceed(args);  //3.明确调用切入点方法
+                this.commit();  //4.提交事务
+                return rtValue;  //5.返回结果
             } catch(Throwable t) {
                 this.rollback();
                 throw new RuntimeException(t);
@@ -3198,8 +3195,7 @@ Integer count =
 5. 超时时间：以秒为单位，默认值-1，表示没有超时限制;
 6. TransactionStatus：描述某个时间点上事务对象的状态信息;
     1. flush()：刷新事务;
-    2. hasSavepoint()：是否存在存储点，将一个事务按步提交，如果某一步失败，只回滚到这一步前，
-    而不是从头开始;
+    2. hasSavepoint()：是否存在存储点，将一个事务按步提交，如果某一步失败，只回滚到这一步前，而不是从头开始;
     3. isCompleted()：事务是否完成;
     4. isNewTransaction()：当前事务是不是一个新事务;
     5. isRollbackOnly()：事务是否回滚;
@@ -3244,8 +3240,7 @@ Integer count =
             ......
         &lt;/bean&gt;
 4. 配置事务管理器：DataSourceTransactionManager
-    &lt;bean id=&quot;manager&quot; 
-        class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+    &lt;bean id=&quot;manager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
         &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
     &lt;/bean&gt;
 5. &lt;tx:advice&gt;：配置事务通知，关联事务管理器;
@@ -3254,6 +3249,8 @@ Integer count =
             &lt;tx:method name=&quot;transfer&quot; propagation=&quot;REQUIRED&quot; read-only=&quot;false&quot; /&gt;
         &lt;/tx:attributes&gt;
     &lt;/tx:advice&gt;
+    1. id属性：此事务通知的唯一标识;
+    2. transaction-manager：指定事务管理器的id，关联事务通知与事务管理器.
 6. &lt;tx:method&gt;：配置事务管理的方法;
     1. name属性：用于指定方法名，支持正则通配符*
         1. name=&quot;find*&quot;：匹配以 find 开头的方法;
@@ -3272,10 +3269,11 @@ Integer count =
     8. rollback-for 和 no-rollback-for 都没有默认值，不指定异常时，表示任何异常都回滚.
 7. 配置AOP：建立事务通知与切入点表达式的关系
     &lt;aop:config&gt;
-        &lt;aop:pointcut id=&quot;pt1&quot; 
-            expression=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:pointcut&gt;
+        &lt;aop:pointcut id=&quot;pt1&quot; expression=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:pointcut&gt;
         &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut-ref=&quot;pt1&quot;&gt;&lt;/aop:advisor&gt;
     &lt;/aop:config&gt;
+    1. advice-ref：关联事务通知的id;
+    2. pointcut-ref：关联切入点表达式的id.
 8. 测试
     ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
     IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
@@ -3291,8 +3289,7 @@ Integer count =
             ......
         &lt;/bean&gt;
         &lt;!-- 配置事务管理器 --&gt;
-        &lt;bean id=&quot;manager&quot; 
-            class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+        &lt;bean id=&quot;manager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
             &lt;property name=&quot;dataSource&quot; ref=&quot;ds&quot;&gt;&lt;/property&gt;
         &lt;/bean&gt;
         &lt;!-- 开启Spring支持注解事务 --&gt;
@@ -3317,8 +3314,17 @@ Integer count =
         @Transactional(propagation=Propagation.REQUIRED, readOnly=false) --&gt;单独配置
         public void transfer(String sourceName, String targetName, Float money) { ... }
     }
+4.     测试
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
+    service.transfer(&quot;AAA&quot;, &quot;BBB&quot;, 100f);
 </code></pre><h4 id="纯注解取代XML"><a href="#纯注解取代XML" class="headerlink" title="纯注解取代XML"></a>纯注解取代XML</h4><pre><code>在java目录下创建包config，存放配置类;
-1. JDBC相关的配置类
+1. resources/jdbcConf.properties：数据库的连接信息
+    jdbc.driver=com.mysql.cj.jdbc.Driver
+    jdbc.url=jdbc:mysql://...
+    jdbc.username=root
+    jdbc.password=123456
+2. JDBC相关的配置类
     public class JdbcConfig {
         @Value(&quot;${jdbc.driver}&quot;)
         private String driver;
@@ -3338,11 +3344,6 @@ Integer count =
             return ds;
         }
     }
-2. resources/jdbcConf.properties：数据库的连接信息
-    jdbc.driver=com.mysql.cj.jdbc.Driver
-    jdbc.url=jdbc:mysql://...
-    jdbc.username=root
-    jdbc.password=123456
 3. 事务管理器相关的配置类
     public class TransactionConfig {
         @Bean(name=&quot;manager&quot;)
@@ -3358,10 +3359,13 @@ Integer count =
     @PropertySource(&quot;jdbcConf.properties&quot;)
     @EnableTransactionManagement
     public class SpringConfiguration { }
+6. 测试
+    ApplicationContext ac = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+    IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
+    service.transfer(&quot;AAA&quot;, &quot;BBB&quot;, 100f);
 </code></pre><h3 id="编程式事务控制"><a href="#编程式事务控制" class="headerlink" title="编程式事务控制"></a>编程式事务控制</h3><pre><code>1. bean.xml：配置Dao、Service、DataSource、事务管理器DataSourceTransactionManager
 2. 除此之外，还需要使用事务模板对象TransactionTemplate，所以也要配置;
-    &lt;bean id=&quot;transactionTemplate&quot; 
-        class=&quot;org.springframework.transaction.support.TransactionTemplate&quot;&gt;
+    &lt;bean id=&quot;transactionTemplate&quot; class=&quot;org.springframework.transaction.support.TransactionTemplate&quot;&gt;
         &lt;property name=&quot;transactionManager&quot; ref=&quot;manager&quot;&gt;&lt;/property&gt;
     &lt;/bean&gt;
 3. 在Service中使用TransactionTemplate
