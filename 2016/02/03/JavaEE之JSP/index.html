@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="JSP1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet 2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet 3. Tomcat/conf/web.xml 对jsp访问的配置     &amp;lt;servlet&amp;gt;         &amp;lt;servlet-name&amp;gt;jsp&amp;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-23T08:55:43.061Z">
+<meta property="og:updated_time" content="2019-04-23T10:38:03.868Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaEE之JSP">
 <meta name="twitter:description" content="JSP1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet 2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet 3. Tomcat/conf/web.xml 对jsp访问的配置     &amp;lt;servlet&amp;gt;         &amp;lt;servlet-name&amp;gt;jsp&amp;">
@@ -351,6 +351,7 @@
 5. session：设置转译的Servlet中是否支持Session，默认开启，不开启则设置session=&quot;false&quot;
 6. errorPage：配置错误页面的路径，errorPage=&quot;error.jsp&quot;
 7. extends：设置JSP转译的Servlet要继承的父类(全类名)
+8. isELIgnored：是否忽略EL表达式，设置为true时，EL表达式会被当做普通字符串解析.
 </code></pre><h3 id="JSP逻辑代码"><a href="#JSP逻辑代码" class="headerlink" title="JSP逻辑代码"></a>JSP逻辑代码</h3><pre><code>1. JSP的局部代码块
     &lt;%
         int num = 1;
@@ -681,7 +682,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

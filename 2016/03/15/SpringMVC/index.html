@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/15/SpringMVC/SSM.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/15/SpringMVC/组件控制流程.jpg">
-<meta property="og:updated_time" content="2019-04-22T16:08:21.762Z">
+<meta property="og:updated_time" content="2019-04-23T12:24:30.046Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC">
 <meta name="twitter:description" content="三层架构1. 开发架构一般都是基于两种形式：C/S(客户端/服务器)、B/S(浏览器/服务器); 2. JavaEE开发几乎都是基于B/S架构，系统标准的三层架构：表现层、业务层、持久层; 3. 表现层：web层，负责接收客户端请求，响应结果;     1. 表现层包括展示层(负责展示结果)和控制层(负责接收请求);     2. 表现层依赖于业务层，用于对请求进行业务处理，并把结果响应给客户端;">
@@ -470,14 +470,14 @@
             public String say() { ... }
         }
         &lt;a href=&quot;user/hello&quot;&gt;To User Hello&lt;/a&gt;
-    2. value属性：指定请求的URL，作用和 path 属性相同;
+    2. value、path属性：指定请求的URL;
     3. method属性：请求方式，如 method=RequestMethod.POST
     4. params属性：限制请求参数的条件，支持简单的表达式，要求请求参数的key-value必须服从于配置;
         1. params={&quot;username&quot;}，则请求参数中必须包含username;
         &lt;a href=&quot;user/hello?username=Java&quot;&gt;
         2. params={&quot;money=100&quot;}，则请求参数中的money必须是100.
         &lt;a href=&quot;user/hello?money=100&quot;&gt;
-    5. headers：限制请求头的条件，如headers={&quot;Accept&quot;}，请求头中必须包含Accept;
+    5. headers属性：限制请求头的条件，如headers={&quot;Accept&quot;}，请求头中必须包含Accept;
 </code></pre><h2 id="请求参数的绑定"><a href="#请求参数的绑定" class="headerlink" title="请求参数的绑定"></a>请求参数的绑定</h2><pre><code>1. 绑定机制
     1. 表单提交的参数都是 key-value 形式，如username=Java&amp;password=123;
         &lt;a href=&quot;hello?username=Java&amp;password=123&quot;&gt;to hello&lt;/a&gt;
@@ -497,7 +497,7 @@
         ...... //setter、getter
     }
     private class Account implements Serializable {
-        private String username;  private String password;  private double money;
+        private String username;  private double money;
         private User user;  //包含引用类型
         private List&lt;User&gt; list;  //List集合
         private Map&lt;String, User&gt; map;  //Map集合
@@ -507,7 +507,6 @@
         &lt;form action=&quot;hello&quot; method=&quot;post&quot;&gt;
             &lt;!-- 基本类型 --&gt;
             &lt;input type=&quot;text&quot; name=&quot;username&quot; /&gt;
-            &lt;input type=&quot;text&quot; name=&quot;password&quot; /&gt;
             &lt;input type=&quot;text&quot; name=&quot;money&quot; /&gt;
             &lt;!-- 实体类 --&gt;
             &lt;input type=&quot;text&quot; name=&quot;user.uname&quot; /&gt;
@@ -527,8 +526,7 @@
         }
 4. 参数中文乱码：在 web.xml 中配置Spring的过滤器，并初始化参数encoding=UTF-8
     &lt;web-app&gt;
-        ......
-        &lt;filter&gt;
+        &lt;filter&gt;  ===&gt;过滤器标签在&lt;servlet&gt;标签之前配置
             &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
             &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
             &lt;init-param&gt;
@@ -540,6 +538,7 @@
             &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
             &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
         &lt;/filter-mapping&gt;
+        ......
     &lt;/web-app&gt;
 5. 在控制器中获取Servlet API：直接把 HttpServletRequest、HttpServletResponse 加到方法的参数上;
     @RequestMapping(path=&quot;/hello&quot;)
@@ -549,7 +548,6 @@
     }
 </code></pre><h3 id="类型转换器"><a href="#类型转换器" class="headerlink" title="类型转换器"></a>类型转换器</h3><pre><code>1. 在参数传递过程中，key和value其实都是字符串，SpringMVC内部有类型转换器，负责转换参数类型;
 2. 但是，对于一些特殊类型，如日期，SpringMVC并不能识别所有的日期格式，这就需要自定义类型转换器;
-    &lt;input type=&quot;text&quot; /&gt; ==&gt; SpringMVC能识别的格式：2018/11/11 ==&gt; private Date date;
 3. 类型转换器的接口：Converter&lt;S, T&gt;，S和T分别代表接受类型和目标类型
     public class String2DateConverter implements Converter&lt;String, Date&gt; {
         public Date convert(String source) {
@@ -563,7 +561,6 @@
             } catch(Exception e) {
                 throw new RuntimeException(&quot;类型转换异常&quot;);
             }
-
         }
     }
 4. springmvc.xml：配置自定义的类型转换器
@@ -576,21 +573,28 @@
     &lt;/bean&gt;
     &lt;mvc:annotation-driven conversion-service=&quot;csfb&quot; /&gt;
     1. &lt;mvc:annotation-driven&gt; 标签开启SpringMVC的注解支持;
-    2. conversion-service属性：让配置的自定义类型转换器生效.
-</code></pre><h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><pre><code>1. @RequestParam：把请求中指定名称的参数，给控制器中的形参赋值;
+    2. conversion-service属性：让配置的自定义日期类型转换器生效.
+5. 当遇到字符串需要转Date时，SpringMVC会自动调用自定义的类型转换器.
+    &lt;a href=&quot;hello?date=2018-11-12&quot;&gt;to hello&lt;/a&gt;
+    @RequestMapping(path=&quot;/hello&quot;)
+    public String say(Date date) {  --&gt; &quot;2018-11-12&quot; 转 Date对象
+        return &quot;success&quot;;
+    }
+</code></pre><h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><pre><code>@Controller
+@RequestMapping(&quot;/user&quot;)
+public class TestController {
+
+}
+1. @RequestParam：把请求中指定名称的参数，给控制器中的形参赋值;
     1. value、name属性：请求参数中的名称;
     2. required：请求参数中是否必须提供此参数，默认为true;
-    @Controller
-    @RequestMapping(&quot;/user&quot;)
-    public class TestController {
         @RequestMapping(path=&quot;/test&quot;)
         public String test(@RequestParam(name=&quot;uname&quot;) String username) {
             return &quot;success&quot;;
         }
-    }
-    1. 请求参数中必须提供一个key为 uname 的键值对，uname的值会赋给形参username;
+    3. 请求参数中必须提供一个key为 uname 的键值对，uname的值会赋给形参username;
         &lt;a href=&quot;user/test?name=Java&quot;&gt;Welcome&lt;/a&gt;
-    2. 不使用 @RequestParam 时，形参username 会接收请求参数中key为 username 的值，
+    4. 不使用 @RequestParam 时，形参username 会接收请求参数中key为 username 的值，
     如果请求参数中没有，则形参username 仍为默认值null.
 2. @RequestBody：用于获取请求体的内容;
     1. 直接使用时会得到整个请求体的内容：key=value&amp;key=value...
@@ -646,53 +650,53 @@
         &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
     &lt;/form&gt;
 3. 修饰有返回值的方法
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test(User user) {
-            System.out.println(user);
-            return &quot;success&quot;;
-        }
-        @ModelAttribute
-        public User initTest(String uname) {
-            User user = new User();
-            user.setUname(uname);
-            ...... //查询数据库，获取age字段
-            user.setAge(20);
-            return user;
-        }
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test(User user) {
+        System.out.println(user);
+        return &quot;success&quot;;
+    }
+    @ModelAttribute
+    public User initTest(String uname) {
+        User user = new User();
+        user.setUname(uname);
+        ...... //查询数据库，获取age字段
+        user.setAge(20);
+        return user;
+    }
     1. initTest() 优先执行，形参uname 接收请求参数中的uname，返回一个User对象;
     2. test() 执行时，形参user 接收 initTest() 返回的User对象.
 4. 修饰无返回值的方法
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test(@ModelAttribute(&quot;abc&quot;) User user) {
-            System.out.println(user);
-            return &quot;success&quot;;
-        }
-        @ModelAttribute
-        public void initTest(String uname, Map&lt;String, User&gt; map) {
-            User user = new User();
-            user.setUname(uname);
-            ...... //查询数据库，获取age字段
-            user.setAge(20);
-            map.put(&quot;abc&quot;, user);
-        }
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test(@ModelAttribute(&quot;abc&quot;) User user) {
+        System.out.println(user);
+        return &quot;success&quot;;
+    }
+    @ModelAttribute
+    public void initTest(String uname, Map&lt;String, User&gt; map) {
+        User user = new User();
+        user.setUname(uname);
+        ...... //查询数据库，获取age字段
+        user.setAge(20);
+        map.put(&quot;abc&quot;, user);
+    }
     1. initTest() 优先执行，形参uname 接收请求参数中的uname，把User对象存入Map集合;
     2. test() 的形参user 通过 @ModelAttribute(&quot;Map集合的key&quot;) 获取Map中的User对象.
-</code></pre><h3 id="SessionAttribute"><a href="#SessionAttribute" class="headerlink" title="SessionAttribute"></a>SessionAttribute</h3><pre><code>1. 在控制器方法的参数上直接使用Servlet API，耦合度太高，如果没有引入相关依赖，编译期就会报错;
+</code></pre><h3 id="SessionAttributes"><a href="#SessionAttributes" class="headerlink" title="SessionAttributes"></a>SessionAttributes</h3><pre><code>1. 为了向域中存储数据，在控制器方法的参数上直接使用Servlet API，这种方式耦合度太高;
 2. 为了解决与Serlvet的耦合度问题，Spring提供了接口Model，并提供了很多实现类;
     @RequestMapping(path=&quot;/test&quot;)
     public String test(Model model) {
         model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt; 存入数据
         return &quot;success&quot;;
     }
-    1. Model中存储的数据，会转存到Request域中;
+    1. Model默认会把数据存到Request域中;
     2. 在JSP中取值：&lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;
-3. @SessionAttribute：用于多次执行控制器方法间的参数共享，数据被存入Session域中;
-    1. value属性：指定存入数据的名称key;
-    2. type属性：指定存入数据的类型;
-    3. 只能修饰类;
+3. @SessionAttributes：用于多次执行控制器方法间的参数共享;
+    1. 只能修饰类，让Model把数据被存入Session域中;
+    2. value、names属性：String数组，用于指定存入数据的key;
+    3. types：根据指定参数的类型，将模型中对应类型的参数存储到session中;
         @Controller
         @RequestMapping(&quot;/user&quot;)
-        @SessionAttribute(value={&quot;msg&quot;})  ---&gt;指定key的名称
+        @SessionAttributes(value={&quot;msg&quot;})  ---&gt;指定key的名称
         public class TestController {
             @RequestMapping(path=&quot;/test&quot;)
             public String test(Model model) {
@@ -712,8 +716,8 @@
                 return &quot;del&quot;;
             }
         }
-    1. 此时Model中存储的数据msg=Java，会存入到Session域中;
-    2. 在JSP中获取数据：
+    2. Model会将数据存入到Request域和Session域中;
+    3. 在JSP中获取数据：
         &lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;  &lt;h2&gt;${ sessionScope.msg }&lt;/h2&gt;
 </code></pre><hr>
 
@@ -756,8 +760,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/16/SpringMVC进阶/" rel="prev" title="SpringMVC进阶">
+                SpringMVC进阶 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -835,7 +839,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -890,7 +894,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#三层架构"><span class="nav-number">1.</span> <span class="nav-text">三层架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MVC模型"><span class="nav-number">1.1.</span> <span class="nav-text">MVC模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC"><span class="nav-number">1.2.</span> <span class="nav-text">SpringMVC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制流程"><span class="nav-number">2.</span> <span class="nav-text">控制流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#访问过程"><span class="nav-number">2.1.</span> <span class="nav-text">访问过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求参数的绑定"><span class="nav-number">3.</span> <span class="nav-text">请求参数的绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类型转换器"><span class="nav-number">3.1.</span> <span class="nav-text">类型转换器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用注解"><span class="nav-number">4.</span> <span class="nav-text">常用注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ModelAttribute"><span class="nav-number">4.1.</span> <span class="nav-text">ModelAttribute</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SessionAttribute"><span class="nav-number">4.2.</span> <span class="nav-text">SessionAttribute</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#三层架构"><span class="nav-number">1.</span> <span class="nav-text">三层架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MVC模型"><span class="nav-number">1.1.</span> <span class="nav-text">MVC模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC"><span class="nav-number">1.2.</span> <span class="nav-text">SpringMVC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制流程"><span class="nav-number">2.</span> <span class="nav-text">控制流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#访问过程"><span class="nav-number">2.1.</span> <span class="nav-text">访问过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求参数的绑定"><span class="nav-number">3.</span> <span class="nav-text">请求参数的绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类型转换器"><span class="nav-number">3.1.</span> <span class="nav-text">类型转换器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用注解"><span class="nav-number">4.</span> <span class="nav-text">常用注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ModelAttribute"><span class="nav-number">4.1.</span> <span class="nav-text">ModelAttribute</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SessionAttributes"><span class="nav-number">4.2.</span> <span class="nav-text">SessionAttributes</span></a></li></ol></li></ol></div>
             
 
           </div>
