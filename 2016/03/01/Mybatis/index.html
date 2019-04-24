@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-12T13:40:18.149Z">
+<meta property="og:updated_time" content="2019-04-24T11:40:10.003Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis">
 <meta name="twitter:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
@@ -368,7 +368,7 @@
             &lt;!-- 配置MySQL的环境 --&gt;
             &lt;environment id=&quot;mysql&quot;&gt;  ====&gt;此id属性值与父节点的default一致
                 &lt;!-- 配置事物的类型 --&gt;
-                &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;transactionManager&gt;
+                &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;/transactionManager&gt;
                 &lt;!-- 配置数据源：连接池，有三种 --&gt;
                 &lt;dataSource type=&quot;POOLED&quot;&gt;
                     &lt;!-- 配置连接数据库的基本信息，5.0和6.0的驱动、URL是不同的 --&gt;
@@ -377,7 +377,7 @@
                     &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
                     &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
                 &lt;/dataSource&gt;
-            &lt;environment&gt;
+            &lt;/environment&gt;
         &lt;/environments&gt;
         &lt;!-- 指定Dao的映射配置文件 --&gt;
         &lt;mappers&gt;
@@ -826,7 +826,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">47</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

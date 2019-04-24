@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-23T13:27:40.321Z">
+<meta property="og:updated_time" content="2019-04-24T13:09:59.647Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC进阶">
 <meta name="twitter:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
@@ -325,8 +325,8 @@
         <h2 id="控制器方法的返回值"><a href="#控制器方法的返回值" class="headerlink" title="控制器方法的返回值"></a>控制器方法的返回值</h2><pre><code>1. resources/springmvc.xml：配置的视图解析器
     &lt;bean id=&quot;internalResourceViewResolver&quot; 
         class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
-        &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;  ===&gt;文件所在目录，根目录是webapp
-        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;  ===&gt;文件的后缀名
+        &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
     &lt;/bean&gt;
 2. String
     @RequestMapping(&quot;/test&quot;)
@@ -403,13 +403,43 @@
     }
     1. @RequestBody：获取请求体的内容，SpringMVC会把JSON格式的请求体封装到User对象中;
     2. @ResponseBody：将返回的对象作为响应体，并转为JSON数据，响应给客户端.
-5. &lt;mvc:resources&gt;：配置不过滤，比如CSS、图片、JS... 这些静态资源不需要经过控制器;
+</code></pre><h2 id="静态资源的处理"><a href="#静态资源的处理" class="headerlink" title="静态资源的处理"></a>静态资源的处理</h2><pre><code>1. 访问静态资源时，不需要经过前端控制器和过滤器，直接响应即可;
+2. 使用Servlet来处理静态资源：web.xml 中配置名称为 default 的&lt;servlet&gt;标签;
+    1. 处理 webapp/css 目录中的静态资源：以 /css/ 开头的URL;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;/css/*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+    2. 处理后缀名为 .css、.js 的静态资源;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+3. 在SpringMVC的配置文件springmvc.xml 中，使用 &lt;mvc:resources&gt; 标签配置静态资源的访问;
+    &lt;mvc:annotation-driven /&gt;
     &lt;mvc:resources location=&quot;/css/&quot; mapping=&quot;/css/**&quot; /&gt;
     &lt;mvc:resources location=&quot;/images/&quot; mapping=&quot;/images/**&quot; /&gt;
     &lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot; /&gt;
-    1. 在配置文件 springmvc.xml 中，告知前端控制器，不要拦截静态资源
-    2. location属性：指定webapp下的目录，如/css/ 表示webapp/css目录;
-    3. mapping属性：匹配的请求路径，如/css/** 表示匹配以 /css 开头的所有URL.
+    1. location属性：指定目录文件的路径，如 /css/ 表示 webapp/css 目录;
+    2. mapping属性：匹配的请求路径，如 /css/** 表示匹配以 /css 开头的所有URL;
+</code></pre><h3 id="SpringMVC的路径匹配模式"><a href="#SpringMVC的路径匹配模式" class="headerlink" title="SpringMVC的路径匹配模式"></a>SpringMVC的路径匹配模式</h3><pre><code>1. Spring MVC中的路径匹配模式，使用的是Apache Ant的样式路径，有三种通配符：?、*、**
+    1. /*：拦截所有目录，不包含子目录;
+    2. /**：拦截所有目录及其子目录.
+2. ?：匹配任何单字符;
+    1. /user/a?bc：能够匹配/user/axbc、/user/aXbc，但不包括/user/abc;
+3. *：匹配 n&gt;=0 个字符，只能匹配一级目录，不能匹配子目录;
+    1. /user/*：匹配 /user/、 /user/abc，但不能匹配 /user/abc/123;
+    2. /app/*.jsp：匹配app目录下的所有 .jsp 文件.
+4. **：匹配 n&gt;=0 个目录;
+    1. /user/**：匹配以 /user 开头的所有URL;
+    2. /**/example：匹配 /example、 /app/example、 /app/foo/example...
+    3. /app/**/dir/file.：匹配 /app/dir/file.jsp、 /app/foo/dir/file.html ...
+5. /**/*.jsp：匹配任何目录下的所有 .jsp 文件;
+6. 所以，以 mvc 为命名空间的标签，在设置路径时，都遵循此路径匹配模式.
 </code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 必要前提
     1. form表单的 enctype(表单请求正文的类型) 属性值为 multipart/form-data;
     2. method 必须是 POST;
@@ -611,20 +641,6 @@
     MyInterceptor.preHandle() --&gt; TestInterceptor.preHandle() --&gt; HelloController.test()
     --&gt; TestInterceptor.postHandle() --&gt; MyInterceptor.postHandle() --&gt; success.jsp --&gt; 
     TestInterceptor.afterCompletion() --&gt; MyInterceptor.afterCompletion()
-</code></pre><h3 id="SpringMVC的路径匹配模式"><a href="#SpringMVC的路径匹配模式" class="headerlink" title="SpringMVC的路径匹配模式"></a>SpringMVC的路径匹配模式</h3><pre><code>1. Spring MVC中的路径匹配模式，使用的是Apache Ant的样式路径，有三种通配符：?、*、**
-    1. /*：拦截所有目录，不包含子目录;
-    2. /**：拦截所有目录及其子目录.
-2. ?：匹配任何单字符;
-    1. /user/a?bc：能够匹配/user/axbc、/user/aXbc，但不包括/user/abc;
-3. *：匹配 n&gt;=0 个字符，只能匹配一级目录，不能匹配子目录;
-    1. /user/*：匹配 /user/、 /user/abc，但不能匹配 /user/abc/123;
-    2. /app/*.jsp：匹配app目录下的所有 .jsp 文件.
-4. **：匹配 n&gt;=0 个目录;
-    1. /user/**：匹配以 /user 开头的所有URL;
-    2. /**/example：匹配 /example、 /app/example、 /app/foo/example...
-    3. /app/**/dir/file.：匹配 /app/dir/file.jsp、 /app/foo/dir/file.html ...
-5. /**/*.jsp：匹配任何目录下的所有 .jsp 文件;
-6. 所以，以 mvc 为命名空间的标签，在设置路径时，都遵循此路径匹配模式.
 </code></pre><hr>
 
       
@@ -666,8 +682,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/25/SSM整合/" rel="prev" title="SSM整合">
+                SSM整合 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -745,7 +761,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">47</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -800,7 +816,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制器方法的返回值"><span class="nav-number">1.</span> <span class="nav-text">控制器方法的返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseBody"><span class="nav-number">1.1.</span> <span class="nav-text">@ResponseBody</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">2.</span> <span class="nav-text">文件上传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC处理文件上传"><span class="nav-number">2.1.</span> <span class="nav-text">SpringMVC处理文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨服务器的文件上传"><span class="nav-number">2.2.</span> <span class="nav-text">跨服务器的文件上传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常处理器"><span class="nav-number">3.</span> <span class="nav-text">异常处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截器"><span class="nav-number">4.</span> <span class="nav-text">拦截器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的路径匹配模式"><span class="nav-number">4.1.</span> <span class="nav-text">SpringMVC的路径匹配模式</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制器方法的返回值"><span class="nav-number">1.</span> <span class="nav-text">控制器方法的返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseBody"><span class="nav-number">1.1.</span> <span class="nav-text">@ResponseBody</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态资源的处理"><span class="nav-number">2.</span> <span class="nav-text">静态资源的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的路径匹配模式"><span class="nav-number">2.1.</span> <span class="nav-text">SpringMVC的路径匹配模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">3.</span> <span class="nav-text">文件上传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC处理文件上传"><span class="nav-number">3.1.</span> <span class="nav-text">SpringMVC处理文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨服务器的文件上传"><span class="nav-number">3.2.</span> <span class="nav-text">跨服务器的文件上传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常处理器"><span class="nav-number">4.</span> <span class="nav-text">异常处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截器"><span class="nav-number">5.</span> <span class="nav-text">拦截器</span></a></li></ol></div>
             
 
           </div>

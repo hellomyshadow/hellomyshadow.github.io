@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/15/SpringMVC/SSM.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/15/SpringMVC/组件控制流程.jpg">
-<meta property="og:updated_time" content="2019-04-23T12:24:30.046Z">
+<meta property="og:updated_time" content="2019-04-24T13:25:42.435Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC">
 <meta name="twitter:description" content="三层架构1. 开发架构一般都是基于两种形式：C/S(客户端/服务器)、B/S(浏览器/服务器); 2. JavaEE开发几乎都是基于B/S架构，系统标准的三层架构：表现层、业务层、持久层; 3. 表现层：web层，负责接收客户端请求，响应结果;     1. 表现层包括展示层(负责展示结果)和控制层(负责接收请求);     2. 表现层依赖于业务层，用于对请求进行业务处理，并把结果响应给客户端;">
@@ -368,18 +368,8 @@
             &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
             &lt;version&gt;${spring.version}&lt;/version&gt;
         &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
-            &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
-            &lt;version&gt;4.0.1&lt;/version&gt;
-            &lt;scope&gt;provided&lt;/scope&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;javax.servlet.jsp&lt;/groupId&gt;
-            &lt;artifactId&gt;javax.servlet.jsp-api&lt;/artifactId&gt;
-            &lt;version&gt;2.3.3&lt;/version&gt;
-            &lt;scope&gt;provided&lt;/scope&gt;
-        &lt;/dependency&gt;
+        javax.servlet-api(provided)
+        javax.servlet.jsp-api(provided)
     &lt;/dependencies&gt;
 2. 配置文件resources/springmvc.xml，加入mvc和context约束
     &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
@@ -393,7 +383,7 @@
             https://www.springframework.org/schema/mvc/spring-mvc.xsd
             http://www.springframework.org/schema/context
             https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
-        &lt;!-- Spring创建IoC容器时扫描的包 --&gt;
+        &lt;!-- 开启扫描哪个包下的注解 --&gt;
         &lt;context:component-scan base-package=&quot;cn.test&quot;&gt;&lt;/context:component-scan&gt;
         &lt;!-- 视图解析器 --&gt;
         &lt;bean id=&quot;internalResourceViewResolver&quot; 
@@ -503,8 +493,8 @@
         private Map&lt;String, User&gt; map;  //Map集合
         ...... //setter、getter
     }
-    1. form表单：key必须与实体类Account的属性保持一致
-        &lt;form action=&quot;hello&quot; method=&quot;post&quot;&gt;
+    1. form表单：key必须与实体类Account的属性保持一致;
+        &lt;form action=&quot;hello&quot; method=&quot;post&quot;&gt;   ==&gt;跟请求方式无关，也可以是GET请求
             &lt;!-- 基本类型 --&gt;
             &lt;input type=&quot;text&quot; name=&quot;username&quot; /&gt;
             &lt;input type=&quot;text&quot; name=&quot;money&quot; /&gt;
@@ -525,21 +515,18 @@
             return &quot;success&quot;;
         }
 4. 参数中文乱码：在 web.xml 中配置Spring的过滤器，并初始化参数encoding=UTF-8
-    &lt;web-app&gt;
-        &lt;filter&gt;  ===&gt;过滤器标签在&lt;servlet&gt;标签之前配置
-            &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
-            &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
-            &lt;init-param&gt;
-                &lt;param-name&gt;encoding&lt;/param-name&gt;
-                &lt;param-value&gt;UTF-8&lt;/param-value&gt;
-            &lt;/init-param&gt;
-        &lt;/filter&gt;
-        &lt;filter-mapping&gt;
-            &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
-            &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-        &lt;/filter-mapping&gt;
-        ......
-    &lt;/web-app&gt;
+    &lt;filter&gt;  ===&gt;过滤器标签排列在&lt;servlet&gt;标签之前
+        &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;encoding&lt;/param-name&gt;
+            &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
 5. 在控制器中获取Servlet API：直接把 HttpServletRequest、HttpServletResponse 加到方法的参数上;
     @RequestMapping(path=&quot;/hello&quot;)
     public String say(HttpServletRequest request, HttpServletResponse response) {
@@ -839,7 +826,7 @@ public class TestController {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">47</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
