@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content=",">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SpringBoot Spring的优缺点 优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能； 缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的； Spring2.5引入的基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置； Spring3.0引入了基于Java的配置，这事一种类型安全的可重构的配置">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SpringBoot">
+<meta property="og:url" content="http://hellomyshadow.github.io/SpringBoot.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="SpringBoot Spring的优缺点 优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能； 缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的； Spring2.5引入的基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置； Spring3.0引入了基于Java的配置，这事一种类型安全的可重构的配置">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-25T13:35:58.327Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot">
+<meta name="twitter:description" content="SpringBoot Spring的优缺点 优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能； 缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的； Spring2.5引入的基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置； Spring3.0引入了基于Java的配置，这事一种类型安全的可重构的配置">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/SpringBoot.html">
+
+
+
+
+
+  <title>SpringBoot | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+	<h1 class="post-title" itemprop="name headline">SpringBoot</h1>
+
+
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <h2 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h2><ol>
+<li>Spring的优缺点<ol>
+<li>优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能；</li>
+<li>缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的；<ol>
+<li>Spring2.5引入的基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置；</li>
+<li>Spring3.0引入了基于Java的配置，这事一种类型安全的可重构的配置方式，可以替代XML；</li>
+<li>除了配置会消耗大量的开发时间，项目的依赖管理也是很麻烦的，有些依赖库还需要依赖其他库，<br>而且，一旦选错了依赖版本，导致的不兼容问题还会严重阻碍项目的开发进度。</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>SpringBoot解决了Spring的缺点，基于约定优先于配置，开发者只需要关心逻辑业务的代码编写；</li>
+<li>SpringBoot的特点<ol>
+<li>为基于Spring的开发提供更快的入门体验；</li>
+<li>开箱即用，没有代码生成，也无需XML配置，同时也可以修改默认值来满足特定的需求；</li>
+<li>提供了一些大型项目中常见的非功能性的特性，如嵌入式服务器、安全、指标、健康检测、外部配置…</li>
+<li>SpringBoot不是对Spring功能上的增强，而是提供一种快速使用Spring的方式。</li>
+</ol>
+</li>
+<li>SpringBoot的核心功能<ol>
+<li>起步依赖：本质上是一个Maven项目对象模型(POM)，定义了对其他库的传递依赖；<br>简单来说，起步依赖就是将具备某种功能的坐标打包到一起，并提供一些默认功能；</li>
+<li>自动配置：SpringBoot的自动配置是一个运行时(应用程序启动时)的过程，<br>考虑了众多因素，才决定Spring配置应该用哪个，不应该用哪个。此过程也是Spring自动完成的。</li>
+</ol>
+</li>
+<li>环境搭建<ol>
+<li>创建一个普通Java项目的Maven工程；</li>
+<li>添加SpringBoot的起步依赖<ol>
+<li>SpringBoot要求：项目要继承SpringBoot的起步依赖spring-boot-starter-parent<parent><br> <groupid>org.springframework.boot</groupid><br> <artifactid>spring-boot-starter-parent</artifactid><br> <version>2.1.4.RELEASE</version><br></parent></li>
+<li>SpringBoot要集成SpringMVC、进行Controller的开发时，只需要导入web的启动依赖即可，<br>且<dependencies>的依赖无需指定版本号<dependency><br> <groupid>org.springframework.boot</groupid><br> <artifactid>spring-boot-starter-web</artifactid><br></dependency></dependencies></li>
+</ol>
+</li>
+<li>创建一个普通类，使用 @SpringBootApplication 声明为一个SpringBoot的引导类(引导应用程序的入口)，<br>在 main() 中，让SpringBoot运行此引导类；<br> @SpringBootApplication<br> public class StartSpringBoot {<pre><code>public static void main(String[] args) {
+    //运行SpringBoot的引导类，参数是 @SpringBootApplication 声明的引导类的字节码对象
+    SpringApplication.run(StartSpringBoot.class);
+}
+</code></pre> }</li>
+<li>运行 main(), 控制台的提示：Tomcat started on port(s): 8080 (http) with context path ‘’，说明它内置一个Tomcat;</li>
+<li>context path ‘’：表示web应用的名称为空字符串，那么就可以直接使用 <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a> 访问；</li>
+<li>当前没有编写任何页面，所以展示的是 Error Page;</li>
+</ol>
+</li>
+<li>无需任何配置，就可以直接编写Controller层<br> @Controller<br> public class QuickController {<pre><code>@RequestMapping(&quot;/test&quot;)
+@ResponseBody
+public String test() {
+    return &quot;Hello SpringBoot&quot;;
+}
+</code></pre> }<ol>
+<li>@ResponseBody修饰了方法之后，表示把返回值作为响应结果，而不再去查找视图；</li>
+<li><a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a>  —&gt; Hello SpringBoot</li>
+</ol>
+</li>
+<li>SpringBoot工程的热部署<ol>
+<li>添加依赖<dependency><br> <groupid>org.springframework.boot</groupid><br> <artifactid>spring-boot-devtools</artifactid><br></dependency></li>
+<li>IDEA默认不支持热部署，需要设置<br>Settings –&gt; Compiler –&gt; 勾选 Build project automatically<br>Ctrl+Shift+Alt+/ –&gt; Registry –&gt; 勾选 compiler.automake.allow.when.app.running</li>
+<li>每次修改了Controller层，重新访问即可，而不是刷新;</li>
+</ol>
+</li>
+<li>IDEA快速创建SpringBoot工程<br> New Project –&gt; Spring Initializr –&gt; Next –&gt; 设置项目信息 –&gt; Next –&gt; 选择依赖 –&gt; Finish<ol>
+<li>除了手动选择的依赖，还会导入一个测试的依赖：spring-boot-starter-test<h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2></li>
+</ol>
+</li>
+<li>起步依赖：所有的SpringBoot工程都必须继承spring-boot-starter-parent;<ol>
+<li>spring-boot-starter-parent会对依赖的版本进行管理；</li>
+<li>spring-boot-starter-web中集成了Tomcat、spring-web、spring-mvc等Web开发的依赖；</li>
+<li>也就是说，导入了一个依赖坐标之后，它会根据指定的版本号、去自动管理其内部集成的其他相关依赖库。</li>
+</ol>
+</li>
+<li>自动配置<ol>
+<li>@SpringBootApplication 内部的三大注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan</li>
+<li>@SpringBootConfiguration 内部还带有 @Configuration，所以引导类就是一个配置类；</li>
+<li>@EnableAutoConfiguration 是自动配置的核心注解，内部使用@Import({AutoConfigurationImportSelector.class})<br> AutoConfigurationImportSelector中就是自动配置的核心源码</li>
+<li>@ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解；<h2 id="SpringBoot的配置文件"><a href="#SpringBoot的配置文件" class="headerlink" title="SpringBoot的配置文件"></a>SpringBoot的配置文件</h2></li>
+</ol>
+</li>
+<li>SpringBoot是基于约定的，所以很多配置都是默认值；</li>
+<li>spring-boot-starter-parent 会自动加载resources目录下的三类配置文件<ol>
+<li>application<em>.yml、application</em>.yaml、application*.properties;</li>
+<li>通过这三类配置文件，就可以覆盖默认配置;</li>
+<li>加载顺序：yml –&gt; yaml –&gt; properties，当有相同的配置时，properties中的配置优先级最高;</li>
+</ol>
+</li>
+<li>创建resources/application.properties，实现个性化配置<br> server.port=9090  –&gt;配置Tomcat启动的端口号，默认是8080<br> server.servlet.context-path=/demo  –&gt;配置web应用的名称，默认是空字符串</li>
+<li>yml和yaml是一种新型配置文件，也是一种标记语言<ol>
+<li>yml文件格式是YAML编写的文件，YAML是一种能够被电脑识别的数据序列化格式，且易读性强；</li>
+<li>容易和脚本语言交互，可以被支持YAML库的编程语言程序导入，如C/C++、Python、Java、C#、PHP、Ruby…</li>
+<li>YML文件以数据为核心，比传统的XML文件更简洁；</li>
+<li>YML文件的扩展名有两种：.yml、.yaml<h3 id="yml配置文件"><a href="#yml配置文件" class="headerlink" title="yml配置文件"></a>yml配置文件</h3></li>
+</ol>
+</li>
+<li>普通数据：key: value<ol>
+<li>key和value之间必须有一个空格，如 name: value</li>
+</ol>
+</li>
+<li>对象数据<ol>
+<li>形式1：<br> key:<pre><code>key1: value1
+key2: value2
+</code></pre></li>
+<li>key1、key2前面的空格个数不限定，相同缩进代表统一级别<br> person:<pre><code>name: Java
+age: 20
+</code></pre></li>
+<li>形式2：<br> key: {key1: value1,key2: value2}<br> person: {name: Java,age: 20}</li>
+</ol>
+</li>
+<li>Map数据的配置与对象的配置相同；</li>
+<li>数据、List、Set<ol>
+<li>存放普通字符串<br>key:<ul>
+<li>value1</li>
+<li>value2<br>行内形式：key: [value1,value2]</li>
+</ul>
+</li>
+<li>存放对象<br>key:<ul>
+<li>key11: value11<br>key12: value12</li>
+<li>key22: value22<br>key23: value23<br>行内形式：key: [{key11: value11,key12: value12},{key22: value22,key23: value23}]<h3 id="配置文件与配置类的属性映射"><a href="#配置文件与配置类的属性映射" class="headerlink" title="配置文件与配置类的属性映射"></a>配置文件与配置类的属性映射</h3></li>
+</ul>
+</li>
+</ol>
+</li>
+<li>配置文件被加载后，其中的键值也会存放到Spring IoC容器中，所以就可以映射到Spring管理的Bean对象中</li>
+<li><p>使用 @Value 映射</p>
+<ol>
+<li><p>通过 @Value 将配置文件中的值，映射到一个Spring管理的Bean的字段上<br>@Controller<br>public class QuickController {<br> @Value(“${name}”)<br> private String name;</p>
+<p> @Value(“${person.name}”)<br> private String name;<br>}</p>
+</li>
+<li>这种方式虽然可以精确匹配，但如果数据量很大，手动匹配会很麻烦。</li>
+</ol>
+</li>
+<li>使用 @ConfigurationProperties 映射，实现自动配置<br> @Controller<br> @ConfigurationProperties(prefix=”person”)<br> public class QuickController {<pre><code>private String name;
+private String age;
+... //getter、setter
+</code></pre> }<ol>
+<li>只需要指定配置文件中的对象数据的key，会自动映射到Bean的字段上；</li>
+<li>使用 @ConfigurationProperties 时，还需要引入其执行器<dependency><br> <groupid>org.springframework.boot</groupid><br> <artifactid>spring-boot-configuration-processor</artifactid><br> <optional>true</optional><br></dependency></li>
+<li>先在Bean中定义需要的属性，然后配置文件中配置时，执行器就会提示可配置的属性。<h2 id="SpringBoot集成其他技术"><a href="#SpringBoot集成其他技术" class="headerlink" title="SpringBoot集成其他技术"></a>SpringBoot集成其他技术</h2>使用IDEA快速创建SpringBoot工程<h3 id="整合MyBatis"><a href="#整合MyBatis" class="headerlink" title="整合MyBatis"></a>整合MyBatis</h3></li>
+</ol>
+</li>
+<li>引入依赖<ol>
+<li>mybatis的起步依赖，需要指定版本号<dependency><br> <groupid>org.mybatis.spring.boot</groupid><br> <artifactid>mybatis-spring-boot-starter</artifactid><br> <version>2.0.1</version><br></dependency></li>
+<li>MySQL的连接驱动<dependency><br> <groupid>mysql</groupid><br> <artifactid>mysql-connector-java</artifactid><br></dependency></li>
+</ol>
+</li>
+<li>创建配置文件resources/application.properties<ol>
+<li>配置数据库连接信息，覆盖默认的配置，所以key必须与默认配置的key保持一致</li>
+<li>查找方向：spring-boot-autoconfigure –&gt; META-INF –&gt; spring-configuration-metadata.json<br>spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver<br>spring.datasource.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai&amp;setUnicode=true&amp;characterEncoding=utf8<br>spring.datasource.username=root<br>spring.datasource.password=123456</li>
+</ol>
+</li>
+<li>创建一个实体类：cn.boot.domain.User<br> public class User {<pre><code>private Integer id;  //尽量使用包装类型
+private String username;
+private String password;
+//getter、setter
+</code></pre> }</li>
+<li><p>创建Dao层：cn.boot.mapper.IUserMapper，并使用 @Mapper 修饰<br> @Mapper<br> public interface IUserMapper {</p>
+<pre><code>List&lt;User&gt; findAll();
+</code></pre><p> }</p>
+<ol>
+<li>除了使用 @Mapper 单独修饰一个Mapper接口，还可以在引导类上使用 @MapperScan</li>
+<li>指定映射哪些包下的接口<br>@MapperScan(basePackages={“cn.boot.mapper”})</li>
+</ol>
+</li>
+<li><p>建立POJO与Dao的映射关系</p>
+<ol>
+<li>配置文件的方式：resources/mapper/UserMapper.xml<br>&lt;?xml version=”1.0” encoding=”UTF-8” ?&gt;<br>&lt;!DOCTYPE mapper PUBLIC “-//mybatis.org//DTD Mapper 3.0//EN”<pre><code>&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
+</code></pre><mapper namespace="cn.boot.mapper.IUserMapper"><br> <select id="findAll" resulttype="user"><br>     select * from user<br> </select><br></mapper></li>
+<li>注解的方式<br>@Mapper<br>public interface IUserMapper {<br> @Select(“select * from user”)<br> List<user> findAll();<br>}</user></li>
+</ol>
+</li>
+<li>建立与SpringBoot的关系<ol>
+<li>在 application.properties 中配置Mybatis的信息</li>
+<li>覆盖默认配置，查找key的方向：mybatis-spring-boot-autoconfigure –&gt; META-INF –&gt; spring-configuration-metadata.json<h1 id="配置POJO别名的扫描包"><a href="#配置POJO别名的扫描包" class="headerlink" title="配置POJO别名的扫描包"></a>配置POJO别名的扫描包</h1>mybatis.type-aliases-package=cn.boot.domain<br>#加载Mybatis的映射文件(使用注解时不配置)<br>mybatis.mapper-locations=classpath:mapper/*Mapper.xml</li>
+</ol>
+</li>
+<li><p>在Controller中，使用 @Autowired 注入Dao(Mapper)对象<br> @Controller<br> public class QuickController {</p>
+<pre><code>@Autowired
+private IUserMapper userMapper;
+
+@RequestMapping(&quot;/test&quot;)
+@ResponseBody
+public String test() {
+    List&lt;User&gt; users = userMapper.findAll();
+    return &quot;Hello SpringBoot&quot;;
+}
+</code></pre><p> }</p>
+<h3 id="整合Junit"><a href="#整合Junit" class="headerlink" title="整合Junit"></a>整合Junit</h3></li>
+<li>IDEA快速创建SpringBoot工程时，默认会引入junit的起步依赖：spring-boot-starter-test</li>
+<li><p>在test目录下创建测试类：cn.boot.TestIbatis<br> @RunWith(SpringRunner.class)<br> @SpringBootTest(classes=引导类.class)<br> public class TestIbatis {</p>
+<pre><code>@Autowired
+private IUserMapper userMapper;  //注入Mapper对象
+
+@Test
+public void test() {
+    List&lt;User&gt; users = userMapper.findAll();
+}
+</code></pre><p> }</p>
+<h3 id="集成Spring-Data-JPA"><a href="#集成Spring-Data-JPA" class="headerlink" title="集成Spring Data JPA"></a>集成Spring Data JPA</h3></li>
+<li>引入起步依赖：spring-boot-starter-data-jpa <dependency><br>     <groupid>org.springframework.boot</groupid><br>     <artifactid>spring-boot-starter-data-jpa</artifactid><br> </dependency></li>
+<li>引入MySQL连接驱动： <dependency><br>     <groupid>mysql</groupid><br>     <artifactid>mysql-connector-java</artifactid><br> </dependency></li>
+<li><p>application.properties</p>
+<h1 id="MySQL连接信息"><a href="#MySQL连接信息" class="headerlink" title="MySQL连接信息"></a>MySQL连接信息</h1><p> spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver<br> spring.datasource.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai&amp;setUnicode=true&amp;characterEncoding=utf8<br> spring.datasource.username=root<br> spring.datasource.password=123456</p>
+<h1 id="JPA的配置信息"><a href="#JPA的配置信息" class="headerlink" title="JPA的配置信息"></a>JPA的配置信息</h1><p> spring.jpa.database=MySQL<br> spring.jpa.show-sql=true<br> spring.jpa.generate-ddl=true<br> spring.jpa.hibernate.ddl-auto=update<br> spring.jpa.hibernate.naming_strategy=org.hibernate.cfg.ImprovedNamingStrategy</p>
+</li>
+<li><p>创建POJO<br> @Entity  –&gt;javax.persistence.Entity<br> public class User {</p>
+<pre><code>@Id
+@GeneratedValue(strategy=GenerationType.IDENTITY)
+private Long id;  //使用包装类型
+private String username;
+private String password;
+//getter、setter
+</code></pre><p> }</p>
+</li>
+<li>Dao层接口：cn.boot.repository.UserRepository<br> public interface UserRepository extends JpaRepository&lt;User, Long&gt; {<pre><code>List&lt;User&gt; findAll();
+</code></pre> }</li>
+<li><p>使用junit测试：测试失败，等学了JPA再说吧<br> @RunWith(SpringRunner.class)<br> @SpringBootTest(classes=引导类.class)<br> public class TestIbatis {</p>
+<pre><code>@Autowired
+private UserRepository userRepository;  //注入Repository对象
+
+@Test
+public void test() {
+    List&lt;User&gt; users = userRepository.findAll();
+}
+</code></pre><p> }</p>
+<ol>
+<li>JDK9环境可能报异常：JAXBException，是因为缺少依赖<br><dependency><br> <groupid>javax.xml.bind</groupid><br> <artifactid>jaxb-api</artifactid><br> <version>2.3.1</version><br></dependency><h3 id="集成Redis"><a href="#集成Redis" class="headerlink" title="集成Redis"></a>集成Redis</h3></li>
+</ol>
+</li>
+<li>引入起步依赖：spring-boot-starter-data-redis</li>
+<li>application.properties<br> #Redis的连接信息<br> spring.redis.host=127.0.0.1<br> spring.redis.port=6379<br> spring.redis.database=0  //配置Redis的数据库编号，默认就是0</li>
+<li><p>注入RedisTemplate，测试Redis<br> @RunWith(SpringRunner.class)<br> @SpringBootTest(classes=引导类.class)<br> public class TestIbatis {</p>
+<pre><code>@Autowired
+private RedisTemplate&lt;String, String&gt; redisTemplate;
+
+@Autowired
+private UserRepository userRepository;
+
+@Test
+public void test() {
+    //1.从Redis缓存中获取数据，数据的形式是JSON字符串
+    String userJson = redisTemplate.boundValueOps(&quot;key&quot;).get();
+    if(null == userJson) {
+        //2.从MySQL数据库中查询数据
+        List&lt;User&gt; users = userRepository.findAll();
+        //3.把数据存入Redis：web的起步依赖中已经包含了spring-mvc相关的依赖
+        //使用jackson把List集合转为JSON字符串
+        ObjectMapper mapper = new ObjectMapper();
+        userJson = mapper.writeValueAsString(users);
+        redisTemplate.boundValueOps(&quot;key&quot;).set(userJson);
+    }
+    System.out.println(userJson);
+}
+</code></pre><p> }</p>
+</li>
+</ol>
+<hr>
+
+        
+      </div>
+      
+      
+      
+    </div>
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的原理"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的配置文件"><span class="nav-number">3.</span> <span class="nav-text">SpringBoot的配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yml配置文件"><span class="nav-number">3.1.</span> <span class="nav-text">yml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件与配置类的属性映射"><span class="nav-number">3.2.</span> <span class="nav-text">配置文件与配置类的属性映射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot集成其他技术"><span class="nav-number">4.</span> <span class="nav-text">SpringBoot集成其他技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#整合MyBatis"><span class="nav-number">4.1.</span> <span class="nav-text">整合MyBatis</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#配置POJO别名的扫描包"><span class="nav-number"></span> <span class="nav-text">配置POJO别名的扫描包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#整合Junit"><span class="nav-number">0.1.</span> <span class="nav-text">整合Junit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集成Spring-Data-JPA"><span class="nav-number">0.2.</span> <span class="nav-text">集成Spring Data JPA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL连接信息"><span class="nav-number"></span> <span class="nav-text">MySQL连接信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JPA的配置信息"><span class="nav-number"></span> <span class="nav-text">JPA的配置信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#集成Redis"><span class="nav-number">0.1.</span> <span class="nav-text">集成Redis</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

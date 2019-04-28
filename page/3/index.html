@@ -2429,6 +2429,348 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/Maven高级/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/26/Maven高级/" itemprop="url">Maven高级</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-26T00:00:00+08:00">
+                2016-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="SSM整合"><a href="#SSM整合" class="headerlink" title="SSM整合"></a>SSM整合</h2><pre><code>1. 引入SSM、log4j、shiro、spring-security的相关依赖
+    1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web
+    2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spring-tx
+    3. junit(test)、、mysql-connector-jave、servlet-api(provided)、jsp-api(provided)、jstl
+    4. log4j、slf4j-api、slf4j-log4j12、mybatis、mybatis-spring、c3p0(type:jar，scope:compile)、
+    5. pagehelper、spring-security-web、spring-security-config、spring-security-core、
+    6. spring-security-taglibs、druid
+2. 使用Maven的web骨架，创建JavaWeb工程;
+3. 把 log4j.properties 放在 resources 目录中
+    # Set root category priority to INFO and its only appender to CONSOLE.
+    #log4j.rootCategory=INFO, CONSOLE            debug   info   warn error fatal
+    log4j.rootCategory=debug, CONSOLE, LOGFILE
+    # Set the enterprise logger category to FATAL and its only appender to CONSOLE.
+    log4j.logger.org.apache.axis.enterprise=FATAL, CONSOLE
+    # CONSOLE is set to be a ConsoleAppender using a PatternLayout.
+    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
+    # LOGFILE is set to be a File appender using a PatternLayout.
+    log4j.appender.LOGFILE=org.apache.log4j.FileAppender
+    log4j.appender.LOGFILE.File=d:\axis.log
+    log4j.appender.LOGFILE.Append=true
+    log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.LOGFILE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
+4. Spring的配置文件：applicationContext.xml
+5. Spring整合Mybatis时，借助 mybatis-spring 包;
+    1. SqlSessionFactoryBean：SqlSessionFactory的工厂对象;
+    2. MapperScannerConfigurer：扫描Dao接口的包，为所有的Dao生成代理对象;
+    3. 使用Dao映射配置文件的方式时，映射文件的包路径与Dao的包路径一致，文件名与映射的Dao接口名一致;
+    4. 比如cn.test.dao.IUserDao，对应的映射配置文件：resources/cn/test/dao/IUserDao.xml;
+    5. Druid是阿里提供的连接池，其&lt;property&gt;的配置和c3p0一样.
+6. Service层使用注解开发，在 applicationContext.xml 中配置只扫描Service包，配置事务管理器、事务通知、切面;
+    &lt;context:component-scan base-package=&quot;cn.test.service&quot; /&gt;
+    @Service
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        private IUserDao dao;
+        ......
+    }
+7. SpringMVC的配置文件：resources/springmvc.xml
+    1. ，配置前端处理器、视图解析器、扫描Controller层所在包、并开启注解扫描的支持
+    &lt;context:component-scan base-package=&quot;cn.test.controller&quot; /&gt;
+    &lt;!-- 简化的配置方式：配置处理器映射器和处理器适配器！不需要配置前端处理器？？？ --&gt;
+    &lt;mvc:annotation-driven /&gt;
+    &lt;!-- 视图解析器 --&gt;
+    &lt;bean id=&quot;internalResourceViewResolver&quot; 
+            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+        &lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/pages&quot; /&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+    &lt;/bean&gt;
+    &lt;!-- 过滤掉静态资源，交给默认的Servlet去处理，但是他怎么知道哪些是静态资源，竟然不需要配置&lt;mvc:resources&gt; --&gt;
+    &lt;mvc:default-servlet-handler /&gt;
+8. web.xml
+    1. 配置编码过滤器CharacterEncodingFilter，避免中文乱码;
+    2. 配置Spring的核心监听器，并重新指定Spring配置文件的路径，加载Spring的配置文件;
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    3. 配置SpringMVC的核心Servlet，在服务器启动时，创建此Servlet对象，并加载SpringMVC的配置文件;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+            &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+9. 配置Tomcat7插件，使用 tomcat7:run 运行，http://localhost:8080/项目名/ 访问;
+</code></pre><h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. Maven工程的拆分：把一个完整的Maven项目分成不同的独立模块，这些模块以坐标的形式依赖;
+2. 聚合：把拆分成零散的模块，聚合成一个完整的项目工程;
+3. 拆分：
+    1. 创建父工程：不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
+    2. 创建子工程(项目模块)：右机父工程 --&gt; New Module --&gt; 创建Maven项目;
+    3. Dao模块和Service都不使用骨架，Controller使用web骨架;
+    4. 子工程的 pom.xml 中，会有一个 &lt;parent&gt; 节点，表示继承的父工程;
+    5. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt; 节点，列出拥有的子模块;
+4. 模块的关系
+    1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
+    2. 比如，Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
+    3. 如果想要引用另一个工程，则把工程打包发布到本地仓库中，再引用工程的坐标即可建立依赖关系;
+5. 父子工程具有继承关系，子工程通过传递依赖，能够直接使用父工程的依赖包;
+    1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
+    2. 默认情况下，依赖的作用域(scope)都是compile，如果传递依赖的作用域是test，传递过程中可能丢失;
+    3. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
+6. 配置文件的拆分：拆分Spring的配置文件applicationContext.xml
+    1. Dao模块部分：resources/spring/applicationContext-dao.xml：添加命名空间和约束，只配置Dao相关;
+    2. Service模块部分：resources/spring/applicationContext-service.xml：只配置Service相关;
+    3. Controller模块：resources/applicationContext.xml，添加命名空间和约束，使用 &lt;import&gt; 导入
+        &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot; /&gt;
+        &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot; /&gt;
+    4. Controller工程依赖于Service工程，Service工程依赖于Dao工程，最终Spring的配置文件会编译成一份;
+7. Controller模块中，把 log4j.properties 和 springmvc.xml 放在 resources 目录中;
+</code></pre><h3 id="启动项目"><a href="#启动项目" class="headerlink" title="启动项目"></a>启动项目</h3><pre><code>1. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
+2. 方式二：配置本地的Tomcat，启动工程;
+3. 方式三
+    1. 如果Controller工程的tomcat7:run，启动会报错，是因为Maven在启动项目时，会扫描项目的pom.xml时，
+    查看本地仓库是否存在引入的依赖，如果没有，则从中央仓库下载，如果找不到，则报错;
+    2. Controller工程中引入了Service工程的坐标，但Service工程是本地项目，没有发布到本地仓库，所以启动报错;
+    3. 由此可知，只需要把Service工程打包发布到本地仓库即可，但是Service工程又引入了Dao工程的坐标，
+    所以只能去打包父工程;
+    4. 在右侧的Maven面板上，双击父工程的Lifecycle --&gt; install，安装成功后，启动Controller工程的tomcat7:run;
+</code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
+2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
+3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
+    1. 安装、卸载、运行：nexus.bat install，nexus.bat uninstall，nexus.bat start
+    2. 查看启动后的服务：右击计算机 -&gt; 管理 -&gt; 服务和应用程序 -&gt; 服务，在列表中查找 nexus;
+4. nuxus的全局配置文件：conf/nexus.properties，默认使用的端口号是8081;
+5. 启动图形化界面时，确保8081端口未被占用：http://localhost:8081/nexus
+    1. 默认用户名和密码：admin，admin123
+    2. 左侧导航栏：点击Repositories --&gt; 浏览仓库，查看仓库信息、地址;
+    3. Add添加仓库，选择仓库类型：Hosted、Proxy、Virtual，还可以创建仓库组;
+6. 创建不同的仓库，管理不同的依赖包
+    1. 存放测试包的仓库Snapshots(hosted)，发布包的仓库Releases(hosted);
+    2. 第三方包的仓库3rd party(hosted)，中央仓库的代理仓库Central(proxy);
+    3. 创建仓库组，把已有的仓库按顺序添加到组中，在本地仓库在私服中查找依赖包时，就能按照仓库的顺序查找，
+    最后由代理仓库转到中央仓库中去查找;
+</code></pre><h3 id="发布私服"><a href="#发布私服" class="headerlink" title="发布私服"></a>发布私服</h3><pre><code>1. Maven的 settings.xml，配置私服仓库的信息
+    &lt;servers&gt;
+        &lt;server&gt;
+            &lt;id&gt;releases&lt;/id&gt;  ===&gt;指定私服仓库的ID
+            &lt;username&gt;admin&lt;/username&gt;  ===&gt;私服的用户名密码
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+        &lt;server&gt;
+            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;指定私服仓库的ID
+            &lt;username&gt;admin&lt;/username&gt;
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+    &lt;/servers&gt;
+2. 要发布哪个项目/模块，就配置它的 pom.xml
+    &lt;distributionManagement&gt;
+        &lt;!-- 配置发布的仓库ID和地址 --&gt;
+        &lt;repository&gt;  ===&gt;正式版的配置，明确发布到存放正式包的仓库
+            &lt;id&gt;releases&lt;/id&gt;  ===&gt;此ID必须在 settings.xml 中已经配置过了
+            &lt;url&gt;http://localhost:8081/nexus/content/repositories/releases/&lt;/url&gt;
+        &lt;/repository&gt;
+        &lt;snapshotRepository&gt;
+            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;测试版的配置，明确发布到存放测试包的仓库
+            &lt;url&gt;http://localhost:8081/nexus/content/repositories/snapshots/&lt;/url&gt;
+        &lt;/snapshotRepository&gt;
+    &lt;/distributionManagement&gt;
+    1. 执行Lifecycle --&gt; deploy
+    2. 执行前面的生命周期时，其后面的生命周期也会执行，所以 install 命令的执行，会把项目/模块安装到本地仓库;
+</code></pre><h3 id="从私服下载jar"><a href="#从私服下载jar" class="headerlink" title="从私服下载jar"></a>从私服下载jar</h3><pre><code>Maven的 settings.xml
+    &lt;profiles&gt;
+        &lt;profile&gt; 
+            &lt;id&gt;dev&lt;/id&gt;  ===&gt;profile的id
+            &lt;repositories&gt;
+                &lt;repository&gt;  ==&gt;仓库id，repositories可以配置多个仓库，保证id不重复
+                    &lt;id&gt;nexus&lt;/id&gt;  ==&gt;仓库地址，即nexus仓库组的地址
+                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;
+                    &lt;releases&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt; ==&gt;是否下载releases构件
+                    &lt;/releases&gt;
+                    &lt;snapshots&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt;  ==&gt;是否下载snapshots构件
+                    &lt;/snapshots&gt;
+                &lt;/repository&gt;
+            &lt;/repositories&gt;
+            &lt;pluginRepositories&gt;  ==&gt;插件仓库，Maven的运行依赖插件，也需要从私服下载插件
+                &lt;pluginRepository&gt; ==&gt;插件仓库的id不允许重复，否则后者会覆盖前者
+                    &lt;id&gt;public&lt;/id&gt;  ==&gt;配置为仓库组，仓库组的id
+                    &lt;name&gt;Public Repositories&lt;/name&gt;  ==&gt;仓库组的名字
+                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;  ==&gt;仓库组的地址
+                &lt;/pluginRepository&gt;
+            &lt;/pluginRepositories&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+    &lt;activeProfiles&gt;
+        &lt;activeProfile&gt;dev&lt;/activeProfile&gt;  ==&gt;激活id=dev的profile
+    &lt;/activeProfiles&gt;
+</code></pre><h3 id="按照第三方jar包"><a href="#按照第三方jar包" class="headerlink" title="按照第三方jar包"></a>按照第三方jar包</h3><pre><code>1. 把第三方jar包安装到本地仓库，如fastjson.jar
+    1. 查看fastjson.jar的坐标：groupId、artifactId、version;
+    2. 进入fastjson.jar所在的目录，执行命令:
+    mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
+    -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
+    3. 如果不在fastjson.jar的目录，则需要指定绝对路径： -Dfile=D:\download\fastjson-1.1.37.jar
+2. 把第三方jar包安装到私服
+    1. 在Maven的 settings.xml 中，添加存放第三方jar包的仓库信息
+        &lt;server&gt;
+            &lt;id&gt;thirdparty&lt;/id&gt;
+            &lt;username&gt;admin&lt;/username&gt;
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+    2. 进入jar所在目录
+        mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
+        -Dfile=fastjson-1.1.37.jar -Dpackaging=jar  -DrepositoryId=thirdparty 
+        -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/
+        1. -Durl：私服的仓库地址;
+        2. -DrepositoryId：私服的仓库ID;
+    3. 如果不在jar包所在目录，-Dfile=jar包的绝对路径;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/25/SSM整合/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2756,6 +3098,10 @@ Esc：退出编辑模式或末行模式；
         }
     }
 </code></pre><h2 id="Spring整合Mybatis"><a href="#Spring整合Mybatis" class="headerlink" title="Spring整合Mybatis"></a>Spring整合Mybatis</h2><pre><code>1. 借助 mybatis-spring 包中的对象，把Mybatis配置文件中的配置转移到Spring的配置文件中;
+    1. SqlSessionFactoryBean: SqlSessionFactory的工厂对象;
+        1. dataSource属性: 配置连接池;
+        2. typeAliasesPackage属性: 扫描实体类(POJO)的所在包，为POJO配置别名;
+    2. MapperScannerConfigurer: 扫描Dao层的包，为所有Dao接口提供代理对象;
 2. 在Spring的配置文件applicationContext.xml 中
     &lt;!--配置连接池--&gt;
     &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
@@ -2765,12 +3111,12 @@ Esc：退出编辑模式或末行模式；
         &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
     &lt;/bean&gt;
 
-    &lt;!--配置SqlSessionFactory的工厂对象SqlSessionFactoryBean，由mybatis-spring提供--&gt;
     &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
         &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+        &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
     &lt;/bean&gt;
 
-    &lt;!--配置Dao层的包，封装到mybatis-spring的MapperScannerConfigurer对象--&gt;
+    &lt;!--配置Dao层的包，封装到mybatis-spring的对象--&gt;
     &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
         &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
     &lt;/bean&gt;
@@ -3002,12 +3348,18 @@ Esc：退出编辑模式或末行模式；
             return &quot;forward:/pages/test.jsp&quot;;  //转发到test.jsp
             return &quot;redirect:/index.jsp&quot;;  //重定向到index.jsp
         }
-</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 用于将控制器方法返回的对象，通过 HttpMessageConverter 接口转为指定格式的数据，如JSON、XML，
-   然后响应给客户端;
-2. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
-3. 引入转换格式的依赖包jackson
+</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 控制器方法的返回值默认会解析为跳转路径，@ResponseBody修饰之后，返回值不会再交给视图解析器，
+   而是被直接写入响应体中;
+    @RequestMapping(&quot;/test&quot;)
+    @ResponseBody
+    public String test() {
+        return &quot;Hello SpringBoot&quot;;  //返回的字符串直接响应给客户端
+    }
+2. 控制器方法返回对象时，通过 HttpMessageConverter 接口转为指定格式的数据，如JSON、XML;
+3. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
+4. 引入转换格式的依赖包jackson
     jackson-databind、jackson-core、jackson-annotations
-4. 在JSP页面发送一个AJAX请求，参数为JSON格式
+5. 在JSP页面发送一个AJAX请求，参数为JSON格式
     public class User {
         private String username;  private String password;
         ......//setter、getter
@@ -3211,7 +3563,7 @@ Esc：退出编辑模式或末行模式；
     2. &lt;mvc:mapping&gt;：配置拦截的控制器方法;
     3. &lt;mvc:exclude-mapping&gt;：配置不拦截的控制器方法;
     4. path 属性：指定URL，也就是控制器方法.
-1. preHandle()：预处理方法
+</code></pre><h3 id="拦截器方法"><a href="#拦截器方法" class="headerlink" title="拦截器方法"></a>拦截器方法</h3><pre><code>1. preHandle()：预处理方法
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, 
         Object handler) {
         return true;
@@ -3304,529 +3656,6 @@ Esc：退出编辑模式或末行模式；
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/15/SpringMVC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/15/SpringMVC/" itemprop="url">SpringMVC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-15T00:00:00+08:00">
-                2016-03-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="三层架构"><a href="#三层架构" class="headerlink" title="三层架构"></a>三层架构</h2><pre><code>1. 开发架构一般都是基于两种形式：C/S(客户端/服务器)、B/S(浏览器/服务器);
-2. JavaEE开发几乎都是基于B/S架构，系统标准的三层架构：表现层、业务层、持久层;
-3. 表现层：web层，负责接收客户端请求，响应结果;
-    1. 表现层包括展示层(负责展示结果)和控制层(负责接收请求);
-    2. 表现层依赖于业务层，用于对请求进行业务处理，并把结果响应给客户端;
-    3. 表现层的设计一般都是用MVC模型，MVC属于表现层的设计模型，跟其他层没关系.
-4. 业务层：service层，负责业务处理，持久化数据时会依赖于持久层;
-5. 持久层：dao层，负责数据持久化;
-</code></pre><h3 id="MVC模型"><a href="#MVC模型" class="headerlink" title="MVC模型"></a>MVC模型</h3><pre><code>1. MVC：模型(Model)-视图(View)-控制器(Controller)，一种用于设计创建Web应用表现层的模型;
-2. Model：数据模型，如JavaBean;
-3. View：展示数据，如JSP、HTML;
-4. Controller：处理程序逻辑.
-</code></pre><h3 id="SpringMVC"><a href="#SpringMVC" class="headerlink" title="SpringMVC"></a>SpringMVC</h3><pre><code>1. SpringMVC是一种基于Java的实现MVC设计模型的请求驱动类型的轻量级Web框架;
-2. SpringMVC属于Spring Framework的后续产品，已经融合在Spring Web Flow中;
-3. Spring框架提供了构建Web应用的全能MVC模块，可以选择使用SpringMVC或其他MVC框架，如Struts2;
-    1. SpringMVC已成为最主流的MVC框架之一，Spring3.0开始就已经全面超越了Struts2;
-    2. SpringMVC通过一套注解，让一个Java类称为处理请求的控制器，而无需实现任何接口;
-    3. SpringMVC还支持RESTful编程风格的请求;
-</code></pre><p><img src="//hellomyshadow.github.io/2016/03/15/SpringMVC/SSM.jpg" alt="SSM"></p>
-<h2 id="控制流程"><a href="#控制流程" class="headerlink" title="控制流程"></a>控制流程</h2><pre><code>创建Web项目，搭建环境
-1. 引入依赖：版本锁定，统一管理Spring的版本
-    &lt;properties&gt;
-        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
-        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt; ==&gt;配置编译运行的JDK版本
-        &lt;spring.version&gt;5.1.6.RELEASE&lt;/spring.version&gt;  ===&gt;锁定版本
-    &lt;/properties&gt;
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
-            &lt;version&gt;${spring.version}&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-web&lt;/artifactId&gt;
-            &lt;version&gt;${spring.version}&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
-            &lt;version&gt;${spring.version}&lt;/version&gt;
-        &lt;/dependency&gt;
-        javax.servlet-api(provided)
-        javax.servlet.jsp-api(provided)
-    &lt;/dependencies&gt;
-2. 配置文件resources/springmvc.xml，加入mvc和context约束
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;
-        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xsi:schemaLocation=&quot;
-            http://www.springframework.org/schema/beans
-            https://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/mvc
-            https://www.springframework.org/schema/mvc/spring-mvc.xsd
-            http://www.springframework.org/schema/context
-            https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
-        &lt;!-- 开启扫描哪个包下的注解 --&gt;
-        &lt;context:component-scan base-package=&quot;cn.test&quot;&gt;&lt;/context:component-scan&gt;
-        &lt;!-- 视图解析器 --&gt;
-        &lt;bean id=&quot;internalResourceViewResolver&quot; 
-            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
-            &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;  ===&gt;文件所在目录，根目录是webapp
-            &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;  ===&gt;文件的后缀名
-        &lt;/bean&gt;
-        &lt;!-- 开启SpringMVC的注解支持 --&gt;
-        &lt;mvc:annotation-driven /&gt;
-    &lt;/beans&gt;
-3. webapp/WEB-INF/web.xml
-    &lt;web-app&gt;
-        &lt;servlet&gt;
-            &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
-            &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-            &lt;!-- 让控制器去加载spring配置文件 --&gt;
-            &lt;init-param&gt;
-                &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-                &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
-            &lt;/init-param&gt;
-            &lt;!-- 控制器在接收第一次请求时才创建，所以要让它在服务器启动时创建，以加载配置文件 --&gt;
-            &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
-        &lt;/servlet&gt;
-        &lt;servlet-mapping&gt;
-            &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
-            &lt;url-pattern&gt;/&lt;/url-pattern&gt;
-        &lt;/servlet-mapping&gt;
-    &lt;/web-app&gt;
-    1. &lt;init-param&gt;：配置当前对象创建时的初始化参数;
-    2. &lt;load-on-startup&gt;：标记容器是否在启动时就加载当前的Servlet(创建并调用其init()方法);
-    3. 一般情况下，Servlet在第一次收到请求时由服务器创建并初始化，&lt;load-on-startup&gt; 可以让它
-    根据自己的需要改变加载的优先级;
-    4. &lt;load-on-startup&gt;n&lt;/load-on-startup&gt;：n 必须是一个整数，表示Servlet应该被加载的顺序;
-    5. 当 n&gt;=0 时，表示在容器(服务器)启动时就加载并初始化这个Servlet，值越小，优先级越高;
-    6. 当 n 的值相同时，由容器自己选择优先加载哪个Servlet.
-4. 创建控制类：cn.test.controller.HelloController，使用 @Controller 修饰
-    @Controller
-    public class HelloController {
-        @RequestMapping(path=&quot;/hello&quot;)
-        public String say() {
-            System.out.println(&quot;Hello SpringMVC&quot;);
-            return &quot;success&quot;;  ---&gt;控制器默认把返回值作为页面的名称，去查找success.jsp
-        }
-    }
-5. 在 webapp/pages 目录下创建success.jsp
-6. 在项目的默认首页 webapp/index.jsp 中配置一个跳转标签：&lt;a href=&quot;hello&quot;&gt;To Hello&lt;/a&gt;
-7. 部署服务器Tomcat Server
-</code></pre><h3 id="访问过程"><a href="#访问过程" class="headerlink" title="访问过程"></a>访问过程</h3><pre><code>1. 启动服务器时：创建DispatcherServlet对象 --&gt; 加载springmvc.xml --&gt; 创建HelloController对象
-2. 点击&lt;a&gt;，发送请求
-    /hello --&gt; DispatcherServlet --&gt; HelloController.say() --&gt; DispatcherServlet --&gt;
-    InternalResourceViewResolver --&gt; success.jsp --&gt; DispatcherServlet --&gt; 响应结果
-</code></pre><p><img src="//hellomyshadow.github.io/2016/03/15/SpringMVC/组件控制流程.jpg" alt="组件控制流程"></p>
-<pre><code>    1. DispatcherServlet：前端控制器，MVC模式中的C，整个控制流程的中心，调用其他组件处理
-    用户的请求，降低了组件之间的耦合性;
-    2. HandlerMapping：处理器映射器，根据用户请求找到Handler(处理器)，SpringMVC提供了不同的
-    映射器实现不同的映射方式，如配置配置文件方式、实现接口方式、注解方式...
-    3. Handler：处理器，开发编写的具体业务控制器，对具体的用户请求进行处理，由DispatcherServlet
-    把请求转发到Handler;
-    4. HandlerAdapter：处理器适配器，适配器模式的应用，对处理器进行执行;
-    5. View Resolver：视图解析器，将处理结果生成View视图，首先根据逻辑视图名解析成物理视图名，
-    即具体的页面地址，再生成View视图对象，并对View进行渲染，将处理结果通过页面展示给用户;
-    6. View：视图，SpringMVC提供了很多View视图类型的支持，如jstlView、freemarkerView、pdfView...
-    最常见的视图就是JSP;
-3. &lt;mvc:annotation-driven&gt;
-    1. 在SpringMVC的各个组件中，处理器映射器、处理器适配器、视图解析器，称为Spring的三大组件;
-    2. &lt;mvc:annotation-driven&gt; 会自动加载 RequestMappingHandlerMapping(处理映射器) 和
-    RequestMappingHandlerAdapter(处理适配器)
-4. @RequestMapping：用于建立请求URL和处理请求方法之间的对应关系;
-    1. @RequestMapping 可以用在类上，定义路径的一级目录，在其方法上定义二级目录;
-        @Controller
-        @RequestMapping(path=&quot;/user&quot;)  ---&gt;一级目录
-        public class HelloController {
-            @RequestMapping(path=&quot;/hello&quot;)  ---&gt;二级目录
-            public String say() { ... }
-        }
-        &lt;a href=&quot;user/hello&quot;&gt;To User Hello&lt;/a&gt;
-    2. value、path属性：指定请求的URL;
-    3. method属性：请求方式，如 method=RequestMethod.POST
-    4. params属性：限制请求参数的条件，支持简单的表达式，要求请求参数的key-value必须服从于配置;
-        1. params={&quot;username&quot;}，则请求参数中必须包含username;
-        &lt;a href=&quot;user/hello?username=Java&quot;&gt;
-        2. params={&quot;money=100&quot;}，则请求参数中的money必须是100.
-        &lt;a href=&quot;user/hello?money=100&quot;&gt;
-    5. headers属性：限制请求头的条件，如headers={&quot;Accept&quot;}，请求头中必须包含Accept;
-</code></pre><h2 id="请求参数的绑定"><a href="#请求参数的绑定" class="headerlink" title="请求参数的绑定"></a>请求参数的绑定</h2><pre><code>1. 绑定机制
-    1. 表单提交的参数都是 key-value 形式，如username=Java&amp;password=123;
-        &lt;a href=&quot;hello?username=Java&amp;password=123&quot;&gt;to hello&lt;/a&gt;
-        @RequestMapping(path=&quot;/hello&quot;)
-        public String say(String username, String password) {
-            System.out.println(username + &quot;, &quot; + password);  //Java, 123
-            return &quot;success&quot;;
-        }
-    2. SpringMVC的参数绑定过程是，把表单提交的参数作为控制器中方法的参数进行绑定的;
-    3. 表单提交的key和参数的名称是一致的，且区分大小写.
-2. 支持的参数类型：基本类型、实体类、集合类型;
-    1. 提交表单的key和实体类中的属性名必须一致;
-    2. 如果实体类中还有其他引用类型，那么表单中key的形式为：对象.属性，如address.name;
-3. 绑定基本类型、实体类、集合类型
-    private class User implements Serializable {
-        private String uname;  private int age;
-        ...... //setter、getter
-    }
-    private class Account implements Serializable {
-        private String username;  private double money;
-        private User user;  //包含引用类型
-        private List&lt;User&gt; list;  //List集合
-        private Map&lt;String, User&gt; map;  //Map集合
-        ...... //setter、getter
-    }
-    1. form表单：key必须与实体类Account的属性保持一致;
-        &lt;form action=&quot;hello&quot; method=&quot;post&quot;&gt;   ==&gt;跟请求方式无关，也可以是GET请求
-            &lt;!-- 基本类型 --&gt;
-            &lt;input type=&quot;text&quot; name=&quot;username&quot; /&gt;
-            &lt;input type=&quot;text&quot; name=&quot;money&quot; /&gt;
-            &lt;!-- 实体类 --&gt;
-            &lt;input type=&quot;text&quot; name=&quot;user.uname&quot; /&gt;
-            &lt;input type=&quot;text&quot; name=&quot;user.age&quot; /&gt;
-            &lt;!-- 集合类型 --&gt;
-            &lt;input type=&quot;text&quot; name=&quot;list[0].uname&quot; /&gt;
-            &lt;input type=&quot;text&quot; name=&quot;list[0].age&quot; /&gt;
-            &lt;input type=&quot;text&quot; name=&quot;map[&apos;one&apos;].uname&quot; /&gt;
-            &lt;input type=&quot;text&quot; name=&quot;map[&apos;one&apos;].age&quot; /&gt;
-            &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
-        &lt;/form&gt;
-    2. 把请求参数封装到JavaBean中
-        @RequestMapping(path=&quot;/hello&quot;)
-        public String say(Account account) {
-            System.out.println(account);
-            return &quot;success&quot;;
-        }
-4. 参数中文乱码：在 web.xml 中配置Spring的过滤器，并初始化参数encoding=UTF-8
-    &lt;filter&gt;  ===&gt;过滤器标签排列在&lt;servlet&gt;标签之前
-        &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
-        &lt;init-param&gt;
-            &lt;param-name&gt;encoding&lt;/param-name&gt;
-            &lt;param-value&gt;UTF-8&lt;/param-value&gt;
-        &lt;/init-param&gt;
-    &lt;/filter&gt;
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
-        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
-5. 在控制器中获取Servlet API：直接把 HttpServletRequest、HttpServletResponse 加到方法的参数上;
-    @RequestMapping(path=&quot;/hello&quot;)
-    public String say(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession();
-        ServletContext context = session.getServletContext();
-    }
-</code></pre><h3 id="类型转换器"><a href="#类型转换器" class="headerlink" title="类型转换器"></a>类型转换器</h3><pre><code>1. 在参数传递过程中，key和value其实都是字符串，SpringMVC内部有类型转换器，负责转换参数类型;
-2. 但是，对于一些特殊类型，如日期，SpringMVC并不能识别所有的日期格式，这就需要自定义类型转换器;
-3. 类型转换器的接口：Converter&lt;S, T&gt;，S和T分别代表接受类型和目标类型
-    public class String2DateConverter implements Converter&lt;String, Date&gt; {
-        public Date convert(String source) {
-            if(source == null) {
-                throw new RuntimeException(&quot;请传入参数&quot;);
-            }
-            //字符串转日期的识别类型 yyyy-MM-dd
-            DateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);
-            try {
-                return df.parse(source);
-            } catch(Exception e) {
-                throw new RuntimeException(&quot;类型转换异常&quot;);
-            }
-        }
-    }
-4. springmvc.xml：配置自定义的类型转换器
-    &lt;bean id=&quot;csfb&quot; class=&quot;org.springframework.context.support.ConversionServiceFactoryBean&quot;&gt;
-        &lt;property name=&quot;converters&quot;&gt;
-            &lt;set&gt;
-                &lt;bean class=&quot;cn.test.converter.String2DateConverter&quot; /&gt;
-            &lt;/set&gt;
-        &lt;/property&gt;
-    &lt;/bean&gt;
-    &lt;mvc:annotation-driven conversion-service=&quot;csfb&quot; /&gt;
-    1. &lt;mvc:annotation-driven&gt; 标签开启SpringMVC的注解支持;
-    2. conversion-service属性：让配置的自定义日期类型转换器生效.
-5. 当遇到字符串需要转Date时，SpringMVC会自动调用自定义的类型转换器.
-    &lt;a href=&quot;hello?date=2018-11-12&quot;&gt;to hello&lt;/a&gt;
-    @RequestMapping(path=&quot;/hello&quot;)
-    public String say(Date date) {  --&gt; &quot;2018-11-12&quot; 转 Date对象
-        return &quot;success&quot;;
-    }
-</code></pre><h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><pre><code>@Controller
-@RequestMapping(&quot;/user&quot;)
-public class TestController {
-
-}
-1. @RequestParam：把请求中指定名称的参数，给控制器中的形参赋值;
-    1. value、name属性：请求参数中的名称;
-    2. required：请求参数中是否必须提供此参数，默认为true;
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test(@RequestParam(name=&quot;uname&quot;) String username) {
-            return &quot;success&quot;;
-        }
-    3. 请求参数中必须提供一个key为 uname 的键值对，uname的值会赋给形参username;
-        &lt;a href=&quot;user/test?name=Java&quot;&gt;Welcome&lt;/a&gt;
-    4. 不使用 @RequestParam 时，形参username 会接收请求参数中key为 username 的值，
-    如果请求参数中没有，则形参username 仍为默认值null.
-2. @RequestBody：用于获取请求体的内容;
-    1. 直接使用时会得到整个请求体的内容：key=value&amp;key=value...
-    2. required属性：是否必须有请求体;
-    3. 不适用于Get请求：required=true时，Get请求会报错; required=false时，Get请求为null;
-        &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
-            &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ==&gt;Java
-            &lt;input type=&quot;text&quot; name=&quot;age&quot; /&gt;  ====&gt;22
-            &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
-        &lt;/form&gt;
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test(@RequestBody String body) {
-            System.out.println(body);  // uname=Java&amp;age=22
-            return &quot;success&quot;;
-        }
-3. @PathVariable：用于绑定url中的占位符，如/delete/{id}，id就是url占位符;
-    1. url支持占位符是在Spring3.0才加入的，它是SpringMVC支持RESTful风格URL的一个重要标志;
-    2. value、name属性：指定URL中占位符的名称;
-    3. required：是否必须提供占位符;
-        @RequestMapping(path=&quot;/test/{uId}&quot;)
-        public String test(@PathVariable(name=&quot;uId&quot;) String id) {
-            System.out.println(id);  // 10
-            return &quot;success&quot;;
-        }
-        &lt;a href=&quot;user/test/10&quot;&gt;Welcome&lt;/a&gt;
-4. HiddentHttpMethodFilter
-    1. 浏览器的form表单只支持GET与POST请求，无法模拟DELETE、PUT等RESTful method;
-    2. Spring3.0提供了一个过滤器，可以将浏览器请求改为指定的请求的方式，再发给控制器方法.
-5. @RequestHeader：获取请求头
-    1. value属性：提供请求头的名称;
-    2. required：是否必须有此请求头;
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test(@RequestHeader(value=&quot;Accept&quot;) String header) {
-            System.out.println(header);
-            return &quot;success&quot;;
-        }
-6. @CookieValue：把指定Cookie名称的值传给控制器方法的参数;
-    1. value属性：指定Cookie的名称;
-    2. required：是否必须有此Cookie;
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test(@CookieValue(value=&quot;JSESSIONID&quot;) String cookieValue) {
-            System.out.println(cookieValue);
-            return &quot;success&quot;;
-        }
-</code></pre><h3 id="ModelAttribute"><a href="#ModelAttribute" class="headerlink" title="ModelAttribute"></a>ModelAttribute</h3><pre><code>1. @ModelAttribute：SpringMVC4.3新特性，可以修饰方法和参数;
-    1. 修饰方法时：当前方法会在控制器的方法执行之前，优先执行;
-    2. 可以修饰没有返回值的方法，也可以修饰有具体返回值的方法;
-    3. 修饰参数时：获取指定的数据，并赋值给参数;
-    4. value属性：获取数据的key，可以是POJO的属性名，也可以是Map结构的key;
-2. 应用：当表单提交参数不是完整的实体类数据时，保证没有提交的字段使用数据库中的原数据;
-    &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
-        &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ===&gt;只提交一个参数uname
-        &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
-    &lt;/form&gt;
-3. 修饰有返回值的方法
-    @RequestMapping(path=&quot;/test&quot;)
-    public String test(User user) {
-        System.out.println(user);
-        return &quot;success&quot;;
-    }
-    @ModelAttribute
-    public User initTest(String uname) {
-        User user = new User();
-        user.setUname(uname);
-        ...... //查询数据库，获取age字段
-        user.setAge(20);
-        return user;
-    }
-    1. initTest() 优先执行，形参uname 接收请求参数中的uname，返回一个User对象;
-    2. test() 执行时，形参user 接收 initTest() 返回的User对象.
-4. 修饰无返回值的方法
-    @RequestMapping(path=&quot;/test&quot;)
-    public String test(@ModelAttribute(&quot;abc&quot;) User user) {
-        System.out.println(user);
-        return &quot;success&quot;;
-    }
-    @ModelAttribute
-    public void initTest(String uname, Map&lt;String, User&gt; map) {
-        User user = new User();
-        user.setUname(uname);
-        ...... //查询数据库，获取age字段
-        user.setAge(20);
-        map.put(&quot;abc&quot;, user);
-    }
-    1. initTest() 优先执行，形参uname 接收请求参数中的uname，把User对象存入Map集合;
-    2. test() 的形参user 通过 @ModelAttribute(&quot;Map集合的key&quot;) 获取Map中的User对象.
-</code></pre><h3 id="SessionAttributes"><a href="#SessionAttributes" class="headerlink" title="SessionAttributes"></a>SessionAttributes</h3><pre><code>1. 为了向域中存储数据，在控制器方法的参数上直接使用Servlet API，这种方式耦合度太高;
-2. 为了解决与Serlvet的耦合度问题，Spring提供了接口Model，并提供了很多实现类;
-    @RequestMapping(path=&quot;/test&quot;)
-    public String test(Model model) {
-        model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt; 存入数据
-        return &quot;success&quot;;
-    }
-    1. Model默认会把数据存到Request域中;
-    2. 在JSP中取值：&lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;
-3. @SessionAttributes：用于多次执行控制器方法间的参数共享;
-    1. 只能修饰类，让Model把数据被存入Session域中;
-    2. value、names属性：String数组，用于指定存入数据的key;
-    3. types：根据指定参数的类型，将模型中对应类型的参数存储到session中;
-        @Controller
-        @RequestMapping(&quot;/user&quot;)
-        @SessionAttributes(value={&quot;msg&quot;})  ---&gt;指定key的名称
-        public class TestController {
-            @RequestMapping(path=&quot;/test&quot;)
-            public String test(Model model) {
-                model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt;向Session域中存入值
-                return &quot;success&quot;;
-            }
-
-            @RequestMapping(path=&quot;/get&quot;)
-            public String test(ModelMap map) {
-                String msg = (String)map.get(&quot;msg&quot;);  --&gt;从Session域中获取值
-                return &quot;get&quot;;
-            }
-
-            @RequestMapping(path=&quot;/del&quot;)
-            public String test(SessionStatus status) {
-                status.setComplete();  --&gt;从Session域中删除值
-                return &quot;del&quot;;
-            }
-        }
-    2. Model会将数据存入到Request域和Session域中;
-    3. 在JSP中获取数据：
-        &lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;  &lt;h2&gt;${ sessionScope.msg }&lt;/h2&gt;
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3877,7 +3706,7 @@ public class TestController {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

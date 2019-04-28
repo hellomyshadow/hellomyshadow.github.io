@@ -232,6 +232,388 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/02/03/JavaEE之JSP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/02/03/JavaEE之JSP/" itemprop="url">JavaEE之JSP</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-03T00:00:00+08:00">
+                2016-02-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="JSP"><a href="#JSP" class="headerlink" title="JSP"></a>JSP</h2><pre><code>1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet
+2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet
+3. Tomcat/conf/web.xml 对jsp访问的配置
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;jsp&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.apache.jasper.servlet.JspServlet&lt;/servlet-class&gt;
+        ...
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;jsp&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jspx&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+4. JSP的访问有一个转译的过程，所以JSP文件的修改不需要重启服务器。
+5. JSP的三种注释：前端注释、Java语言注释、JSP注释
+    1. 前端注释会被转译，也会被发送给浏览器，但不会执行；
+    2. Java语言注释会被转译，但不会被Servlet执行；
+    3. JSP注释不会被转译：&lt;%-- JSP注释 --%&gt;
+</code></pre><h3 id="page指令"><a href="#page指令" class="headerlink" title="page指令"></a>page指令</h3><pre><code>1. page指令：配置JSP转译的相关参数
+    &lt;%@ page 属性名=&quot;属性值&quot; 属性名=&quot;属性值&quot; ... %&gt;
+2. language：声明JSP被转译的语言，如language=&quot;java&quot;
+3. import：使用什么语言，就需要导入什么语言的包，不同的包以&quot;,&quot;隔开，也可以导入项目中的类
+    import=&quot;java.util.*,java.lang.*,it.test.cn.modal.*&quot;
+4. pageEncoding：文件保存的编码，如pageEncoding=&quot;utf-8&quot;
+    1. 对于高版本的JSP，pageEncoding可以同时指定响应的编码；
+    2. 对于低版本的JSP，还需要指定响应的编码：contentType=&quot;text/html;charset=UTF-8&quot;
+5. session：设置转译的Servlet中是否支持Session，默认开启，不开启则设置session=&quot;false&quot;
+6. errorPage：配置错误页面的路径，errorPage=&quot;error.jsp&quot;
+7. extends：设置JSP转译的Servlet要继承的父类(全类名)
+8. isELIgnored：是否忽略EL表达式，设置为true时，EL表达式会被当做普通字符串解析.
+</code></pre><h3 id="JSP逻辑代码"><a href="#JSP逻辑代码" class="headerlink" title="JSP逻辑代码"></a>JSP逻辑代码</h3><pre><code>1. JSP的局部代码块
+    &lt;%
+        int num = 1;
+        if(num &gt; 0) {
+    %&gt;
+            &lt;div&gt;num大于0&lt;/div&gt;
+    &lt;% } else { %&gt;
+            &lt;div&gt;另作处理&lt;/div&gt;
+    &lt;% } %&gt;
+    1. 转译到Servlet中
+    int num = 1;
+    if(num &gt; 0) {
+        out.write(&quot;\r\n&quot;);
+        out.write(&quot;\t\t&lt;div&gt;num大于0&lt;/div&gt;\r\n&quot;);
+    } else {
+        out.write(&quot;\t\t&lt;div&gt;另作处理&lt;/div&gt;\r\n&quot;);
+    }
+    2. 在JSP中写逻辑代码，编码困难，可阅读性和可维护性极差，所以尽量在Servlet中处理逻辑，
+    JSP只负责展示内容。
+2. JSP的全局代码块
+    1. 声明Servlet的成员方法和成员变量
+    &lt;%!
+        int num = 1;
+        public void test(){ ... }
+    %&gt;
+    2. 全局代码块声明的属性和方法，只能在局部代码块中使用。
+3. JSP脚本段语句
+    1. &lt;%= num %&gt;
+    2. &lt;%= test() %&gt;  ==&gt;方法要有返回值
+</code></pre><h3 id="JSP的引入与转发"><a href="#JSP的引入与转发" class="headerlink" title="JSP的引入与转发"></a>JSP的引入与转发</h3><pre><code>1. 静态引入： &lt;%@include file=&quot;header.jsp&quot; %&gt;
+    1. 两个JSP文件会合并成一个Servlet文件;
+    2. 静态引入的JSP不会单独转为一个Servlet;
+    3. 两个JSP文件不能声明同名的Java变量.
+2. 动态引入： &lt;jsp:include page=&quot;active.jsp&quot;&gt;&lt;/jsp:include&gt;
+    1. 动态引入的JSP文件也会单独转为一个Servlet;
+    2. 在当前JSP文件转译的Servlet中，会调用动态引入的JSP文件转译的Servlet;
+    3. 允许在两个JSP文件中声明同名的Java变量.
+3. JSP转发标签
+    &lt;jsp:forward page=&quot;target.jsp&quot;&gt;&lt;/jsp:forward&gt;
+    1. 一次请求，浏览器地址栏信息不变;
+    2. 在&lt;jsp:forward&gt;标签中只能写&lt;jsp:param name=&quot;xxx&quot; value=&quot;xxx&quot;/&gt;，向目的JSP页面
+    传递参数，而不能有其他任何字符，甚至是空格也不行，否则就会报错;
+    &lt;jsp:forward page=&quot;target.jsp&quot;&gt;
+        &lt;jsp:param name=&quot;user&quot; value=&quot;Mack&quot; /&gt;
+    &lt;/jsp:forward&gt;
+    3. 以GET形式转发参数：转发路径?user=Mack
+    4. 在目的JSP页面获取参数：&lt;%= request.getParameter(&quot;user&quot;) %&gt;
+</code></pre><h3 id="JSP的内置对象"><a href="#JSP的内置对象" class="headerlink" title="JSP的内置对象"></a>JSP的内置对象</h3><pre><code>1. 九大内置对象：JSP文件转译为Servlet时自动生成并声明的对象，可以在JSP文件中直接使用；
+2. 内置对象只能在局部代码块和脚本段语句中使用；
+1. pageContext：JSP的页面上下文对象，内部封装了另外8个内置对象；
+    1. PageContext封存了当前JSP的运行信息，每个JSP文件都有一个PageContext对象；
+    2. 每次请求都会重新创建一个PageContext对象，存储当前页面内的数据。
+2. application
+    ServletContext application = pageContext.getServletContext();
+3. config
+    ServletConfig application = pageContext.getServletConfig();
+4. out
+    JspWriter out = pageContext.getOut();
+    1. JSP内部使用的响应对象，带有缓冲区，效率高于response
+5. session：一次会话的Session对象，存储同一用户、不同请求的共享数据；
+    1. 要使用Session对象，必须先在page指令中开启，session=&quot;true&quot;
+    session = pageContext.getSession();
+6. request，response：分别是当前的请求对象、响应对象；
+7. page：this，当前JSP对象(Servlet对象);
+8. exception：存储当前运行的异常信息，先在page指令中使用 isErrorPage=&quot;true&quot; 开启;
+9. 数据流转
+    1. pageContext：当前页面内的数据共享，获取其他内置对象;
+    2. request：一次请求的数据共享，通过请求转发，把数据流转给下一个Servlet;
+    3. session：一次会话，同一用户、不同请求的数据共享，将数据从一次请求流转给其他请求;
+    4. application：项目内的数据，不同用户的数据共享，将数据从一个用户流转给其他用户.
+</code></pre><h3 id="JSP的资源路径"><a href="#JSP的资源路径" class="headerlink" title="JSP的资源路径"></a>JSP的资源路径</h3><pre><code>1. 在JSP中使用相对路径时，资源位置不可随意更改；
+2. 绝对路径：&lt;a href=&quot;/servtest/a.jsp&quot;&gt;，
+    1. 第一个 &quot;/&quot; 表示服务器根目录(Tomcat/webapps)，&quot;/servtest&quot; 表示服务器的项目根目录，
+    servtest是项目在Tomcat/webapps下的虚拟目录名。
+3. 在JSP中声明全局路径
+    &lt;%
+        String path = request.getContextPath();
+        String basePath = request.getScheme()+&quot;://&quot;+request.getServerName()+&quot;:&quot;
+        +request.getServerPort()+path+&quot;/&quot;;
+    %&gt;
+    &lt;html&gt;
+        &lt;head&gt;
+            &lt;base href=&quot;&lt;%=basePath%&gt;&quot;&gt;
+    1. 那么，在JSP文件中引入资源时，资源路径会自动加上 Ip:Port/项目虚拟目录名/
+    2. &lt;a href=&quot;a.jsp&quot;&gt; 跳转到 http://Ip:Port/servtest/a.jsp
+4. 重定向到 main目录下的main.jsp
+    resp.sendRedirect(&quot;/servtest/main/main.jsp&quot;);
+    1. 重定向时，尽量使用绝对路径取代资源路径：/项目虚拟目录名/资源路径;
+    2. 假定当前的Servlet的别名带有目录，如&lt;url-pattern&gt;/user/abc&lt;/url-pattern&gt;
+    3. 如果使用相对路径，如resp.sendRedirect(&quot;main/main.jsp&quot;);  那么跳转的main.jsp的
+    路径为 /项目虚拟目录名/user/main/main.jsp;
+    4. 而main.jsp的真实路径是 /项目虚拟目录名/main/main.jsp ，那么就会报404错误.
+5. 转发到一个JSP页面
+    req.getRequestDispatcher(&quot;/login.jsp&quot;).forward(req, resp);
+    1. 与请求重定向不同，请求转发的第一个 &quot;/&quot; 表示项目根目录，而不是服务器根目录，所以不用
+    加项目的虚拟目录名.
+</code></pre><h2 id="EL表达式"><a href="#EL表达式" class="headerlink" title="EL表达式"></a>EL表达式</h2><pre><code>1. EL：Expression Language，一种写法非常简洁的表达式，灵感来源于ES和XPath;
+2. EL表达式用于简化在JSP中获取作用域数据和请求数据，不需要导入相关的类(包);
+3. 传统的获取方式
+    1. 在Servlet中处理请求之后，通过请求转发到JSP页面：req.setAttribute(&quot;key&quot;, Object);
+    2. 在JSP页面中获取数据：&lt;%= request.getAttribute(&quot;key&quot;) %&gt;
+    3. 在JSP页面中获取请求参数：&lt;%= request.getParameter(&quot;key&quot;) %&gt;
+4. 语法结构：${expression}
+    1. 获取请求参数
+    ${ param.key } --&gt; 单个值
+    ${ paramvalues.key } --&gt; 同键不同值如Checkbox
+    2. 获取 req.setAttribute(&quot;key&quot;, Object) 传递的数据：${ Object }
+    3. ${} 只获取 pageContext、request、session、application四个对象中的数据;
+    &lt;%  String uname = &quot;Java&quot;;  %&gt;
+    &lt;h3&gt;${ uname }&lt;/h3&gt;
+    4. 如果在四大对象中找不到uname，不报错，也不显示内容，但决不理会页面中定义的变量uname;
+5. EL查找作用域数据的默认顺序：pageContext --&gt; request --&gt; session --&gt; application
+    &lt;%
+        pageContext.setAttribute(&quot;uname&quot;, &quot;aaaa&quot;);
+        request.setAttribute(&quot;uname&quot;, &quot;bbbb&quot;);
+        session.setAttribute(&quot;uname&quot;, &quot;cccc&quot;);
+        application.setAttribute(&quot;uname&quot;, &quot;dddd&quot;);
+    %&gt;
+    &lt;div&gt;${ uname }&lt;/div&gt; ===&gt; aaaa
+    1. 除了默认顺序，还可以手动指定查找方向
+    request：${ requestScope.uname }，pageContext：${ pageScope.uname }
+    session：${ sessionScope.uname }，application：${ applicationScope.uname }
+6. EL支持简单的逻辑运算：算术表达式、关系表达式、逻辑表达式(&amp;&amp; || !)、三元表达式
+    ${ 1+3 } =&gt; 4，${ 1&gt;3 } =&gt; false，${ flag==0?&quot;正确&quot;:&quot;错误&quot; }
+    1. EL表达式中不允许做字符串连接
+    ${ 1+&quot;4&quot; } =&gt; 5，${ 1+&quot;a&quot; } =&gt; 报错
+7. EL的空值判断：${ empty key }，空字符串、空集合都返回true，但是对象返回false
+8. EL获取请求头数据：${ header }
+    1. 单个值：${ header[&quot;key&quot;] }，如${ header[&quot;user-agent&quot;] }
+    2. 数组：${ headerValues[&quot;key&quot;] }，同键不同值
+9. EL获取Cookie数据：${ cookie }
+    1. 获取一条Cookie数据，如sessionID：${ cookie.JSESSIONID }
+    2. 获取这条Cookie数据的键值：
+    ${ cookie.JSESSIONID.name }，${ cookie.JSESSIONID.value }
+</code></pre><h2 id="JSTL标签库"><a href="#JSTL标签库" class="headerlink" title="JSTL标签库"></a>JSTL标签库</h2><pre><code>1. JSTL是 Apache 对EL表达式的扩展，JSTL依赖于EL，使用时需要导包，并指定标签库；
+    1. MyEclipse会在lib目录下自动存放jstl.jar
+    2. JSTL的标签库：核心库、格式化库、SQL库、函数库、XML库
+2. JSTL标签库能够提升JSP页面编写逻辑代码的效率，可阅读性更强；
+</code></pre><h3 id="JSTL核心标签库"><a href="#JSTL核心标签库" class="headerlink" title="JSTL核心标签库"></a>JSTL核心标签库</h3><pre><code>1. 导入jar包，声明jstl核心标签库的引入
+    &lt;%@taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+2. 输出：&lt;c:out&gt; 类似于 &lt;%=xxx %&gt;
+    &lt;%  request.setAttribute(&quot;uname&quot;, &quot;Java&quot;);  %&gt;
+    &lt;c:out value=&quot;${uname}&quot; default=&quot;xxx&quot;&gt;&lt;/c:out&gt;
+    1. 结合EL表达式输出，如果uname不存在，则输出默认值default
+3. 向作用域中存储键值： &lt;c:set var=&quot;key&quot; value=&quot;xxx&quot;&gt;&lt;c:set&gt;
+    1. 默认存储在pageContext中，也可以手动指定存储的作用域对象
+    &lt;c:set var=&quot;key&quot; value=&quot;xxx&quot; scope=&quot;page/request/session/application&quot;&gt;&lt;c:set&gt;
+4. 删除作用域的数据：&lt;c:remove&gt;
+    &lt;c:remove var=&quot;uname&quot; /&gt;
+    1. 默认把4个作用域对象中的uname都删除，scope属性指定作用域
+    &lt;c:remove var=&quot;uname&quot; scope=&quot;page/request/session/application&quot; /&gt;
+5. 逻辑标签：依赖于EL表达式
+    1. 单个判断
+    &lt;c:set var=&quot;score&quot; value=&quot;66&quot;&gt;&lt;c:set&gt;
+    &lt;c:if test=&quot;${score&gt;60}&quot;&gt;
+        &lt;div&gt;条件通过&lt;/div&gt;
+    &lt;/c:if&gt;
+    2. 多重判断
+    &lt;c:choose&gt;
+        &lt;c:when test=&quot;${score&gt;=90}&quot;&gt;
+            &lt;li&gt;11111111&lt;/li&gt;
+        &lt;/c:when&gt;
+        &lt;c:when test=&quot;${score&lt;90 &amp;&amp; score&gt;=70}&quot;&gt;
+            &lt;li&gt;2222222&lt;/li&gt;
+        &lt;/c:when&gt;
+        &lt;c:when test=&quot;${score&lt;70 &amp;&amp; score&gt;=60}&quot;&gt;
+            &lt;li&gt;3333333&lt;/li&gt;
+        &lt;/c:when&gt;
+        &lt;c:otherwise&gt;
+            &lt;li&gt;4444444&lt;/li&gt;
+        &lt;/c:otherwise&gt;
+    &lt;/c:choose&gt;
+6. 常量循环
+    &lt;c:forEach begin=&quot;1&quot; end=&quot;4&quot; step=&quot;1&quot; varStatus=&quot;vs&quot;&gt;  ==&gt; 循环4次
+        &lt;li&gt;${vs.index} -- ${vs.count} -- ${vs.first} -- ${vs.last}&lt;/li&gt;
+    &lt;/c:forEach&gt;
+    1. step属性设置每次循环的自增步数，默认自增1
+    2. varStatus属性保存当前循环的状态
+        1. vs.index：当前循环的角标
+        2. vs.count：当前是第几次循环
+        3. vs.first/vs.last：当前是不是第一次/最后一次循环，true/false
+7. 动态循环
+    &lt;%
+        ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
+        list.add(&quot;111&quot;);
+        request.setAttribute(&quot;list&quot;, list);
+        HashMap&lt;String, String&gt; map = new HashMap&lt;&gt;();
+        map.put(&quot;a&quot;, &quot;11&quot;);
+        request.setAttribute(&quot;map&quot;, map);
+    %&gt;
+    1. 遍历List集合
+    &lt;c:forEach items=&quot;${list}&quot; var=&quot;v&quot;&gt;
+        &lt;li&gt;${v}&lt;/li&gt;
+    &lt;/c:forEach&gt;
+    2. var属性是每次循环的元素值;
+    3. 遍历Map集合
+    &lt;c:forEach items=&quot;${map}&quot; var=&quot;v&quot;&gt;
+        &lt;li&gt;${v.key} -- ${v.value}&lt;/li&gt;
+    &lt;/c:forEach&gt;
+    4. v 表示每次循环的一条Map元素，v.key、v.value 分别表示这条数据的键、值。
+</code></pre><h3 id="JSTL格式化标签库"><a href="#JSTL格式化标签库" class="headerlink" title="JSTL格式化标签库"></a>JSTL格式化标签库</h3><pre><code>1. 声明jstl核心标签库的引入
+    &lt;%@taglib prefix=&quot;fmt&quot; uri=&quot;http://java.sun.com/jsp/jstl/fmt&quot; %&gt;
+2. 可以格式化输入文本、日期、时间、数字
+    1. &lt;fmt:formatNumber&gt;：使用指定的格式或精度格式化数字;
+    2. &lt;fmt:parseNumber&gt;：解析一个代表着数字/货币/百分比的字符串;
+    3. &lt;fmt:formatDate&gt;：使用指定的风格或模式格式化日期和时间;
+    4. &lt;fmt:parseDate&gt;：解析一个代表着日期或时间的字符串;
+    5. &lt;fmt:requestEncoding&gt;：设置request的字符编码;
+    6. &lt;fmt:timeZone&gt;：指定时区，供其它标签使用;
+    7. &lt;fmt:setTimeZone&gt;：复制一个时区对象至指定的作用域.
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/02/01/JavaEE之Servlet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -680,51 +1062,54 @@
       
         
           
-            <h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><pre><code>1. Maven是一个项目管理工具，它包含了：
-    1. 一个项目对象模型(POM)，一组标准集合，一个项目生命周期，一个依赖管理系统，
-    和 用来运行定义在生命周期阶段中插件目标的逻辑。
+            <h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><pre><code>1. Maven是一个项目管理工具，两大核心功能：依赖管理、一键构建;
 2. 依赖管理(jar包管理)
-    1. Maven项目中的jar包在一个jar包仓库中，以依赖的形式存在于项目中，在代码编译时，
-    再根据依赖到仓库中找到jar包；
-    2. 大大减少了磁盘空间，而且避免了jar包冲突；
-    3. 实现了代码可重用。
-3. 项目的一键构建
+    1. Maven项目中的jar包在一个jar包仓库中，项目中只放jar包的坐标，在代码编译时去仓库中找到jar包;
+    2. 大大减少了磁盘空间，解决了jar包冲突，实现了代码可重用。
+3. 一键构建
     1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都交给Maven进行管理；
-    2. 一个Maven命令就可以实现构建，所以在maven/lib目录中一定集成了Tomcat插件。
-4. Maven依赖于JDK，还需要配置环境变量，然后测试是否安装配置成功：mvn -v
-</code></pre><h2 id="Maven仓库"><a href="#Maven仓库" class="headerlink" title="Maven仓库"></a>Maven仓库</h2><pre><code>1. 本地仓库、远程仓库(私服)、中央仓库
+    2. 一个Maven命令就可以实现构建，在maven/lib目录中集成了Tomcat插件。
+4. Maven项目必须使用依赖管理，而一键构建却不是必须的，还可以使用本地安装的Tomcat构建项目;
+5. Maven依赖于JDK，还需要配置环境变量，然后测试是否安装配置成功：mvn -v
+</code></pre><h2 id="Maven仓库"><a href="#Maven仓库" class="headerlink" title="Maven仓库"></a>Maven仓库</h2><pre><code>1. Maven仓库的分类：本地仓库、远程仓库(私服)、中央仓库
+    1. 当启动Maven项目时，Maven会通过 pom.xml 中配置的依赖坐标，去本地仓库中查找对应的jar包;
+    2. 默认情况下，如果本地仓库没有对应的jar包，Maven会自动从中央仓库下载jar包到本地仓库;
+    3. 如果配置了私服，则去私服下载jar包到本地仓库; 私服中没有，则转去中央仓库下载，还没有则报错.
 2. 本地仓库
     1. 在 Maven/conf/settings.xml 中，本地仓库的默认配置为 ${user.home}/.m2/repository
     2. user.home 表示C盘下的个人目录
     3. 考虑到C盘通常是系统盘，所以会自定义本地仓库的路径，如D盘下
-    &lt;localRepository&gt;D:/local/repo&lt;/localRepository&gt;
+        &lt;localRepository&gt;D:/local/repo&lt;/localRepository&gt;
+    4. 配置淘宝等国内镜像，可以加快下载速度。
 3. 远程仓库(私服)：
-    1. 在公司内有专门的局域网服务器作为jar包的远程仓库，又称为私服；
-    2. 如果本地仓库没有需要的jar包，默认会联外网从中央仓库下载，配置了远程仓库之后，就可以在
-    局域网内快速下载需要的jar包；
-    3. 如果远程仓库中没有需要的jar包，则由远程仓库向中央仓库请求下载；
-    4. 通常也会预先从本地上传常用的jar包到远程仓库。
+    1. 在公司内有专门的局域网服务器作为jar包的远程仓库，又称为私服;
+    2. 配置了远程仓库之后，预先在私服中上传常用的jar包，让本地仓库从局域网内的私服下载jar包;
+    3. 如果私服中没有需要的jar包，再转去中央仓库下载。
 4. 中央仓库：Maven的云服务器jar包仓库，存放了几乎所有的开源jar包。
-</code></pre><h2 id="标准目录结构"><a href="#标准目录结构" class="headerlink" title="标准目录结构"></a>标准目录结构</h2><pre><code>1. Maven项目的目录可分为四大部分：核心代码、配置文件、测试代码、测试配置文件
+</code></pre><h2 id="Maven项目"><a href="#Maven项目" class="headerlink" title="Maven项目"></a>Maven项目</h2><pre><code>1. Maven项目的目录可分为四大部分：核心代码、配置文件、测试代码、测试配置文件
 2. Maven的Java项目
-    1. src/main/java：核心代码
-    2. src/main/resources：配置文件
-    3. src/test/java：测试代码
-    4. src/test/resources：测试配置文件
-4. Maven的Java Web项目
-    1. 除了Java项目的4个目录，还有一个 src/main/webapp，存放页面资源、JS、CSS、图片等等。
-5. Maven常用命令
+    1. src/main/java：核心代码;
+    2. src/main/resources：配置文件;
+    3. src/test/java：测试代码;
+    4. src/test/resources：测试配置文件;
+3. 对于Java Web项目，除了这4个目录，还有一个 src/main/webapp，存放JSP页面资源、web.xml等。
+</code></pre><h3 id="Maven的生命周期"><a href="#Maven的生命周期" class="headerlink" title="Maven的生命周期"></a>Maven的生命周期</h3><pre><code>1. Maven常用命令
     1. mvn clean：清除项目中的编译信息，删除target目录；
     2. mvn compile：编译src/main/java中的核心代码，生成target目录，存放编译好的class文件
     3. mvn test：除了编译核心代码，还会编译src/main/test中的测试代码；
-    4. mvn package：打包，除了编译核心代码和测试代码，还会打包成war包；
-    在Maven项目/pom.xml中，默认配置有 &lt;packaging&gt;war&lt;/packaging&gt;，所以打包成war包
+    4. mvn package：打包，除了编译核心代码和测试代码，还会打包成war/jar包；
     5. mvn install：安装，编译核心代码和测试代码，打成war包，同时把war包安装到本地仓库中。
-</code></pre><h2 id="Maven的生命周期"><a href="#Maven的生命周期" class="headerlink" title="Maven的生命周期"></a>Maven的生命周期</h2><pre><code>1. mvn clean：独立的一个生命周期，称为清理生命周期；
-2. 编译(compile)、测试(test)、打包(package)、安装(install)、发布(mvn deploy)
+2. mvn clean：独立的一个生命周期，称为清理生命周期；
+3. 编译(compile)、测试(test)、打包(package)、安装(install)、发布(mvn deploy)
     1. 称为默认生命周期，所以执行越靠后的命令时，会自动执行前面的命令；
     2. 其中，发布需要额外配置。
-3. 另外，还有一个不常用的站点生命周期；
+4. 另外，还有一个不常用的站点生命周期.
+</code></pre><h3 id="jar包和war包"><a href="#jar包和war包" class="headerlink" title="jar包和war包"></a>jar包和war包</h3><pre><code>1. jar和war是两种不同的打包方式，在项目的 pom.xml 中配置：&lt;packaging&gt;war&lt;/packaging&gt;
+2. war是一个web模块，其中需要包括WEB-INF，是可以直接运行的web模块;
+3. 将war包放置 Tomcat/webapps/ 下，启动Tomcat，war包会自动解压成项目的web目录，相当于发布了;
+4. jar一般只是包括一些class文件，在声明了 main() 之后就可以用java命令运行;
+5. Spring项目一般都是打成war包发布到Tomcat上，而SpringBoot项目一般使用jar包的打包模式;
+6. SpringBoot内部已经集成了Tomcat插件，省去了安装Tomcat等中间件，所以打成jar包也很有必要.
 </code></pre><h2 id="POM模型"><a href="#POM模型" class="headerlink" title="POM模型"></a>POM模型</h2><pre><code>1. Maven的概念模型POM
 </code></pre><p><img src="//hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg" alt="Maven"></p>
 <h2 id="idea集成Maven"><a href="#idea集成Maven" class="headerlink" title="idea集成Maven"></a>idea集成Maven</h2><pre><code>1. 下载并解压Maven，配置环境变量(必须有JDK环境)：
@@ -732,33 +1117,32 @@
     2. 配置Path：%MAVEN_HOME%\bin
 2. idea：Settings --&gt; Maven
     1. 配置Maven路径
-    Maven home directory: D:\maven\apache-maven-3.6.0
-    User settings file: D:\maven\apache-maven-3.6.0\conf\settings.xml
-    Local repository: D:\maven\maven_repository
-    2. 如果Maven项目骨架(模板)已经下载过了，不要再下载了：Maven --&gt; Runner
-    VM Options: archetypeCatalog=internal
+        Maven home directory: D:\maven\apache-maven-3.6.0
+        User settings file: D:\maven\apache-maven-3.6.0\conf\settings.xml
+        Local repository: D:\maven\maven_repository
+    2. 如果Maven项目骨架(模板)已经下载过了，不要再下载了：
+        Maven --&gt; Runner VM Options: archetypeCatalog=internal
 3. 使用Maven骨架(模板)创建Java项目
-    1. New Project --&gt; Maven --&gt; 勾选Create... --&gt; 选择maven-archetype-quickstart
-    2. 一个jar包的坐标由三个基本元素构成：
+    New Project --&gt; Maven --&gt; 勾选Create... --&gt; 选择maven-archetype-quickstart
+    1. 一个jar包的坐标由三个基本元素构成：
         GroupId(公司或组织的名称): com.test  ---&gt;作为项目的包名
         ArtifactId(项目名称): maven_test
-        Version(版本号): 1.0-SNAPSHOT
-    3. Next --&gt; 确认当前使用的Maven环境，与Settings--&gt;Maven中的配置一致；
-    4. 如果第一次使用此骨架，会联网下载；
-    5. 默认只会创建使用到的目录，不会把Maven标准目录结构都创建；
-    6. 创建main/resources目录，右键 --&gt; Mark Directory As --&gt; Resources Root
-    7. 刚创建的项目不能运行，点击右下角的 Import Changes 或 Enable Auto-Import
-    Add Configurations -&gt; + Application(自定义名字) -&gt; Main class(选择入口文件) -&gt; OK
+        Version(版本号): 1.0-SNAPSHOT  ---&gt;RSNAPSHOT表示测试版，RELEASE表示发布/正式版
+    2. Next --&gt; 确认当前使用的Maven环境，与 Settings--&gt;Maven 中的配置一致；
+    3. 如果第一次使用此骨架，会联网下载，而且默认只会创建使用到的目录，不会把Maven标准目录结构都创建;
+    4. 创建main/resources目录，右键 --&gt; Mark Directory As --&gt; Resources Root
+    5. 刚创建的项目不能运行，点击右下角的 Import Changes 或 Enable Auto-Import(自动导入依赖)
+        Add Configurations -&gt; + Application(自定义名字) -&gt; Main class(选择入口文件) -&gt; OK
 4. 不适用骨架的Java项目
     1. 目录结构：src/main/java，src/main/resources
     2. 与使用骨架相比，目录结构更接近Maven项目的标准目录，文件也更干净。
 </code></pre><h3 id="创建JavaWeb项目"><a href="#创建JavaWeb项目" class="headerlink" title="创建JavaWeb项目"></a>创建JavaWeb项目</h3><pre><code>1. 选择骨架：maven-archetype-webapp
-2. 默认只有一个main/webapp目录，并没有main/java、main/resources目录；
-3. 新建java目录，右击 --&gt; Mark Directory as --&gt; Sources Root
-4. 点击右下角的 Import Changes 或 Enable Auto-Import
-5. 在项目的 pom.xml 中添加Servlet相关的依赖，在maven中央仓库搜索需要的jar包
+2. 默认只有一个 main/webapp 目录，并没有main/java、main/resources目录;
+3. 新建java目录，右击 --&gt; Mark Directory as --&gt; Sources Root;
+4. 点击 Import Changes 或 Enable Auto-Import，在项目的 External Libraries 可以查看当前项目的依赖列表;
+5. 在项目的 pom.xml 中，添加Servlet相关的依赖，在maven中央仓库搜索需要的jar包;
     &lt;dependencies&gt;
-        &lt;dependency&gt;
+        &lt;dependency&gt;  ===&gt;如果本地仓库没有这些依赖，idea会自动联网下载
             &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
             &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
             &lt;version&gt;4.0.1&lt;/version&gt;
@@ -771,14 +1155,24 @@
             &lt;scope&gt;provided&lt;/scope&gt;
         &lt;/dependency&gt;
     &lt;/dependencies&gt;
-    1. 如果本地仓库没有这些依赖，idea会自动联网下载；
-    2. 创建一个Servlet，配置web.xml
-    3. 打开右侧的Maven面板 --&gt; 点击上面带有&quot;m&quot;的小图标 --&gt; 输入 tomcat:run 命令运行项目
-</code></pre><h3 id="运行web项目的问题"><a href="#运行web项目的问题" class="headerlink" title="运行web项目的问题"></a>运行web项目的问题</h3><pre><code>1. jar冲突问题：xxxServlet cannot be cast to javax.servlet.Servlet
-    1. Tomcat中自带servlet-api.jar和jsp-api.jar，项目中又引入了这两个jar包，所以在运行时
-    抛出jar包此冲突异常；
-    2. &lt;scope&gt;provided&lt;/scope&gt;：设置当前jar包的作用范围，provided 表示只在编译期和测试时
-    有效，在运行时忽略此jar包，解决运行时冲突问题；
+6. web.xml 中，为根节点 &lt;web-app&gt; 添加约束
+    &lt;web-app xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee
+            http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd&quot;
+        version=&quot;3.0&quot;&gt;
+7. 使用Maven自带的Tomcat插件运行项目：打开右侧的Maven面板
+    1. 点击上面带有&quot;m&quot;的小图标 --&gt; 输入 tomcat:run 命令运行项目;
+    2. 展开项目的Lifecycle，双击 run 命令也可以运行;
+    3. 访问：http://localhost:8080/项目名/
+8. 使用本地的Tomcat运行项目：
+    Add Configurations --&gt; + Tomcat Server -&gt; Local --&gt; Name命名，Deployment添加项目
+    1. + Artifacts --&gt; war表示打包启动，war exploded表示打包热启动，选择热启动;
+    2. Application context 设置项目的虚拟目录名，设置为 /
+    3. 访问：http://localhost::8080/
+</code></pre><h3 id="tomcat-run的问题"><a href="#tomcat-run的问题" class="headerlink" title="tomcat:run的问题"></a>tomcat:run的问题</h3><pre><code>1. jar冲突问题：xxxServlet cannot be cast to javax.servlet.Servlet
+    1. Tomcat中自带servlet-api.jar和jsp-api.jar，项目中又引入了这两个jar包，所以在运行时报jar包冲突异常;
+    2. &lt;scope&gt;provided&lt;/scope&gt;：设置jar包的作用范围，provided 表示只在编译期和测试时有效，解决运行时冲突;
 2. 对于测试jar包junit的&lt;scope&gt;设置：&lt;scope&gt;test&lt;/scope&gt;，表示只在测试时有效；
     &lt;dependency&gt;
         &lt;groupId&gt;junit&lt;/groupId&gt;
@@ -807,17 +1201,16 @@
             &lt;/pluginManagement&gt;
         &lt;/build&gt;
     3. 使用Tomcat7运行web项目：tomcat7:run
-    4. Tomcat的默认端口号都是8080，可以修改Tomcat7的端口号；
-        &lt;plugin&gt;
-            &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
-            &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;2.2&lt;/version&gt;
-            &lt;configuration&gt;
-                &lt;port&gt;8888&lt;/port&gt;
-            &lt;/configuration&gt;
-        &lt;/plugin&gt;
-    5. 这样就可以同时运行tomcat6和tomcat7
-5. 同理，还可以配置使用的JDK插件
+5. Tomcat的默认端口号都是8080，可以修改Tomcat7的端口号，可以同时启动tomcat6和tomcat7;
+    &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.2&lt;/version&gt;
+        &lt;configuration&gt;
+            &lt;port&gt;8888&lt;/port&gt;
+        &lt;/configuration&gt;
+    &lt;/plugin&gt;
+</code></pre><h3 id="配置JDK版本"><a href="#配置JDK版本" class="headerlink" title="配置JDK版本"></a>配置JDK版本</h3><pre><code>1. 插件的方式
     &lt;plugin&gt;
         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
         &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
@@ -827,6 +1220,37 @@
             &lt;encoding&gt;UTF-8&lt;/encoding&gt;  ==&gt;编码
         &lt;/configuration&gt;
     &lt;/plugin&gt;
+2. 常用方式
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+    &lt;/properties&gt;
+</code></pre><h2 id="jar包冲突"><a href="#jar包冲突" class="headerlink" title="jar包冲突"></a>jar包冲突</h2><pre><code>1. 依赖树：打开右侧Maven面板 --&gt; 点击提示Show Dependencies的图标，可以查看当前项目的依赖树结构;
+2. 解决方式一：第一声明优先原则
+    1. 哪个jar包的坐标配置靠前，那么这个jar包就优先声明;
+    2. 优先声明的jar包坐标及其依赖包，也会优先进入项目中;
+3. 解决方式二：路径近者优先原则
+    1. 直接依赖：项目中显式引入的jar包坐标;
+    2. 传递依赖：项目中没有显式配置的jar包，但通过直接依赖的jar包传递到项目中;
+    3. 比如，项目中依次引入了 AA(4.2.4)、BB(5.1.6) 两个依赖包，它们又都依赖于CC，所以项目中又会自动引入CC，
+    但因为 AA 在前，BB 在后，由第一声明优先原则可知，项目中引入的 CC 版本为4.2.4;
+    4. 但如果显式引入了 CC(4.8.0)，那么不管它处于哪个位置，都会优先引入，因为直接依赖比传递依赖的路径更近;
+4. 解决方式三：直接排除法(推荐方式)
+    1. &lt;exclusions&gt; 标签实现依赖包的排除;
+    2. AA(4.2.4) 配置在 BB(5.1.6) 的前面，但又希望使用 CC(5.1.6)，那么就排除 AA 中的 CC(4.2.4);
+        &lt;dependency&gt;
+            &lt;groupId&gt;aa.xxx&lt;/groupId&gt;
+            &lt;artifactId&gt;AA&lt;/artifactId&gt;
+            &lt;version&gt;4.2.4.RELEASE&lt;/version&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;cc.xxx&lt;/groupId&gt;
+                    &lt;artifactId&gt;CC&lt;/artifactId&gt;
+                    &lt;!-- 不必再声明版本号，默认就是使用上层节点的版本号 --&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
 </code></pre><hr>
 
           
@@ -2561,7 +2985,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

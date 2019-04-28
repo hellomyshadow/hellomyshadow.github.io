@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SSM整合1. 引入SSM、log4j、shiro、spring-security的相关依赖     1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web     2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spr">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Maven高级">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/03/26/Maven高级/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="SSM整合1. 引入SSM、log4j、shiro、spring-security的相关依赖     1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web     2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spr">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-28T15:41:52.720Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Maven高级">
+<meta name="twitter:description" content="SSM整合1. 引入SSM、log4j、shiro、spring-security的相关依赖     1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web     2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spr">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/03/26/Maven高级/">
+
+
+
+
+
+  <title>Maven高级 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/Maven高级/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Maven高级</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-26T00:00:00+08:00">
+                2016-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="SSM整合"><a href="#SSM整合" class="headerlink" title="SSM整合"></a>SSM整合</h2><pre><code>1. 引入SSM、log4j、shiro、spring-security的相关依赖
+    1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web
+    2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spring-tx
+    3. junit(test)、、mysql-connector-jave、servlet-api(provided)、jsp-api(provided)、jstl
+    4. log4j、slf4j-api、slf4j-log4j12、mybatis、mybatis-spring、c3p0(type:jar，scope:compile)、
+    5. pagehelper、spring-security-web、spring-security-config、spring-security-core、
+    6. spring-security-taglibs、druid
+2. 使用Maven的web骨架，创建JavaWeb工程;
+3. 把 log4j.properties 放在 resources 目录中
+    # Set root category priority to INFO and its only appender to CONSOLE.
+    #log4j.rootCategory=INFO, CONSOLE            debug   info   warn error fatal
+    log4j.rootCategory=debug, CONSOLE, LOGFILE
+    # Set the enterprise logger category to FATAL and its only appender to CONSOLE.
+    log4j.logger.org.apache.axis.enterprise=FATAL, CONSOLE
+    # CONSOLE is set to be a ConsoleAppender using a PatternLayout.
+    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
+    # LOGFILE is set to be a File appender using a PatternLayout.
+    log4j.appender.LOGFILE=org.apache.log4j.FileAppender
+    log4j.appender.LOGFILE.File=d:\axis.log
+    log4j.appender.LOGFILE.Append=true
+    log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.LOGFILE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
+4. Spring的配置文件：applicationContext.xml
+5. Spring整合Mybatis时，借助 mybatis-spring 包;
+    1. SqlSessionFactoryBean：SqlSessionFactory的工厂对象;
+    2. MapperScannerConfigurer：扫描Dao接口的包，为所有的Dao生成代理对象;
+    3. 使用Dao映射配置文件的方式时，映射文件的包路径与Dao的包路径一致，文件名与映射的Dao接口名一致;
+    4. 比如cn.test.dao.IUserDao，对应的映射配置文件：resources/cn/test/dao/IUserDao.xml;
+    5. Druid是阿里提供的连接池，其&lt;property&gt;的配置和c3p0一样.
+6. Service层使用注解开发，在 applicationContext.xml 中配置只扫描Service包，配置事务管理器、事务通知、切面;
+    &lt;context:component-scan base-package=&quot;cn.test.service&quot; /&gt;
+    @Service
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        private IUserDao dao;
+        ......
+    }
+7. SpringMVC的配置文件：resources/springmvc.xml
+    1. ，配置前端处理器、视图解析器、扫描Controller层所在包、并开启注解扫描的支持
+    &lt;context:component-scan base-package=&quot;cn.test.controller&quot; /&gt;
+    &lt;!-- 简化的配置方式：配置处理器映射器和处理器适配器！不需要配置前端处理器？？？ --&gt;
+    &lt;mvc:annotation-driven /&gt;
+    &lt;!-- 视图解析器 --&gt;
+    &lt;bean id=&quot;internalResourceViewResolver&quot; 
+            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+        &lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/pages&quot; /&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+    &lt;/bean&gt;
+    &lt;!-- 过滤掉静态资源，交给默认的Servlet去处理，但是他怎么知道哪些是静态资源，竟然不需要配置&lt;mvc:resources&gt; --&gt;
+    &lt;mvc:default-servlet-handler /&gt;
+8. web.xml
+    1. 配置编码过滤器CharacterEncodingFilter，避免中文乱码;
+    2. 配置Spring的核心监听器，并重新指定Spring配置文件的路径，加载Spring的配置文件;
+    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
+    &lt;/context-param&gt;
+    3. 配置SpringMVC的核心Servlet，在服务器启动时，创建此Servlet对象，并加载SpringMVC的配置文件;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+            &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+9. 配置Tomcat7插件，使用 tomcat7:run 运行，http://localhost:8080/项目名/ 访问;
+</code></pre><h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. Maven工程的拆分：把一个完整的Maven项目分成不同的独立模块，这些模块以坐标的形式依赖;
+2. 聚合：把拆分成零散的模块，聚合成一个完整的项目工程;
+3. 拆分：
+    1. 创建父工程：不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
+    2. 创建子工程(项目模块)：右机父工程 --&gt; New Module --&gt; 创建Maven项目;
+    3. Dao模块和Service都不使用骨架，Controller使用web骨架;
+    4. 子工程的 pom.xml 中，会有一个 &lt;parent&gt; 节点，表示继承的父工程;
+    5. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt; 节点，列出拥有的子模块;
+4. 模块的关系
+    1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
+    2. 比如，Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
+    3. 如果想要引用另一个工程，则把工程打包发布到本地仓库中，再引用工程的坐标即可建立依赖关系;
+5. 父子工程具有继承关系，子工程通过传递依赖，能够直接使用父工程的依赖包;
+    1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
+    2. 默认情况下，依赖的作用域(scope)都是compile，如果传递依赖的作用域是test，传递过程中可能丢失;
+    3. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
+6. 配置文件的拆分：拆分Spring的配置文件applicationContext.xml
+    1. Dao模块部分：resources/spring/applicationContext-dao.xml：添加命名空间和约束，只配置Dao相关;
+    2. Service模块部分：resources/spring/applicationContext-service.xml：只配置Service相关;
+    3. Controller模块：resources/applicationContext.xml，添加命名空间和约束，使用 &lt;import&gt; 导入
+        &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot; /&gt;
+        &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot; /&gt;
+    4. Controller工程依赖于Service工程，Service工程依赖于Dao工程，最终Spring的配置文件会编译成一份;
+7. Controller模块中，把 log4j.properties 和 springmvc.xml 放在 resources 目录中;
+</code></pre><h3 id="启动项目"><a href="#启动项目" class="headerlink" title="启动项目"></a>启动项目</h3><pre><code>1. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
+2. 方式二：配置本地的Tomcat，启动工程;
+3. 方式三
+    1. 如果Controller工程的tomcat7:run，启动会报错，是因为Maven在启动项目时，会扫描项目的pom.xml时，
+    查看本地仓库是否存在引入的依赖，如果没有，则从中央仓库下载，如果找不到，则报错;
+    2. Controller工程中引入了Service工程的坐标，但Service工程是本地项目，没有发布到本地仓库，所以启动报错;
+    3. 由此可知，只需要把Service工程打包发布到本地仓库即可，但是Service工程又引入了Dao工程的坐标，
+    所以只能去打包父工程;
+    4. 在右侧的Maven面板上，双击父工程的Lifecycle --&gt; install，安装成功后，启动Controller工程的tomcat7:run;
+</code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
+2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
+3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
+    1. 安装、卸载、运行：nexus.bat install，nexus.bat uninstall，nexus.bat start
+    2. 查看启动后的服务：右击计算机 -&gt; 管理 -&gt; 服务和应用程序 -&gt; 服务，在列表中查找 nexus;
+4. nuxus的全局配置文件：conf/nexus.properties，默认使用的端口号是8081;
+5. 启动图形化界面时，确保8081端口未被占用：http://localhost:8081/nexus
+    1. 默认用户名和密码：admin，admin123
+    2. 左侧导航栏：点击Repositories --&gt; 浏览仓库，查看仓库信息、地址;
+    3. Add添加仓库，选择仓库类型：Hosted、Proxy、Virtual，还可以创建仓库组;
+6. 创建不同的仓库，管理不同的依赖包
+    1. 存放测试包的仓库Snapshots(hosted)，发布包的仓库Releases(hosted);
+    2. 第三方包的仓库3rd party(hosted)，中央仓库的代理仓库Central(proxy);
+    3. 创建仓库组，把已有的仓库按顺序添加到组中，在本地仓库在私服中查找依赖包时，就能按照仓库的顺序查找，
+    最后由代理仓库转到中央仓库中去查找;
+</code></pre><h3 id="发布私服"><a href="#发布私服" class="headerlink" title="发布私服"></a>发布私服</h3><pre><code>1. Maven的 settings.xml，配置私服仓库的信息
+    &lt;servers&gt;
+        &lt;server&gt;
+            &lt;id&gt;releases&lt;/id&gt;  ===&gt;指定私服仓库的ID
+            &lt;username&gt;admin&lt;/username&gt;  ===&gt;私服的用户名密码
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+        &lt;server&gt;
+            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;指定私服仓库的ID
+            &lt;username&gt;admin&lt;/username&gt;
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+    &lt;/servers&gt;
+2. 要发布哪个项目/模块，就配置它的 pom.xml
+    &lt;distributionManagement&gt;
+        &lt;!-- 配置发布的仓库ID和地址 --&gt;
+        &lt;repository&gt;  ===&gt;正式版的配置，明确发布到存放正式包的仓库
+            &lt;id&gt;releases&lt;/id&gt;  ===&gt;此ID必须在 settings.xml 中已经配置过了
+            &lt;url&gt;http://localhost:8081/nexus/content/repositories/releases/&lt;/url&gt;
+        &lt;/repository&gt;
+        &lt;snapshotRepository&gt;
+            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;测试版的配置，明确发布到存放测试包的仓库
+            &lt;url&gt;http://localhost:8081/nexus/content/repositories/snapshots/&lt;/url&gt;
+        &lt;/snapshotRepository&gt;
+    &lt;/distributionManagement&gt;
+    1. 执行Lifecycle --&gt; deploy
+    2. 执行前面的生命周期时，其后面的生命周期也会执行，所以 install 命令的执行，会把项目/模块安装到本地仓库;
+</code></pre><h3 id="从私服下载jar"><a href="#从私服下载jar" class="headerlink" title="从私服下载jar"></a>从私服下载jar</h3><pre><code>Maven的 settings.xml
+    &lt;profiles&gt;
+        &lt;profile&gt; 
+            &lt;id&gt;dev&lt;/id&gt;  ===&gt;profile的id
+            &lt;repositories&gt;
+                &lt;repository&gt;  ==&gt;仓库id，repositories可以配置多个仓库，保证id不重复
+                    &lt;id&gt;nexus&lt;/id&gt;  ==&gt;仓库地址，即nexus仓库组的地址
+                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;
+                    &lt;releases&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt; ==&gt;是否下载releases构件
+                    &lt;/releases&gt;
+                    &lt;snapshots&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt;  ==&gt;是否下载snapshots构件
+                    &lt;/snapshots&gt;
+                &lt;/repository&gt;
+            &lt;/repositories&gt;
+            &lt;pluginRepositories&gt;  ==&gt;插件仓库，Maven的运行依赖插件，也需要从私服下载插件
+                &lt;pluginRepository&gt; ==&gt;插件仓库的id不允许重复，否则后者会覆盖前者
+                    &lt;id&gt;public&lt;/id&gt;  ==&gt;配置为仓库组，仓库组的id
+                    &lt;name&gt;Public Repositories&lt;/name&gt;  ==&gt;仓库组的名字
+                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;  ==&gt;仓库组的地址
+                &lt;/pluginRepository&gt;
+            &lt;/pluginRepositories&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+    &lt;activeProfiles&gt;
+        &lt;activeProfile&gt;dev&lt;/activeProfile&gt;  ==&gt;激活id=dev的profile
+    &lt;/activeProfiles&gt;
+</code></pre><h3 id="按照第三方jar包"><a href="#按照第三方jar包" class="headerlink" title="按照第三方jar包"></a>按照第三方jar包</h3><pre><code>1. 把第三方jar包安装到本地仓库，如fastjson.jar
+    1. 查看fastjson.jar的坐标：groupId、artifactId、version;
+    2. 进入fastjson.jar所在的目录，执行命令:
+    mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
+    -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
+    3. 如果不在fastjson.jar的目录，则需要指定绝对路径： -Dfile=D:\download\fastjson-1.1.37.jar
+2. 把第三方jar包安装到私服
+    1. 在Maven的 settings.xml 中，添加存放第三方jar包的仓库信息
+        &lt;server&gt;
+            &lt;id&gt;thirdparty&lt;/id&gt;
+            &lt;username&gt;admin&lt;/username&gt;
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+    2. 进入jar所在目录
+        mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
+        -Dfile=fastjson-1.1.37.jar -Dpackaging=jar  -DrepositoryId=thirdparty 
+        -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/
+        1. -Durl：私服的仓库地址;
+        2. -DrepositoryId：私服的仓库ID;
+    3. 如果不在jar包所在目录，-Dfile=jar包的绝对路径;
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/25/SSM整合/" rel="next" title="SSM整合">
+                <i class="fa fa-chevron-left"></i> SSM整合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSM整合"><span class="nav-number">1.</span> <span class="nav-text">SSM整合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拆分与聚合"><span class="nav-number">2.</span> <span class="nav-text">拆分与聚合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动项目"><span class="nav-number">2.1.</span> <span class="nav-text">启动项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私服"><span class="nav-number">3.</span> <span class="nav-text">私服</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建私服-windows"><span class="nav-number">3.1.</span> <span class="nav-text">搭建私服(windows)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布私服"><span class="nav-number">3.2.</span> <span class="nav-text">发布私服</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从私服下载jar"><span class="nav-number">3.3.</span> <span class="nav-text">从私服下载jar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按照第三方jar包"><span class="nav-number">3.4.</span> <span class="nav-text">按照第三方jar包</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

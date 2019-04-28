@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-13T10:14:13.122Z">
+<meta property="og:updated_time" content="2019-04-27T14:19:19.339Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis进阶">
 <meta name="twitter:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
@@ -580,15 +580,21 @@
             &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;
             &lt;!-- 大于Mybatis3.4.1的默认值为false，表示按需加载每个属性 --&gt;
             &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
+            &lt;!-- 开启驼峰扫描 --&gt;
+            &lt;setting name=&quot;mapUnderscoreToCamelCase&quot; value=&quot;true&quot; /&gt;
         &lt;/settings&gt;
     &lt;/configuration&gt;
-    2. IUserDao接口 与 IUserDao.xml
-        //根据主键 id 查询user表
-        User findById(int id);
+    2. 开启驼峰扫描之后，可以自动将SQL语句中带下划线的字段，转换为驼峰标志，再去匹配实体类中的属性;
+        1. 比如字段user_type，在Java实体类中的属性通常为驼峰式：userType
+        2. 如果不开启驼峰扫描，在SQL语句中需要使用 AS 实现映射匹配;
+        select user_type as userType from user
+        3. 但开启了Mybatis的驼峰匹配之后，就可以自动匹配：select user_type from user
+    3. IUserDao接口 与 IUserDao.xml
+        User findById(int id);  //根据主键 id 查询user表
         &lt;select id=&quot;findById&quot; parameterType=&quot;int&quot; resultType=&quot;user&quot;&gt;
             select * from user where id=#{uid}
         &lt;/select&gt;
-    3. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
+    4. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
         &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
             &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
             &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
@@ -599,7 +605,7 @@
         &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
             select * from account  ---&gt;不能再使用连接查询，否则延迟加载是无效的
         &lt;/select&gt;
-    4. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
+    5. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
 3. 一对多的延迟加载：表user--&gt;表account
     1. IAccountDao接口 与 IAccountDao.xml
         //根据外键 uid 去查询account表
@@ -823,7 +829,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

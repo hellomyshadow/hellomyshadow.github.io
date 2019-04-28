@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SSM整合1. 表现层SpringMVC，业务层Spring，持久层MyBatis 2. 整合方向：用Spring框架去整合另外两个框架; 3. 指定编译运行版本，版本锁定     &amp;lt;properties&amp;gt;         &amp;lt;project.build.sourceEncoding&amp;gt;UTF-8&amp;lt;/project.build.sourceEncoding&amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-24T14:06:42.356Z">
+<meta property="og:updated_time" content="2019-04-28T13:44:16.375Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SSM整合">
 <meta name="twitter:description" content="SSM整合1. 表现层SpringMVC，业务层Spring，持久层MyBatis 2. 整合方向：用Spring框架去整合另外两个框架; 3. 指定编译运行版本，版本锁定     &amp;lt;properties&amp;gt;         &amp;lt;project.build.sourceEncoding&amp;gt;UTF-8&amp;lt;/project.build.sourceEncoding&amp;gt;">
@@ -556,6 +556,10 @@
         }
     }
 </code></pre><h2 id="Spring整合Mybatis"><a href="#Spring整合Mybatis" class="headerlink" title="Spring整合Mybatis"></a>Spring整合Mybatis</h2><pre><code>1. 借助 mybatis-spring 包中的对象，把Mybatis配置文件中的配置转移到Spring的配置文件中;
+    1. SqlSessionFactoryBean: SqlSessionFactory的工厂对象;
+        1. dataSource属性: 配置连接池;
+        2. typeAliasesPackage属性: 扫描实体类(POJO)的所在包，为POJO配置别名;
+    2. MapperScannerConfigurer: 扫描Dao层的包，为所有Dao接口提供代理对象;
 2. 在Spring的配置文件applicationContext.xml 中
     &lt;!--配置连接池--&gt;
     &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
@@ -565,12 +569,12 @@
         &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
     &lt;/bean&gt;
 
-    &lt;!--配置SqlSessionFactory的工厂对象SqlSessionFactoryBean，由mybatis-spring提供--&gt;
     &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
         &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+        &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
     &lt;/bean&gt;
 
-    &lt;!--配置Dao层的包，封装到mybatis-spring的MapperScannerConfigurer对象--&gt;
+    &lt;!--配置Dao层的包，封装到mybatis-spring的对象--&gt;
     &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
         &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
     &lt;/bean&gt;
@@ -648,8 +652,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/26/Maven高级/" rel="prev" title="Maven高级">
+                Maven高级 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -727,7 +731,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

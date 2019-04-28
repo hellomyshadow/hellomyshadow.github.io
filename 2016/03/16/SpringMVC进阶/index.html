@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-24T13:09:59.647Z">
+<meta property="og:updated_time" content="2019-04-27T09:06:46.653Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC进阶">
 <meta name="twitter:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
@@ -375,12 +375,18 @@
             return &quot;forward:/pages/test.jsp&quot;;  //转发到test.jsp
             return &quot;redirect:/index.jsp&quot;;  //重定向到index.jsp
         }
-</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 用于将控制器方法返回的对象，通过 HttpMessageConverter 接口转为指定格式的数据，如JSON、XML，
-   然后响应给客户端;
-2. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
-3. 引入转换格式的依赖包jackson
+</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 控制器方法的返回值默认会解析为跳转路径，@ResponseBody修饰之后，返回值不会再交给视图解析器，
+   而是被直接写入响应体中;
+    @RequestMapping(&quot;/test&quot;)
+    @ResponseBody
+    public String test() {
+        return &quot;Hello SpringBoot&quot;;  //返回的字符串直接响应给客户端
+    }
+2. 控制器方法返回对象时，通过 HttpMessageConverter 接口转为指定格式的数据，如JSON、XML;
+3. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
+4. 引入转换格式的依赖包jackson
     jackson-databind、jackson-core、jackson-annotations
-4. 在JSP页面发送一个AJAX请求，参数为JSON格式
+5. 在JSP页面发送一个AJAX请求，参数为JSON格式
     public class User {
         private String username;  private String password;
         ......//setter、getter
@@ -584,7 +590,7 @@
     2. &lt;mvc:mapping&gt;：配置拦截的控制器方法;
     3. &lt;mvc:exclude-mapping&gt;：配置不拦截的控制器方法;
     4. path 属性：指定URL，也就是控制器方法.
-1. preHandle()：预处理方法
+</code></pre><h3 id="拦截器方法"><a href="#拦截器方法" class="headerlink" title="拦截器方法"></a>拦截器方法</h3><pre><code>1. preHandle()：预处理方法
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, 
         Object handler) {
         return true;
@@ -761,7 +767,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -816,7 +822,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制器方法的返回值"><span class="nav-number">1.</span> <span class="nav-text">控制器方法的返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseBody"><span class="nav-number">1.1.</span> <span class="nav-text">@ResponseBody</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态资源的处理"><span class="nav-number">2.</span> <span class="nav-text">静态资源的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的路径匹配模式"><span class="nav-number">2.1.</span> <span class="nav-text">SpringMVC的路径匹配模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">3.</span> <span class="nav-text">文件上传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC处理文件上传"><span class="nav-number">3.1.</span> <span class="nav-text">SpringMVC处理文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨服务器的文件上传"><span class="nav-number">3.2.</span> <span class="nav-text">跨服务器的文件上传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常处理器"><span class="nav-number">4.</span> <span class="nav-text">异常处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截器"><span class="nav-number">5.</span> <span class="nav-text">拦截器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制器方法的返回值"><span class="nav-number">1.</span> <span class="nav-text">控制器方法的返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseBody"><span class="nav-number">1.1.</span> <span class="nav-text">@ResponseBody</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态资源的处理"><span class="nav-number">2.</span> <span class="nav-text">静态资源的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的路径匹配模式"><span class="nav-number">2.1.</span> <span class="nav-text">SpringMVC的路径匹配模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">3.</span> <span class="nav-text">文件上传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC处理文件上传"><span class="nav-number">3.1.</span> <span class="nav-text">SpringMVC处理文件上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨服务器的文件上传"><span class="nav-number">3.2.</span> <span class="nav-text">跨服务器的文件上传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常处理器"><span class="nav-number">4.</span> <span class="nav-text">异常处理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截器"><span class="nav-number">5.</span> <span class="nav-text">拦截器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#拦截器方法"><span class="nav-number">5.1.</span> <span class="nav-text">拦截器方法</span></a></li></ol></li></ol></div>
             
 
           </div>

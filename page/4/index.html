@@ -232,6 +232,529 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/15/SpringMVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/15/SpringMVC/" itemprop="url">SpringMVC</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-15T00:00:00+08:00">
+                2016-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="三层架构"><a href="#三层架构" class="headerlink" title="三层架构"></a>三层架构</h2><pre><code>1. 开发架构一般都是基于两种形式：C/S(客户端/服务器)、B/S(浏览器/服务器);
+2. JavaEE开发几乎都是基于B/S架构，系统标准的三层架构：表现层、业务层、持久层;
+3. 表现层：web层，负责接收客户端请求，响应结果;
+    1. 表现层包括展示层(负责展示结果)和控制层(负责接收请求);
+    2. 表现层依赖于业务层，用于对请求进行业务处理，并把结果响应给客户端;
+    3. 表现层的设计一般都是用MVC模型，MVC属于表现层的设计模型，跟其他层没关系.
+4. 业务层：service层，负责业务处理，持久化数据时会依赖于持久层;
+5. 持久层：dao层，负责数据持久化;
+</code></pre><h3 id="MVC模型"><a href="#MVC模型" class="headerlink" title="MVC模型"></a>MVC模型</h3><pre><code>1. MVC：模型(Model)-视图(View)-控制器(Controller)，一种用于设计创建Web应用表现层的模型;
+2. Model：数据模型，如JavaBean;
+3. View：展示数据，如JSP、HTML;
+4. Controller：处理程序逻辑.
+</code></pre><h3 id="SpringMVC"><a href="#SpringMVC" class="headerlink" title="SpringMVC"></a>SpringMVC</h3><pre><code>1. SpringMVC是一种基于Java的实现MVC设计模型的请求驱动类型的轻量级Web框架;
+2. SpringMVC属于Spring Framework的后续产品，已经融合在Spring Web Flow中;
+3. Spring框架提供了构建Web应用的全能MVC模块，可以选择使用SpringMVC或其他MVC框架，如Struts2;
+    1. SpringMVC已成为最主流的MVC框架之一，Spring3.0开始就已经全面超越了Struts2;
+    2. SpringMVC通过一套注解，让一个Java类称为处理请求的控制器，而无需实现任何接口;
+    3. SpringMVC还支持RESTful编程风格的请求;
+</code></pre><p><img src="//hellomyshadow.github.io/2016/03/15/SpringMVC/SSM.jpg" alt="SSM"></p>
+<h2 id="控制流程"><a href="#控制流程" class="headerlink" title="控制流程"></a>控制流程</h2><pre><code>创建Web项目，搭建环境
+1. 引入依赖：版本锁定，统一管理Spring的版本
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt; ==&gt;配置编译运行的JDK版本
+        &lt;spring.version&gt;5.1.6.RELEASE&lt;/spring.version&gt;  ===&gt;锁定版本
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-web&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+            &lt;version&gt;${spring.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        javax.servlet-api(provided)
+        javax.servlet.jsp-api(provided)
+    &lt;/dependencies&gt;
+2. 配置文件resources/springmvc.xml，加入mvc和context约束
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;
+        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/mvc
+            https://www.springframework.org/schema/mvc/spring-mvc.xsd
+            http://www.springframework.org/schema/context
+            https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+        &lt;!-- 开启扫描哪个包下的注解 --&gt;
+        &lt;context:component-scan base-package=&quot;cn.test&quot;&gt;&lt;/context:component-scan&gt;
+        &lt;!-- 视图解析器 --&gt;
+        &lt;bean id=&quot;internalResourceViewResolver&quot; 
+            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+            &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;  ===&gt;文件所在目录，根目录是webapp
+            &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;  ===&gt;文件的后缀名
+        &lt;/bean&gt;
+        &lt;!-- 开启SpringMVC的注解支持 --&gt;
+        &lt;mvc:annotation-driven /&gt;
+    &lt;/beans&gt;
+3. webapp/WEB-INF/web.xml
+    &lt;web-app&gt;
+        &lt;servlet&gt;
+            &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+            &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+            &lt;!-- 让控制器去加载spring配置文件 --&gt;
+            &lt;init-param&gt;
+                &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+                &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
+            &lt;/init-param&gt;
+            &lt;!-- 控制器在接收第一次请求时才创建，所以要让它在服务器启动时创建，以加载配置文件 --&gt;
+            &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+        &lt;/servlet&gt;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+    &lt;/web-app&gt;
+    1. &lt;init-param&gt;：配置当前对象创建时的初始化参数;
+    2. &lt;load-on-startup&gt;：标记容器是否在启动时就加载当前的Servlet(创建并调用其init()方法);
+    3. 一般情况下，Servlet在第一次收到请求时由服务器创建并初始化，&lt;load-on-startup&gt; 可以让它
+    根据自己的需要改变加载的优先级;
+    4. &lt;load-on-startup&gt;n&lt;/load-on-startup&gt;：n 必须是一个整数，表示Servlet应该被加载的顺序;
+    5. 当 n&gt;=0 时，表示在容器(服务器)启动时就加载并初始化这个Servlet，值越小，优先级越高;
+    6. 当 n 的值相同时，由容器自己选择优先加载哪个Servlet.
+4. 创建控制类：cn.test.controller.HelloController，使用 @Controller 修饰
+    @Controller
+    public class HelloController {
+        @RequestMapping(path=&quot;/hello&quot;)
+        public String say() {
+            System.out.println(&quot;Hello SpringMVC&quot;);
+            return &quot;success&quot;;  ---&gt;控制器默认把返回值作为页面的名称，去查找success.jsp
+        }
+    }
+5. 在 webapp/pages 目录下创建success.jsp
+6. 在项目的默认首页 webapp/index.jsp 中配置一个跳转标签：&lt;a href=&quot;hello&quot;&gt;To Hello&lt;/a&gt;
+7. 部署服务器Tomcat Server
+</code></pre><h3 id="访问过程"><a href="#访问过程" class="headerlink" title="访问过程"></a>访问过程</h3><pre><code>1. 启动服务器时：创建DispatcherServlet对象 --&gt; 加载springmvc.xml --&gt; 创建HelloController对象
+2. 点击&lt;a&gt;，发送请求
+    /hello --&gt; DispatcherServlet --&gt; HelloController.say() --&gt; DispatcherServlet --&gt;
+    InternalResourceViewResolver --&gt; success.jsp --&gt; DispatcherServlet --&gt; 响应结果
+</code></pre><p><img src="//hellomyshadow.github.io/2016/03/15/SpringMVC/组件控制流程.jpg" alt="组件控制流程"></p>
+<pre><code>    1. DispatcherServlet：前端控制器，MVC模式中的C，整个控制流程的中心，调用其他组件处理
+    用户的请求，降低了组件之间的耦合性;
+    2. HandlerMapping：处理器映射器，根据用户请求找到Handler(处理器)，SpringMVC提供了不同的
+    映射器实现不同的映射方式，如配置配置文件方式、实现接口方式、注解方式...
+    3. Handler：处理器，开发编写的具体业务控制器，对具体的用户请求进行处理，由DispatcherServlet
+    把请求转发到Handler;
+    4. HandlerAdapter：处理器适配器，适配器模式的应用，对处理器进行执行;
+    5. View Resolver：视图解析器，将处理结果生成View视图，首先根据逻辑视图名解析成物理视图名，
+    即具体的页面地址，再生成View视图对象，并对View进行渲染，将处理结果通过页面展示给用户;
+    6. View：视图，SpringMVC提供了很多View视图类型的支持，如jstlView、freemarkerView、pdfView...
+    最常见的视图就是JSP;
+3. &lt;mvc:annotation-driven&gt;
+    1. 在SpringMVC的各个组件中，处理器映射器、处理器适配器、视图解析器，称为Spring的三大组件;
+    2. &lt;mvc:annotation-driven&gt; 会自动加载 RequestMappingHandlerMapping(处理映射器) 和
+    RequestMappingHandlerAdapter(处理适配器)
+4. @RequestMapping：用于建立请求URL和处理请求方法之间的对应关系;
+    1. @RequestMapping 可以用在类上，定义路径的一级目录，在其方法上定义二级目录;
+        @Controller
+        @RequestMapping(path=&quot;/user&quot;)  ---&gt;一级目录
+        public class HelloController {
+            @RequestMapping(path=&quot;/hello&quot;)  ---&gt;二级目录
+            public String say() { ... }
+        }
+        &lt;a href=&quot;user/hello&quot;&gt;To User Hello&lt;/a&gt;
+    2. value、path属性：指定请求的URL;
+    3. method属性：请求方式，如 method=RequestMethod.POST
+    4. params属性：限制请求参数的条件，支持简单的表达式，要求请求参数的key-value必须服从于配置;
+        1. params={&quot;username&quot;}，则请求参数中必须包含username;
+        &lt;a href=&quot;user/hello?username=Java&quot;&gt;
+        2. params={&quot;money=100&quot;}，则请求参数中的money必须是100.
+        &lt;a href=&quot;user/hello?money=100&quot;&gt;
+    5. headers属性：限制请求头的条件，如headers={&quot;Accept&quot;}，请求头中必须包含Accept;
+</code></pre><h2 id="请求参数的绑定"><a href="#请求参数的绑定" class="headerlink" title="请求参数的绑定"></a>请求参数的绑定</h2><pre><code>1. 绑定机制
+    1. 表单提交的参数都是 key-value 形式，如username=Java&amp;password=123;
+        &lt;a href=&quot;hello?username=Java&amp;password=123&quot;&gt;to hello&lt;/a&gt;
+        @RequestMapping(path=&quot;/hello&quot;)
+        public String say(String username, String password) {
+            System.out.println(username + &quot;, &quot; + password);  //Java, 123
+            return &quot;success&quot;;
+        }
+    2. SpringMVC的参数绑定过程是，把表单提交的参数作为控制器中方法的参数进行绑定的;
+    3. 表单提交的key和参数的名称是一致的，且区分大小写.
+2. 支持的参数类型：基本类型、实体类、集合类型;
+    1. 提交表单的key和实体类中的属性名必须一致;
+    2. 如果实体类中还有其他引用类型，那么表单中key的形式为：对象.属性，如address.name;
+3. 绑定基本类型、实体类、集合类型
+    private class User implements Serializable {
+        private String uname;  private int age;
+        ...... //setter、getter
+    }
+    private class Account implements Serializable {
+        private String username;  private double money;
+        private User user;  //包含引用类型
+        private List&lt;User&gt; list;  //List集合
+        private Map&lt;String, User&gt; map;  //Map集合
+        ...... //setter、getter
+    }
+    1. form表单：key必须与实体类Account的属性保持一致;
+        &lt;form action=&quot;hello&quot; method=&quot;post&quot;&gt;   ==&gt;跟请求方式无关，也可以是GET请求
+            &lt;!-- 基本类型 --&gt;
+            &lt;input type=&quot;text&quot; name=&quot;username&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;money&quot; /&gt;
+            &lt;!-- 实体类 --&gt;
+            &lt;input type=&quot;text&quot; name=&quot;user.uname&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;user.age&quot; /&gt;
+            &lt;!-- 集合类型 --&gt;
+            &lt;input type=&quot;text&quot; name=&quot;list[0].uname&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;list[0].age&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;map[&apos;one&apos;].uname&quot; /&gt;
+            &lt;input type=&quot;text&quot; name=&quot;map[&apos;one&apos;].age&quot; /&gt;
+            &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
+        &lt;/form&gt;
+    2. 把请求参数封装到JavaBean中
+        @RequestMapping(path=&quot;/hello&quot;)
+        public String say(Account account) {
+            System.out.println(account);
+            return &quot;success&quot;;
+        }
+4. 参数中文乱码：在 web.xml 中配置Spring的过滤器，并初始化参数encoding=UTF-8
+    &lt;filter&gt;  ===&gt;过滤器标签排列在&lt;servlet&gt;标签之前
+        &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;encoding&lt;/param-name&gt;
+            &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+5. 在控制器中获取Servlet API：直接把 HttpServletRequest、HttpServletResponse 加到方法的参数上;
+    @RequestMapping(path=&quot;/hello&quot;)
+    public String say(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+        ServletContext context = session.getServletContext();
+    }
+</code></pre><h3 id="类型转换器"><a href="#类型转换器" class="headerlink" title="类型转换器"></a>类型转换器</h3><pre><code>1. 在参数传递过程中，key和value其实都是字符串，SpringMVC内部有类型转换器，负责转换参数类型;
+2. 但是，对于一些特殊类型，如日期，SpringMVC并不能识别所有的日期格式，这就需要自定义类型转换器;
+3. 类型转换器的接口：Converter&lt;S, T&gt;，S和T分别代表接受类型和目标类型
+    public class String2DateConverter implements Converter&lt;String, Date&gt; {
+        public Date convert(String source) {
+            if(source == null) {
+                throw new RuntimeException(&quot;请传入参数&quot;);
+            }
+            //字符串转日期的识别类型 yyyy-MM-dd
+            DateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);
+            try {
+                return df.parse(source);
+            } catch(Exception e) {
+                throw new RuntimeException(&quot;类型转换异常&quot;);
+            }
+        }
+    }
+4. springmvc.xml：配置自定义的类型转换器
+    &lt;bean id=&quot;csfb&quot; class=&quot;org.springframework.context.support.ConversionServiceFactoryBean&quot;&gt;
+        &lt;property name=&quot;converters&quot;&gt;
+            &lt;set&gt;
+                &lt;bean class=&quot;cn.test.converter.String2DateConverter&quot; /&gt;
+            &lt;/set&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;mvc:annotation-driven conversion-service=&quot;csfb&quot; /&gt;
+    1. &lt;mvc:annotation-driven&gt; 标签开启SpringMVC的注解支持;
+    2. conversion-service属性：让配置的自定义日期类型转换器生效.
+5. 当遇到字符串需要转Date时，SpringMVC会自动调用自定义的类型转换器.
+    &lt;a href=&quot;hello?date=2018-11-12&quot;&gt;to hello&lt;/a&gt;
+    @RequestMapping(path=&quot;/hello&quot;)
+    public String say(Date date) {  --&gt; &quot;2018-11-12&quot; 转 Date对象
+        return &quot;success&quot;;
+    }
+</code></pre><h2 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h2><pre><code>@Controller
+@RequestMapping(&quot;/user&quot;)
+public class TestController {
+
+}
+1. @RequestParam：把请求中指定名称的参数，给控制器中的形参赋值;
+    1. value、name属性：请求参数中的名称;
+    2. required：请求参数中是否必须提供此参数，默认为true;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestParam(name=&quot;uname&quot;) String username) {
+            return &quot;success&quot;;
+        }
+    3. 请求参数中必须提供一个key为 uname 的键值对，uname的值会赋给形参username;
+        &lt;a href=&quot;user/test?name=Java&quot;&gt;Welcome&lt;/a&gt;
+    4. 不使用 @RequestParam 时，形参username 会接收请求参数中key为 username 的值，
+    如果请求参数中没有，则形参username 仍为默认值null.
+2. @RequestBody：用于获取请求体的内容;
+    1. 直接使用时会得到整个请求体的内容：key=value&amp;key=value...
+    2. required属性：是否必须有请求体;
+    3. 不适用于Get请求：required=true时，Get请求会报错; required=false时，Get请求为null;
+        &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
+            &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ==&gt;Java
+            &lt;input type=&quot;text&quot; name=&quot;age&quot; /&gt;  ====&gt;22
+            &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
+        &lt;/form&gt;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestBody String body) {
+            System.out.println(body);  // uname=Java&amp;age=22
+            return &quot;success&quot;;
+        }
+3. @PathVariable：用于绑定url中的占位符，如/delete/{id}，id就是url占位符;
+    1. url支持占位符是在Spring3.0才加入的，它是SpringMVC支持RESTful风格URL的一个重要标志;
+    2. value、name属性：指定URL中占位符的名称;
+    3. required：是否必须提供占位符;
+        @RequestMapping(path=&quot;/test/{uId}&quot;)
+        public String test(@PathVariable(name=&quot;uId&quot;) String id) {
+            System.out.println(id);  // 10
+            return &quot;success&quot;;
+        }
+        &lt;a href=&quot;user/test/10&quot;&gt;Welcome&lt;/a&gt;
+4. HiddentHttpMethodFilter
+    1. 浏览器的form表单只支持GET与POST请求，无法模拟DELETE、PUT等RESTful method;
+    2. Spring3.0提供了一个过滤器，可以将浏览器请求改为指定的请求的方式，再发给控制器方法.
+5. @RequestHeader：获取请求头
+    1. value属性：提供请求头的名称;
+    2. required：是否必须有此请求头;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestHeader(value=&quot;Accept&quot;) String header) {
+            System.out.println(header);
+            return &quot;success&quot;;
+        }
+6. @CookieValue：把指定Cookie名称的值传给控制器方法的参数;
+    1. value属性：指定Cookie的名称;
+    2. required：是否必须有此Cookie;
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@CookieValue(value=&quot;JSESSIONID&quot;) String cookieValue) {
+            System.out.println(cookieValue);
+            return &quot;success&quot;;
+        }
+</code></pre><h3 id="ModelAttribute"><a href="#ModelAttribute" class="headerlink" title="ModelAttribute"></a>ModelAttribute</h3><pre><code>1. @ModelAttribute：SpringMVC4.3新特性，可以修饰方法和参数;
+    1. 修饰方法时：当前方法会在控制器的方法执行之前，优先执行;
+    2. 可以修饰没有返回值的方法，也可以修饰有具体返回值的方法;
+    3. 修饰参数时：获取指定的数据，并赋值给参数;
+    4. value属性：获取数据的key，可以是POJO的属性名，也可以是Map结构的key;
+2. 应用：当表单提交参数不是完整的实体类数据时，保证没有提交的字段使用数据库中的原数据;
+    &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
+        &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ===&gt;只提交一个参数uname
+        &lt;input type=&quot;submit&quot; value=&quot;提交&quot; /&gt;
+    &lt;/form&gt;
+3. 修饰有返回值的方法
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test(User user) {
+        System.out.println(user);
+        return &quot;success&quot;;
+    }
+    @ModelAttribute
+    public User initTest(String uname) {
+        User user = new User();
+        user.setUname(uname);
+        ...... //查询数据库，获取age字段
+        user.setAge(20);
+        return user;
+    }
+    1. initTest() 优先执行，形参uname 接收请求参数中的uname，返回一个User对象;
+    2. test() 执行时，形参user 接收 initTest() 返回的User对象.
+4. 修饰无返回值的方法
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test(@ModelAttribute(&quot;abc&quot;) User user) {
+        System.out.println(user);
+        return &quot;success&quot;;
+    }
+    @ModelAttribute
+    public void initTest(String uname, Map&lt;String, User&gt; map) {
+        User user = new User();
+        user.setUname(uname);
+        ...... //查询数据库，获取age字段
+        user.setAge(20);
+        map.put(&quot;abc&quot;, user);
+    }
+    1. initTest() 优先执行，形参uname 接收请求参数中的uname，把User对象存入Map集合;
+    2. test() 的形参user 通过 @ModelAttribute(&quot;Map集合的key&quot;) 获取Map中的User对象.
+</code></pre><h3 id="SessionAttributes"><a href="#SessionAttributes" class="headerlink" title="SessionAttributes"></a>SessionAttributes</h3><pre><code>1. 为了向域中存储数据，在控制器方法的参数上直接使用Servlet API，这种方式耦合度太高;
+2. 为了解决与Serlvet的耦合度问题，Spring提供了接口Model，并提供了很多实现类;
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test(Model model) {
+        model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt; 存入数据
+        return &quot;success&quot;;
+    }
+    1. Model默认会把数据存到Request域中;
+    2. 在JSP中取值：&lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;
+3. @SessionAttributes：用于多次执行控制器方法间的参数共享;
+    1. 只能修饰类，让Model把数据被存入Session域中;
+    2. value、names属性：String数组，用于指定存入数据的key;
+    3. types：根据指定参数的类型，将模型中对应类型的参数存储到session中;
+        @Controller
+        @RequestMapping(&quot;/user&quot;)
+        @SessionAttributes(value={&quot;msg&quot;})  ---&gt;指定key的名称
+        public class TestController {
+            @RequestMapping(path=&quot;/test&quot;)
+            public String test(Model model) {
+                model.addAttribute(&quot;msg&quot;, &quot;Java&quot;);  --&gt;向Session域中存入值
+                return &quot;success&quot;;
+            }
+
+            @RequestMapping(path=&quot;/get&quot;)
+            public String test(ModelMap map) {
+                String msg = (String)map.get(&quot;msg&quot;);  --&gt;从Session域中获取值
+                return &quot;get&quot;;
+            }
+
+            @RequestMapping(path=&quot;/del&quot;)
+            public String test(SessionStatus status) {
+                status.setComplete();  --&gt;从Session域中删除值
+                return &quot;del&quot;;
+            }
+        }
+    2. Model会将数据存入到Request域和Session域中;
+    3. 在JSP中获取数据：
+        &lt;h2&gt;${ requestScope.msg }&lt;/h2&gt;  &lt;h2&gt;${ sessionScope.msg }&lt;/h2&gt;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/11/Spring5新特性/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3048,15 +3571,21 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
             &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;
             &lt;!-- 大于Mybatis3.4.1的默认值为false，表示按需加载每个属性 --&gt;
             &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
+            &lt;!-- 开启驼峰扫描 --&gt;
+            &lt;setting name=&quot;mapUnderscoreToCamelCase&quot; value=&quot;true&quot; /&gt;
         &lt;/settings&gt;
     &lt;/configuration&gt;
-    2. IUserDao接口 与 IUserDao.xml
-        //根据主键 id 查询user表
-        User findById(int id);
+    2. 开启驼峰扫描之后，可以自动将SQL语句中带下划线的字段，转换为驼峰标志，再去匹配实体类中的属性;
+        1. 比如字段user_type，在Java实体类中的属性通常为驼峰式：userType
+        2. 如果不开启驼峰扫描，在SQL语句中需要使用 AS 实现映射匹配;
+        select user_type as userType from user
+        3. 但开启了Mybatis的驼峰匹配之后，就可以自动匹配：select user_type from user
+    3. IUserDao接口 与 IUserDao.xml
+        User findById(int id);  //根据主键 id 查询user表
         &lt;select id=&quot;findById&quot; parameterType=&quot;int&quot; resultType=&quot;user&quot;&gt;
             select * from user where id=#{uid}
         &lt;/select&gt;
-    3. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
+    4. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
         &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
             &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
             &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
@@ -3067,7 +3596,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
         &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
             select * from account  ---&gt;不能再使用连接查询，否则延迟加载是无效的
         &lt;/select&gt;
-    4. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
+    5. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
 3. 一对多的延迟加载：表user--&gt;表account
     1. IAccountDao接口 与 IAccountDao.xml
         //根据外键 uid 去查询account表
@@ -3334,7 +3863,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
         &lt;artifactId&gt;mybatis&lt;/artifactId&gt;
         &lt;version&gt;3.4.5&lt;/version&gt;
     &lt;/dependency&gt;
-    &lt;dependency&gt;  -------------------------&gt;MySQL
+    &lt;dependency&gt;  -------------------------&gt;使用MySQL数据库，则配置MySQL的数据库驱动
         &lt;groupId&gt;mysql&lt;/groupId&gt;
         &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
         &lt;version&gt;5.1.6&lt;/version&gt;
@@ -3957,388 +4486,6 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/02/03/JavaEE之JSP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/02/03/JavaEE之JSP/" itemprop="url">JavaEE之JSP</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-03T00:00:00+08:00">
-                2016-02-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="JSP"><a href="#JSP" class="headerlink" title="JSP"></a>JSP</h2><pre><code>1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet
-2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet
-3. Tomcat/conf/web.xml 对jsp访问的配置
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;jsp&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;org.apache.jasper.servlet.JspServlet&lt;/servlet-class&gt;
-        ...
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;jsp&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
-        &lt;url-pattern&gt;*.jspx&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-4. JSP的访问有一个转译的过程，所以JSP文件的修改不需要重启服务器。
-5. JSP的三种注释：前端注释、Java语言注释、JSP注释
-    1. 前端注释会被转译，也会被发送给浏览器，但不会执行；
-    2. Java语言注释会被转译，但不会被Servlet执行；
-    3. JSP注释不会被转译：&lt;%-- JSP注释 --%&gt;
-</code></pre><h3 id="page指令"><a href="#page指令" class="headerlink" title="page指令"></a>page指令</h3><pre><code>1. page指令：配置JSP转译的相关参数
-    &lt;%@ page 属性名=&quot;属性值&quot; 属性名=&quot;属性值&quot; ... %&gt;
-2. language：声明JSP被转译的语言，如language=&quot;java&quot;
-3. import：使用什么语言，就需要导入什么语言的包，不同的包以&quot;,&quot;隔开，也可以导入项目中的类
-    import=&quot;java.util.*,java.lang.*,it.test.cn.modal.*&quot;
-4. pageEncoding：文件保存的编码，如pageEncoding=&quot;utf-8&quot;
-    1. 对于高版本的JSP，pageEncoding可以同时指定响应的编码；
-    2. 对于低版本的JSP，还需要指定响应的编码：contentType=&quot;text/html;charset=UTF-8&quot;
-5. session：设置转译的Servlet中是否支持Session，默认开启，不开启则设置session=&quot;false&quot;
-6. errorPage：配置错误页面的路径，errorPage=&quot;error.jsp&quot;
-7. extends：设置JSP转译的Servlet要继承的父类(全类名)
-8. isELIgnored：是否忽略EL表达式，设置为true时，EL表达式会被当做普通字符串解析.
-</code></pre><h3 id="JSP逻辑代码"><a href="#JSP逻辑代码" class="headerlink" title="JSP逻辑代码"></a>JSP逻辑代码</h3><pre><code>1. JSP的局部代码块
-    &lt;%
-        int num = 1;
-        if(num &gt; 0) {
-    %&gt;
-            &lt;div&gt;num大于0&lt;/div&gt;
-    &lt;% } else { %&gt;
-            &lt;div&gt;另作处理&lt;/div&gt;
-    &lt;% } %&gt;
-    1. 转译到Servlet中
-    int num = 1;
-    if(num &gt; 0) {
-        out.write(&quot;\r\n&quot;);
-        out.write(&quot;\t\t&lt;div&gt;num大于0&lt;/div&gt;\r\n&quot;);
-    } else {
-        out.write(&quot;\t\t&lt;div&gt;另作处理&lt;/div&gt;\r\n&quot;);
-    }
-    2. 在JSP中写逻辑代码，编码困难，可阅读性和可维护性极差，所以尽量在Servlet中处理逻辑，
-    JSP只负责展示内容。
-2. JSP的全局代码块
-    1. 声明Servlet的成员方法和成员变量
-    &lt;%!
-        int num = 1;
-        public void test(){ ... }
-    %&gt;
-    2. 全局代码块声明的属性和方法，只能在局部代码块中使用。
-3. JSP脚本段语句
-    1. &lt;%= num %&gt;
-    2. &lt;%= test() %&gt;  ==&gt;方法要有返回值
-</code></pre><h3 id="JSP的引入与转发"><a href="#JSP的引入与转发" class="headerlink" title="JSP的引入与转发"></a>JSP的引入与转发</h3><pre><code>1. 静态引入： &lt;%@include file=&quot;header.jsp&quot; %&gt;
-    1. 两个JSP文件会合并成一个Servlet文件;
-    2. 静态引入的JSP不会单独转为一个Servlet;
-    3. 两个JSP文件不能声明同名的Java变量.
-2. 动态引入： &lt;jsp:include page=&quot;active.jsp&quot;&gt;&lt;/jsp:include&gt;
-    1. 动态引入的JSP文件也会单独转为一个Servlet;
-    2. 在当前JSP文件转译的Servlet中，会调用动态引入的JSP文件转译的Servlet;
-    3. 允许在两个JSP文件中声明同名的Java变量.
-3. JSP转发标签
-    &lt;jsp:forward page=&quot;target.jsp&quot;&gt;&lt;/jsp:forward&gt;
-    1. 一次请求，浏览器地址栏信息不变;
-    2. 在&lt;jsp:forward&gt;标签中只能写&lt;jsp:param name=&quot;xxx&quot; value=&quot;xxx&quot;/&gt;，向目的JSP页面
-    传递参数，而不能有其他任何字符，甚至是空格也不行，否则就会报错;
-    &lt;jsp:forward page=&quot;target.jsp&quot;&gt;
-        &lt;jsp:param name=&quot;user&quot; value=&quot;Mack&quot; /&gt;
-    &lt;/jsp:forward&gt;
-    3. 以GET形式转发参数：转发路径?user=Mack
-    4. 在目的JSP页面获取参数：&lt;%= request.getParameter(&quot;user&quot;) %&gt;
-</code></pre><h3 id="JSP的内置对象"><a href="#JSP的内置对象" class="headerlink" title="JSP的内置对象"></a>JSP的内置对象</h3><pre><code>1. 九大内置对象：JSP文件转译为Servlet时自动生成并声明的对象，可以在JSP文件中直接使用；
-2. 内置对象只能在局部代码块和脚本段语句中使用；
-1. pageContext：JSP的页面上下文对象，内部封装了另外8个内置对象；
-    1. PageContext封存了当前JSP的运行信息，每个JSP文件都有一个PageContext对象；
-    2. 每次请求都会重新创建一个PageContext对象，存储当前页面内的数据。
-2. application
-    ServletContext application = pageContext.getServletContext();
-3. config
-    ServletConfig application = pageContext.getServletConfig();
-4. out
-    JspWriter out = pageContext.getOut();
-    1. JSP内部使用的响应对象，带有缓冲区，效率高于response
-5. session：一次会话的Session对象，存储同一用户、不同请求的共享数据；
-    1. 要使用Session对象，必须先在page指令中开启，session=&quot;true&quot;
-    session = pageContext.getSession();
-6. request，response：分别是当前的请求对象、响应对象；
-7. page：this，当前JSP对象(Servlet对象);
-8. exception：存储当前运行的异常信息，先在page指令中使用 isErrorPage=&quot;true&quot; 开启;
-9. 数据流转
-    1. pageContext：当前页面内的数据共享，获取其他内置对象;
-    2. request：一次请求的数据共享，通过请求转发，把数据流转给下一个Servlet;
-    3. session：一次会话，同一用户、不同请求的数据共享，将数据从一次请求流转给其他请求;
-    4. application：项目内的数据，不同用户的数据共享，将数据从一个用户流转给其他用户.
-</code></pre><h3 id="JSP的资源路径"><a href="#JSP的资源路径" class="headerlink" title="JSP的资源路径"></a>JSP的资源路径</h3><pre><code>1. 在JSP中使用相对路径时，资源位置不可随意更改；
-2. 绝对路径：&lt;a href=&quot;/servtest/a.jsp&quot;&gt;，
-    1. 第一个 &quot;/&quot; 表示服务器根目录(Tomcat/webapps)，&quot;/servtest&quot; 表示服务器的项目根目录，
-    servtest是项目在Tomcat/webapps下的虚拟目录名。
-3. 在JSP中声明全局路径
-    &lt;%
-        String path = request.getContextPath();
-        String basePath = request.getScheme()+&quot;://&quot;+request.getServerName()+&quot;:&quot;
-        +request.getServerPort()+path+&quot;/&quot;;
-    %&gt;
-    &lt;html&gt;
-        &lt;head&gt;
-            &lt;base href=&quot;&lt;%=basePath%&gt;&quot;&gt;
-    1. 那么，在JSP文件中引入资源时，资源路径会自动加上 Ip:Port/项目虚拟目录名/
-    2. &lt;a href=&quot;a.jsp&quot;&gt; 跳转到 http://Ip:Port/servtest/a.jsp
-4. 重定向到 main目录下的main.jsp
-    resp.sendRedirect(&quot;/servtest/main/main.jsp&quot;);
-    1. 重定向时，尽量使用绝对路径取代资源路径：/项目虚拟目录名/资源路径;
-    2. 假定当前的Servlet的别名带有目录，如&lt;url-pattern&gt;/user/abc&lt;/url-pattern&gt;
-    3. 如果使用相对路径，如resp.sendRedirect(&quot;main/main.jsp&quot;);  那么跳转的main.jsp的
-    路径为 /项目虚拟目录名/user/main/main.jsp;
-    4. 而main.jsp的真实路径是 /项目虚拟目录名/main/main.jsp ，那么就会报404错误.
-5. 转发到一个JSP页面
-    req.getRequestDispatcher(&quot;/login.jsp&quot;).forward(req, resp);
-    1. 与请求重定向不同，请求转发的第一个 &quot;/&quot; 表示项目根目录，而不是服务器根目录，所以不用
-    加项目的虚拟目录名.
-</code></pre><h2 id="EL表达式"><a href="#EL表达式" class="headerlink" title="EL表达式"></a>EL表达式</h2><pre><code>1. EL：Expression Language，一种写法非常简洁的表达式，灵感来源于ES和XPath;
-2. EL表达式用于简化在JSP中获取作用域数据和请求数据，不需要导入相关的类(包);
-3. 传统的获取方式
-    1. 在Servlet中处理请求之后，通过请求转发到JSP页面：req.setAttribute(&quot;key&quot;, Object);
-    2. 在JSP页面中获取数据：&lt;%= request.getAttribute(&quot;key&quot;) %&gt;
-    3. 在JSP页面中获取请求参数：&lt;%= request.getParameter(&quot;key&quot;) %&gt;
-4. 语法结构：${expression}
-    1. 获取请求参数
-    ${ param.key } --&gt; 单个值
-    ${ paramvalues.key } --&gt; 同键不同值如Checkbox
-    2. 获取 req.setAttribute(&quot;key&quot;, Object) 传递的数据：${ Object }
-    3. ${} 只获取 pageContext、request、session、application四个对象中的数据;
-    &lt;%  String uname = &quot;Java&quot;;  %&gt;
-    &lt;h3&gt;${ uname }&lt;/h3&gt;
-    4. 如果在四大对象中找不到uname，不报错，也不显示内容，但决不理会页面中定义的变量uname;
-5. EL查找作用域数据的默认顺序：pageContext --&gt; request --&gt; session --&gt; application
-    &lt;%
-        pageContext.setAttribute(&quot;uname&quot;, &quot;aaaa&quot;);
-        request.setAttribute(&quot;uname&quot;, &quot;bbbb&quot;);
-        session.setAttribute(&quot;uname&quot;, &quot;cccc&quot;);
-        application.setAttribute(&quot;uname&quot;, &quot;dddd&quot;);
-    %&gt;
-    &lt;div&gt;${ uname }&lt;/div&gt; ===&gt; aaaa
-    1. 除了默认顺序，还可以手动指定查找方向
-    request：${ requestScope.uname }，pageContext：${ pageScope.uname }
-    session：${ sessionScope.uname }，application：${ applicationScope.uname }
-6. EL支持简单的逻辑运算：算术表达式、关系表达式、逻辑表达式(&amp;&amp; || !)、三元表达式
-    ${ 1+3 } =&gt; 4，${ 1&gt;3 } =&gt; false，${ flag==0?&quot;正确&quot;:&quot;错误&quot; }
-    1. EL表达式中不允许做字符串连接
-    ${ 1+&quot;4&quot; } =&gt; 5，${ 1+&quot;a&quot; } =&gt; 报错
-7. EL的空值判断：${ empty key }，空字符串、空集合都返回true，但是对象返回false
-8. EL获取请求头数据：${ header }
-    1. 单个值：${ header[&quot;key&quot;] }，如${ header[&quot;user-agent&quot;] }
-    2. 数组：${ headerValues[&quot;key&quot;] }，同键不同值
-9. EL获取Cookie数据：${ cookie }
-    1. 获取一条Cookie数据，如sessionID：${ cookie.JSESSIONID }
-    2. 获取这条Cookie数据的键值：
-    ${ cookie.JSESSIONID.name }，${ cookie.JSESSIONID.value }
-</code></pre><h2 id="JSTL标签库"><a href="#JSTL标签库" class="headerlink" title="JSTL标签库"></a>JSTL标签库</h2><pre><code>1. JSTL是 Apache 对EL表达式的扩展，JSTL依赖于EL，使用时需要导包，并指定标签库；
-    1. MyEclipse会在lib目录下自动存放jstl.jar
-    2. JSTL的标签库：核心库、格式化库、SQL库、函数库、XML库
-2. JSTL标签库能够提升JSP页面编写逻辑代码的效率，可阅读性更强；
-</code></pre><h3 id="JSTL核心标签库"><a href="#JSTL核心标签库" class="headerlink" title="JSTL核心标签库"></a>JSTL核心标签库</h3><pre><code>1. 导入jar包，声明jstl核心标签库的引入
-    &lt;%@taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
-2. 输出：&lt;c:out&gt; 类似于 &lt;%=xxx %&gt;
-    &lt;%  request.setAttribute(&quot;uname&quot;, &quot;Java&quot;);  %&gt;
-    &lt;c:out value=&quot;${uname}&quot; default=&quot;xxx&quot;&gt;&lt;/c:out&gt;
-    1. 结合EL表达式输出，如果uname不存在，则输出默认值default
-3. 向作用域中存储键值： &lt;c:set var=&quot;key&quot; value=&quot;xxx&quot;&gt;&lt;c:set&gt;
-    1. 默认存储在pageContext中，也可以手动指定存储的作用域对象
-    &lt;c:set var=&quot;key&quot; value=&quot;xxx&quot; scope=&quot;page/request/session/application&quot;&gt;&lt;c:set&gt;
-4. 删除作用域的数据：&lt;c:remove&gt;
-    &lt;c:remove var=&quot;uname&quot; /&gt;
-    1. 默认把4个作用域对象中的uname都删除，scope属性指定作用域
-    &lt;c:remove var=&quot;uname&quot; scope=&quot;page/request/session/application&quot; /&gt;
-5. 逻辑标签：依赖于EL表达式
-    1. 单个判断
-    &lt;c:set var=&quot;score&quot; value=&quot;66&quot;&gt;&lt;c:set&gt;
-    &lt;c:if test=&quot;${score&gt;60}&quot;&gt;
-        &lt;div&gt;条件通过&lt;/div&gt;
-    &lt;/c:if&gt;
-    2. 多重判断
-    &lt;c:choose&gt;
-        &lt;c:when test=&quot;${score&gt;=90}&quot;&gt;
-            &lt;li&gt;11111111&lt;/li&gt;
-        &lt;/c:when&gt;
-        &lt;c:when test=&quot;${score&lt;90 &amp;&amp; score&gt;=70}&quot;&gt;
-            &lt;li&gt;2222222&lt;/li&gt;
-        &lt;/c:when&gt;
-        &lt;c:when test=&quot;${score&lt;70 &amp;&amp; score&gt;=60}&quot;&gt;
-            &lt;li&gt;3333333&lt;/li&gt;
-        &lt;/c:when&gt;
-        &lt;c:otherwise&gt;
-            &lt;li&gt;4444444&lt;/li&gt;
-        &lt;/c:otherwise&gt;
-    &lt;/c:choose&gt;
-6. 常量循环
-    &lt;c:forEach begin=&quot;1&quot; end=&quot;4&quot; step=&quot;1&quot; varStatus=&quot;vs&quot;&gt;  ==&gt; 循环4次
-        &lt;li&gt;${vs.index} -- ${vs.count} -- ${vs.first} -- ${vs.last}&lt;/li&gt;
-    &lt;/c:forEach&gt;
-    1. step属性设置每次循环的自增步数，默认自增1
-    2. varStatus属性保存当前循环的状态
-        1. vs.index：当前循环的角标
-        2. vs.count：当前是第几次循环
-        3. vs.first/vs.last：当前是不是第一次/最后一次循环，true/false
-7. 动态循环
-    &lt;%
-        ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
-        list.add(&quot;111&quot;);
-        request.setAttribute(&quot;list&quot;, list);
-        HashMap&lt;String, String&gt; map = new HashMap&lt;&gt;();
-        map.put(&quot;a&quot;, &quot;11&quot;);
-        request.setAttribute(&quot;map&quot;, map);
-    %&gt;
-    1. 遍历List集合
-    &lt;c:forEach items=&quot;${list}&quot; var=&quot;v&quot;&gt;
-        &lt;li&gt;${v}&lt;/li&gt;
-    &lt;/c:forEach&gt;
-    2. var属性是每次循环的元素值;
-    3. 遍历Map集合
-    &lt;c:forEach items=&quot;${map}&quot; var=&quot;v&quot;&gt;
-        &lt;li&gt;${v.key} -- ${v.value}&lt;/li&gt;
-    &lt;/c:forEach&gt;
-    4. v 表示每次循环的一条Map元素，v.key、v.value 分别表示这条数据的键、值。
-</code></pre><h3 id="JSTL格式化标签库"><a href="#JSTL格式化标签库" class="headerlink" title="JSTL格式化标签库"></a>JSTL格式化标签库</h3><pre><code>1. 声明jstl核心标签库的引入
-    &lt;%@taglib prefix=&quot;fmt&quot; uri=&quot;http://java.sun.com/jsp/jstl/fmt&quot; %&gt;
-2. 可以格式化输入文本、日期、时间、数字
-    1. &lt;fmt:formatNumber&gt;：使用指定的格式或精度格式化数字;
-    2. &lt;fmt:parseNumber&gt;：解析一个代表着数字/货币/百分比的字符串;
-    3. &lt;fmt:formatDate&gt;：使用指定的风格或模式格式化日期和时间;
-    4. &lt;fmt:parseDate&gt;：解析一个代表着日期或时间的字符串;
-    5. &lt;fmt:requestEncoding&gt;：设置request的字符编码;
-    6. &lt;fmt:timeZone&gt;：指定时区，供其它标签使用;
-    7. &lt;fmt:setTimeZone&gt;：复制一个时区对象至指定的作用域.
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4389,7 +4536,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
