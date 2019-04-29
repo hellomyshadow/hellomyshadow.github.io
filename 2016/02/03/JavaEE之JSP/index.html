@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="JSP1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet 2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet 3. Tomcat/conf/web.xml 对jsp访问的配置     &amp;lt;servlet&amp;gt;         &amp;lt;servlet-name&amp;gt;jsp&amp;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-23T10:38:03.868Z">
+<meta property="og:updated_time" content="2019-04-29T14:53:38.377Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaEE之JSP">
 <meta name="twitter:description" content="JSP1. JSP：Java Server Pages，一种动态网页技术标准，本质是一个简化的Servlet 2. 原理：浏览器访问jsp文件时，JSP引擎把jsp文件转为Servlet(java文件)，然后执行此Servlet 3. Tomcat/conf/web.xml 对jsp访问的配置     &amp;lt;servlet&amp;gt;         &amp;lt;servlet-name&amp;gt;jsp&amp;">
@@ -437,6 +437,10 @@
             &lt;base href=&quot;&lt;%=basePath%&gt;&quot;&gt;
     1. 那么，在JSP文件中引入资源时，资源路径会自动加上 Ip:Port/项目虚拟目录名/
     2. &lt;a href=&quot;a.jsp&quot;&gt; 跳转到 http://Ip:Port/servtest/a.jsp
+    3. &lt;img src=&quot;images/header.png&quot; /&gt;
+        http://Ip:Port/servtest/images/header.png
+    4. &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/main.css&quot; /&gt;
+        http://Ip:Port/servtest/css/main.css
 4. 重定向到 main目录下的main.jsp
     resp.sendRedirect(&quot;/servtest/main/main.jsp&quot;);
     1. 重定向时，尽量使用绝对路径取代资源路径：/项目虚拟目录名/资源路径;

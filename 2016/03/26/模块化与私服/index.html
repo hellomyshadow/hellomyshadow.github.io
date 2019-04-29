@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="SSM整合1. 引入SSM、log4j、shiro、spring-security的相关依赖     1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web     2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spr">
+<meta name="description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Maven高级">
-<meta property="og:url" content="http://hellomyshadow.github.io/2016/03/26/Maven高级/index.html">
+<meta property="og:title" content="模块化与私服">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/03/26/模块化与私服/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="SSM整合1. 引入SSM、log4j、shiro、spring-security的相关依赖     1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web     2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spr">
+<meta property="og:description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-28T15:41:52.720Z">
+<meta property="og:updated_time" content="2019-04-29T16:35:20.597Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Maven高级">
-<meta name="twitter:description" content="SSM整合1. 引入SSM、log4j、shiro、spring-security的相关依赖     1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web     2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spr">
+<meta name="twitter:title" content="模块化与私服">
+<meta name="twitter:description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://hellomyshadow.github.io/2016/03/26/Maven高级/">
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
 
 
 
 
 
-  <title>Maven高级 | 大麦田程序猿</title>
+  <title>模块化与私服 | 大麦田程序猿</title>
   
 
 
@@ -233,7 +233,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/Maven高级/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -250,7 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Maven高级</h1>
+          <h1 class="post-title" itemprop="name headline">模块化与私服</h1>
         
 
         <div class="post-meta">
@@ -322,116 +322,117 @@
       
 
       
-        <h2 id="SSM整合"><a href="#SSM整合" class="headerlink" title="SSM整合"></a>SSM整合</h2><pre><code>1. 引入SSM、log4j、shiro、spring-security的相关依赖
-    1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web
-    2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spring-tx
-    3. junit(test)、、mysql-connector-jave、servlet-api(provided)、jsp-api(provided)、jstl
-    4. log4j、slf4j-api、slf4j-log4j12、mybatis、mybatis-spring、c3p0(type:jar，scope:compile)、
-    5. pagehelper、spring-security-web、spring-security-config、spring-security-core、
-    6. spring-security-taglibs、druid
-2. 使用Maven的web骨架，创建JavaWeb工程;
-3. 把 log4j.properties 放在 resources 目录中
-    # Set root category priority to INFO and its only appender to CONSOLE.
-    #log4j.rootCategory=INFO, CONSOLE            debug   info   warn error fatal
-    log4j.rootCategory=debug, CONSOLE, LOGFILE
-    # Set the enterprise logger category to FATAL and its only appender to CONSOLE.
-    log4j.logger.org.apache.axis.enterprise=FATAL, CONSOLE
-    # CONSOLE is set to be a ConsoleAppender using a PatternLayout.
-    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
-    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
-    log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
-    # LOGFILE is set to be a File appender using a PatternLayout.
-    log4j.appender.LOGFILE=org.apache.log4j.FileAppender
-    log4j.appender.LOGFILE.File=d:\axis.log
-    log4j.appender.LOGFILE.Append=true
-    log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
-    log4j.appender.LOGFILE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
-4. Spring的配置文件：applicationContext.xml
-5. Spring整合Mybatis时，借助 mybatis-spring 包;
-    1. SqlSessionFactoryBean：SqlSessionFactory的工厂对象;
-    2. MapperScannerConfigurer：扫描Dao接口的包，为所有的Dao生成代理对象;
-    3. 使用Dao映射配置文件的方式时，映射文件的包路径与Dao的包路径一致，文件名与映射的Dao接口名一致;
-    4. 比如cn.test.dao.IUserDao，对应的映射配置文件：resources/cn/test/dao/IUserDao.xml;
-    5. Druid是阿里提供的连接池，其&lt;property&gt;的配置和c3p0一样.
-6. Service层使用注解开发，在 applicationContext.xml 中配置只扫描Service包，配置事务管理器、事务通知、切面;
-    &lt;context:component-scan base-package=&quot;cn.test.service&quot; /&gt;
-    @Service
-    public class UserServiceImpl implements IUserService {
-        @Autowired
-        private IUserDao dao;
-        ......
-    }
-7. SpringMVC的配置文件：resources/springmvc.xml
-    1. ，配置前端处理器、视图解析器、扫描Controller层所在包、并开启注解扫描的支持
-    &lt;context:component-scan base-package=&quot;cn.test.controller&quot; /&gt;
-    &lt;!-- 简化的配置方式：配置处理器映射器和处理器适配器！不需要配置前端处理器？？？ --&gt;
-    &lt;mvc:annotation-driven /&gt;
-    &lt;!-- 视图解析器 --&gt;
-    &lt;bean id=&quot;internalResourceViewResolver&quot; 
-            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
-        &lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/pages&quot; /&gt;
-        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
-    &lt;/bean&gt;
-    &lt;!-- 过滤掉静态资源，交给默认的Servlet去处理，但是他怎么知道哪些是静态资源，竟然不需要配置&lt;mvc:resources&gt; --&gt;
-    &lt;mvc:default-servlet-handler /&gt;
-8. web.xml
-    1. 配置编码过滤器CharacterEncodingFilter，避免中文乱码;
-    2. 配置Spring的核心监听器，并重新指定Spring配置文件的路径，加载Spring的配置文件;
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
-    &lt;context-param&gt;
-        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
-    &lt;/context-param&gt;
-    3. 配置SpringMVC的核心Servlet，在服务器启动时，创建此Servlet对象，并加载SpringMVC的配置文件;
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-        &lt;init-param&gt;
-            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-            &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
-        &lt;/init-param&gt;
-        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-9. 配置Tomcat7插件，使用 tomcat7:run 运行，http://localhost:8080/项目名/ 访问;
-</code></pre><h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. Maven工程的拆分：把一个完整的Maven项目分成不同的独立模块，这些模块以坐标的形式依赖;
-2. 聚合：把拆分成零散的模块，聚合成一个完整的项目工程;
-3. 拆分：
-    1. 创建父工程：不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
-    2. 创建子工程(项目模块)：右机父工程 --&gt; New Module --&gt; 创建Maven项目;
-    3. Dao模块和Service都不使用骨架，Controller使用web骨架;
-    4. 子工程的 pom.xml 中，会有一个 &lt;parent&gt; 节点，表示继承的父工程;
-    5. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt; 节点，列出拥有的子模块;
-4. 模块的关系
+        <h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块;
+2. 模块之间的关系：
     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
-    2. 比如，Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
-    3. 如果想要引用另一个工程，则把工程打包发布到本地仓库中，再引用工程的坐标即可建立依赖关系;
-5. 父子工程具有继承关系，子工程通过传递依赖，能够直接使用父工程的依赖包;
+    2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
+    3. 如果想引用另一个Maven工程，则需要把工程打包发布到本地仓库中，再其坐标即可建立依赖关系;
+3. 父工程：New Project --&gt; 不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
     1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
-    2. 默认情况下，依赖的作用域(scope)都是compile，如果传递依赖的作用域是test，传递过程中可能丢失;
-    3. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
-6. 配置文件的拆分：拆分Spring的配置文件applicationContext.xml
-    1. Dao模块部分：resources/spring/applicationContext-dao.xml：添加命名空间和约束，只配置Dao相关;
-    2. Service模块部分：resources/spring/applicationContext-service.xml：只配置Service相关;
-    3. Controller模块：resources/applicationContext.xml，添加命名空间和约束，使用 &lt;import&gt; 导入
-        &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot; /&gt;
-        &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot; /&gt;
-    4. Controller工程依赖于Service工程，Service工程依赖于Dao工程，最终Spring的配置文件会编译成一份;
-7. Controller模块中，把 log4j.properties 和 springmvc.xml 放在 resources 目录中;
-</code></pre><h3 id="启动项目"><a href="#启动项目" class="headerlink" title="启动项目"></a>启动项目</h3><pre><code>1. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
-2. 方式二：配置本地的Tomcat，启动工程;
-3. 方式三
-    1. 如果Controller工程的tomcat7:run，启动会报错，是因为Maven在启动项目时，会扫描项目的pom.xml时，
-    查看本地仓库是否存在引入的依赖，如果没有，则从中央仓库下载，如果找不到，则报错;
-    2. Controller工程中引入了Service工程的坐标，但Service工程是本地项目，没有发布到本地仓库，所以启动报错;
-    3. 由此可知，只需要把Service工程打包发布到本地仓库即可，但是Service工程又引入了Dao工程的坐标，
-    所以只能去打包父工程;
-    4. 在右侧的Maven面板上，双击父工程的Lifecycle --&gt; install，安装成功后，启动Controller工程的tomcat7:run;
+    2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
+4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
+    1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
+    2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
+    3. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt;，列出拥有的子模块;
+    4. 依赖包的作用域(scope)默认是compile，父工程的依赖包传递给子工程的过程中，scope为test的依赖可能丢失;
+    5. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
+5. Dao模块：resources/spring/applicationContext-dao.xml，只配置Dao层相关
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+        &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+            &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
+        &lt;/bean&gt;
+
+        &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
+            &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
+        &lt;/bean&gt;
+
+        &lt;context:property-placeholder location=&quot;classpath:db.properties&quot; /&gt;
+        &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+            &lt;property name=&quot;driverClass&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+            &lt;property name=&quot;jdbcUrl&quot; value=&quot;${jdbc.url}&quot; /&gt;
+            &lt;property name=&quot;user&quot; value=&quot;${jdbc.username}&quot; /&gt;
+            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+        &lt;/bean&gt;
+    &lt;/beans&gt;
+6. Service模块
+    1. resources/spring/applicationContext-service.xml，只配置Service层相关
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            https://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx
+            https://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop
+            https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+
+        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
+        &lt;bean id=&quot;manager&quot; 
+                class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+        &lt;/bean&gt;
+        &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
+            &lt;tx:attributes&gt;
+                &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
+                &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
+            &lt;/tx:attributes&gt;
+        &lt;/tx:advice&gt;
+        &lt;aop:config&gt;
+            &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
+        &lt;/aop:config&gt;
+    &lt;/beans&gt;
+    2. pom.xml：引入Dao模块的坐标
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
+                &lt;artifactId&gt;ssmdao&lt;/artifactId&gt;
+                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+7. Web模块
+    1. springmvc.xml、web.xml 都和未拆分前相同;
+    2. Spring的配置文件：resources/applicationContext.xml，把Dao和Service的部分合并到一起;
+        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+            xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+            &lt;!-- 导入Dao部分和Service部分的Spring配置文件 --&gt;
+            &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot;/&gt;
+            &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot;/&gt;
+        &lt;/beans&gt;
+    3. pom.xml：引入Service模块的坐标
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
+                &lt;artifactId&gt;ssmservice&lt;/artifactId&gt;
+                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    4. 删除 pom.xml 中默认生成的JDK版本相关的&lt;properties&gt;，使用父工程中配置的JDK版本;
+    5. 默认也生成了的&lt;build&gt;，也可以删除，父工程中已经配置了Tomcat7插件;
+</code></pre><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><pre><code>1. log4j.properties 放在 Web模块/resources 目录中，启动项目;
+2. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
+3. 配置本地的Tomcat，启动服务器，运行项目;
+4. 方式三：选择 Web 工程的 tomcat7:run
+    1. Maven项目在运行时会扫描 pom.xml，如果本地仓库没有引入的依赖，则从中央仓库下载，再找不到就报错;
+    2. Web工程中引入了Service工程的坐标，但Service工程是本地项目，并没有发布到本地仓库，所以运行失败;
+    3. 因此要把Service工程发布到本地仓库，但Service工程又引入了Dao工程的坐标，所以只能去发布父工程;
+    4. 在右侧的Maven面板上，双击父工程的Lifecycle -&gt; install，等待安装成功;
+    5. 启动Web工程的 tomcat7:run，运行项目;
 </code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
 2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
 3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
@@ -697,7 +698,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSM整合"><span class="nav-number">1.</span> <span class="nav-text">SSM整合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拆分与聚合"><span class="nav-number">2.</span> <span class="nav-text">拆分与聚合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动项目"><span class="nav-number">2.1.</span> <span class="nav-text">启动项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私服"><span class="nav-number">3.</span> <span class="nav-text">私服</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建私服-windows"><span class="nav-number">3.1.</span> <span class="nav-text">搭建私服(windows)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布私服"><span class="nav-number">3.2.</span> <span class="nav-text">发布私服</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从私服下载jar"><span class="nav-number">3.3.</span> <span class="nav-text">从私服下载jar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按照第三方jar包"><span class="nav-number">3.4.</span> <span class="nav-text">按照第三方jar包</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#拆分与聚合"><span class="nav-number">1.</span> <span class="nav-text">拆分与聚合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行项目"><span class="nav-number">1.1.</span> <span class="nav-text">运行项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私服"><span class="nav-number">2.</span> <span class="nav-text">私服</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建私服-windows"><span class="nav-number">2.1.</span> <span class="nav-text">搭建私服(windows)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布私服"><span class="nav-number">2.2.</span> <span class="nav-text">发布私服</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从私服下载jar"><span class="nav-number">2.3.</span> <span class="nav-text">从私服下载jar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按照第三方jar包"><span class="nav-number">2.4.</span> <span class="nav-text">按照第三方jar包</span></a></li></ol></li></ol></div>
             
 
           </div>

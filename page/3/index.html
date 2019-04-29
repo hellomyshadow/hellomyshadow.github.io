@@ -2429,7 +2429,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/Maven高级/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -2448,7 +2448,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/03/26/Maven高级/" itemprop="url">Maven高级</a></h1>
+                <a class="post-title-link" href="/2016/03/26/模块化与私服/" itemprop="url">模块化与私服</a></h1>
         
 
         <div class="post-meta">
@@ -2522,116 +2522,117 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="SSM整合"><a href="#SSM整合" class="headerlink" title="SSM整合"></a>SSM整合</h2><pre><code>1. 引入SSM、log4j、shiro、spring-security的相关依赖
-    1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web
-    2. spring-orm、spring-beans、spring-core、spring-test、spring-webmvc、spring-tx
-    3. junit(test)、、mysql-connector-jave、servlet-api(provided)、jsp-api(provided)、jstl
-    4. log4j、slf4j-api、slf4j-log4j12、mybatis、mybatis-spring、c3p0(type:jar，scope:compile)、
-    5. pagehelper、spring-security-web、spring-security-config、spring-security-core、
-    6. spring-security-taglibs、druid
-2. 使用Maven的web骨架，创建JavaWeb工程;
-3. 把 log4j.properties 放在 resources 目录中
-    # Set root category priority to INFO and its only appender to CONSOLE.
-    #log4j.rootCategory=INFO, CONSOLE            debug   info   warn error fatal
-    log4j.rootCategory=debug, CONSOLE, LOGFILE
-    # Set the enterprise logger category to FATAL and its only appender to CONSOLE.
-    log4j.logger.org.apache.axis.enterprise=FATAL, CONSOLE
-    # CONSOLE is set to be a ConsoleAppender using a PatternLayout.
-    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
-    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
-    log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
-    # LOGFILE is set to be a File appender using a PatternLayout.
-    log4j.appender.LOGFILE=org.apache.log4j.FileAppender
-    log4j.appender.LOGFILE.File=d:\axis.log
-    log4j.appender.LOGFILE.Append=true
-    log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
-    log4j.appender.LOGFILE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
-4. Spring的配置文件：applicationContext.xml
-5. Spring整合Mybatis时，借助 mybatis-spring 包;
-    1. SqlSessionFactoryBean：SqlSessionFactory的工厂对象;
-    2. MapperScannerConfigurer：扫描Dao接口的包，为所有的Dao生成代理对象;
-    3. 使用Dao映射配置文件的方式时，映射文件的包路径与Dao的包路径一致，文件名与映射的Dao接口名一致;
-    4. 比如cn.test.dao.IUserDao，对应的映射配置文件：resources/cn/test/dao/IUserDao.xml;
-    5. Druid是阿里提供的连接池，其&lt;property&gt;的配置和c3p0一样.
-6. Service层使用注解开发，在 applicationContext.xml 中配置只扫描Service包，配置事务管理器、事务通知、切面;
-    &lt;context:component-scan base-package=&quot;cn.test.service&quot; /&gt;
-    @Service
-    public class UserServiceImpl implements IUserService {
-        @Autowired
-        private IUserDao dao;
-        ......
-    }
-7. SpringMVC的配置文件：resources/springmvc.xml
-    1. ，配置前端处理器、视图解析器、扫描Controller层所在包、并开启注解扫描的支持
-    &lt;context:component-scan base-package=&quot;cn.test.controller&quot; /&gt;
-    &lt;!-- 简化的配置方式：配置处理器映射器和处理器适配器！不需要配置前端处理器？？？ --&gt;
-    &lt;mvc:annotation-driven /&gt;
-    &lt;!-- 视图解析器 --&gt;
-    &lt;bean id=&quot;internalResourceViewResolver&quot; 
-            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
-        &lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/pages&quot; /&gt;
-        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
-    &lt;/bean&gt;
-    &lt;!-- 过滤掉静态资源，交给默认的Servlet去处理，但是他怎么知道哪些是静态资源，竟然不需要配置&lt;mvc:resources&gt; --&gt;
-    &lt;mvc:default-servlet-handler /&gt;
-8. web.xml
-    1. 配置编码过滤器CharacterEncodingFilter，避免中文乱码;
-    2. 配置Spring的核心监听器，并重新指定Spring配置文件的路径，加载Spring的配置文件;
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
-    &lt;context-param&gt;
-        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
-    &lt;/context-param&gt;
-    3. 配置SpringMVC的核心Servlet，在服务器启动时，创建此Servlet对象，并加载SpringMVC的配置文件;
-    &lt;servlet&gt;
-        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-        &lt;init-param&gt;
-            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-            &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
-        &lt;/init-param&gt;
-        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-9. 配置Tomcat7插件，使用 tomcat7:run 运行，http://localhost:8080/项目名/ 访问;
-</code></pre><h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. Maven工程的拆分：把一个完整的Maven项目分成不同的独立模块，这些模块以坐标的形式依赖;
-2. 聚合：把拆分成零散的模块，聚合成一个完整的项目工程;
-3. 拆分：
-    1. 创建父工程：不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
-    2. 创建子工程(项目模块)：右机父工程 --&gt; New Module --&gt; 创建Maven项目;
-    3. Dao模块和Service都不使用骨架，Controller使用web骨架;
-    4. 子工程的 pom.xml 中，会有一个 &lt;parent&gt; 节点，表示继承的父工程;
-    5. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt; 节点，列出拥有的子模块;
-4. 模块的关系
+            <h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块;
+2. 模块之间的关系：
     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
-    2. 比如，Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
-    3. 如果想要引用另一个工程，则把工程打包发布到本地仓库中，再引用工程的坐标即可建立依赖关系;
-5. 父子工程具有继承关系，子工程通过传递依赖，能够直接使用父工程的依赖包;
+    2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
+    3. 如果想引用另一个Maven工程，则需要把工程打包发布到本地仓库中，再其坐标即可建立依赖关系;
+3. 父工程：New Project --&gt; 不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
     1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
-    2. 默认情况下，依赖的作用域(scope)都是compile，如果传递依赖的作用域是test，传递过程中可能丢失;
-    3. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
-6. 配置文件的拆分：拆分Spring的配置文件applicationContext.xml
-    1. Dao模块部分：resources/spring/applicationContext-dao.xml：添加命名空间和约束，只配置Dao相关;
-    2. Service模块部分：resources/spring/applicationContext-service.xml：只配置Service相关;
-    3. Controller模块：resources/applicationContext.xml，添加命名空间和约束，使用 &lt;import&gt; 导入
-        &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot; /&gt;
-        &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot; /&gt;
-    4. Controller工程依赖于Service工程，Service工程依赖于Dao工程，最终Spring的配置文件会编译成一份;
-7. Controller模块中，把 log4j.properties 和 springmvc.xml 放在 resources 目录中;
-</code></pre><h3 id="启动项目"><a href="#启动项目" class="headerlink" title="启动项目"></a>启动项目</h3><pre><code>1. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
-2. 方式二：配置本地的Tomcat，启动工程;
-3. 方式三
-    1. 如果Controller工程的tomcat7:run，启动会报错，是因为Maven在启动项目时，会扫描项目的pom.xml时，
-    查看本地仓库是否存在引入的依赖，如果没有，则从中央仓库下载，如果找不到，则报错;
-    2. Controller工程中引入了Service工程的坐标，但Service工程是本地项目，没有发布到本地仓库，所以启动报错;
-    3. 由此可知，只需要把Service工程打包发布到本地仓库即可，但是Service工程又引入了Dao工程的坐标，
-    所以只能去打包父工程;
-    4. 在右侧的Maven面板上，双击父工程的Lifecycle --&gt; install，安装成功后，启动Controller工程的tomcat7:run;
+    2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
+4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
+    1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
+    2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
+    3. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt;，列出拥有的子模块;
+    4. 依赖包的作用域(scope)默认是compile，父工程的依赖包传递给子工程的过程中，scope为test的依赖可能丢失;
+    5. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
+5. Dao模块：resources/spring/applicationContext-dao.xml，只配置Dao层相关
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+        &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+            &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
+        &lt;/bean&gt;
+
+        &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
+            &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
+        &lt;/bean&gt;
+
+        &lt;context:property-placeholder location=&quot;classpath:db.properties&quot; /&gt;
+        &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+            &lt;property name=&quot;driverClass&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+            &lt;property name=&quot;jdbcUrl&quot; value=&quot;${jdbc.url}&quot; /&gt;
+            &lt;property name=&quot;user&quot; value=&quot;${jdbc.username}&quot; /&gt;
+            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+        &lt;/bean&gt;
+    &lt;/beans&gt;
+6. Service模块
+    1. resources/spring/applicationContext-service.xml，只配置Service层相关
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            https://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx
+            https://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop
+            https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+
+        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
+        &lt;bean id=&quot;manager&quot; 
+                class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+        &lt;/bean&gt;
+        &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
+            &lt;tx:attributes&gt;
+                &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
+                &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
+            &lt;/tx:attributes&gt;
+        &lt;/tx:advice&gt;
+        &lt;aop:config&gt;
+            &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
+        &lt;/aop:config&gt;
+    &lt;/beans&gt;
+    2. pom.xml：引入Dao模块的坐标
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
+                &lt;artifactId&gt;ssmdao&lt;/artifactId&gt;
+                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+7. Web模块
+    1. springmvc.xml、web.xml 都和未拆分前相同;
+    2. Spring的配置文件：resources/applicationContext.xml，把Dao和Service的部分合并到一起;
+        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+            xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+            &lt;!-- 导入Dao部分和Service部分的Spring配置文件 --&gt;
+            &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot;/&gt;
+            &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot;/&gt;
+        &lt;/beans&gt;
+    3. pom.xml：引入Service模块的坐标
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
+                &lt;artifactId&gt;ssmservice&lt;/artifactId&gt;
+                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    4. 删除 pom.xml 中默认生成的JDK版本相关的&lt;properties&gt;，使用父工程中配置的JDK版本;
+    5. 默认也生成了的&lt;build&gt;，也可以删除，父工程中已经配置了Tomcat7插件;
+</code></pre><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><pre><code>1. log4j.properties 放在 Web模块/resources 目录中，启动项目;
+2. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
+3. 配置本地的Tomcat，启动服务器，运行项目;
+4. 方式三：选择 Web 工程的 tomcat7:run
+    1. Maven项目在运行时会扫描 pom.xml，如果本地仓库没有引入的依赖，则从中央仓库下载，再找不到就报错;
+    2. Web工程中引入了Service工程的坐标，但Service工程是本地项目，并没有发布到本地仓库，所以运行失败;
+    3. 因此要把Service工程发布到本地仓库，但Service工程又引入了Dao工程的坐标，所以只能去发布父工程;
+    4. 在右侧的Maven面板上，双击父工程的Lifecycle -&gt; install，等待安装成功;
+    5. 启动Web工程的 tomcat7:run，运行项目;
 </code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
 2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
 3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
@@ -2864,39 +2865,70 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="SSM整合"><a href="#SSM整合" class="headerlink" title="SSM整合"></a>SSM整合</h2><pre><code>1. 表现层SpringMVC，业务层Spring，持久层MyBatis
-2. 整合方向：用Spring框架去整合另外两个框架;
-3. 指定编译运行版本，版本锁定
-    &lt;properties&gt;
-        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
-        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
-        &lt;spring.version&gt;5.1.6.RELEASE&lt;/spring.version&gt;
-    &lt;/properties&gt;
-4. 引入依赖
-    1. spring-context、spring-web、spring-webmvc、spring-test(test)、junit(test)
-    2. spring-jdbc、spring-aop、spring-tx、aspectjweaver
-    3. javax.servlet-api(provided)、javax.servlet.jsp-api(provided)、jstl
-    4. mybatis、mybatis-spring、mysql-connector-java、c3p0
+            <h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><pre><code>1. 表现层SpringMVC，业务层Spring，持久层MyBatis，整合方向就是用Spring框架去整合另外两个框架;
+2. 使用Maven的Web骨架，创建一个Web项目;
+3. pom.xml
+    1. 配置JDK的运行编译版本，以及jar包的版本锁定
+        &lt;properties&gt;
+            &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+            &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+            &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+            &lt;spring.version&gt;5.1.6.RELEASE&lt;/spring.version&gt;
+        &lt;/properties&gt;
+    2. 配置Tomcat7插件
+        &lt;build&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.apache.tomcat.maven&lt;/groupId&gt;
+                    &lt;artifactId&gt;tomcat7-maven-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;2.2&lt;/version&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/build&gt;
+4. 相关依赖
+    1. aspectjweaver、spring-aop、spring-context、spring-context-support、spring-web
+    2. spring-orm、spring-beans、spring-core、spring-webmvc、spring-tx、spring-test(test)
+    3. junit(test)、mysql-connector-jave、servlet-api(provided)、jsp-api(provided)、jstl
+    4. log4j、slf4j-api、slf4j-log4j12、jackson-databind、jackson-core、jackson-annotations
+    5. mybatis、mybatis-spring、c3p0(type:jar，scope:compile)、druid(两套连接池，根据需要选择)
+    6. spring-security-web、spring-security-config、spring-security-core、spring-security-taglibs
 5. 基本结构
-    1. 实体类：cn.ssm.domain.Account
-        public class Account implements Serializable {
-            private int id;
+    1. 实体类：cn.ssm.domain.User
+        public class User implements Serializable {
+            private Integer id;
             private String name;
-            private double money;
+            private Double money;
             ...... //setter、getter
-    }
-    2. Dao层：cn.ssm.dao.IAccountDao
+        }
+    2. Dao层：cn.ssm.dao.IUserDao
+        public interface IUserDao {
+            List&lt;User&gt; findAll();
+            User findById(Integer id);
+        }
     3. Service层：
-        cn.ssm.service.IAccountService
-        cn.ssm.service.impl.AccountServiceImpl
-    4. Controller层：cn.ssm.controller.AccountController
-</code></pre><h3 id="搭建-Spring-的环境"><a href="#搭建-Spring-的环境" class="headerlink" title="搭建 Spring 的环境"></a>搭建 Spring 的环境</h3><pre><code>1. Spring的配置文件：resources/applicationContext.xml
+        cn.ssm.service.IUserService
+        cn.ssm.service.impl.UserServiceImpl
+    4. Controller层：cn.ssm.controller.UserController
+6. 配置文件(resources目录)
+    1. Spring：applicationContext.xml
+    2. SpringMVC：springmvc.xml
+    3. 数据库配置信息：db.properties
+        jdbc.driver=com.mysql.cj.jdbc.Driver
+        jdbc.url=jdbc:mysql:///db_mybatis?serverTimezone=Asia/Shanghai
+        jdbc.username=root
+        jdbc.password=123456
+</code></pre><h2 id="Spring整合MyBatis"><a href="#Spring整合MyBatis" class="headerlink" title="Spring整合MyBatis"></a>Spring整合MyBatis</h2><pre><code>1. 借助 mybatis-spring 包中的对象，把Mybatis的相关配置转移到Spring的配置文件中;
+    1. SqlSessionFactoryBean: SqlSessionFactory的工厂对象;
+        1. dataSource属性: 配置连接池;
+        2. typeAliasesPackage属性: 扫描实体类(POJO)的所在包，为POJO配置别名;
+    2. MapperScannerConfigurer: 扫描Dao层的包，为所有Dao接口提供代理对象;
+2. Spring的配置文件：applicationContext.xml
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
     &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
         xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
         xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
         xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
         xsi:schemaLocation=&quot;
             http://www.springframework.org/schema/beans
             https://www.springframework.org/schema/beans/spring-beans.xsd
@@ -2906,34 +2938,96 @@ Esc：退出编辑模式或末行模式；
             https://www.springframework.org/schema/tx/spring-tx.xsd
             http://www.springframework.org/schema/aop
             https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
-        &lt;!--Spring创建IoC容器时 要扫描哪个包下的注解--&gt;
-        &lt;context:component-scan base-package=&quot;cn.ssm&quot;&gt;
-            &lt;!--配置忽略的注解：Controller--&gt;
-            &lt;context:exclude-filter type=&quot;annotation&quot; 
-                        expression=&quot;org.springframework.stereotype.Controller&quot; /&gt;
-        &lt;/context:component-scan&gt;
+        &lt;!-- Dao层使用映射配置文件的方式，那么只扫描service包 --&gt;
+        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
+        &lt;!-- SqlSessionFactory的工厂对象 --&gt;
+        &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+            &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
+        &lt;/bean&gt;
+        &lt;!-- 为所有Dao接口提供代理对象 --&gt;
+        &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
+            &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
+        &lt;/bean&gt;
+        &lt;!-- 事务管理器 --&gt;
+        &lt;bean id=&quot;manager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+        &lt;/bean&gt;
+        &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
+            &lt;tx:attributes&gt;
+                &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
+                &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
+            &lt;/tx:attributes&gt;
+        &lt;/tx:advice&gt;
+        &lt;aop:config&gt;
+            &lt;!--切入点表达式--&gt;
+            &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
+        &lt;/aop:config&gt;
+        &lt;!-- c3p0连接池：引入数据库配置信息的文件db.properties --&gt;
+        &lt;context:property-placeholder location=&quot;classpath:db.properties&quot; /&gt;
+        &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+            &lt;property name=&quot;driverClass&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+            &lt;property name=&quot;jdbcUrl&quot; value=&quot;${jdbc.url}&quot; /&gt;
+            &lt;property name=&quot;user&quot; value=&quot;${jdbc.username}&quot; /&gt;
+            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+        &lt;/bean&gt;
     &lt;/beans&gt;
-    1. 添加 context、aop、tx 的命名空间和约束;
-    2. 配置Spring创建IoC容器时，要去扫描哪些包下的注解;
-    3. Controller层的注解是由SpringMVC管理的，Spring只需要关心Dao层和Service层的注解;
-    4. &lt;context:exclude-filter&gt; 配置扫描包时忽略的内容，忽略 Controller 注解.
-2. Service层
-    @Service(&quot;accountService&quot;)
-    public class AccountServiceImpl implements IAccountService {
-        public List&lt;Account&gt; findAll() {
-            System.out.println(&quot;findAll&quot;);
-            return null;
+3. Dao的映射配置文件
+    1. 文件路径和名称与Dao接口保持一致，如cn.ssm.dao.IUserDao -&gt; resources/cn/ssm/dao/IUserDao.xml;
+    2. IUserDao.xml
+        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+        &lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;
+                &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
+        &lt;mapper namespace=&quot;cn.ssm.dao.IUserDao&quot;&gt;
+            &lt;select id=&quot;findAll&quot; resultType=&quot;user&quot;&gt;
+                select * from users
+            &lt;/select&gt;
+            &lt;select id=&quot;findById&quot; parameterType=&quot;int&quot; resultType=&quot;user&quot;&gt;
+                select * from users where id=#{id}
+            &lt;/select&gt;
+        &lt;/mapper&gt;
+4. Dao层使用注解开发
+    1. Spring配置文件中，配置注解扫描包(扫描service包和dao包)，有两种方式
+        1. 直接配置要扫描的包
+        &lt;context:component-scan base-package=&quot;cn.ssm.dao&quot; /&gt;
+        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
+        2. 扫描指定包下的注解时，忽略 @Controller 注解
+    &lt;context:component-scan base-package=&quot;cn.ssm&quot;&gt;
+        &lt;context:exclude-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&gt;
+    &lt;/context:component-scan&gt;
+    2. SQL语句的注解
+        public interface IUserDao {
+            @Select(&quot;select * from users&quot;)
+            List&lt;User&gt; findAll();
+
+            @Select(&quot;select * from users where id=#{id}&quot;)
+            User findById(Integer id);
         }
-        public void save(Account account) {
-            System.out.println(&quot;save&quot;);
+5. Service层使用注解开发，注入Dao对象
+    @Service(&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        private IUserDao dao;
+
+        public List&lt;User&gt; findAll() {
+            return dao.findAll();
         }
     }
-3. 测试Spring环境
-    ApplicationContext ac = 
-            new ClassPathXmlApplicationContext(&quot;classpath:applicationContext.xml&quot;);
-    IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
-    service.findAll();  // findAll
-</code></pre><h3 id="搭建-SpringMVC-的环境"><a href="#搭建-SpringMVC-的环境" class="headerlink" title="搭建 SpringMVC 的环境"></a>搭建 SpringMVC 的环境</h3><pre><code>1. SpringMVC的配置文件：resources/springmvc.xml
+6. 测试
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(locations=&quot;classpath:applicationContext.xml&quot;)
+    public class TestService {
+        @Autowired
+        private IUserService service;
+
+        @Test
+        public void testFindAll() {
+            List&lt;User&gt; users = service.findAll();
+        }
+    }
+</code></pre><p>##Spring整合SpringMVC</p>
+<pre><code>1. SpringMVC的配置文件：resources/springmvc.xml
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
     &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
         xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;
         xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
@@ -2945,36 +3039,43 @@ Esc：退出编辑模式或末行模式；
             https://www.springframework.org/schema/mvc/spring-mvc.xsd
             http://www.springframework.org/schema/context
             https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
-        &lt;!-- 开启注解扫描 --&gt;
-        &lt;context:component-scan base-package=&quot;cn.ssm&quot;&gt;
-        &lt;!--只去扫描Controller注解--&gt;
-            &lt;context:include-filter type=&quot;annotation&quot; 
-                    expression=&quot;org.springframework.stereotype.Controller&quot; /&gt;
-        &lt;/context:component-scan&gt;
-        &lt;!-- 视图解析器 --&gt;
+        &lt;!-- 开启注解扫描，只扫描controller包 --&gt;
+        &lt;context:component-scan base-package=&quot;cn.ssm.controller&quot; /&gt;
+        &lt;!--视图解析器--&gt;
         &lt;bean id=&quot;internalResourceViewResolver&quot; 
-            class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+                class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
             &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;
             &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
         &lt;/bean&gt;
-        &lt;!--过滤的静态资源--&gt;
-        &lt;mvc:resources location=&quot;/css/&quot; mapping=&quot;/css/**&quot; /&gt;
-        &lt;mvc:resources location=&quot;/images/&quot; mapping=&quot;/images/**&quot; /&gt;
-        &lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot; /&gt;
-        &lt;!-- 开启SpringMVC的注解支持 --&gt;
+        &lt;!--处理静态资源--&gt;
+        &lt;mvc:default-servlet-handler /&gt;
+        &lt;!-- 开启SpringMVC的注解支持，并注册处理器映射器和处理器适配器 --&gt;
         &lt;mvc:annotation-driven /&gt;
     &lt;/beans&gt;
-    1. 添加 context、mvc 的命名空间和约束;
-    2. 配置扫描哪些包下的注解，SpringMVC管理Controller层，只需要关心 Controller 注解;
-    3. &lt;context:include-filter&gt; 配置扫描包时需要管理的内容，解析 Controller 注解;
-    4. 配置视图解析器，指定视图所在的目录(webapp/pages)，视图的类型(.jsp);
-    5. &lt;mvc:resources&gt; 配置过滤静态资源，采用默认方式去处理;
-    6. 开启SpringMVC的注解支持：&lt;mvc:annotation-driven /&gt;
-2. 配置 web.xml
-    &lt;web-app&gt;
+2. 开启注解扫描的两种方式
+    1. 直接配置要扫描的包;
+    2. 配置扫描的注解类型，只去扫描 @Controller 注解;
+    &lt;context:component-scan base-package=&quot;cn.ssm&quot;&gt;
+        &lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&gt;
+    &lt;/context:component-scan&gt;
+3. 在 webapp 目录中，分别创建存放JSP页面的 pages 目录，存放静态资源的 css、images、js 目录;
+4. web.xml
+    &lt;web-app xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee
+            http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd&quot;
+        version=&quot;3.0&quot;&gt;
         &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
+        &lt;!--配置Spring的核心监听器，重新指定Spring配置文件的路径，加载Spring的配置文件--&gt;
+        &lt;listener&gt;
+            &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+        &lt;/listener&gt;
+        &lt;context-param&gt;
+            &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+            &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
+        &lt;/context-param&gt;
+        &lt;!--编码过滤器，解决中文乱码--&gt;
         &lt;filter&gt;
-            &lt;!--解决中文乱码的过滤器--&gt;
             &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
             &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
             &lt;init-param&gt;
@@ -2986,16 +3087,15 @@ Esc：退出编辑模式或末行模式；
             &lt;filter-name&gt;characterEncodingFilter&lt;/filter-name&gt;
             &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
         &lt;/filter-mapping&gt;
-        &lt;!-- 配置控制器 --&gt;
+        &lt;!--前端控制器：SpringMVC的核心Servlet，在服务器启动时就创建并初始化，加载SpringMVC的配置文件--&gt;
         &lt;servlet&gt;
             &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
             &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-            &lt;!-- 让控制器去加载SpringMVC的配置文件 --&gt;
             &lt;init-param&gt;
                 &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
                 &lt;param-value&gt;classpath:springmvc.xml&lt;/param-value&gt;
             &lt;/init-param&gt;
-            &lt;!-- 让控制器在服务器启动时创建并初始化，以便于让它去加载配置文件 --&gt;
+            &lt;!-- 在服务器启动时，就创建并初始化核心Servlet --&gt;
             &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
         &lt;/servlet&gt;
         &lt;servlet-mapping&gt;
@@ -3003,156 +3103,39 @@ Esc：退出编辑模式或末行模式；
             &lt;url-pattern&gt;/&lt;/url-pattern&gt;
         &lt;/servlet-mapping&gt;
     &lt;/web-app&gt;
-    1. 配置控制器DispatcherServlet，并让控制器去加载SpringMVC的配置文件;
-    2. Servlet默认在第一次接收到请求时创建，配置 &lt;load-on-startup&gt;，让它随服务器启动就创建;
-    3. 配置一个过滤器，解决中文乱码问题;
-3. 在webapp目录下创建4个目录：pages、css、images、js
-4. Controller层
+5. Controller层
     @Controller
-    @RequestMapping(&quot;/account&quot;)
-    public class AccountController {
-        @RequestMapping(&quot;/findAll&quot;)
-        public String findAll() {
-            System.out.println(&quot;findAll&quot;);
-            return &quot;list&quot;;
-        }
-    }
-5. 启动服务器，测试SpringMVC环境
-    1. 创建 webapp/pages/list.jsp;
-    2. 在 index.jsp 中添加一个 &lt;a&gt; 标签：&lt;a href=&quot;account/findAll&quot;&gt;show list&lt;/a&gt;
-</code></pre><h3 id="搭建Mybatis环境"><a href="#搭建Mybatis环境" class="headerlink" title="搭建Mybatis环境"></a>搭建Mybatis环境</h3><pre><code>1. 创建Mybatis的配置文件：resources/SqlMapConfig.xml
-    &lt;!DOCTYPE configuration PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
-        &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;
-    &lt;configuration&gt;
-        &lt;!-- 配置环境 --&gt;
-        &lt;environments default=&quot;mysql&quot;&gt;
-            &lt;!-- 配置MySQL的环境 --&gt;
-            &lt;environment id=&quot;mysql&quot;&gt;
-                &lt;!-- 配置事物的类型 --&gt;
-                &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;/transactionManager&gt;
-                &lt;!-- 配置数据源：连接池，有三种 --&gt;
-                &lt;dataSource type=&quot;POOLED&quot;&gt;
-                    &lt;!-- 配置连接数据库的基本信息 --&gt;
-                    &lt;property name=&quot;driver&quot; value=&quot;com.mysql.cj.jdbc.Driver&quot; /&gt;
-                    &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql:...&quot;/&gt;
-                    &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
-                    &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
-                &lt;/dataSource&gt;
-            &lt;/environment&gt;
-        &lt;/environments&gt;
-        &lt;!-- 配置映射的Dao class --&gt;
-        &lt;mappers&gt;
-            &lt;mapper class=&quot;cn.ssm.dao.IAccountDao&quot;/&gt;
-        &lt;/mappers&gt;
-    &lt;/configuration&gt;
-2. Dao层
-    public interface IAccountDao {
-        @Select(&quot;select * from account&quot;)
-        List&lt;Account&gt; findAll();
-
-        @Insert(&quot;insert into account(name, money) values(#{name}, #{money})&quot;)
-        void save(Account account);
-    }
-3. 测试MyBatis环境
-    InputStream is = Resources.getResourceAsStream(&quot;SqlMapConfig.xml&quot;);
-    SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
-    SqlSessionFactory factory = builder.build(is);
-    SqlSession session = factory.openSession();
-    IAccountDao dao = session.getMapper(IAccountDao.class);
-    List&lt;Account&gt; accounts = dao.findAll();
-    session.close();
-    is.close();
-</code></pre><h2 id="Spring-整合-SpringMVC"><a href="#Spring-整合-SpringMVC" class="headerlink" title="Spring 整合 SpringMVC"></a>Spring 整合 SpringMVC</h2><pre><code>1. SpringMVC的配置文件springmvc.xml 中，只扫描了 Controller 注解，Spring的IoC容器中也就没有
-   Service和Dao的对象，所以在控制器类中无法注入Service和Dao的对象;
-2. 既然Spring的配置文件applicationContext.xml 中扫描了Service和Dao的注解，那么在启动Tomcat时，
-   就去加载 Spring 的配置文件;
-    1. 服务器启动时会创建一个全局的ServletContext对象，服务器关闭时，此对象才会随之销毁;
-    2. 那么就可以使用一类监听器，监听ServletContext对象的创建与销毁，让监听器去加载Spring的配置文件，
-    创建WEB版本的工厂，存入ServletContext域中;
-    3. spring-web 提供了这样一个监听器，在 web.xml 中配置：
-    &lt;listener&gt;
-        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
-3. 但是，ContextLoaderListener 默认加载的配置文件是：WEB-INF/applicationContext.xml
-4. 除了把Spring的配置文件拷贝到 WEB-INF 目录中，还可以使用 &lt;context-param&gt;
-    1. 在 web.xml 的&lt;web-app&gt;下使用 &lt;context-param&gt; 标签;
-    2. &lt;param-name&gt; 配置为 contextConfigLocation 参数，&lt;param-value&gt;配置为Spring配置文件的位置;
-    &lt;context-param&gt;
-        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
-    &lt;/context-param&gt;
-5. 在控制器类中使用 @Autowired 注入Service对象;
-    @Controller
-    @RequestMapping(&quot;/account&quot;)
-    public class AccountController {
+    @RequestMapping(&quot;/hello&quot;)
+    public class HelloController {
         @Autowired
-        private IAccountService service;
+        private IUserService service;  //注入Service对象
 
-        @RequestMapping(&quot;/findAll&quot;)
-        public ModelAndView findAll() {
-            List&lt;Account&gt; accounts = service.findAll();
-            ModelAndView mv = new ModelAndView();
-            mv.addObject(&quot;accounts&quot;, accounts);
-            mv.setViewName(&quot;list&quot;);
-            return mv;
+        @RequestMapping(&quot;/test&quot;)
+        @ResponseBody
+        public String testHello() {
+            List&lt;User&gt; users = service.findUserAll();
+            return users;
         }
     }
-</code></pre><h2 id="Spring整合Mybatis"><a href="#Spring整合Mybatis" class="headerlink" title="Spring整合Mybatis"></a>Spring整合Mybatis</h2><pre><code>1. 借助 mybatis-spring 包中的对象，把Mybatis配置文件中的配置转移到Spring的配置文件中;
-    1. SqlSessionFactoryBean: SqlSessionFactory的工厂对象;
-        1. dataSource属性: 配置连接池;
-        2. typeAliasesPackage属性: 扫描实体类(POJO)的所在包，为POJO配置别名;
-    2. MapperScannerConfigurer: 扫描Dao层的包，为所有Dao接口提供代理对象;
-2. 在Spring的配置文件applicationContext.xml 中
-    &lt;!--配置连接池--&gt;
-    &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
-        &lt;property name=&quot;driverClass&quot; value=&quot;com.mysql.cj.jdbc.Driver&quot; /&gt;
-        &lt;property name=&quot;jdbcUrl&quot; value=&quot;jdbc:mysql:...&quot; /&gt;
-        &lt;property name=&quot;user&quot; value=&quot;root&quot; /&gt;
-        &lt;property name=&quot;password&quot; value=&quot;123456&quot; /&gt;
-    &lt;/bean&gt;
-
-    &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
-        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-        &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
-    &lt;/bean&gt;
-
-    &lt;!--配置Dao层的包，封装到mybatis-spring的对象--&gt;
-    &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
-        &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
-    &lt;/bean&gt;
-
-    &lt;!-- 配置声明式事务 --&gt;
-    &lt;!--1.配置事务管理器--&gt;
-    &lt;bean id=&quot;manager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
-        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-    &lt;/bean&gt;
-    &lt;!--2.配置事务通知--&gt;
-    &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
-        &lt;tx:attributes&gt;
-            &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
-            &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
-        &lt;/tx:attributes&gt;
-    &lt;/tx:advice&gt;
-    &lt;!--3.AOP增强--&gt;
-    &lt;aop:config&gt;
-        &lt;!--切入点表达式--&gt;
-        &lt;aop:advisor advice-ref=&quot;txAdvice&quot; 
-            pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
-    &lt;/aop:config&gt;
-3. 移除Mybatis的配置文件SqlMapConfig.xml
-4. 在Service层使用 @Autowired 注入Dao对象
-    @Service(&quot;accountService&quot;)
-    public class AccountServiceImpl implements IAccountService {
-        @Autowired
-        private IAccountDao dao;
-
-        public List&lt;Account&gt; findAll() {
-            return dao.findAll();
-        }
-        public void save(Account account) {
-            dao.save(account);
-        }
-    }
+6. 运行项目
+    1. 右侧Maven面板 --&gt; 展开项目/Plugins/tomcat7 --&gt; 双击 tomcat7:run 运行项目;
+    2. 配置本地的Tomcat，添加项目，启动Tomcat;
+7. 如果使用了log4j，还需要把 log4j.properties 放在 resources 目录中
+    # Set root category priority to INFO and its only appender to CONSOLE.
+    #log4j.rootCategory=INFO, CONSOLE            debug   info   warn error fatal
+    log4j.rootCategory=debug, CONSOLE, LOGFILE
+    # Set the enterprise logger category to FATAL and its only appender to CONSOLE.
+    log4j.logger.org.apache.axis.enterprise=FATAL, CONSOLE
+    # CONSOLE is set to be a ConsoleAppender using a PatternLayout.
+    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
+    # LOGFILE is set to be a File appender using a PatternLayout.
+    log4j.appender.LOGFILE=org.apache.log4j.FileAppender
+    log4j.appender.LOGFILE.File=d:\axis.log
+    log4j.appender.LOGFILE.Append=true
+    log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.LOGFILE.layout.ConversionPattern=%d{ISO8601} %-6r [%15.15t] %-5p %30.30c %x - %m\n
 </code></pre><hr>
 
           
@@ -3405,6 +3388,10 @@ Esc：退出编辑模式或末行模式；
     &lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot; /&gt;
     1. location属性：指定目录文件的路径，如 /css/ 表示 webapp/css 目录;
     2. mapping属性：匹配的请求路径，如 /css/** 表示匹配以 /css 开头的所有URL;
+4. 更简便的配置方式
+    &lt;mvc:default-servlet-handler /&gt;
+    1. 它会在SpringMVC上下文中定义一个DefaultServletHttpRequestHandler，筛选URL;
+    2. 如果发现静态资源，则交给名称为 default 的Servlet;
 </code></pre><h3 id="SpringMVC的路径匹配模式"><a href="#SpringMVC的路径匹配模式" class="headerlink" title="SpringMVC的路径匹配模式"></a>SpringMVC的路径匹配模式</h3><pre><code>1. Spring MVC中的路径匹配模式，使用的是Apache Ant的样式路径，有三种通配符：?、*、**
     1. /*：拦截所有目录，不包含子目录;
     2. /**：拦截所有目录及其子目录.

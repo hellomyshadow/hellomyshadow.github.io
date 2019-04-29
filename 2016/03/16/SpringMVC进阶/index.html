@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-27T09:06:46.653Z">
+<meta property="og:updated_time" content="2019-04-29T15:00:15.002Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC进阶">
 <meta name="twitter:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
@@ -432,6 +432,10 @@
     &lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot; /&gt;
     1. location属性：指定目录文件的路径，如 /css/ 表示 webapp/css 目录;
     2. mapping属性：匹配的请求路径，如 /css/** 表示匹配以 /css 开头的所有URL;
+4. 更简便的配置方式
+    &lt;mvc:default-servlet-handler /&gt;
+    1. 它会在SpringMVC上下文中定义一个DefaultServletHttpRequestHandler，筛选URL;
+    2. 如果发现静态资源，则交给名称为 default 的Servlet;
 </code></pre><h3 id="SpringMVC的路径匹配模式"><a href="#SpringMVC的路径匹配模式" class="headerlink" title="SpringMVC的路径匹配模式"></a>SpringMVC的路径匹配模式</h3><pre><code>1. Spring MVC中的路径匹配模式，使用的是Apache Ant的样式路径，有三种通配符：?、*、**
     1. /*：拦截所有目录，不包含子目录;
     2. /**：拦截所有目录及其子目录.
