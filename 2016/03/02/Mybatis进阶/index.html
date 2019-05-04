@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-27T14:19:19.339Z">
+<meta property="og:updated_time" content="2019-05-04T02:52:00.698Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis进阶">
 <meta name="twitter:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
@@ -407,7 +407,7 @@
     &lt;/typeAliases&gt;
     ......
     &lt;mappers&gt;
-        &lt;package name=&quot;com.test.dao&quot;&gt;&lt;/package&gt;
+        &lt;package name=&quot;com.test.dao&quot; /&gt;
     &lt;/mappers&gt;
 6. 创建 resources/com/test/dao/IAccountDao.xml
     &lt;mapper namespace=&quot;com.test.dao.IAccountDao&quot;&gt;
@@ -829,7 +829,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

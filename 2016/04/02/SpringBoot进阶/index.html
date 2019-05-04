@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot进阶">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/04/02/SpringBoot进阶/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-04T09:47:07.948Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot进阶">
+<meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/04/02/SpringBoot进阶/">
+
+
+
+
+
+  <title>SpringBoot进阶 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/02/SpringBoot进阶/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringBoot进阶</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-02T00:00:00+08:00">
+                2016-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="SpringMVC新增注解"><a href="#SpringMVC新增注解" class="headerlink" title="SpringMVC新增注解"></a>SpringMVC新增注解</h2><pre><code>1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping
+   来帮助简化常用的HTTP方法的映射;
+    1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);
+    2. @PostMapping是 @RequestMapping(method=RequestMethod.POST) 的缩写;
+2. @RestController：相当于 @ResponseBody + @Controller 的组合;
+    @RestController
+    @RequestMapping(&quot;/user&quot;)
+    public class RestController {
+
+        @GetMapping(&quot;/getList&quot;)
+        public List&lt;User&gt; getList() {
+            List&lt;User&gt; us = dao.findAll();
+            return us;
+        }
+    }
+    1. @RestController 的方法都只能返回String、Object、Json等实体对象;
+    2. 方法返回的对象数据会被jackson转为JSON字符串，写入响应体中;
+    3. 如果想要跳转页面，则用 ModelAndView 封装;
+        @GetMapping(&quot;/index&quot;)
+        public ModelAndView toIndex() {
+            ModelAndView mv = new ModelAndView(&quot;index&quot;);
+            return mv;
+        }
+</code></pre><h2 id="属性注入"><a href="#属性注入" class="headerlink" title="属性注入"></a>属性注入</h2><h3 id="Spring的属性注入"><a href="#Spring的属性注入" class="headerlink" title="Spring的属性注入"></a>Spring的属性注入</h3><pre><code>1. Druid是Java语言中最好的数据库连接池，能够提供强大的监控和扩展功能;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+        &lt;artifactId&gt;druid&lt;/artifactId&gt;
+        &lt;version&gt;1.1.16&lt;/version&gt;
+    &lt;/dependency&gt;
+2. Java配置主要依靠Java类和注解，比较常用的注解如下：
+    1. @Configuration：声明一个类为配置类，代替XML配置文件;
+    2. @Bean：声明在方法上，将方法的返回值加入到IoC Bean容器，代替&lt;bean&gt;标签;
+    3. @Value：属性注入;
+    4. @PropertySource：指定外部属性配置文件.
+4. JDBC相关的配置类JdbcConfig
+    1. 数据库的连接信息：resources/jdbc.properties
+        jdbc.driverClassName=com.mysql.cj.jdbc.Driver
+        jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
+        jdbc.username=root
+        jdbc.password=123456
+    2. JDBC配置类JdbcConfig
+        @Configuration
+        @PropertySource(&quot;classpath:jdbc.properties&quot;)
+        public class JdbcConfig {
+            @Value(&quot;${jdbc.driverClassName}&quot;)
+            private String driverClassName;
+            ... //url、username、password
+
+            @Bean
+            public DataSource getDataSource() {
+                DruidDataSource ds = new DruidDataSource();
+                ds.setDriverClassName(driverClassName);
+                ds.setUrl(url);
+                ds.setUsername(username);
+                ds.setPassword(password);
+                return ds;
+            }
+        }
+</code></pre><h3 id="SpringBoot的属性注入"><a href="#SpringBoot的属性注入" class="headerlink" title="SpringBoot的属性注入"></a>SpringBoot的属性注入</h3><pre><code>1. SpringBoot对Spring的属性注入做了优化;
+2. SpringBoot的配置文件：resources/application.properties
+    jdbc.driverClassName=com.mysql.cj.jdbc.Driver
+    jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
+    jdbc.username=root
+    jdbc.password=123456
+3. lombok：通过注解的方式，在编译时自动生成构造器、getter/setter、equals、hashcode、toString()
+    1. 依赖包的坐标
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;version&gt;1.18.6&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+    2. @Data：注解在Java类上，源码中没有变化，只存在于编译生成的class文件中.
+4. SpringBoot的配置文件是自动加载的，定义一个POJO，专门用于映射JDBC相关的字段;
+    1. @ConfigurationProperties：把配置文件中的键值数据映射到当前Java类的属性上;
+        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
+        @Data
+        public class JdbcProperties {
+            private String driverClassName;
+            private String url;
+            private String username;
+            private String password;
+        }
+    2. prefix属性：声明配置文件中的字段前缀.
+5. JdbcProperties的使用有多种方式
+    1. 在 JdbcProperties 上注解 @Component，添加进Spring IoC容器中，供其他Bean对象使用;
+    2. @EnableConfigurationProperties：使用 @ConfigurationProperties 注解的Java类;
+    @Configuration
+    @EnableConfigurationProperties(JdbcProperties.class)
+    public class JdbcConfig {
+        @Autowired
+        private JdbcProperties jdbc;  //1. @Autowired的方式注入JdbcProperties对象
+
+        public JdbcConfig(JdbcProperties jdbc) { //2.构造方法的方式注入JdbcProperties对象
+
+        }
+
+        @Bean
+        public DataSource getDataSource(JdbcProperties prop) {  //3.方法参数的方式注入
+            DruidDataSource ds = new DruidDataSource();
+            ds.setDriverClassName(prop.getDriverClassName());
+            ds.setUrl(prop.getUrl());
+            ds.setUsername(prop.getUsername());
+            ds.setPassword(prop.getPassword());
+            return ds;
+        }
+    }
+6. 如果只有一个Bean对象使用JDBC的连接信息，还可以优雅地映射配置文件中的键值
+    1. 不需要属性映射类JdbcProperties，直接在对应Bean对象上使用 @ConfigurationProperties
+    @Configuration
+    public class JdbcConfig {
+        @Bean
+        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
+        public DataSource getDataSource(JdbcProperties prop) {
+            return new DruidDataSource();
+        }
+    }
+    2. getDataSource() 返回一个DruidDataSource对象，@ConfigurationProperties注解在此对象上;
+    3. jdbc.driverClassName、jdbc.url... 的字段值映射到DruidDataSource对象中的同名属性上.
+</code></pre><h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><pre><code>1. yaml/yml
+    jdbc:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
+        username: root
+        password: 123456
+        user:
+            name: Java
+            age: 21
+            language:
+                    - java
+                    - php
+                    - ios
+===&gt;
+    @Data
+    public class JdbcProperties {
+        private String driverClassName;
+        private String url;
+        private String username;
+        private String password;
+        private User user = new User();
+        class User {
+            private String name;
+            private int age;
+            private List&lt;String&gt; language;
+        }
+    }
+2. resources/application.yaml
+    1. 自定义SpringMVC的默认配置
+        server:
+            port: 8888    # 配置服务器的端口号
+            servlet:
+                path: &quot;*.do&quot;    # 访问映射路径，默认是&quot;/&quot;，会影响所有的请求路径
+    2. Log4j相关
+        logging:    # 日志配置(log4j相关的依赖已经被集成)
+            level:    # 控制日志级别，是一个Map集合
+                cn.boot: debug    # cn.boot包下的日志级别为debug
+                org.springframework: debug
+3. ResourceProperties中定义了静态资源的查找方向
+    classpath:/META-INF/resources/
+    classpath:/resources/
+    classpath:/static/
+    classpath:/public/
+    1. 注意：classpath 指的就是 src/main/resources 目录;
+    2. META-INF/resources、resources、static、public 都是 src/main/resources/ 下的目录;
+    3. 比如创建resources/static目录，放入图片、CSS、JS、HTML等静态资源，然后就能访问这些资源了;
+</code></pre><h2 id="自定义拦截器"><a href="#自定义拦截器" class="headerlink" title="自定义拦截器"></a>自定义拦截器</h2><pre><code>1. @Slf4j 与 log=LoggerFactory.getLogger(类名.class) 是等效的，都是用来获取Logger对象;
+    @Slf4j
+    public class MyInterceptor implements HandlerInterceptor {
+        public boolean preHandle(......) {
+            log.debug(&quot;preHandle debug log&quot;);
+            return true;
+        }
+        ......
+    }
+2. SpringBoot规定：
+    1. 如果要保留SpringBoot的一些默认MVC特征，同时又想自定义一些MVC配置，如拦截器、格式化器、视图控制器、
+    消息转发器... 就必须实现WebMvcConfigurer，并使用 @Configuration，但一定不能使用 @EnableWebMvc;
+    2. 如果想要完全自定义SpringMVC，不保留默认的一切MVC特征，则使用 @Configuration 和 @EnableWebMvc;
+3. 配置自定义的拦截器
+    @Configuration
+    public class MvcConfig implements WebMvcConfigurer {
+        public void addInterceptors(InterceptorRegistry registry) {
+            //添加进自定义的拦截器
+            registry.addInterceptor(new MyInterceptor())
+                    .addPathPatterns(&quot;/**&quot;);  //拦截所有的路径，SpringMVC的路径采用的是Ant风格
+        }
+    }
+</code></pre><h2 id="整合连接池"><a href="#整合连接池" class="headerlink" title="整合连接池"></a>整合连接池</h2><pre><code>1. DBCP是一款老牌的JDBC连接池，出自Apache;
+2. cp30与Druid都是连接池，一个JDBC组件，速度都差不多;
+    1. Hibernate默认使用c3p0;
+    2. Druid可以监控每一条SQL语句的执行性能，从而优化SQL语句.
+3. 速度最快的JDBC连接池是HikariCP(追光者)，Spring也已经默认支持了HikariCP;
+4. Spring提供的JDBC启动器：spring-boot-starter-jdbc
+5. 连接池只是一个JDBC组件，还需要配置数据库驱动，如mysql-connector-java(MySQL)
+6. 在 application.yaml 中，配置Spring启动器中的连接池：连接数据库的4大参数;
+    spring:
+        datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
+        username: root
+        password: 123456
+</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. application.yaml 中的MyBatis相关
+    mybatis:
+        type-aliases-package: cn.boot.pojo
+2. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
+    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
+    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
+3. 通用Mapper的启动器：mapper-spring-boot-starter
+    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
+    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
+    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启.
+4. Dao层接口需要继承 Mapper 接口，泛型为实体类
+    public interface UserMapper extends Mapper&lt;User&gt; {
+        //Mapper中已经提供了常用的CRUD方法
+    }
+    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
+5. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了;
+6. 实体类相关
+    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
+    2. @Id 注解在属性上，指定主键;
+    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
+    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
+    @Data
+    @Table(name=&quot;tl_user&quot;)
+    public class User {
+        @Id
+        @KeySql(userGeneratedKeys=true)
+        private Integer id;  //自增长的主键
+        private String username;
+        @Transient
+        private String remark;  //额外的属性
+    }
+7. 测试
+    @RunWith(SpringRunner.class)
+    @SpringBootTest
+    public class UserMapperTest {
+        @Autowired
+        private UserMapper mapper;
+
+        @Test
+        public void test() {
+            User u = mapper.selectByPrimaryKey(8);  //按主键查询：where id=8
+        }
+    }
+8. Service层：使用 @Transactional 注解引入事务;
+    @Service
+    public class UserService {
+        @Autowired
+        private UserMapper mapper;
+
+        public User findById(Integer id) {
+            return mapper.selectByPrimaryKey(id);
+        }
+        @Transactional
+        public void insertUser(User user) {  //插入数据时使用事务
+            return mapper.insert(user);
+        }
+    }
+9. 使用Controller测试
+    @Slf4j
+    @RestController
+    @RequestMapping(&quot;/user&quot;)
+    public class UserMapperTest {
+        @Autowired
+        private UserService service;
+
+        @GetMapping(&quot;/{id}&quot;)
+        public User test(@PathVariable(&quot;id&quot;) Integer id) {
+            log.debug(&quot;test service&quot;);
+            return service.findById(id);
+        }
+    }
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略所致，同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，
+   不能读写对方的资源;
+2. 主域名和子域名之间也是跨域，cookie也无法访问;
+3. 同源策略限制的行为：
+    1. Cookie、LocalStorage 和 IndexDB 无法读取;
+    2. DOM 和 JS对象无法获得;
+    3. AJAX 请求不能发送.
+4. 注意：
+    1. 浏览器并没有限制跨站请求的发起，而是返回结果被浏览器拦截了，比如CRSF跨站攻击原理，无论是否跨域，
+    请求已经发给了服务器;
+    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+5. 解决跨域问题的方案有很多：
+    1. 通过jsonp跨域
+    2. document.domain + iframe跨域
+    3. location.hash + iframe
+    4. window.name + iframe跨域
+    5. postMessage跨域
+    6. 跨域资源共享(CORS)
+    7. 前端通过Nginx解决跨域问题
+    8. nodejs中间件代理跨域
+    9. WebSocket协议跨域
+6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
+    2. WebSocket属于服务器推送技术的一种，最大特点就是保持长链接，服务器和客户端都可以主动向
+    对方推送/发送信息，是真正的双向平等对话;
+    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
+</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享;
+2. CORS需要浏览器和服务器同时支持;
+    1. 所有浏览器都支持该功能，IE浏览器不能低于IE10;
+    2. 整个CORS通信过程都是浏览器自动完成，不需要用户参与;
+    3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
+    4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，
+    但用户不会有感觉;
+    5. 实现CORS通信的关键是服务器，只要服务器实现了CORS接口，就可以跨源通信.
+3. CORS与JSONP相比：
+    1. JSONP只能实现GET请求，而CORS支持所有类型的HTTP请求;
+    2. 使用CORS，开发者仍可以使用普通的AJAX发起请求和获得数据，比起JSONP有更好的错误处理;
+    3. JSONP主要被老浏览器支持，它们往往不支持CORS，而绝大多数现代浏览器都已经支持了CORS.
+4. SpringMVC4.2开始，支持使用 @CrossOrigin 解决跨域问题;
+    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
+    2. value、origins属性：允许可访问的域列表;
+    3. maxAge属性：准备响应前的缓存持续的最大时间(s);
+    4. allowedHeaders、exposedHeaders、methods、allowCredentials
+5. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
+    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
+    3. withCredentials:true 表示对附带身份凭证的请求，服务器不得设置 Access-Control-Allow-Origin=&quot;&quot;,
+    因为请求头中携带了Cookie，如果Access-Control-Allow-Origin=&quot;&quot;，请求将会失败;
+    而设置 Access-Control-Allow-Origin=&quot;http://foo.example&quot;，则会请求成功;
+    其次服务器需要设置 Access-Control-Allow-Credentials:true，否则响应内容不会返回给客户端;
+6. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
+7. 对于不支持 @CrossOrigin 的版本，可以在Filter中拦截此请求，手动添加允许跨域的请求头;
+    setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);
+8. SpringMVC的XML配置文件中，全局配置CORS
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/**&quot; /&gt;
+    &lt;/mvc:cors&gt;
+    1. 更加细粒度的配置：
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/api/**&quot;
+            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
+            allowed-methods=&quot;GET, PUT&quot;
+            allowed-headers=&quot;header1, header2, header3&quot;
+            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
+            max-age=&quot;3600&quot; /&gt;
+        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
+    &lt;/mvc:cors&gt;
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/01/SpringBoot/" rel="next" title="SpringBoot">
+                <i class="fa fa-chevron-left"></i> SpringBoot
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringMVC新增注解"><span class="nav-number">1.</span> <span class="nav-text">SpringMVC新增注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性注入"><span class="nav-number">2.</span> <span class="nav-text">属性注入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring的属性注入"><span class="nav-number">2.1.</span> <span class="nav-text">Spring的属性注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot的属性注入"><span class="nav-number">2.2.</span> <span class="nav-text">SpringBoot的属性注入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">3.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义拦截器"><span class="nav-number">4.</span> <span class="nav-text">自定义拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整合连接池"><span class="nav-number">5.</span> <span class="nav-text">整合连接池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用Mapper"><span class="nav-number">6.</span> <span class="nav-text">通用Mapper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">7.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">7.1.</span> <span class="nav-text">CORS</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

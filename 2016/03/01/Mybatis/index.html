@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-27T09:22:25.659Z">
+<meta property="og:updated_time" content="2019-05-04T02:51:16.367Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis">
 <meta name="twitter:description" content="框架1. 框架是软件开发中的一套解决方案，不同的框架解决不同的问题，Mybatis解决的是持久层问题 2. 三层结构     1. 表现层：用于展示数据，如SpringMVC:MVC框架     2. 业务层：处理业务需求     3. 持久层，和数据库交互，如Mybatis:持久层框架     4. Spring：Ioc(控制反转)、AOP(面向切面编程)，不属于任何一层。 3. 持久层技术的解">
@@ -627,9 +627,9 @@
             &lt;package name=&quot;com.test.domain&quot; /&gt;
         &lt;/typeAliases&gt;
     2. 配置了实体类的包名之后，实体类的类名就是别名，不再区分大小写.
-4. SqlMapConfig.xml 中的 &lt;mappers&gt; 也有一个子标签为 &lt;package&gt;，用于指定dao接口的包名
+4. SqlMapConfig.xml 中的 &lt;mappers&gt; 也有一个子标签为 &lt;package&gt;，用于指定dao接口的包名;
     &lt;mappers&gt;
-        &lt;package name=&quot;com.test.dao&quot;&gt;&lt;/package&gt;  ==&gt;无需再配置&lt;mapper&gt;标签
+        &lt;package name=&quot;com.test.dao&quot; /&gt;  ==&gt;无需再配置&lt;mapper&gt;标签
     &lt;/mappers&gt;
 </code></pre><h3 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h3><pre><code>1. 连接池就是一个存储连接的容器(线程安全的集合对象)，保证不能让两个线程拿到同一个连接；
     1. 该集合还必须实现队列的特性：先进后出；
@@ -826,7 +826,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
