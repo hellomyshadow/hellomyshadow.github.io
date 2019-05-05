@@ -88,7 +88,7 @@
 <meta property="og:description" content="Maven1. Maven是一个项目管理工具，两大核心功能：依赖管理、一键构建; 2. 依赖管理(jar包管理)     1. Maven项目中的jar包在一个jar包仓库中，项目中只放jar包的坐标，在代码编译时去仓库中找到jar包;     2. 大大减少了磁盘空间，解决了jar包冲突，实现了代码可重用。 3. 一键构建     1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg">
-<meta property="og:updated_time" content="2019-04-28T13:35:16.395Z">
+<meta property="og:updated_time" content="2019-05-05T12:27:39.382Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java之Maven">
 <meta name="twitter:description" content="Maven1. Maven是一个项目管理工具，两大核心功能：依赖管理、一键构建; 2. 依赖管理(jar包管理)     1. Maven项目中的jar包在一个jar包仓库中，项目中只放jar包的坐标，在代码编译时去仓库中找到jar包;     2. 大大减少了磁盘空间，解决了jar包冲突，实现了代码可重用。 3. 一键构建     1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都">
@@ -342,7 +342,15 @@
     2. user.home 表示C盘下的个人目录
     3. 考虑到C盘通常是系统盘，所以会自定义本地仓库的路径，如D盘下
         &lt;localRepository&gt;D:/local/repo&lt;/localRepository&gt;
-    4. 配置淘宝等国内镜像，可以加快下载速度。
+    4. 配置淘宝等国内镜像，可以加快下载速度，比如阿里的Maven镜像;
+    &lt;mirrors&gt;
+        &lt;mirror&gt; 
+            &lt;id&gt;alimaven&lt;/id&gt; 
+            &lt;name&gt;aliyun maven&lt;/name&gt; 
+            &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt; 
+            &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;         
+        &lt;/mirror&gt; 
+    &lt;/mirrors&gt;
 3. 远程仓库(私服)：
     1. 在公司内有专门的局域网服务器作为jar包的远程仓库，又称为私服;
     2. 配置了远程仓库之后，预先在私服中上传常用的jar包，让本地仓库从局域网内的私服下载jar包;
@@ -377,8 +385,8 @@
 <h2 id="idea集成Maven"><a href="#idea集成Maven" class="headerlink" title="idea集成Maven"></a>idea集成Maven</h2><pre><code>1. 下载并解压Maven，配置环境变量(必须有JDK环境)：
     1. 新建环境变量MAVEN_HOME：D:\maven\apache-maven-3.6.0
     2. 配置Path：%MAVEN_HOME%\bin
-2. idea：Settings --&gt; Maven
-    1. 配置Maven路径
+2. idea：Settings --&gt; 搜索 Maven
+    1. 配置使用本地Maven
         Maven home directory: D:\maven\apache-maven-3.6.0
         User settings file: D:\maven\apache-maven-3.6.0\conf\settings.xml
         Local repository: D:\maven\maven_repository

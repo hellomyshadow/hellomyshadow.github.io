@@ -3292,7 +3292,7 @@ public AccountServiceImpl implements IAccountService {
                 ......//Bean的销毁
             }
         }
-</code></pre><h3 id="注入数据的注解"><a href="#注入数据的注解" class="headerlink" title="注入数据的注解"></a>注入数据的注解</h3><pre><code>1. Autowired：自动按照类型注入；
+</code></pre><h3 id="注入数据的注解"><a href="#注入数据的注解" class="headerlink" title="注入数据的注解"></a>注入数据的注解</h3><pre><code>1. @Autowired：自动按照类型注入；
     1. 只要容器中有唯一的一个Bean对象与要注入的变量类型匹配，就可以注入成功；
     2. 可以用在变量上，也可以用在方法上；
     @Repository(&quot;userDao&quot;)
@@ -3328,7 +3328,7 @@ public AccountServiceImpl implements IAccountService {
             ......
         }
     4. 不再需要setter
-2. Qualifier：在按照类中注入的基础上，再按照名称注入；
+2. @Qualifier：在按照类中注入的基础上，再按照名称注入；
     1. 在给类成员注入时，不能单独使用; 但给方法参数注入时，可以单独使用;
     2. 属性value：指定注入Bean对象的id;
     @Service(&quot;userService&quot;)
@@ -3338,10 +3338,10 @@ public AccountServiceImpl implements IAccountService {
         private IUserDao dao;
         ......
     }
-3. Resource：直接按照Bean的id注入，且可以单独使用，属性name用于指定注入Bean的id
-    @Resource(name=&quot;userDao2&quot;)
+3. @Resource：按照Bean的id注入，且可以单独使用，属性name用于指定注入Bean的id;
+    @Resource(name=&quot;userDao2&quot;)  --&gt;如果不指定name属性，默认把属性变量名作为Bean的id
     private IUserDao dao;
-4. 这三种注解都只能注入Bean类型的数据，不能注入基本数据类型，且集合类型只能使用XML实现注入;
+4. 这三种注解都只能注入IoC容器管理的Bean对象，不能注入基本数据类型，而集合类型只能使用XML实现注入;
 5. Value：用于注入基本数据类型，属性value用于指定数据的值；
     1. 它可以使用Spring的SpEL(Spring的EL表达式);
     2. SpEL的写法：${表达式}，虽然与JSP的EL表达式写法相同，但出现的位置并不相同；
