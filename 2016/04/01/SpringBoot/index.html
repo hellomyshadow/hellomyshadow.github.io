@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-05T12:57:01.476Z">
+<meta property="og:updated_time" content="2019-05-05T14:49:06.343Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot">
 <meta name="twitter:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
@@ -511,7 +511,7 @@
         List&lt;User&gt; findAll();
     }
     1. @Mapper：修饰在Dao层接口上，为其生成实现类;
-    2. @MapperScan：修饰在引导类上，指定Dao层接口所在的包;
+    2. @MapperScan：修饰在引导类上，指定Mapper接口所在的包，为包下的所有接口生成实现类;
         @SpringBootApplication
         @MapperScan(basePackages={&quot;cn.boot.mapper&quot;})
         public class BootdemoApplication {

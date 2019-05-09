@@ -341,21 +341,24 @@
         目录下：sudo cp /usr/local/redis/redis.conf /etc/redis/
         3. 指定配置文件启动：sudo redis-server /etc/redis/redis.conf
     3. sudo service redis start/stop/restart：后台启动/停止/重启Redis服务。
-3. 连接Redis服务：redis-cli，默认连接本机的Redis
-4. 切换数据库：select 编号，默认使用的是0号数据库。
-</code></pre><h2 id="数据操作"><a href="#数据操作" class="headerlink" title="数据操作"></a>数据操作</h2><pre><code>Redis是key-value类型的数据，所以每个数据都是一个键-值对；
-1. 键的类型为字符串；
-2. 值的类型有5种：字符串string、哈希hash、列表list、集合set、有序集合zset
-</code></pre><h3 id="字符串操作"><a href="#字符串操作" class="headerlink" title="字符串操作"></a>字符串操作</h3><pre><code>string是Redis最基本的类型，最大存储512MB的数据；
-string类型是二进制安全的，即可以为任何数据，包括数字、图片、序列化对象等；
-1. 设置
+3. Redis默认不允许远程访问，修改配置文件：
+    1. bind 127.0.0.1  #注释掉 或者改为本机IP;
+    2. protected-mode no  #开启远程访问
+4. 连接Redis服务：redis-cli，默认连接本机的Redis
+5. 切换数据库：select 编号，默认使用的是0号数据库。
+</code></pre><h2 id="数据操作"><a href="#数据操作" class="headerlink" title="数据操作"></a>数据操作</h2><pre><code>1. Redis是key-value类型的数据，所以每个数据都是一个键-值对；
+2. 键的类型为字符串；
+3. 值的类型有5种：字符串string、哈希hash、列表list、集合set、有序集合zset
+</code></pre><h3 id="字符串操作"><a href="#字符串操作" class="headerlink" title="字符串操作"></a>字符串操作</h3><pre><code>1. string是Redis最基本的类型，最大存储512MB的数据；
+2. string类型是二进制安全的，即可以为任何数据，包括数字、图片、序列化对象等；
+3. 设置
     1. set key value：设置键-值，比如set name &apos;python&apos;；
     2. SETEX key seconds value：设置键值及过期时间，以秒为单位，过期之后会被删除；
     3. 设置多个键-值：MSET key value key value ...
-2. 获取
+4. 获取
     1. GET key：根据键获取值，如果不存在，则返回nil；
     2. MGET key key ...：根据多个键获取多个值。
-3. 运算
+5. 运算
     1. 运算的前提：值必须是数字；
     2. INCR/DECR key：将key对应的value加/减1；
     3. INCRBY/DECRBY key number：对value加/减整数，number可以是正数/负数；
@@ -450,8 +453,6 @@ string类型是二进制安全的，即可以为任何数据，包括数字、�
         3. sudo python setup.py install
 2. 导入redis模块：import redis
 3. 连接Redis，获取客户端对象：r=redis.StrictRedis(host=&apos;Ip&apos;, port=6379)
-4. Windows上的PyCharm编写连接Ubuntu上的Redis的代码时，Redis的配置文件中所绑定的Ip
-   不能使用默认的127.0.0.1，而必须配置为Ubuntu的Ip，否则会连接失败。
 </code></pre><h3 id="Python操作Redis的方式"><a href="#Python操作Redis的方式" class="headerlink" title="Python操作Redis的方式"></a>Python操作Redis的方式</h3><pre><code>1. 直接操作：读写方法会被立即执行；
     1. r.set(&apos;name&apos;, &apos;Hello Redis&apos;)：写入数据；
     2. r.get(&apos;name&apos;)：获取数据。

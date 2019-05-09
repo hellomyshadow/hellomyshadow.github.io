@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-05T12:19:55.024Z">
+<meta property="og:updated_time" content="2019-05-09T13:24:43.359Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot进阶">
 <meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
@@ -374,7 +374,7 @@
                 return ds;
             }
         }
-</code></pre><h3 id="SpringBoot的属性注入"><a href="#SpringBoot的属性注入" class="headerlink" title="SpringBoot的属性注入"></a>SpringBoot的属性注入</h3><pre><code>1. SpringBoot对Spring的属性注入做了优化;
+</code></pre><h3 id="SpringBoot的属性注入"><a href="#SpringBoot的属性注入" class="headerlink" title="SpringBoot的属性注入"></a>SpringBoot的属性注入</h3><pre><code>1. SpringBoot对Spring的属性注入做了优化，引入Druid的依赖坐标;
 2. SpringBoot的配置文件：resources/application.properties
     jdbc.driverClassName=com.mysql.cj.jdbc.Driver
     jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
@@ -507,25 +507,33 @@
     1. Hibernate默认使用c3p0;
     2. Druid可以监控每一条SQL语句的执行性能，从而优化SQL语句.
 3. 速度最快的JDBC连接池是HikariCP(追光者)，Spring也已经默认支持了HikariCP;
-4. Spring提供的JDBC启动器：spring-boot-starter-jdbc
+4. Spring提供的JDBC启动器：spring-boot-starter-jdbc，使用Spring默认的连接池，无需再手动引入;
 5. 连接池只是一个JDBC组件，还需要配置数据库驱动，如mysql-connector-java(MySQL)
-6. 在 application.yaml 中，配置Spring启动器中的连接池：连接数据库的4大参数;
+6. 在 application.yaml 中，配置Spring启动器中的默认连接池：连接数据库的4大参数;
     spring:
         datasource:
             driver-class-name: com.mysql.cj.jdbc.Driver
             url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
             username: root
             password: 123456
+7. 如果想使用其他连接池，如druid，只需要引入druid的依赖，再配置 spring.datasource.type
+    spring:
+        datasource:
+            type: com.alibaba.druid.pool.DruidDataSource
+            ...... # driver-class-name、url、username、password
 </code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>2. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
     1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
     2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
 3. 通用Mapper的启动器：mapper-spring-boot-starter
     1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
     2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
-    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启.
-    4. application.yaml 中的MyBatis相关
-        mybatis:
-            type-aliases-package: cn.boot.pojo
+    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
+    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
+    spring:
+        datasource:
+            ...... # driver-class-name、url、username、password
+    mybatis:
+        type-aliases-package: cn.boot.pojo
 4. Dao层接口需要继承 Mapper 接口，泛型为实体类
     public interface UserMapper extends Mapper&lt;User&gt; {
         //Mapper中已经提供了常用的CRUD方法

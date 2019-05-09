@@ -88,7 +88,7 @@
 <meta property="og:description" content="Maven1. Maven是一个项目管理工具，两大核心功能：依赖管理、一键构建; 2. 依赖管理(jar包管理)     1. Maven项目中的jar包在一个jar包仓库中，项目中只放jar包的坐标，在代码编译时去仓库中找到jar包;     2. 大大减少了磁盘空间，解决了jar包冲突，实现了代码可重用。 3. 一键构建     1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg">
-<meta property="og:updated_time" content="2019-05-05T12:27:39.382Z">
+<meta property="og:updated_time" content="2019-05-08T11:42:19.317Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java之Maven">
 <meta name="twitter:description" content="Maven1. Maven是一个项目管理工具，两大核心功能：依赖管理、一键构建; 2. 依赖管理(jar包管理)     1. Maven项目中的jar包在一个jar包仓库中，项目中只放jar包的坐标，在代码编译时去仓库中找到jar包;     2. 大大减少了磁盘空间，解决了jar包冲突，实现了代码可重用。 3. 一键构建     1. 构建：项目从编译、测试、运行、打包、安装、部署的整个过程都">
@@ -380,6 +380,7 @@
 4. jar一般只是包括一些class文件，在声明了 main() 之后就可以用java命令运行;
 5. Spring项目一般都是打成war包发布到Tomcat上，而SpringBoot项目一般使用jar包的打包模式;
 6. SpringBoot内部已经集成了Tomcat插件，省去了安装Tomcat等中间件，所以打成jar包也很有必要.
+    java -jar jar包名  //运行jar包项目的命令
 </code></pre><h2 id="POM模型"><a href="#POM模型" class="headerlink" title="POM模型"></a>POM模型</h2><pre><code>1. Maven的概念模型POM
 </code></pre><p><img src="//hellomyshadow.github.io/2016/01/10/Java之Maven/Maven.jpg" alt="Maven"></p>
 <h2 id="idea集成Maven"><a href="#idea集成Maven" class="headerlink" title="idea集成Maven"></a>idea集成Maven</h2><pre><code>1. 下载并解压Maven，配置环境变量(必须有JDK环境)：

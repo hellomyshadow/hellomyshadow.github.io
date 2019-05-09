@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-29T16:35:20.597Z">
+<meta property="og:updated_time" content="2019-05-09T13:14:47.939Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="模块化与私服">
 <meta name="twitter:description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
@@ -330,6 +330,17 @@
 3. 父工程：New Project --&gt; 不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
     1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
     2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
+    3. 打包方式：pom
+        &lt;packaging&gt;pom&lt;/packaging&gt;
+    4. &lt;dependencyManagement&gt; 管理的依赖和插件不会传递给子工程
+        &lt;dependencyManagement&gt;
+            &lt;dependencies&gt;
+                &lt;!-- 这些依赖不会传递给子工程 --&gt;
+            &lt;/dependencies&gt;
+        &lt;/dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;!-- 这些依赖会传递给子工程 --&gt;
+        &lt;/dependencies&gt;
 4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
     1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
     2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
