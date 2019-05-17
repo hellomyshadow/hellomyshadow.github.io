@@ -88,7 +88,7 @@
 <meta property="og:description" content="JdbcTemplate1. JdbcTemplate是Spring提供的一个对象，对原始JDBC的一层简单封装；     1. 操作关系型数据库：JdbcTemplate、HibernateTemplate     2. 操作NoSQL数据库：RedisTemplate     3. 操作消息队列：JmsTemplate  2. JdbcTemplate的依赖包：spring-jdbc，除此之外">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/09/Spring事务控制/持久层.jpg">
-<meta property="og:updated_time" content="2019-04-22T10:37:06.504Z">
+<meta property="og:updated_time" content="2019-05-16T12:00:52.655Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring事务控制">
 <meta name="twitter:description" content="JdbcTemplate1. JdbcTemplate是Spring提供的一个对象，对原始JDBC的一层简单封装；     1. 操作关系型数据库：JdbcTemplate、HibernateTemplate     2. 操作NoSQL数据库：RedisTemplate     3. 操作消息队列：JmsTemplate  2. JdbcTemplate的依赖包：spring-jdbc，除此之外">
@@ -646,7 +646,7 @@ Integer count = jt.queryForObject(&quot;select count(id) from account where mone
         private JdbcTemplate jt;
         ......
     }
-3. 在Service层，在需要事务控制的类/方法上使用 @Transactional，并配置事务的相关属性;
+3. @Transactional：事务控制，注解在Service层的类/方法上，并配置事务的相关属性;
     @Service(&quot;accountService&quot;)
     @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)  --&gt;对所有方法有效
     public class AccountServiceImpl implements IAccountService {
@@ -658,7 +658,7 @@ Integer count = jt.queryForObject(&quot;select count(id) from account where mone
         @Transactional(propagation=Propagation.REQUIRED, readOnly=false) --&gt;单独配置
         public void transfer(String sourceName, String targetName, Float money) { ... }
     }
-4.     测试
+4. 测试
     ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
     IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
     service.transfer(&quot;AAA&quot;, &quot;BBB&quot;, 100f);
@@ -861,7 +861,7 @@ Integer count = jt.queryForObject(&quot;select count(id) from account where mone
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -883,7 +883,7 @@ Integer count = jt.queryForObject(&quot;select count(id) from account where mone
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

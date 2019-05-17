@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/15/SpringMVC/SSM.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/03/15/SpringMVC/组件控制流程.jpg">
-<meta property="og:updated_time" content="2019-04-29T14:54:42.524Z">
+<meta property="og:updated_time" content="2019-05-15T12:17:25.172Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC">
 <meta name="twitter:description" content="三层架构1. 开发架构一般都是基于两种形式：C/S(客户端/服务器)、B/S(浏览器/服务器); 2. JavaEE开发几乎都是基于B/S架构，系统标准的三层架构：表现层、业务层、持久层; 3. 表现层：web层，负责接收客户端请求，响应结果;     1. 表现层包括展示层(负责展示结果)和控制层(负责接收请求);     2. 表现层依赖于业务层，用于对请求进行业务处理，并把结果响应给客户端;">
@@ -573,18 +573,19 @@ public class TestController { ... }
 1. @RequestParam：把请求中指定名称的参数，给控制器中的形参赋值;
     1. value、name属性：请求参数中的名称;
     2. required：请求参数中是否必须提供此参数，默认为true;
+    3. defaultValue属性：设置默认值，如果参数中没有携带指定的属性，则使用默认值;
         @RequestMapping(path=&quot;/test&quot;)
         public String test(@RequestParam(name=&quot;uname&quot;) String username) {
             return &quot;success&quot;;
         }
     3. 请求参数中必须提供一个key为 uname 的键值对，uname的值会赋给形参username;
         &lt;a href=&quot;user/test?name=Java&quot;&gt;Welcome&lt;/a&gt;
-    4. 不使用 @RequestParam 时，形参username 会接收请求参数中key为 username 的值，
+    4. 不使用 @RequestParam 时，形参username 只会接收请求参数中key为 username 的值，
     如果请求参数中没有，则形参username 仍为默认值null.
 2. @RequestBody：用于获取请求体的内容;
-    1. 直接使用时会得到整个请求体的内容：key=value&amp;key=value...
+    1. HTTP请求头必须是content-type=application/json，且使用body传输数据，所以是POST请求;
     2. required属性：是否必须有请求体;
-    3. 不适用于Get请求：required=true时，Get请求会报错; required=false时，Get请求为null;
+    3. 直接使用时会得到整个请求体的内容：key=value&amp;key=value...
         &lt;form action=&quot;user/test&quot; method=&quot;post&quot;&gt;
             &lt;input type=&quot;text&quot; name=&quot;uname&quot; /&gt;  ==&gt;Java
             &lt;input type=&quot;text&quot; name=&quot;age&quot; /&gt;  ====&gt;22
@@ -593,6 +594,11 @@ public class TestController { ... }
         @RequestMapping(path=&quot;/test&quot;)
         public String test(@RequestBody String body) {
             System.out.println(body);  // uname=Java&amp;age=22
+            return &quot;success&quot;;
+        }
+    3. 引入Jackson相关的依赖之后，可以把请求体封装到POJO对象中
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test(@RequestBody User user) {
             return &quot;success&quot;;
         }
 3. @PathVariable：用于绑定url中的占位符，如/delete/{id}，id就是url占位符;
@@ -612,7 +618,7 @@ public class TestController { ... }
     1. value属性：提供请求头的名称;
     2. required：是否必须有此请求头;
         @RequestMapping(path=&quot;/test&quot;)
-        public String test(@RequestHeader(value=&quot;Accept&quot;) String header) {
+        public String test(@RequestHeader(value=&quot;Accept&quot;) String header, int id) {
             System.out.println(header);
             return &quot;success&quot;;
         }
@@ -824,7 +830,7 @@ public class TestController { ... }
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -846,7 +852,7 @@ public class TestController { ... }
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

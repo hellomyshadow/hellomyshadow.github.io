@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Redis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis高级">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/04/15/Redis高级/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-16T14:23:00.119Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis高级">
+<meta name="twitter:description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/04/15/Redis高级/">
+
+
+
+
+
+  <title>Redis高级 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/15/Redis高级/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis高级</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-15T00:00:00+08:00">
+                2016-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><pre><code>1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能；
+2. Redis与Memcache
+    1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；
+    2. 实现方式：Redis是单线程，Memcache是多线程；
+    3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memcache的数据只存储在内存中，没有持久化功能；
+    4. Redis除了基本的 k-v 结构，还支持多种其他复杂结构、事务等高级功能，它已经不仅仅是一个缓存服务；
+    5. Memcache只支持基本的 k-v 结构，功能相对单一；
+    6. 可用性：Redis支持主从复制、数据分片、哨兵监控；Memcache没有分片功能，需要从客户端支持。
+3. 安装
+    cd /usr/local/
+    wget http://download.redis.io/releases/redis-5.0.4.tar.gz
+    tar -zxvf /redis-5.0.4.tar.gz
+    cd redis-5.0.4
+    make &amp;&amp; make install
+</code></pre><h2 id="redis-conf"><a href="#redis-conf" class="headerlink" title="redis.conf"></a>redis.conf</h2><pre><code>1. Redis默认不是以守护进程的方式运行，可以通过该配置项修改，使用yes启用守护进程
+    daemonize no
+2. 当Redis以守护进程方式运行时，Redis默认会把pid写入/var/run/redis.pid文件
+    pidfile /var/run/redis.pid
+3. Redis监听端口，默认为6379
+    port 6379
+4. 绑定的主机地址
+    bind 127.0.0.1
+5. 当客户端闲置多长时间后关闭连接，如果指定为0，表示关闭该功能
+    timeout 300
+6. 指定日志记录级别，Redis共支持四个级别：debug、verbose、notice、warning，默认为verbose
+    loglevel verbose
+7. 日志记录方式，默认为标准输出，如果配置Redis为守护进程方式运行，而这里又配置为日志记录方式为标准输出，
+   则日志将会发送给/dev/null
+    logfile stdout
+8. 设置数据库的数量，默认为16，编号0-15，默认操作是 0 号数据库
+    databases 16
+9. RDB方式的持久化，默认方式
+    save 900 1
+    save 300 10
+    save 60 10000
+10. 指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩;
+    rdbcompression yes
+    1. 如果为了节省CPU时间，可以关闭该选项，但会导致数据库文件变的巨大.
+11. 指定本地数据库文件名，默认值为dump.rdb
+    dbfilename dump.rdb
+12. 指定本地数据库存放目录，默认就是当前目录
+    dir ./
+13. 当本机为slav服务时，设置master服务的IP地址及端口，在Redis启动时，它会自动从master进行数据同步
+    slaveof &lt;masterip&gt; &lt;masterport&gt;
+14. 当master服务设置了密码保护时，slav服务连接master的密码
+    masterauth &lt;master-password&gt;
+15. 设置Redis连接密码，如果配置了密码，客户端在连接Redis时需要通过AUTH &lt;password&gt;命令提供密码，默认关闭
+    requirepass foobared
+16. 设置同一时间最大客户端连接数，默认无限制;
+    maxclients 128
+    1. Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件描述符数;
+    2. 如果设置 maxclients 0，表示不作限制;
+    3. 当客户端连接数到达限制时，Redis会关闭新的连接并向客户端返回max number of clients reached错误信息.
+17. 指定Redis最大内存限制
+    maxmemory &lt;bytes&gt;
+    1. Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key;
+    2. 如果这种方式处理后，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读取操作;
+    3. Redis新的 vm 机制会把 Key 存放内存，Value 存放在 swap 区.
+18. AOF方式的持久化，默认关闭
+    appendonly no
+    appendfilename appendonly.aof
+    appendfsync everysec  # no  always  everysec
+19. 指定包含的其它配置文件
+    include /path/to/local.conf
+    1. 在同一主机上，多个Redis实例可以使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件.
+</code></pre><h3 id="远程访问"><a href="#远程访问" class="headerlink" title="远程访问"></a>远程访问</h3><pre><code>1. Redis默认不允许远程访问，修改配置文件：
+    1. bind 127.0.0.1 # 注释掉 或者 改为本机的IP地址
+    2. protected-mode no  # 如果不设置密码，则关闭保护模式
+    3. deamonize yes  # 后台启动运行Redis
+2. Redis数据库由一个整数索引标识，而不是一个具体的数据库名称，默认操作的数据库是0号;
+    1. select 数据库索引：切换数据库;
+    2. move key 数据库索引：移动key到指定数据库;
+    3. flushdb：清空当前数据库的key;
+    4. flushall：清空所有数据库的key.
+</code></pre><h3 id="数据淘汰策略"><a href="#数据淘汰策略" class="headerlink" title="数据淘汰策略"></a>数据淘汰策略</h3><pre><code>1. Redis脚本：Redis使用 Lua 解释器来执行脚本，Redis2.6通过内嵌支持 Lua 环境，执行脚本的常用命令为 EVAL
+2. Redis数据淘汰策略
+    1. Redis官方的警告：当内存不足时，Redis会根据配置的缓存策略淘汰部分Key，以保证写入成功;
+    2. 当无淘汰策略 或者没有找到合适的key时，Redis直接返回 Out of Memory 错误;
+    3. 在配置文件 redis.conf 中，允许设置的最大缓存大小：maxmemory 512G
+3. Redis提供的数据淘汰策略
+    1. volatile-lru：从已设置过期时间的数据集中，挑选最近最少使用的数据淘汰;
+    2. volatile-lfu：从已设置过期的key中，淘汰一段时间内使用次数最少的;
+    3. volatile-ttl：从已设置过期时间的数据集中，淘汰最近将要过期的数据;
+    4. volatile-random：从已设置过期时间的数据集中，随机选择淘汰的数据;
+    5. allkeys-lru：从数据集中，淘汰最近最少使用的数据;
+    6. allkeys-lfu：从所有key中，淘汰一段时间内使用次数最少的;
+    7. allkeys-random：从数据集中，随机选择淘汰的数据;
+    8. no-enviction：不采用任何淘汰策略，默认配置.
+4. 在平时使用时，应尽量主动设置/更新key的过期时间，主动剔除不活跃的旧数据，有助于提升查询性能.
+</code></pre><h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><pre><code>1. RDB：默认持久化方案，当满足一定条件时，Redis会自动将内存中的数据全部持久到硬盘文件中;
+    1. 在配置文件redis.conf中配置RDB的条件：save (time) (count)
+    2. 当满足在time(秒)时间内，至少进行了count次修改后，触发持久化条件，进行RDB快照
+2. 默认配置(三者是或的关系)
+    save 900 1  # 15分钟内，有至少1个键被更改，则触发RDB快照
+    save 300 10  # 5分钟内，有至少10个键被更改
+    save 60 10000  # 1分钟内，至少有10000个键被更改
+3. 以快照的方式写入到二进制文件中，默认文件名：dump.rdb
+    dbfilename dump.rdb  #本地数据库文件
+    dir  ./  #本地数据库的存放路径，./ 表示当前目录
+4. 快照：保存数据、还原数据极快，适用于灾难性备份;
+5. 触发快照的条件，除了配置文件中配置的RDB快照，在服务器正常关闭时，shutdown，也会触发快照;
+2. RDB的流程：
+    1. Redis使用fork函数来复制一份当前进程(父进程)的副本(子进程);
+    2. 父进程继续接收并处理请求，子进程开始把内存中的数据写入硬盘中的临时文件;
+    3. 子进程写完后，会使用临时文件替代旧的RDB文件;
+</code></pre><h3 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h3><pre><code>1. AOF：把每一条服务端接收到的写命令都记录下来，每隔一定时间，写入硬盘的AOF文件中;
+    1. 当服务器重启后，重新执行这些命令，恢复数据;
+    appendonly yes  # 开启AOF
+    2. 每收到写命令时，都会记录到文件中，默认文件名：appendonly.aof
+2. 这种方式没有RDB快照的限制，适用于Redis意外宕机的数据恢复;
+3. AOF的缺点也很明显，占用较大的内存，所以Redis的默认持久化策略是RDB
+4. AOF写入的频率：同步策略三选一
+    appendfsync always  # 每次都同步(最安全但最慢)
+    appendfsync everysec  # 每秒同步(默认)
+    appendfsync no  # 不主动同步，由操作系统来决定(最快但不安全)
+    1. 默认情况下，文件会先写入到系统的缓存中，系统每30s同步一次，才会真正写入到硬盘;
+    2. 如果在这30s内，服务器宕机，那么数据也会丢失;
+  5. AOF文件重写
+      1. 当记录命令过多时，必然会出现对同一个key的多次写操作，此时只需要记录最后一条即可，前面的记录都毫无意义;
+      2. 因此，当满足一定条件时，Redis会对AOF文件进行重写，移除对同一个key的多次操作命令，只保留最后一条;
+auto-aof-rewrite-percentage 100
+    1. 当前的AOF文件大小超过上一次重写时的AOF文件大小的百分之多少时，会再次进行重写;
+    2. 如果之前没有重写过，则以启动时的AOF文件大小为依据;
+auto-aof-rewrite-min-size 64mb
+    1. 限制允许重写的最小AOF文件大小，通常在AOF文件很小的时候、即使其中有些冗余的命令，也是可以忽略的;
+</code></pre><h2 id="订阅发布"><a href="#订阅发布" class="headerlink" title="订阅发布"></a>订阅发布</h2><pre><code>1. Redis的发布订阅是一种消息通信模式：发送者发送消息，订阅者接收消息，客户端可以订阅任意数量的频道;
+2. 订阅频道
+    1. subscribe 频道1 频道2 ... : 订阅指定的一个或多个频道;
+    2. psubscribe 模式1 模式2... : 订阅一个或多个符合指定模式的频道;
+3. 发布频道
+    publish 频道1 消息
+4. 退订频道
+    1. unsubscribe 频道1 频道2 ...
+    2. punsubscribe 模式1 模式2 ...
+5. 比如：客户端1、2 订阅频道cctv5，客户端3 向频道cctv5 发布消息，客户端1、2 就会受到订阅的消息;
+6. 应用：构建实时消息系统，如普通的即时聊天、群聊等功能；
+    1. 在一个博客网站，有100个粉丝订阅了AA，当AA发布新文章时，就可以推送消息给这100个粉丝;
+    2. 微信公众号模式;
+</code></pre><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><pre><code>1. Redis事务可以一次执行多个命令，按顺序串行化执行，且执行过程中不许加塞;
+    1. 批量操作在发送 EXEC 命令前被放入队列缓存;
+    2. 收到 EXEC 命令后，进入事务执行，事务中任何命令执行失败，其余命令依然被执行;
+    3. 在事务执行过程中，其他客户端提交的命令请求不会插入到事务执行序列中;
+    4. 总的来说，Redis会将一个事务中的所有命令序列化，然后按顺序执行，且不允许出现加塞行为.
+2. 事务经历的三个阶段：开启事务 --&gt; 命令入列 --&gt; 执行事务;
+3. A向B转账
+    multi  #开启事务，以后的命令会依次进入到序列中
+    get account:a
+    get account:b
+    decrby account:a 50  #A减50
+    incrby account:b 50  #B加50
+    exec  #执行事务
+4. discard：取消事务，放弃队列中的所有命令；开启了事务，但不想执行 exec 命令时，可执行 discard 命令取消事务;
+5. 错误处理：
+    1. 如果队列中的某个命令出现错误，比如操作的key不存在，属于逻辑业务的错误，那么这条命令不再执行，
+    而其他命令仍照常执行，而且不会回滚;
+    2. 但如果某个命令出现报告错误(语法错误)，比如输入的命令不存在，Redis会立即报错，那么Redis会取消事务，
+    所有命令都不会执行;
+6. watch/unwatch
+    1. 当两个事务同时操作同一个key时，可能会导致数据的不一致;
+    2. watch key key ... : 监视key，在开启事务之后、执行事务之前，这个key被其他命令改动了，
+    那么当前事务将会被打断，并回滚;
+    3. unwatch：取消对所有key的监视;
+    4. 如果在执行 watch 命令之后，只要执行了 exec 或 discard 命令，watch会自动取消，无需再执行 unwatch 命令.
+7. 应用场景：
+    1. 一组命令必须同时执行，或者都不执行;
+    2. 保证一组命令在执行过程中不被其他命令插入;
+    3. 商品秒杀活动、转账;
+</code></pre><h2 id="缓存的数据一致性"><a href="#缓存的数据一致性" class="headerlink" title="缓存的数据一致性"></a>缓存的数据一致性</h2><pre><code>1. Redis缓存与MySQL中的数据要保证一致性;
+2. 实时同步：适用于对一致性要求比较高的业务;
+    1. 缓存中不存在，则去数据库查询，并保存到缓存中;
+    2. 如果数据库中的数据修改了，缓存也要修改;
+3. 在SpringBoot中，采用注解的方式来完成 if-else 的工作
+    1. @Cacheable：查询时使用，Long类型需要转为String类型，否则会抛出异常;
+    2. @CachePut：更新时使用，此注解一定会从数据库中查询数据;
+    3. @CacheEvict：删除时使用;
+    4. @Caching：组合用法;
+4. 异步队列：对于并发程度较高的情况，则采用异步消息队列的方式同步;
+5. 阿里的同步工具canal：模拟MySQL slave和master(主从)的同步机制，监控DB bitlog的日志更新来触发缓存的更新;
+6. 采用UDF自定义函数的方式：面向MySQL的API进行编程，利用触发器进行缓存同步，UDF主要由C/C++实现;
+</code></pre><h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><h3 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h3><pre><code>1. 缓存穿透
+    1. 查询一个不存在数据时，缓存中没有，就需要从数据库中查询，查不到数据就不写入缓存中，导致每次请求
+    这个不存在的数据时，都要到数据库中去查询，造成缓存穿透;
+    2. 解决方式：持久层查询不到数据时，就缓存一个空结果(空字符串)，每次查询时先判断缓存中是否存在key，
+    如果有，则直接返回空值，表示此数据不存在，否则就去查询数据库;
+    3. 另外，持久层 insert 此数据时，及时清除查询的key，或者设置空结果的缓存时间;
+2. 缓存雪崩
+    1. 如果缓存集中在一段时间内失效，发生大量的缓存穿透，所有的查询都落在数据库上，造成缓存雪崩;
+    2. 缓存雪崩没有完美的解决方案，应分析用户行为，尽量将缓存失效时间均匀分布;
+    3. 大多数系统设计者会考虑加锁/分布式锁，或者队列的方式来保证单线程/进程去写缓存，从而避免失效时
+    大量的并发请求落在数据库上;
+3. 热点key
+    1. 某个key访问非常频繁，当key失效时，将会有大量线程来构建缓存，导致负载增加，系统崩溃;
+    2. 解决方案：
+        1. 使用锁，单机使用synchronized、lock等，分布式使用分布式锁;
+        2. 不设置缓存过期时间，而是在对应的value里设置一个时间，如果检测到超过了这个时间，则异步更新缓存;
+        3. 在value里设置一个比过期时间t0小的过期时间t1，当t1过期时，延长t1，并更新缓存;
+        4. 设置标签缓存，并设置过期时间，标签缓存过期后，异步更新实际缓存;
+4. 缓存预热：在项目即将发布上线之前，清空Redis数据库，然后由开发者把所有的功能调试一遍，
+   这样Redis中就有了一些缓存数据，然后再发布项目，这样做也是为了避免大量用户同时去查询MySQL数据库了;
+</code></pre><h3 id="高并发思路"><a href="#高并发思路" class="headerlink" title="高并发思路"></a>高并发思路</h3><pre><code>1. 在实际项目中，一般不会只是用一台Redis
+    1. 从结构上来说，单个Redis服务器会发生单点故障，并且一台服务器处理所有的请求负载，压力较大;
+    2. 从容量上来说，单个Redis服务器的内存容量有限，就算容量为256G，也不能都用作Redis存储内存，
+    单台Redis最大使用内存不应超过20G;
+2. 高并发的指标：响应时间、吞吐量、每秒查询率QPS、并发用户...
+3. 在方法论中，提高系统并发能力的方式主要有两种：垂直扩展、水平扩展
+    1. 垂直扩展：提升单机的处理能力，包括增强单机硬件性能、提升单机架构性能;
+    2. 水平扩展：增加服务器数量，线性扩充系统性能;
+</code></pre><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><pre><code>1. 一个Redis服务有多个复制品，这个服务称为Master，其他复制品称为Slaves
+2. 在Redis主从模式中，一台主库可以有多个从库，但一个从库只能有一个主库;
+3. Redis默认支持主从复制，配置极其简单::自行百度
+4. 单机主从复制(一台机器，多个Redis服务)，集群主从复制
+</code></pre><h2 id="集群：Redis-Cluster"><a href="#集群：Redis-Cluster" class="headerlink" title="集群：Redis-Cluster"></a>集群：Redis-Cluster</h2><pre><code>1. Redis搭建集群的方案有多种，Redis3.0之前大多采用哨兵模式、主从复制;
+2. 从Redis3.0开始支持 redis-cluster 集群，至少需要 3(Master)+3(Slave) 才能搭建集群;
+</code></pre><h3 id="去中心化"><a href="#去中心化" class="headerlink" title="去中心化"></a>去中心化</h3><pre><code>1. Redis-Cluster采用去中心化结构，每个节点都保存数据和整个集群状态，每个节点都和其他所有节点连接;
+2. 所有节点彼此互联(PING-PONG机制)，内部使用二进制协议优化传输速度和带宽;
+3. 节点的fail是通过集群中超过半数的节点检测失效时才生效;
+4. 客户端与Redis节点直连，不需要中间Proxy层，客户端只需要连接集群中的任意一个节点即可;
+5. Redis-Cluster把所有的物理节点映射到 0-16383 slot上，Cluster负责维护;
+6. Redis集群预分配 16384 个哈希槽，在Redis集群中放置一个 key-value 时，Redis先对key使用 crc16 算法
+   计算出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽，
+   Redis会根据节点数量大致均等地将哈希槽映射到不同的节点上;
+</code></pre><h3 id="容错性"><a href="#容错性" class="headerlink" title="容错性"></a>容错性</h3><pre><code>1. 投票机制：由集群中所有的Master参与，如果半数以上的Master节点与当前Master节点通信超时，则认为当前Master节点挂掉;
+2. 如果集群中的某个Master挂掉，且它没有Slave，则集群进入fail状态，也可以认为集群的Slot映射 0-16383 不完整时进入fail状态;
+3. 如果集群超过半数以上的Master挂掉，无论是否有Slave，集群都进入fail状态.
+</code></pre><h3 id="节点分配"><a href="#节点分配" class="headerlink" title="节点分配"></a>节点分配</h3><pre><code>1. 三个主节点分别是A、B、C，它们可以是一台机器上的三个端口，也可以是三台不同的服务器;
+2. 采用哈希槽的方式来分配 16384 个Slot时，三个节点分别承担的Slot区间：A[0-5460]，B[5461-10922]，C[10923-16383]
+3. 新增一个主节点D，Cluster会从各个主节点的前面各取一部分Slot到 D 上;
+    1. A 覆盖 [1365-5460]，B 覆盖 [6827-10922]，C 覆盖 [12288-16383]
+    2. D 覆盖 [0-1364，5461-6826，10923-12287]
+4. Redis-Cluster的节点分配体现了去中心化思想，不会去优待任何节点;
+</code></pre><h3 id="搭建集群"><a href="#搭建集群" class="headerlink" title="搭建集群"></a>搭建集群</h3><pre><code>1. 集群中至少应该有奇数个节点，同时每个节点至少有1个备份节点，主节点、备份节点由 Redis-Cluster 确定;
+2. 真集群 - 至少6台机器，假集群 - 一台机器中存在6个Redis服务;
+[- 使用一台机器模拟：ubuntu、redis-v5.0.4、一台机器模拟 -]
+1. 创建Redis节点安装目录(集群目录)
+    mkdir /usr/local/redis_cluster
+2. 在 redis_cluster 目录下，创建6个文件夹：7001-7006，分别代表6个节点
+    mkdir 7001 7002 ... 7006
+3. 把 redis.conf 分别拷贝到这6个目录下，修改这些目录下的redis.conf，以7001为例
+    bind 192.168.103.30  # 直接注释掉(必配)
+    port  7001  # 绑定端口号，分别对应7001-7006，以区分Redis服务(必配)
+    protected-mode no  #如果不设置密码，则关闭保护模式(必配)
+    daemonize  yes  # redis后台运行(守护进程的方式)
+    pidfile  /var/run/redis_7001.pid  # 修改PID进程文件名(必配)
+    logfile  /usr/local/redis_cluster/7001/redis.log  #日志文件名
+
+    cluster-enabled  yes  # 开启集群(必配)
+    cluster-config-file  nodes_7001.conf  # 集群节点的配置文件(必配)
+    cluster-node-timeout  15000  #集群节点的超时时间
+4. 启动各个节点
+    1. 在编译安装Redis的目录中，有一个src目录，分别拷贝到 7001-7006 目录中;
+    2. 分别进入 7001-7006 目录下，使用 sudo src/redis-server ./redis.conf 命令启动当前的Redis服务;  
+    3. 当然，也可以不拷贝src目录，使用同一个 redis-server 命令，指定不同的配置文件，启动6个Redis服务;
+    4. 切记：启动时一定要有权限，因为设置后台运行之后，如果没有权限，它不会提示！
+    5. 查看启动的服务：ps -ef | grep -i redis
+5. 客户端连接/断开节点，测试单个Redis服务
+    1. 连接：src/redis-cli -p 7001
+    2. 停止：src/redis-cli -p 7001 shutdown  //正常关闭，数据会自动保存
+    3. kill -9 PID  //非正常关闭，断电，数据容易丢失
+6. 创建集群：Redis5.0以下
+    1. src目录下命令 redis-trib.rb
+        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
+    2. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
+    3. redis-trib.rb 依赖 Ruby 环境
+        yum -y install ruby ruby-devel rubygems rpm-build   #安装Ruby
+        gem install redis  # gem是ruby的一个工具包，可能会报错，要求Ruby版本为2.2.2以上
+    4. 执行 redis-trib.rb create ... 命令，创建集群;
+7. 创建集群：Redis5.0+
+    1. 从 Redis5.0 开始，不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 来创建集群;
+        redis-cli --cluster create 127.0.0.1:7001 ... 127.0.0.1:7006 --cluster-replicas 1
+        ===&gt; Can I set the above configuration?   yes
+        [OK] All 16384 slots covered.  ===&gt;集群创建成功
+    2. 常见报错：Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
+    3. 解决方式：逐个连接Redis服务，清空数据库：flushall
+    4. Redis服务的重启，不需要再执行创建集群的命令，启动所有Redis服务，集群自动开启;
+[- 访问集群 -]
+    redis-cli -h IP -c -p PORT -a Password  # -c表示连接redis集群
+1. 访问redis集群中的任意一个节点
+    redis-cli -h 127.0.0.1 -c -p 7001  ==&gt; 没有设置密码，不需要使用 -a
+2. 登录之后的命令
+    1. info：查看所有信息;
+    2. info replication：只查看replication，当前节点的身份、状态等信息;
+    3. cluster nodes：查看当前集群中的所有节点，及其主从关系;
+        7ffc63c7283a05b799d553002bf1d14ef413a655 127.0.0.1:7004@17004 slave 9e191422······
+        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 127.0.0.1:7002@17002 master - 0 155······
+        ······
+        1. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
+        2. 每个节点都会记录其他节点的ID，而不是通过IP或端口号，因为IP/端口号可能变化，而ID在整个生命周期内是不会变的;
+    4. set/get数据时，可能会提示 Redirected to slot [xxxx] located at 127.0.0.1:700x，表示集群搭建成功.
+3. Redis Cluster采用去中心化、去中间件的设计，即集群中的每个节点都是平等的，都保存各自的数据和整个集群的状态;
+    1. 每个节点都和其他节点连接，而且这些连接保持活跃，保证了只需要连接集群中的任意节点，就可以获取到其他节点的数据;
+    2. get的数据被存储在哪个slot下，就重定向到该slot所分配的节点去获取数据，整个数据查找过程由 Redis Cluster 完成.
+4. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
+5. Java使用 Jedis 访问Redis集群
+    //在nodes中指定每个节点的地址
+    Set&lt;HostAndPort&gt; nodes = new HashSet&lt;&gt;();
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7001));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7002));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7003));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7004));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7005));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7006));
+    //创建一个JedisCluster对象，jedisCluster在系统中是单例的
+    JedisCluster cluster = new JedisCluster(nodes);
+    cluster.set(&quot;name&quot;, &quot;Hello World&quot;);
+    cluster.set(&quot;value&quot;, &quot;100&quot;);
+    String name = cluster.get(&quot;name&quot;);
+    String value = cluster.get(&quot;value&quot;);
+    //系统关闭时关闭JedisCluster
+    cluster.close();
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/12/RabbitMQ/" rel="next" title="RabbitMQ">
+                <i class="fa fa-chevron-left"></i> RabbitMQ
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-conf"><span class="nav-number">2.</span> <span class="nav-text">redis.conf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#远程访问"><span class="nav-number">2.1.</span> <span class="nav-text">远程访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据淘汰策略"><span class="nav-number">2.2.</span> <span class="nav-text">数据淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">2.3.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF"><span class="nav-number">2.4.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订阅发布"><span class="nav-number">3.</span> <span class="nav-text">订阅发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">4.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存的数据一致性"><span class="nav-number">5.</span> <span class="nav-text">缓存的数据一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高并发"><span class="nav-number">6.</span> <span class="nav-text">高并发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存问题"><span class="nav-number">6.1.</span> <span class="nav-text">缓存问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高并发思路"><span class="nav-number">6.2.</span> <span class="nav-text">高并发思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从复制"><span class="nav-number">6.3.</span> <span class="nav-text">主从复制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群：Redis-Cluster"><span class="nav-number">7.</span> <span class="nav-text">集群：Redis-Cluster</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#去中心化"><span class="nav-number">7.1.</span> <span class="nav-text">去中心化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容错性"><span class="nav-number">7.2.</span> <span class="nav-text">容错性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点分配"><span class="nav-number">7.3.</span> <span class="nav-text">节点分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建集群"><span class="nav-number">7.4.</span> <span class="nav-text">搭建集群</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

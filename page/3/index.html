@@ -2429,7 +2429,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/02/SpringBoot进阶/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/15/Redis高级/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -2448,7 +2448,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/04/02/SpringBoot进阶/" itemprop="url">SpringBoot进阶</a></h1>
+                <a class="post-title-link" href="/2016/04/15/Redis高级/" itemprop="url">Redis高级</a></h1>
         
 
         <div class="post-meta">
@@ -2460,8 +2460,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-02T00:00:00+08:00">
-                2016-04-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-15T00:00:00+08:00">
+                2016-04-15
               </time>
             
 
@@ -2522,353 +2522,315 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="SpringMVC新增注解"><a href="#SpringMVC新增注解" class="headerlink" title="SpringMVC新增注解"></a>SpringMVC新增注解</h2><pre><code>1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping
-   来帮助简化常用的HTTP方法的映射;
-    1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);
-    2. @PostMapping是 @RequestMapping(method=RequestMethod.POST) 的缩写;
-2. @RestController：相当于 @ResponseBody + @Controller 的组合;
-    @RestController
-    @RequestMapping(&quot;/user&quot;)
-    public class RestController {
-        @GetMapping(&quot;/getList&quot;)
-        public List&lt;User&gt; getList() {
-            List&lt;User&gt; us = dao.findAll();
-            return us;
-        }
-    }
-    1. @RestController 的方法都只能返回String、Object、Json等实体对象;
-    2. 方法返回的对象数据会被jackson转为JSON字符串，写入响应体中;
-    3. 如果想要跳转页面，则用 ModelAndView 封装;
-    @GetMapping(&quot;/index&quot;)
-    public ModelAndView toIndex() {
-        ModelAndView mv = new ModelAndView(&quot;index&quot;);
-        return mv;
-    }
-</code></pre><h2 id="属性注入"><a href="#属性注入" class="headerlink" title="属性注入"></a>属性注入</h2><h3 id="Spring的属性注入"><a href="#Spring的属性注入" class="headerlink" title="Spring的属性注入"></a>Spring的属性注入</h3><pre><code>1. Druid是Java语言中最好的数据库连接池，能够提供强大的监控和扩展功能，引入其依赖坐标：druid
-2. Java配置主要依靠Java类和注解，比较常用的注解如下：
-    1. @Configuration：声明一个类为配置类，代替XML配置文件;
-    2. @Bean：声明在方法上，将方法的返回值加入到IoC Bean容器，代替&lt;bean&gt;标签;
-    3. @Value：属性注入;
-    4. @PropertySource：指定外部属性配置文件.
-4. JDBC相关的配置类JdbcConfig
-    1. 数据库的连接信息：resources/jdbc.properties
-        jdbc.driverClassName=com.mysql.cj.jdbc.Driver
-        jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-        jdbc.username=root
-        jdbc.password=123456
-    2. JDBC配置类JdbcConfig
-        @Configuration
-        @PropertySource(&quot;classpath:jdbc.properties&quot;)
-        public class JdbcConfig {
-            @Value(&quot;${jdbc.driverClassName}&quot;)
-            private String driverClassName;
-            ... //url、username、password
+            <h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><pre><code>1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能；
+2. Redis与Memcache
+    1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；
+    2. 实现方式：Redis是单线程，Memcache是多线程；
+    3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memcache的数据只存储在内存中，没有持久化功能；
+    4. Redis除了基本的 k-v 结构，还支持多种其他复杂结构、事务等高级功能，它已经不仅仅是一个缓存服务；
+    5. Memcache只支持基本的 k-v 结构，功能相对单一；
+    6. 可用性：Redis支持主从复制、数据分片、哨兵监控；Memcache没有分片功能，需要从客户端支持。
+3. 安装
+    cd /usr/local/
+    wget http://download.redis.io/releases/redis-5.0.4.tar.gz
+    tar -zxvf /redis-5.0.4.tar.gz
+    cd redis-5.0.4
+    make &amp;&amp; make install
+</code></pre><h2 id="redis-conf"><a href="#redis-conf" class="headerlink" title="redis.conf"></a>redis.conf</h2><pre><code>1. Redis默认不是以守护进程的方式运行，可以通过该配置项修改，使用yes启用守护进程
+    daemonize no
+2. 当Redis以守护进程方式运行时，Redis默认会把pid写入/var/run/redis.pid文件
+    pidfile /var/run/redis.pid
+3. Redis监听端口，默认为6379
+    port 6379
+4. 绑定的主机地址
+    bind 127.0.0.1
+5. 当客户端闲置多长时间后关闭连接，如果指定为0，表示关闭该功能
+    timeout 300
+6. 指定日志记录级别，Redis共支持四个级别：debug、verbose、notice、warning，默认为verbose
+    loglevel verbose
+7. 日志记录方式，默认为标准输出，如果配置Redis为守护进程方式运行，而这里又配置为日志记录方式为标准输出，
+   则日志将会发送给/dev/null
+    logfile stdout
+8. 设置数据库的数量，默认为16，编号0-15，默认操作是 0 号数据库
+    databases 16
+9. RDB方式的持久化，默认方式
+    save 900 1
+    save 300 10
+    save 60 10000
+10. 指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩;
+    rdbcompression yes
+    1. 如果为了节省CPU时间，可以关闭该选项，但会导致数据库文件变的巨大.
+11. 指定本地数据库文件名，默认值为dump.rdb
+    dbfilename dump.rdb
+12. 指定本地数据库存放目录，默认就是当前目录
+    dir ./
+13. 当本机为slav服务时，设置master服务的IP地址及端口，在Redis启动时，它会自动从master进行数据同步
+    slaveof &lt;masterip&gt; &lt;masterport&gt;
+14. 当master服务设置了密码保护时，slav服务连接master的密码
+    masterauth &lt;master-password&gt;
+15. 设置Redis连接密码，如果配置了密码，客户端在连接Redis时需要通过AUTH &lt;password&gt;命令提供密码，默认关闭
+    requirepass foobared
+16. 设置同一时间最大客户端连接数，默认无限制;
+    maxclients 128
+    1. Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件描述符数;
+    2. 如果设置 maxclients 0，表示不作限制;
+    3. 当客户端连接数到达限制时，Redis会关闭新的连接并向客户端返回max number of clients reached错误信息.
+17. 指定Redis最大内存限制
+    maxmemory &lt;bytes&gt;
+    1. Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key;
+    2. 如果这种方式处理后，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读取操作;
+    3. Redis新的 vm 机制会把 Key 存放内存，Value 存放在 swap 区.
+18. AOF方式的持久化，默认关闭
+    appendonly no
+    appendfilename appendonly.aof
+    appendfsync everysec  # no  always  everysec
+19. 指定包含的其它配置文件
+    include /path/to/local.conf
+    1. 在同一主机上，多个Redis实例可以使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件.
+</code></pre><h3 id="远程访问"><a href="#远程访问" class="headerlink" title="远程访问"></a>远程访问</h3><pre><code>1. Redis默认不允许远程访问，修改配置文件：
+    1. bind 127.0.0.1 # 注释掉 或者 改为本机的IP地址
+    2. protected-mode no  # 如果不设置密码，则关闭保护模式
+    3. deamonize yes  # 后台启动运行Redis
+2. Redis数据库由一个整数索引标识，而不是一个具体的数据库名称，默认操作的数据库是0号;
+    1. select 数据库索引：切换数据库;
+    2. move key 数据库索引：移动key到指定数据库;
+    3. flushdb：清空当前数据库的key;
+    4. flushall：清空所有数据库的key.
+</code></pre><h3 id="数据淘汰策略"><a href="#数据淘汰策略" class="headerlink" title="数据淘汰策略"></a>数据淘汰策略</h3><pre><code>1. Redis脚本：Redis使用 Lua 解释器来执行脚本，Redis2.6通过内嵌支持 Lua 环境，执行脚本的常用命令为 EVAL
+2. Redis数据淘汰策略
+    1. Redis官方的警告：当内存不足时，Redis会根据配置的缓存策略淘汰部分Key，以保证写入成功;
+    2. 当无淘汰策略 或者没有找到合适的key时，Redis直接返回 Out of Memory 错误;
+    3. 在配置文件 redis.conf 中，允许设置的最大缓存大小：maxmemory 512G
+3. Redis提供的数据淘汰策略
+    1. volatile-lru：从已设置过期时间的数据集中，挑选最近最少使用的数据淘汰;
+    2. volatile-lfu：从已设置过期的key中，淘汰一段时间内使用次数最少的;
+    3. volatile-ttl：从已设置过期时间的数据集中，淘汰最近将要过期的数据;
+    4. volatile-random：从已设置过期时间的数据集中，随机选择淘汰的数据;
+    5. allkeys-lru：从数据集中，淘汰最近最少使用的数据;
+    6. allkeys-lfu：从所有key中，淘汰一段时间内使用次数最少的;
+    7. allkeys-random：从数据集中，随机选择淘汰的数据;
+    8. no-enviction：不采用任何淘汰策略，默认配置.
+4. 在平时使用时，应尽量主动设置/更新key的过期时间，主动剔除不活跃的旧数据，有助于提升查询性能.
+</code></pre><h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><pre><code>1. RDB：默认持久化方案，当满足一定条件时，Redis会自动将内存中的数据全部持久到硬盘文件中;
+    1. 在配置文件redis.conf中配置RDB的条件：save (time) (count)
+    2. 当满足在time(秒)时间内，至少进行了count次修改后，触发持久化条件，进行RDB快照
+2. 默认配置(三者是或的关系)
+    save 900 1  # 15分钟内，有至少1个键被更改，则触发RDB快照
+    save 300 10  # 5分钟内，有至少10个键被更改
+    save 60 10000  # 1分钟内，至少有10000个键被更改
+3. 以快照的方式写入到二进制文件中，默认文件名：dump.rdb
+    dbfilename dump.rdb  #本地数据库文件
+    dir  ./  #本地数据库的存放路径，./ 表示当前目录
+4. 快照：保存数据、还原数据极快，适用于灾难性备份;
+5. 触发快照的条件，除了配置文件中配置的RDB快照，在服务器正常关闭时，shutdown，也会触发快照;
+2. RDB的流程：
+    1. Redis使用fork函数来复制一份当前进程(父进程)的副本(子进程);
+    2. 父进程继续接收并处理请求，子进程开始把内存中的数据写入硬盘中的临时文件;
+    3. 子进程写完后，会使用临时文件替代旧的RDB文件;
+</code></pre><h3 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h3><pre><code>1. AOF：把每一条服务端接收到的写命令都记录下来，每隔一定时间，写入硬盘的AOF文件中;
+    1. 当服务器重启后，重新执行这些命令，恢复数据;
+    appendonly yes  # 开启AOF
+    2. 每收到写命令时，都会记录到文件中，默认文件名：appendonly.aof
+2. 这种方式没有RDB快照的限制，适用于Redis意外宕机的数据恢复;
+3. AOF的缺点也很明显，占用较大的内存，所以Redis的默认持久化策略是RDB
+4. AOF写入的频率：同步策略三选一
+    appendfsync always  # 每次都同步(最安全但最慢)
+    appendfsync everysec  # 每秒同步(默认)
+    appendfsync no  # 不主动同步，由操作系统来决定(最快但不安全)
+    1. 默认情况下，文件会先写入到系统的缓存中，系统每30s同步一次，才会真正写入到硬盘;
+    2. 如果在这30s内，服务器宕机，那么数据也会丢失;
+  5. AOF文件重写
+      1. 当记录命令过多时，必然会出现对同一个key的多次写操作，此时只需要记录最后一条即可，前面的记录都毫无意义;
+      2. 因此，当满足一定条件时，Redis会对AOF文件进行重写，移除对同一个key的多次操作命令，只保留最后一条;
+auto-aof-rewrite-percentage 100
+    1. 当前的AOF文件大小超过上一次重写时的AOF文件大小的百分之多少时，会再次进行重写;
+    2. 如果之前没有重写过，则以启动时的AOF文件大小为依据;
+auto-aof-rewrite-min-size 64mb
+    1. 限制允许重写的最小AOF文件大小，通常在AOF文件很小的时候、即使其中有些冗余的命令，也是可以忽略的;
+</code></pre><h2 id="订阅发布"><a href="#订阅发布" class="headerlink" title="订阅发布"></a>订阅发布</h2><pre><code>1. Redis的发布订阅是一种消息通信模式：发送者发送消息，订阅者接收消息，客户端可以订阅任意数量的频道;
+2. 订阅频道
+    1. subscribe 频道1 频道2 ... : 订阅指定的一个或多个频道;
+    2. psubscribe 模式1 模式2... : 订阅一个或多个符合指定模式的频道;
+3. 发布频道
+    publish 频道1 消息
+4. 退订频道
+    1. unsubscribe 频道1 频道2 ...
+    2. punsubscribe 模式1 模式2 ...
+5. 比如：客户端1、2 订阅频道cctv5，客户端3 向频道cctv5 发布消息，客户端1、2 就会受到订阅的消息;
+6. 应用：构建实时消息系统，如普通的即时聊天、群聊等功能；
+    1. 在一个博客网站，有100个粉丝订阅了AA，当AA发布新文章时，就可以推送消息给这100个粉丝;
+    2. 微信公众号模式;
+</code></pre><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><pre><code>1. Redis事务可以一次执行多个命令，按顺序串行化执行，且执行过程中不许加塞;
+    1. 批量操作在发送 EXEC 命令前被放入队列缓存;
+    2. 收到 EXEC 命令后，进入事务执行，事务中任何命令执行失败，其余命令依然被执行;
+    3. 在事务执行过程中，其他客户端提交的命令请求不会插入到事务执行序列中;
+    4. 总的来说，Redis会将一个事务中的所有命令序列化，然后按顺序执行，且不允许出现加塞行为.
+2. 事务经历的三个阶段：开启事务 --&gt; 命令入列 --&gt; 执行事务;
+3. A向B转账
+    multi  #开启事务，以后的命令会依次进入到序列中
+    get account:a
+    get account:b
+    decrby account:a 50  #A减50
+    incrby account:b 50  #B加50
+    exec  #执行事务
+4. discard：取消事务，放弃队列中的所有命令；开启了事务，但不想执行 exec 命令时，可执行 discard 命令取消事务;
+5. 错误处理：
+    1. 如果队列中的某个命令出现错误，比如操作的key不存在，属于逻辑业务的错误，那么这条命令不再执行，
+    而其他命令仍照常执行，而且不会回滚;
+    2. 但如果某个命令出现报告错误(语法错误)，比如输入的命令不存在，Redis会立即报错，那么Redis会取消事务，
+    所有命令都不会执行;
+6. watch/unwatch
+    1. 当两个事务同时操作同一个key时，可能会导致数据的不一致;
+    2. watch key key ... : 监视key，在开启事务之后、执行事务之前，这个key被其他命令改动了，
+    那么当前事务将会被打断，并回滚;
+    3. unwatch：取消对所有key的监视;
+    4. 如果在执行 watch 命令之后，只要执行了 exec 或 discard 命令，watch会自动取消，无需再执行 unwatch 命令.
+7. 应用场景：
+    1. 一组命令必须同时执行，或者都不执行;
+    2. 保证一组命令在执行过程中不被其他命令插入;
+    3. 商品秒杀活动、转账;
+</code></pre><h2 id="缓存的数据一致性"><a href="#缓存的数据一致性" class="headerlink" title="缓存的数据一致性"></a>缓存的数据一致性</h2><pre><code>1. Redis缓存与MySQL中的数据要保证一致性;
+2. 实时同步：适用于对一致性要求比较高的业务;
+    1. 缓存中不存在，则去数据库查询，并保存到缓存中;
+    2. 如果数据库中的数据修改了，缓存也要修改;
+3. 在SpringBoot中，采用注解的方式来完成 if-else 的工作
+    1. @Cacheable：查询时使用，Long类型需要转为String类型，否则会抛出异常;
+    2. @CachePut：更新时使用，此注解一定会从数据库中查询数据;
+    3. @CacheEvict：删除时使用;
+    4. @Caching：组合用法;
+4. 异步队列：对于并发程度较高的情况，则采用异步消息队列的方式同步;
+5. 阿里的同步工具canal：模拟MySQL slave和master(主从)的同步机制，监控DB bitlog的日志更新来触发缓存的更新;
+6. 采用UDF自定义函数的方式：面向MySQL的API进行编程，利用触发器进行缓存同步，UDF主要由C/C++实现;
+</code></pre><h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><h3 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h3><pre><code>1. 缓存穿透
+    1. 查询一个不存在数据时，缓存中没有，就需要从数据库中查询，查不到数据就不写入缓存中，导致每次请求
+    这个不存在的数据时，都要到数据库中去查询，造成缓存穿透;
+    2. 解决方式：持久层查询不到数据时，就缓存一个空结果(空字符串)，每次查询时先判断缓存中是否存在key，
+    如果有，则直接返回空值，表示此数据不存在，否则就去查询数据库;
+    3. 另外，持久层 insert 此数据时，及时清除查询的key，或者设置空结果的缓存时间;
+2. 缓存雪崩
+    1. 如果缓存集中在一段时间内失效，发生大量的缓存穿透，所有的查询都落在数据库上，造成缓存雪崩;
+    2. 缓存雪崩没有完美的解决方案，应分析用户行为，尽量将缓存失效时间均匀分布;
+    3. 大多数系统设计者会考虑加锁/分布式锁，或者队列的方式来保证单线程/进程去写缓存，从而避免失效时
+    大量的并发请求落在数据库上;
+3. 热点key
+    1. 某个key访问非常频繁，当key失效时，将会有大量线程来构建缓存，导致负载增加，系统崩溃;
+    2. 解决方案：
+        1. 使用锁，单机使用synchronized、lock等，分布式使用分布式锁;
+        2. 不设置缓存过期时间，而是在对应的value里设置一个时间，如果检测到超过了这个时间，则异步更新缓存;
+        3. 在value里设置一个比过期时间t0小的过期时间t1，当t1过期时，延长t1，并更新缓存;
+        4. 设置标签缓存，并设置过期时间，标签缓存过期后，异步更新实际缓存;
+4. 缓存预热：在项目即将发布上线之前，清空Redis数据库，然后由开发者把所有的功能调试一遍，
+   这样Redis中就有了一些缓存数据，然后再发布项目，这样做也是为了避免大量用户同时去查询MySQL数据库了;
+</code></pre><h3 id="高并发思路"><a href="#高并发思路" class="headerlink" title="高并发思路"></a>高并发思路</h3><pre><code>1. 在实际项目中，一般不会只是用一台Redis
+    1. 从结构上来说，单个Redis服务器会发生单点故障，并且一台服务器处理所有的请求负载，压力较大;
+    2. 从容量上来说，单个Redis服务器的内存容量有限，就算容量为256G，也不能都用作Redis存储内存，
+    单台Redis最大使用内存不应超过20G;
+2. 高并发的指标：响应时间、吞吐量、每秒查询率QPS、并发用户...
+3. 在方法论中，提高系统并发能力的方式主要有两种：垂直扩展、水平扩展
+    1. 垂直扩展：提升单机的处理能力，包括增强单机硬件性能、提升单机架构性能;
+    2. 水平扩展：增加服务器数量，线性扩充系统性能;
+</code></pre><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><pre><code>1. 一个Redis服务有多个复制品，这个服务称为Master，其他复制品称为Slaves
+2. 在Redis主从模式中，一台主库可以有多个从库，但一个从库只能有一个主库;
+3. Redis默认支持主从复制，配置极其简单::自行百度
+4. 单机主从复制(一台机器，多个Redis服务)，集群主从复制
+</code></pre><h2 id="集群：Redis-Cluster"><a href="#集群：Redis-Cluster" class="headerlink" title="集群：Redis-Cluster"></a>集群：Redis-Cluster</h2><pre><code>1. Redis搭建集群的方案有多种，Redis3.0之前大多采用哨兵模式、主从复制;
+2. 从Redis3.0开始支持 redis-cluster 集群，至少需要 3(Master)+3(Slave) 才能搭建集群;
+</code></pre><h3 id="去中心化"><a href="#去中心化" class="headerlink" title="去中心化"></a>去中心化</h3><pre><code>1. Redis-Cluster采用去中心化结构，每个节点都保存数据和整个集群状态，每个节点都和其他所有节点连接;
+2. 所有节点彼此互联(PING-PONG机制)，内部使用二进制协议优化传输速度和带宽;
+3. 节点的fail是通过集群中超过半数的节点检测失效时才生效;
+4. 客户端与Redis节点直连，不需要中间Proxy层，客户端只需要连接集群中的任意一个节点即可;
+5. Redis-Cluster把所有的物理节点映射到 0-16383 slot上，Cluster负责维护;
+6. Redis集群预分配 16384 个哈希槽，在Redis集群中放置一个 key-value 时，Redis先对key使用 crc16 算法
+   计算出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽，
+   Redis会根据节点数量大致均等地将哈希槽映射到不同的节点上;
+</code></pre><h3 id="容错性"><a href="#容错性" class="headerlink" title="容错性"></a>容错性</h3><pre><code>1. 投票机制：由集群中所有的Master参与，如果半数以上的Master节点与当前Master节点通信超时，则认为当前Master节点挂掉;
+2. 如果集群中的某个Master挂掉，且它没有Slave，则集群进入fail状态，也可以认为集群的Slot映射 0-16383 不完整时进入fail状态;
+3. 如果集群超过半数以上的Master挂掉，无论是否有Slave，集群都进入fail状态.
+</code></pre><h3 id="节点分配"><a href="#节点分配" class="headerlink" title="节点分配"></a>节点分配</h3><pre><code>1. 三个主节点分别是A、B、C，它们可以是一台机器上的三个端口，也可以是三台不同的服务器;
+2. 采用哈希槽的方式来分配 16384 个Slot时，三个节点分别承担的Slot区间：A[0-5460]，B[5461-10922]，C[10923-16383]
+3. 新增一个主节点D，Cluster会从各个主节点的前面各取一部分Slot到 D 上;
+    1. A 覆盖 [1365-5460]，B 覆盖 [6827-10922]，C 覆盖 [12288-16383]
+    2. D 覆盖 [0-1364，5461-6826，10923-12287]
+4. Redis-Cluster的节点分配体现了去中心化思想，不会去优待任何节点;
+</code></pre><h3 id="搭建集群"><a href="#搭建集群" class="headerlink" title="搭建集群"></a>搭建集群</h3><pre><code>1. 集群中至少应该有奇数个节点，同时每个节点至少有1个备份节点，主节点、备份节点由 Redis-Cluster 确定;
+2. 真集群 - 至少6台机器，假集群 - 一台机器中存在6个Redis服务;
+[- 使用一台机器模拟：ubuntu、redis-v5.0.4、一台机器模拟 -]
+1. 创建Redis节点安装目录(集群目录)
+    mkdir /usr/local/redis_cluster
+2. 在 redis_cluster 目录下，创建6个文件夹：7001-7006，分别代表6个节点
+    mkdir 7001 7002 ... 7006
+3. 把 redis.conf 分别拷贝到这6个目录下，修改这些目录下的redis.conf，以7001为例
+    bind 192.168.103.30  # 直接注释掉(必配)
+    port  7001  # 绑定端口号，分别对应7001-7006，以区分Redis服务(必配)
+    protected-mode no  #如果不设置密码，则关闭保护模式(必配)
+    daemonize  yes  # redis后台运行(守护进程的方式)
+    pidfile  /var/run/redis_7001.pid  # 修改PID进程文件名(必配)
+    logfile  /usr/local/redis_cluster/7001/redis.log  #日志文件名
 
-            @Bean
-            public DataSource getDataSource() {
-                DruidDataSource ds = new DruidDataSource();
-                ds.setDriverClassName(driverClassName);
-                ds.setUrl(url);
-                ds.setUsername(username);
-                ds.setPassword(password);
-                return ds;
-            }
-        }
-</code></pre><h3 id="SpringBoot的属性注入"><a href="#SpringBoot的属性注入" class="headerlink" title="SpringBoot的属性注入"></a>SpringBoot的属性注入</h3><pre><code>1. SpringBoot对Spring的属性注入做了优化，引入Druid的依赖坐标;
-2. SpringBoot的配置文件：resources/application.properties
-    jdbc.driverClassName=com.mysql.cj.jdbc.Driver
-    jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-    jdbc.username=root
-    jdbc.password=123456
-3. lombok：通过注解的方式，在编译时自动生成构造器、getter/setter、equals、hashcode、toString()
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
-        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
-        &lt;version&gt;1.18.6&lt;/version&gt;
-        &lt;scope&gt;provided&lt;/scope&gt;
-    &lt;/dependency&gt;
-    1. 常用的注解：@Data、@Slf4j，都是注解在类上;
-    2. @Data：在编译期自动生成getter、setter... 源码中没有变化，只存在于编译生成的class文件中;
-    3. @Slf4j：等效于在类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class)
-    4. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
-4. SpringBoot的配置文件是自动加载的，定义一个POJO，专门用于映射JDBC相关的字段;
-    1. @ConfigurationProperties：把配置文件中的键值数据映射到当前Java类的属性上;
-        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
-        @Data
-        public class JdbcProperties {
-            private String driverClassName;
-            private String url;
-            private String username;
-            private String password;
-        }
-    2. prefix属性：声明配置文件中的字段前缀.
-5. JdbcProperties有多种使用方式
-    1. 在 JdbcProperties 上注解 @Component，添加进Spring IoC容器中，供其他Bean对象使用;
-    2. @EnableConfigurationProperties：使用 @ConfigurationProperties 注解的Java类;
-    @Configuration
-    @EnableConfigurationProperties(JdbcProperties.class)
-    public class JdbcConfig {
-        @Autowired
-        private JdbcProperties jdbc;  //1. @Autowired的方式注入JdbcProperties对象
-
-        public JdbcConfig(JdbcProperties jdbc) { //2.构造方法的方式注入JdbcProperties对象
-
-        }
-        @Bean
-        public DataSource getDataSource(JdbcProperties prop) {  //3.方法参数的方式注入
-            DruidDataSource ds = new DruidDataSource();
-            ds.setDriverClassName(prop.getDriverClassName());
-            ds.setUrl(prop.getUrl());
-            ds.setUsername(prop.getUsername());
-            ds.setPassword(prop.getPassword());
-            return ds;
-        }
-    }
-6. 如果只有一个Bean对象使用JDBC的连接信息，还可以优雅地映射配置文件中的键值
-    1. 不需要属性映射类JdbcProperties，直接在对应Bean对象上使用 @ConfigurationProperties
-    @Configuration
-    public class JdbcConfig {
-        @Bean
-        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
-        public DataSource getDataSource(JdbcProperties prop) {
-            return new DruidDataSource();
-        }
-    }
-    2. getDataSource() 返回一个DruidDataSource对象，@ConfigurationProperties注解在此对象上;
-    3. jdbc.driverClassName、jdbc.url... 的字段值映射到DruidDataSource对象中的同名属性上.
-</code></pre><h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><pre><code>1. yaml/yml
-    jdbc:
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-        username: root
-        password: 123456
-        user:
-            name: Java
-            age: 21
-            language:
-                    - java
-                    - php
-                    - ios
-===&gt;
-    @Data
-    public class JdbcProperties {
-        private String driverClassName;
-        private String url;
-        private String username;
-        private String password;
-        private User user = new User();
-        class User {
-            private String name;
-            private int age;
-            private List&lt;String&gt; language;
-        }
-    }
-2. resources/application.yaml
-    1. 自定义SpringMVC的默认配置
-        server:
-            port: 8888    # 配置服务器的端口号
-            servlet:
-                path: &quot;*.do&quot;    # 访问映射路径，默认是&quot;/&quot;，会影响所有的请求路径
-    2. Log4j相关
-        logging:    # 日志配置(log4j相关的依赖已经被集成)
-            level:    # 控制日志级别，是一个Map集合
-                cn.boot: debug    # cn.boot包下的日志级别为debug
-                org.springframework: debug
-3. ResourceProperties中定义了静态资源的查找方向
-    classpath:/META-INF/resources/
-    classpath:/resources/
-    classpath:/static/
-    classpath:/public/
-    1. 注意：classpath 指的就是 src/main/resources 目录;
-    2. META-INF/resources、resources、static、public 都是 src/main/resources/ 下的目录;
-    3. 比如创建resources/static目录，放入图片、CSS、JS、HTML等静态资源，然后就能访问这些资源了;
-</code></pre><h2 id="自定义拦截器"><a href="#自定义拦截器" class="headerlink" title="自定义拦截器"></a>自定义拦截器</h2><pre><code>    @Slf4j
-    public class MyInterceptor implements HandlerInterceptor {
-        public boolean preHandle(......) {
-            log.debug(&quot;preHandle debug log&quot;);
-            return true;
-        }
-        ......
-    }
-2. SpringBoot规定：
-    1. 如果要保留SpringBoot的一些默认MVC特征，同时又想自定义一些MVC配置，如拦截器、格式化器、视图控制器、
-    消息转发器... 就必须实现WebMvcConfigurer，并使用 @Configuration，但一定不能使用 @EnableWebMvc;
-    2. 如果想要完全自定义SpringMVC，不保留默认的一切MVC特征，则使用 @Configuration 和 @EnableWebMvc;
-3. 配置自定义的拦截器
-    @Configuration
-    public class MvcConfig implements WebMvcConfigurer {
-        public void addInterceptors(InterceptorRegistry registry) {
-            //添加进自定义的拦截器
-            registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/**&quot;); //Ant风格的路径
-        }
-    }
-</code></pre><h2 id="整合连接池"><a href="#整合连接池" class="headerlink" title="整合连接池"></a>整合连接池</h2><pre><code>1. DBCP是一款老牌的JDBC连接池，出自Apache;
-2. cp30与Druid都是连接池，一个JDBC组件，速度都差不多;
-    1. Hibernate默认使用c3p0;
-    2. Druid可以监控每一条SQL语句的执行性能，从而优化SQL语句.
-3. 速度最快的JDBC连接池是HikariCP(追光者)，Spring也已经默认支持了HikariCP;
-4. Spring提供的JDBC启动器：spring-boot-starter-jdbc，使用Spring默认的连接池，无需再手动引入;
-5. 连接池只是一个JDBC组件，还需要配置数据库驱动，如mysql-connector-java(MySQL)
-6. 在 application.yaml 中，配置Spring启动器中的默认连接池：连接数据库的4大参数;
-    spring:
-        datasource:
-            driver-class-name: com.mysql.cj.jdbc.Driver
-            url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-            username: root
-            password: 123456
-7. 如果想使用其他连接池，如druid，只需要引入druid的依赖，再配置 spring.datasource.type
-    spring:
-        datasource:
-            type: com.alibaba.druid.pool.DruidDataSource
-            ...... # driver-class-name、url、username、password
-</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>2. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
-    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
-    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
-3. 通用Mapper的启动器：mapper-spring-boot-starter
-    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
-    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
-    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
-    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
-    spring:
-        datasource:
-            ...... # driver-class-name、url、username、password
-    mybatis:
-        type-aliases-package: cn.boot.pojo
-4. Dao层接口需要继承 Mapper 接口，泛型为实体类
-    public interface UserMapper extends Mapper&lt;User&gt; {
-        //Mapper中已经提供了常用的CRUD方法
-    }
-    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
-    2. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了.
-5. 在启动类上注解通用Mapper的 @MapperScan , 声明扫描Mapper/Dao层接口所在的包
-    @SpringBootApplication
-    @MapperScan(&quot;cn.boot.mapper&quot;)
-    public class StartQuickBoot {
-        ...
-    }
-6. 实体类相关
-    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
-    2. @Id 注解在属性上，指定主键;
-    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
-    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
-    @Data
-    @Table(name=&quot;tl_user&quot;)
-    public class User {
-        @Id
-        @KeySql(userGeneratedKeys=true)
-        private Integer id;  //自增长的主键
-        private String username;
-        @Transient
-        private String remark;  //额外的属性
-    }
-7. 测试
-    @RunWith(SpringRunner.class)
-    @SpringBootTest
-    public class UserMapperTest {
-        @Autowired
-        private UserMapper mapper;
-
-        @Test
-        public void test() {
-            User u = mapper.selectByPrimaryKey(8);  //按主键查询：where id=8
-        }
-    }
-8. Service层：使用 @Transactional 注解引入事务;
-    @Service
-    public class UserService {
-        @Autowired
-        private UserMapper mapper;
-
-        public User findById(Integer id) {
-            return mapper.selectByPrimaryKey(id);
-        }
-        @Transactional
-        public void insertUser(User user) {  //插入数据时使用事务
-            mapper.insert(user);
-        }
-    }
-9. 使用Controller测试
-    @Slf4j
-    @RestController
-    @RequestMapping(&quot;/user&quot;)
-    public class UserMapperTest {
-        @Autowired
-        private UserService service;  //注入Service对象
-
-        @GetMapping(&quot;/{id}&quot;)
-        public User test(@PathVariable(&quot;id&quot;) Integer id) {
-            log.debug(&quot;test service&quot;);
-            return service.findById(id);
-        }
-    }
-</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略所致，同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，
-   不能读写对方的资源;
-2. 主域名和子域名之间也是跨域，cookie也无法访问;
-3. 同源策略限制的行为：
-    1. Cookie、LocalStorage 和 IndexDB 无法读取;
-    2. DOM 和 JS对象无法获得;
-    3. AJAX 请求不能发送.
-4. 注意：
-    1. 浏览器并没有限制跨站请求的发起，而是返回结果被浏览器拦截了，比如CRSF跨站攻击原理，无论是否跨域，
-    请求已经发给了服务器;
-    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
-5. 解决跨域问题的方案有很多：
-    1. 通过jsonp跨域
-    2. document.domain + iframe跨域
-    3. location.hash + iframe
-    4. window.name + iframe跨域
-    5. postMessage跨域
-    6. 跨域资源共享(CORS)
-    7. 前端通过Nginx解决跨域问题
-    8. nodejs中间件代理跨域
-    9. WebSocket协议跨域
-6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
-7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
-    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
-    2. WebSocket属于服务器推送技术的一种，最大特点就是保持长链接，服务器和客户端都可以主动向
-    对方推送/发送信息，是真正的双向平等对话;
-    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
-</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享;
-2. CORS需要浏览器和服务器同时支持;
-    1. 所有浏览器都支持该功能，IE浏览器不能低于IE10;
-    2. 整个CORS通信过程都是浏览器自动完成，不需要用户参与;
-    3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
-    4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，
-    但用户不会有感觉;
-    5. 实现CORS通信的关键是服务器，只要服务器实现了CORS接口，就可以跨源通信.
-3. CORS与JSONP相比：
-    1. JSONP只能实现GET请求，而CORS支持所有类型的HTTP请求;
-    2. 使用CORS，开发者仍可以使用普通的AJAX发起请求和获得数据，比起JSONP有更好的错误处理;
-    3. JSONP主要被老浏览器支持，它们往往不支持CORS，而绝大多数现代浏览器都已经支持了CORS.
-4. SpringMVC4.2开始，支持使用 @CrossOrigin 解决跨域问题;
-    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
-    2. value、origins属性：允许可访问的域列表;
-    3. maxAge属性：准备响应前的缓存持续的最大时间(s);
-    4. allowedHeaders、exposedHeaders、methods、allowCredentials
-5. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
-    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
-    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
-    3. withCredentials:true 表示对附带身份凭证的请求，服务器不得设置 Access-Control-Allow-Origin=&quot;&quot;,
-    因为请求头中携带了Cookie，如果Access-Control-Allow-Origin=&quot;&quot;，请求将会失败;
-    而设置 Access-Control-Allow-Origin=&quot;http://foo.example&quot;，则会请求成功;
-    其次服务器需要设置 Access-Control-Allow-Credentials:true，否则响应内容不会返回给客户端;
-6. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
-7. 对于不支持 @CrossOrigin 的版本，可以在Filter中拦截此请求，手动添加允许跨域的请求头;
-    setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);
-8. SpringMVC的XML配置文件中，全局配置CORS
-    &lt;mvc:cors&gt;
-        &lt;mvc:mapping path=&quot;/**&quot; /&gt;
-    &lt;/mvc:cors&gt;
-    1. 更加细粒度的配置：
-    &lt;mvc:cors&gt;
-        &lt;mvc:mapping path=&quot;/api/**&quot;
-            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
-            allowed-methods=&quot;GET, PUT&quot;
-            allowed-headers=&quot;header1, header2, header3&quot;
-            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
-            max-age=&quot;3600&quot; /&gt;
-        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
-    &lt;/mvc:cors&gt;
+    cluster-enabled  yes  # 开启集群(必配)
+    cluster-config-file  nodes_7001.conf  # 集群节点的配置文件(必配)
+    cluster-node-timeout  15000  #集群节点的超时时间
+4. 启动各个节点
+    1. 在编译安装Redis的目录中，有一个src目录，分别拷贝到 7001-7006 目录中;
+    2. 分别进入 7001-7006 目录下，使用 sudo src/redis-server ./redis.conf 命令启动当前的Redis服务;  
+    3. 当然，也可以不拷贝src目录，使用同一个 redis-server 命令，指定不同的配置文件，启动6个Redis服务;
+    4. 切记：启动时一定要有权限，因为设置后台运行之后，如果没有权限，它不会提示！
+    5. 查看启动的服务：ps -ef | grep -i redis
+5. 客户端连接/断开节点，测试单个Redis服务
+    1. 连接：src/redis-cli -p 7001
+    2. 停止：src/redis-cli -p 7001 shutdown  //正常关闭，数据会自动保存
+    3. kill -9 PID  //非正常关闭，断电，数据容易丢失
+6. 创建集群：Redis5.0以下
+    1. src目录下命令 redis-trib.rb
+        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
+    2. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
+    3. redis-trib.rb 依赖 Ruby 环境
+        yum -y install ruby ruby-devel rubygems rpm-build   #安装Ruby
+        gem install redis  # gem是ruby的一个工具包，可能会报错，要求Ruby版本为2.2.2以上
+    4. 执行 redis-trib.rb create ... 命令，创建集群;
+7. 创建集群：Redis5.0+
+    1. 从 Redis5.0 开始，不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 来创建集群;
+        redis-cli --cluster create 127.0.0.1:7001 ... 127.0.0.1:7006 --cluster-replicas 1
+        ===&gt; Can I set the above configuration?   yes
+        [OK] All 16384 slots covered.  ===&gt;集群创建成功
+    2. 常见报错：Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
+    3. 解决方式：逐个连接Redis服务，清空数据库：flushall
+    4. Redis服务的重启，不需要再执行创建集群的命令，启动所有Redis服务，集群自动开启;
+[- 访问集群 -]
+    redis-cli -h IP -c -p PORT -a Password  # -c表示连接redis集群
+1. 访问redis集群中的任意一个节点
+    redis-cli -h 127.0.0.1 -c -p 7001  ==&gt; 没有设置密码，不需要使用 -a
+2. 登录之后的命令
+    1. info：查看所有信息;
+    2. info replication：只查看replication，当前节点的身份、状态等信息;
+    3. cluster nodes：查看当前集群中的所有节点，及其主从关系;
+        7ffc63c7283a05b799d553002bf1d14ef413a655 127.0.0.1:7004@17004 slave 9e191422······
+        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 127.0.0.1:7002@17002 master - 0 155······
+        ······
+        1. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
+        2. 每个节点都会记录其他节点的ID，而不是通过IP或端口号，因为IP/端口号可能变化，而ID在整个生命周期内是不会变的;
+    4. set/get数据时，可能会提示 Redirected to slot [xxxx] located at 127.0.0.1:700x，表示集群搭建成功.
+3. Redis Cluster采用去中心化、去中间件的设计，即集群中的每个节点都是平等的，都保存各自的数据和整个集群的状态;
+    1. 每个节点都和其他节点连接，而且这些连接保持活跃，保证了只需要连接集群中的任意节点，就可以获取到其他节点的数据;
+    2. get的数据被存储在哪个slot下，就重定向到该slot所分配的节点去获取数据，整个数据查找过程由 Redis Cluster 完成.
+4. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
+5. Java使用 Jedis 访问Redis集群
+    //在nodes中指定每个节点的地址
+    Set&lt;HostAndPort&gt; nodes = new HashSet&lt;&gt;();
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7001));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7002));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7003));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7004));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7005));
+    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7006));
+    //创建一个JedisCluster对象，jedisCluster在系统中是单例的
+    JedisCluster cluster = new JedisCluster(nodes);
+    cluster.set(&quot;name&quot;, &quot;Hello World&quot;);
+    cluster.set(&quot;value&quot;, &quot;100&quot;);
+    String name = cluster.get(&quot;name&quot;);
+    String value = cluster.get(&quot;value&quot;);
+    //系统关闭时关闭JedisCluster
+    cluster.close();
 </code></pre><hr>
 
           
@@ -2918,7 +2880,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/01/SpringBoot/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/12/RabbitMQ/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -2937,7 +2899,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/04/01/SpringBoot/" itemprop="url">SpringBoot</a></h1>
+                <a class="post-title-link" href="/2016/04/12/RabbitMQ/" itemprop="url">RabbitMQ</a></h1>
         
 
         <div class="post-meta">
@@ -2949,8 +2911,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-01T00:00:00+08:00">
-                2016-04-01
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-12T00:00:00+08:00">
+                2016-04-12
               </time>
             
 
@@ -3011,164 +2973,451 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="SpringBoot与Spring"><a href="#SpringBoot与Spring" class="headerlink" title="SpringBoot与Spring"></a>SpringBoot与Spring</h2><pre><code>1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能;
-2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;
-    1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;
-    2. Spring3.0引入了基于Java的配置，这是一种类型安全的、可重构的配置方式，可以替代XML;
-    3. 除了配置会消耗大量的开发时间，项目的依赖管理也是很麻烦的，版本选择困难，容易冲突.
-3. Spring注解的发展
-    1. Spring1.0时代因为JDK1.5刚出来，注解开发尚未盛行，所以一切Spring配置皆是XML格式;
-    2. Spring2.0时代引入了注解开发，但并未完善，因此并未完全替代XML;
-    3. Spring3.0时代的注解已经非常完善了，因此Spring推荐使用注解(Java配置)代替XML.
-4. SpringBoot解决了Spring的缺点，基于约定优先于配置，开发者只需要关心逻辑业务的代码编写;
-    1. 开箱即用，没有代码生成，也无需XML配置，通过修改默认值来满足特定的需求;
-    2. 提供了一些大型项目中常见的非功能性的特性，如嵌入式服务器、安全、指标、健康检测、外部配置...
-    3. SpringBoot不是对Spring功能上的增强，而是提供一种基于Spring的快速开发方式.
-5. SpringBoot的核心功能
-    1. 起步依赖：本质上是一个Maven项目对象模型(POM)，定义了对其他库的传递依赖;
-    1. 简单来说，起步依赖就是将具备某种功能的坐标打包到一起，并提供一些默认功能.
-    2. 自动配置：SpringBoot的自动配置是一个运行时(应用程序启动时)的过程;
-    2. 考虑了众多因素，才决定Spring配置应该用哪个、不应该用哪个，此过程也是Spring自动完成的。
-6. 在SpringBoot中，默认采用Servlet3.0，它可以完全使用注解取代web.xml了，所以SpringBoot没有了web.xml;
-7. 主流的Java模板引擎：JSP、Velocity、Freemarker、Thymeleaf
-    1. SpringBoot项目是普通的Java工程，没有web.xml，所以通常也不再使用JSP，SpringBoot官方推荐Thymeleaf;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    2. Thymeleaf不仅可以把渲染结果写入Response，还可以写到本地文件中，从而实现页面静态化;
-    3. 页面静态化：把动态渲染的HTML页面变成静态内容保存，比如部署在Nginx中;
-    4. 以后的用户请求到来时，直接访问静态页面，不再经过服务的渲染，从而大大提高并发能力，减小Tomcat的压力.
-</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. 创建一个普通Java项目的Maven工程即可;
-2. 第三方框架要应用在SpringBoot中，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
-3. SpringBoot的项目必须要继承SpringBoot的起步依赖spring-boot-starter-parent
-    &lt;parent&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
-        &lt;version&gt;2.1.4.RELEASE&lt;/version&gt;
-    &lt;/parent&gt;
-4. SpringBoot要集成SpringMVC、进行Web/Controller的开发时，只需要导入web的启动器即可;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-        &lt;!-- 无需指定版本号(如果无法自动配置，还是要手动指定版本号) --&gt;
-    &lt;/dependency&gt;
-5. 创建一个普通类，使用 @SpringBootApplication 声明为一个SpringBoot的引导类(引导应用程序的入口);
-    1. 在 main() 中运行引导类：SpringApplication.run(引导类.class, 可选参数);
-    @SpringBootApplication
-    public class StartSpringBoot {
-        public static void main(String[] args) {
-            SpringApplication.run(StartSpringBoot.class, args);
+            <h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><pre><code>1. 消息队列是典型的 生产者、消费者 模型，简称MQ;
+2. MQ是消息通信的模型，并发的具体实现，目前实现MQ的两种主流方式是：AMQP、JMS
+3. AMQP：高级消息队列协议，一个进程间传递异步消息的应用层协议，为面向消息的中间件设计；
+4. JMS：由Sun公司早期提出的消息标准，为Java应用提供统一的消息操作，与JDBC担任类似的角色；
+5. AMQP与JMS
+    1. JMS定义了统一的接口，规范消息操作；AMQP是通过协议来统一数据交互的格式；
+    2. JMS限定了必须使用Java语言；AMQP只是一种协议，实现方式是跨语言的；
+    3. JMS规定了两种消息模型，而AMQP的消息模型更加丰富。
+6. 常见的MQ
+    1. ActiveMQ：Apache，基于JMS；
+    2. RabbitMQ：采用Erlang语言开发，基于AMQP，可靠性、稳定性好；
+    3. RocketMQ：阿里巴巴，基于JMS，目前交给Apache；
+    4. Kafka：分布式消息系统，高吞吐量。
+</code></pre><h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><pre><code>1. RabbitMQ最初起源于金融系统，用于在分布式系统中存储、转发消息；
+    1. 可靠性：RabbitMQ使用诸如持久化、传输确认、发布确认等机制来保证可靠性；
+    2. 灵活的路由：在消息进入队列之前，通过 Exchange 来路由消息；
+    3. 消息集群：多个 RabbitMQ 服务器可以组成一个集群，形成一个逻辑 Broker；
+    4. 高可用：队列可以在集群中的机器上进行镜像，使得在部分节点出问题的情况下仍然可用；
+    5. 多种协议：RabbitMQ支持多种消息队列协议，比如 STOMP、MQTT...
+    6. 多语言客户端：RabbitMQ几乎支持所有常用语言，比如Java、.NET、Ruby...
+    7. 管理界面：RabbitMQ提供了一个易用的用户界面，可以监控和管理消息Broker；
+    8. 追踪机制：如果消息异常，RabbitMQ提供了消息跟踪机制，从而查找出原因；
+    9. 插件机制：RabbitMQ提供了许多插件，可以从多方面进行扩展，也可以自定义插件。
+2. 安装RabbitMQ，启动服务，配置环境和用户、权限...
+3. Web管理平台的默认端口号是15672，使用配置的用户去登录管理平台：http://localhost:15672
+    1. 创建虚拟主机
+        Admin --&gt; Virtual Hosts --&gt; Add virtual host --&gt; 输入Name，如/test
+        Admin --&gt; Users --&gt; 选择一个用户 --&gt; Permissions
+    2. Current permissions：当前拥有的虚拟主机；
+    3. Set permission：为用户添加虚拟主机。
+4. RabbitMQ是一个消息的代理者(Message Broker)，负责接收消息并传递消息，传递二进制数据。
+</code></pre><h2 id="消息模型"><a href="#消息模型" class="headerlink" title="消息模型"></a>消息模型</h2><pre><code>1. RabbitMQ提供了6种消息模型，但第6种其实属于RPC(远程服务调用)，并不算是MQ；
+    https://www.rabbitmq.com/getstarted.html
+2. 搭建环境(两种方式)
+    1. 创建SpringBoot项目进行测试，引入启动器：spring-boot-starter-amqp
+    2. 创建普通的Maven Java项目，引入依赖：spring-rabbit、slf4j-nop
+</code></pre><h3 id="模型一：Hello-World"><a href="#模型一：Hello-World" class="headerlink" title="模型一：Hello World"></a>模型一：Hello World</h3><pre><code>1. 模型：Producer --&gt; MQ --&gt; Consumer，单个生产者和单个消费者
+2. 创建连接的工具类
+    public class ConnectionUtil {
+        public static Connection getConnection() throws IOException, TimeoutException {
+            //定义连接工厂
+            ConnectionFactory factory = new ConnectionFactory();
+            //设置服务地址和端口
+            factory.setHost(&quot;192.168.103.30&quot;);
+            //Web管理端的默认端口号是15672，访问服务的默认端口号是5672
+            factory.setPort(5672);
+            //设置账号信息：虚拟主机及其对应的用户名、密码
+            factory.setVirtualHost(&quot;/techsel&quot;); //虚拟主机
+            factory.setUsername(&quot;java&quot;);  //用户名
+            factory.setPassword(&quot;123456&quot;);  //密码
+            //通过工厂获取连接
+            return factory.newConnection();
         }
     }
-6. SpringBoot中内置有Tomcat插件，直接运行 main()，在控制台提示Tomcat启动信息：
-    Tomcat started on port(s): 8080 (http) with context path &apos;&apos;
-    1. context path &apos;&apos;：表示web应用的名称(虚拟项目名)为空字符串，访问 http://localhost:8080/ ;
-    2. 当前没有编写任何页面，所以展示的是 Error Page;
-7. 无需任何配置，就可以直接编写Controller层
-    @Controller
-    public class QuickController {
-        @RequestMapping(&quot;/test&quot;)
-        @ResponseBody
-        public String test() {
-            return &quot;Hello SpringBoot&quot;;
-        }
-    }
-    http://localhost:8080/test  ---&gt; Hello SpringBoot
-</code></pre><h3 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h3><pre><code>1. 添加起步依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. IDEA默认不支持热部署，需要设置
-    1. Settings --&gt; Compiler --&gt; 勾选 Build project automatically
-    2. Ctrl+Shift+Alt+/ --&gt; Registry --&gt; 勾选 compiler.automake.allow.when.app.running
-3. 每次修改了Controller层之后，等待服务器重启，刷新浏览器页面.
-</code></pre><h3 id="IDEA快速创建SpringBoot工程"><a href="#IDEA快速创建SpringBoot工程" class="headerlink" title="IDEA快速创建SpringBoot工程"></a>IDEA快速创建SpringBoot工程</h3><pre><code>New Project -&gt; Spring Initializr -&gt; Next -&gt; 设置项目信息 -&gt; Next -&gt; 选择依赖 -&gt; Finish
-1. 除了手动选择的依赖，默认还会引入一个测试的启动器：spring-boot-starter-test
-</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><h3 id="起步依赖"><a href="#起步依赖" class="headerlink" title="起步依赖"></a>起步依赖</h3><pre><code>1. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent;
-2. spring-boot-starter-parent 会对依赖的版本进行管理;
-3. spring-boot-starter-web 中集成了 Tomcat、spring-web、spring-mvc 等Web开发的依赖;
-4. 导入一个启动器的坐标之后，它会根据指定的版本号、去自动管理内部依赖的其他相关库.
-</code></pre><h3 id="自动配置"><a href="#自动配置" class="headerlink" title="自动配置"></a>自动配置</h3><pre><code>1. @SpringBootApplication 内部的三大注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
-2. @SpringBootConfiguration 内部还带有 @Configuration，所以引导类也就是一个配置类;
-3. @EnableAutoConfiguration 是自动配置的核心注解，内部使用了 @Import({AutoConfigurationImportSelector.class})
-4. AutoConfigurationImportSelector中就是自动配置的核心源码;
-5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解.
-</code></pre><h2 id="SpringBoot的配置文件"><a href="#SpringBoot的配置文件" class="headerlink" title="SpringBoot的配置文件"></a>SpringBoot的配置文件</h2><pre><code>1. SpringBoot是基于约定的，所以很多配置都是默认值;
-2. 在需要自定义配置时，根据启动器提供的key名，在SpringBoot的配置文件中指定value值即可;
-3. spring-boot-starter-parent 会自动加载 resources 目录下的三类配置文件;
-    1. application*.yml、application*.yaml、application*.properties;
-    2. 通过这三类配置文件，就可以覆盖默认配置;
-    3. 加载顺序：yml --&gt; yaml --&gt; properties，当有相同的key名配置时，properties中的优先级最高.
-4. 创建 resources/application.properties，实现一些个性化配置;
-    server.port=9090    # 配置Tomcat启动的端口号，默认是8080
-    server.servlet.context-path=/demo    # 配置web应用虚拟目录名，默认是空字符串
-5. YML一种新型配置文件，也是一种标记语言，有两种扩展名：.yml、.yaml
-    1. YML文件格式是由YAML编写的，YAML是一种能够被电脑识别的数据序列化格式，且易读性强;
-    2. YML文件与脚本语言的交互性强，可以被支持YAML库的编程语言程序导入，如C/C++、Python、Java、C#、PHP、Ruby...
-    3. YML文件以数据为核心，比传统的XML文件更简洁.
-</code></pre><h3 id="yml配置文件"><a href="#yml配置文件" class="headerlink" title="yml配置文件"></a>yml配置文件</h3><pre><code>1. 普通数据
-    1. key: value
-    2. key和value之间必须有一个空格：name: Jack
-2. 对象数据/Map数据
-    1. 形式一：缩进形式
-        key:
-            key1: value1
-            key2: value2
-    2. key1、key2前面的空格个数不限定，相同缩进代表同一级别;
-        person:
-            name: Java
-            age: 20
-    3. 形式二：行内形式
-        key: {key1: value1,key2: value2}
-3. 数组、List、Set
-    1. 存放普通字符串
-        key:
-            - value1
-            - value2
-        key: [value1,value2]
-    2. 存放对象
-        key:
-        - key11: value11
-          key12: value12
-        - key22: value22
-          key23: value23
-        key: [{key11: value11,key12: value12},{key22: value22,key23: value23}]
-</code></pre><h3 id="配置文件与配置类的属性映射"><a href="#配置文件与配置类的属性映射" class="headerlink" title="配置文件与配置类的属性映射"></a>配置文件与配置类的属性映射</h3><pre><code>1. 配置文件被加载后，其中的键-值将会被存放到Spring IoC容器中，那么就可以映射到Spring管理的Bean对象中;
-2. @Value 的映射：指定配置文件的key名，映射到Bean对象的属性上，适合数据量较小的情况;
-    @Controller
-    public class QuickController {
-        @Value(&quot;${name}&quot;)
-        private String name;
+3. 生产者
+    public class Send {
+        //队列名称
+        private static final String QUEUE_NAME = &quot;simple_queue&quot;;
 
-        @Value(&quot;${person.name}&quot;)
-        private String name;
-    }
-3. @ConfigurationProperties 的映射
-    @Controller
-    @ConfigurationProperties(prefix=&quot;person&quot;)
-    public class QuickController {
-        private String name;
-        private String age;
-        ... //getter、setter
-    }
-    1. prefix属性：指定对象数据的key，此对象数据的字段会自动与Bean的同名属性建立映射关系;
-    2. 使用 @ConfigurationProperties 时，还需要引入其执行器;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
-        &lt;optional&gt;true&lt;/optional&gt;
-    &lt;/dependency&gt;
-    3. 先在Bean中定义需要的属性，然后在配置文件中配置时，执行器就会提示可配置的属性.
-</code></pre><h2 id="SpringBoot集成其他技术"><a href="#SpringBoot集成其他技术" class="headerlink" title="SpringBoot集成其他技术"></a>SpringBoot集成其他技术</h2><pre><code>1. 使用IDEA快速创建SpringBoot工程，选择web依赖包;
-    @SpringBootApplication
-    public class BootdemoApplication {
-        public static void main(String[] args) {
-            SpringApplication.run(BootdemoApplication.class, args);
+        public static void main(String[] args) throws IOException, TimeoutException {
+            //创建连接，在Web管理平台：Connections 上会多一条连接信息
+            Connection conn = ConnectionUtil.getConnection();
+            //创建通道，在Web管理平台：Channels 上会多一条通道信息
+            Channel channel = conn.createChannel();
+            //声明队列: 设置队列名称, ...
+            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            //消息内容
+            String message = &quot;Hello RabbitMQ&quot;;
+            //向指定的队列中发送消息，在Web管理平台：Queues 上可以查看消息通道及其详细信息
+            channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes());
+            //关闭通道和连接
+            channel.close();
+            conn.close();
         }
     }
-</code></pre><h3 id="整合MyBatis"><a href="#整合MyBatis" class="headerlink" title="整合MyBatis"></a>整合MyBatis</h3><pre><code>1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;
+4. 消费者
+    public class Recv {
+        //队列名称：与生产者声明的队列名称一致
+        private static final String QUEUE_NAME = &quot;simple_queue&quot;;
+
+        public static void main(String[] args) throws IOException, TimeoutException {
+            Connection conn = ConnectionUtil.getConnection();
+            Channel channel = conn.createChannel();
+            //声明队列
+            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            //定义队列的消费者
+            DefaultConsumer consumer = new DefaultConsumer(channel){
+                //消费的回调方法：消费者会一致阻塞，只要MQ中一有消息，就回调此方法，进行消费
+                public void handleDelivery(String consumerTag, Envelope envelope, 
+                    AMQP.BasicProperties properties, byte[] body) throws IOException {
+                    //消费消息: body
+                    String message = new String(body);
+                    System.out.println(&quot;消费者：&quot; + message);
+                }
+            };
+            //监听队列：绑定消息队列和消费者，参数2表示：是否自动进行消息确认(手动/自动ACK)
+            channel.basicConsume(QUEUE_NAME, true, consumer);
+        }
+    }
+5. 启动消费者，监听队列，等待消费消息；再启动生产者，生产消息；在Web管理平台上跟踪连接、通道、消息;
+</code></pre><h3 id="消费者的消息确认机制"><a href="#消费者的消息确认机制" class="headerlink" title="消费者的消息确认机制"></a>消费者的消息确认机制</h3><pre><code>1. 消息确认机制：Acknowlege，当消费者获取消息之后，会向RabbitMQ发送回执ACK，告知消息已经被接收;
+2. RabbitMQ收到回执的ACK后，就会立即删除消息;
+3. 回执ACK有两种情况：自动ACK、手动ACK
+    1. 自动ACK：消息一旦被接收，消费者自动发送ACK;
+        channel.basicConsume(QUEUE_NAME, true, consumer);
+    2. 手动ACK：消息接收后，不发送ACK，去手动调用;
+        channel.basicConsume(QUEUE_NAME, false, consumer);
+4. 在自动回执ACK时，回调方法 handleDelivery() 尚未开始执行，但消息已经从MQ中删除了，一旦回调方法中
+   发生了异常，消息就找不回来了，所以就需要 手动ACK 的方案，确保一些重要的消息不会丢失；
+5. 手动ACK：等待处理逻辑执行完成，再手动回执ACK，从而避免消息的丢失；
+    public void handleDelivery(...) {
+        String message = new String(body);
+        int i = 1/0;  //发生逻辑错误
+        //手动回执ACK
+        channel.basicAck(envelope.getDeliveryTag(), false);
+    }
+    1. 因为发生了逻辑错误，没有手动回执ACK，消息会回滚MQ中，然后再分发给其他消费者，保证消息不会被删除;
+    2. 但是，因为当前消费者没有ACK，在没有断开重连之前，MQ不会再把消息分发给它，所以如果没有其他消费者，
+    就可能造成消息堆积，从而影响MQ的速度.
+</code></pre><h3 id="模型二：Work-queues"><a href="#模型二：Work-queues" class="headerlink" title="模型二：Work queues"></a>模型二：Work queues</h3><pre><code>1. 如果消息处理比较耗时，生产消息的速度远远大于消费消息的速度，那么就可能造成消息堆积;
+2. 模型：Producer --&gt; MQ --&gt; Consumer1、Consumer2，让多个消费者绑定到一个队列上，共同消费队列的消息;
+3. 生产者发送消息
+    for (int i=0; i&lt;100; i++) {
+        String message = &quot;Hello RabbitMQ : &quot; + i;
+        channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes());
+        Thread.sleep(i * 2);  //休眠一段时间，让消费者去消费消息
+    }
+4. 消费者消费消息：创建两个消费者，绑定同一个队列
+    1. 消费者性能相同，则消费能力相同
+        public void handleDelivery(...) {  ---&gt;消费者-1的回调方法
+            String message = new String(body);
+            System.out.println(&quot;消费者111：&quot; + message);
+            //使用手动ACK
+            channel.basicAck(envelope.getDeliveryTag(), false);
+        }
+        public void handleDelivery(...) {  ---&gt;消费者-2的回调方法
+            String message = new String(body);
+            System.out.println(&quot;消费者222：&quot; + message);
+            //使用手动ACK
+            channel.basicAck(envelope.getDeliveryTag(), false);
+        }
+    2. 消费者性能不同，消费者-1的机器配置较差
+        public void handleDelivery(...) {  ---&gt;消费者-2的回调方法
+            String message = new String(body);
+            Thread.sleep(500);  ---&gt; 模拟消费者-2的性能较差，处理消息速度慢
+            System.out.println(&quot;消费者222：&quot; + message);
+        }
+5. 对比结果可知：无论消费者的性能是否相同，它们处理消息的数量总是相同的；
+6. 也就是说，不管消费者是否已经消费完消息(发送回执ACK)，MQ总是平均分配消息给每个消费者；
+7. 让MQ不要平分消息给消费者，让性能好的消费者多消费，性能差的消费者少消费;
+    1. 在每个消息者中，设置 Channel 每次同时只能处理1条消息，在没有回执ACK时，不要再分配消息
+        channel.basicQos(1);
+</code></pre><h3 id="模型三：Publish-Subscribe"><a href="#模型三：Publish-Subscribe" class="headerlink" title="模型三：Publish/Subscribe"></a>模型三：Publish/Subscribe</h3><pre><code>1. 模型3、4、5其实是类似的，都是订阅模型，在生产者和MQ之间增加了一层交换器exchange;
+2. 生产者永远不会把消息直接发给MQ，实际上，生产者也不关心消息是否会被发送给MQ;
+3. 生产者只负责把消息发给交换器，由交换器去决定是把消息传递给所有MQ，还是特定的MQ，亦或者是丢弃消息;
+4. 交换器处理消息的方式，取决于不同的交换类型：direct、topic、headers、fanout，其中headers不常用;
+5. 模型三称为订阅/发布模型，也称为广播，属于交换类型fanout
+    Producer --&gt; X --&gt; MQ1-&gt;Consumer1、MQ2-&gt;Consumer2
+6. 生产者
+    1. 不再直接声明队列，而是声明交换器，并指定交换类型为fanout
+    private static final String EXCHANGE_NAME = &quot;fanout_exchange&quot;;
+    //声明交换器
+    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.FANOUT);
+    2. 发布消息到交换器
+    String message = &quot;Hello RabbitMQ&quot;;
+    channel.basicPublish(EXCHANGE_NAME, &quot;&quot;, null, message.getBytes());
+    3. 在Web管理平台的 Exchanges 上，可以查看创建的交换器.
+7. 消费者
+    private static final String EXCHANGE_NAME = &quot;fanout_exchange&quot;;
+    1. 消费者1、2 使用不同的队列：
+        QUEUE_NAME = &quot;fanout_queue_1&quot;;
+        QUEUE_NAME = &quot;fanout_queue_2&quot;;
+    2. 声明队列之后，把队列绑定到交换器上，其实就是订阅消息
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;&quot;);
+8. 启动消费者1、2，再启动生产者，两个消费者都会收到消息.
+</code></pre><h3 id="模型四：Routing"><a href="#模型四：Routing" class="headerlink" title="模型四：Routing"></a>模型四：Routing</h3><pre><code>1. 设置交换类型为direct，与模型三不同的是：它可以订阅不同的消息类型(Routingkey)，实现定向发布;
+2. 生产者
+    1. 声明交换器
+    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.DIRECT);
+    2. 在发送消息时，指定消息的类型
+    channel.basicPublish(EXCHANGE_NAME, &quot;delete&quot;, null, message.getBytes());
+3. 消费者：在绑定队列到交换器时，指定监听的消息类型；
+    1. 消费者-1：监听2种消息类型
+    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;insert&quot;);
+    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;delete&quot;);
+    2. 消费者-2：只关心1种消息类型
+    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;delete&quot;);
+4. 生产者发送消息类型delete时，消费者-1、2都会收到消息；发送消息类型insert时，只有消费者-1能收到.
+</code></pre><h3 id="模型五：Topics"><a href="#模型五：Topics" class="headerlink" title="模型五：Topics"></a>模型五：Topics</h3><pre><code>1. 设置交换类型为topic，与模型四不同的是，它可以使用通配符;
+2. 消息类型通常都是一个或多个单词组成，单词之间以 . 分割，如item.insert
+3. 通配符的类型和规则
+    1. #：匹配一个或多个词，如audit.# 可以匹配 audit.irs.corp、audit.del
+    2. *：只能匹配一个词，如audit.* 只能匹配 audit.del、audit.ins
+4. 生产者
+    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.TOPIC);
+    channel.basicPublish(EXCHANGE_NAME, &quot;intem.delete&quot;, null, message.getBytes());
+5. 消费者
+    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;item.*&quot;);
+</code></pre><h3 id="消息丢失"><a href="#消息丢失" class="headerlink" title="消息丢失"></a>消息丢失</h3><pre><code>1. 手动回执ACK的方式并不能完全解决消息丢失的问题，比如MQ服务器宕机了;
+2. 虽然集群MQ全部宕机的几率很小，但宕机总会导致消息的丢失，这就需要消息的持久化;
+3. RabbitMQ默认不会持久化消息，重启RabbitMQ服务，会发现交换器、队列、消息统统丢失了;
+    1. 交换器的持久化：生产者声明交换器时，设置第三个参数为true
+    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.TOPIC, true);
+    2. 队列的持久化：消费者声明队列时，设置第二个参数为true
+    channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+4. 消息持久化：生产者发送消息时，设置消息参数BasicProperties
+    1. BasicProperties的构造方法特别多，所以它提供了枚举类型MessageProperties，封装了常用设置;
+    2. 是否持久化的区别在于：BasicProperties构造方法上的参数deliveryMode，2表示启用持久化;
+    3. 默认枚举值BASIC，持久化的枚举值：PERSISTENT_TEXT_PLAIN(文本类型)、PERSISTENT_BASIC(二进制数据流)
+    //发送的是字符串，则可以使用文本类型
+    channel.basicPublish(EXCHANGE_NAME, &quot;item.delete&quot;, MessageProperties.PERSISTENT_TEXT_PLAIN,
+        message.getBytes());
+5. 生产者确认机制
+    1. 手动回执解决了消费者丢失消息，持久化解决了RabbitMQ丢失消息，但生产者在发送消息到MQ时，也可能发送失败;
+    2. 消费者确认机制：消费者收到消息，向MQ发送回执ACK;
+    3. 生产者确认机制：MQ收到消息，向生产者发送确认回执;
+    4. 在生产者中，开启生产者确认;
+        Channel channel = conn.createChannel();
+        channel.confirmSelect();
+    5. 通过生产者确认的相关API，处理消息回执;
+        channel.addConfirmListener(...);  //监听器
+        channel.waitForConfirms([long]);  //等待机制
+        channel.waitForConfirmsOrDie([long]);  //等待机制
+6. 解决消息丢失
+    1. 消费者确认机制(ACK)
+    2. 持久化
+    3. 可靠消息服务：在发送消息前，将消息持久化到数据库，并记录状态
+    4. 生产者确认机制
+7. 消息发送失败的重试问题：可能导致消息的重复性
+    1. 因为网络等原因，导致消息发送时间特别长，但仍发送成功，由于发送时间超时，生产者又发送了一次，导致消息重复;
+    2. 在金融方面，消息的重复性可能导致灾难性问题，此时就需要保证消息处理方的幂等性;
+    3. 幂等性：同一个接口被重复执行时，其结果应该是一致的;
+    4. 有些接口天生就是幂等的，如查询接口；有些接口就不是幂等的，如新增、删除、修改;
+    5. 要保证幂等性，就应该在接口中加入一些特殊的标识，以判断重复性操作，通常是在一定时间内去判断.
+</code></pre><h2 id="SpringBoot整合RabbitMQ"><a href="#SpringBoot整合RabbitMQ" class="headerlink" title="SpringBoot整合RabbitMQ"></a>SpringBoot整合RabbitMQ</h2><pre><code>1. 创建SpringBoot的项目，引入AMQP的启动器：spring-boot-starter-amqp
+2. spring-rabbit 与 spring-amqp
+    1. spring-amqp 是对AMQP协议的抽象实现;
+    2. spring-rabbit 是对协议的具体实现，也是目前的唯一实现，底层使用的就是RabbitMQ.
+3. 在配置文件 application.yml 中，配置RabbitMQ的连接信息
+    spring:
+        rabbitmq:
+            host: 192.168.103.30
+            username: java
+            password: 123456
+            virtual-host: /techsel
+4. Spring也为AMQP提供了Template：AmqpTemplate
+    1. 向交换器发送消息
+        @RunWith(SpringRunner.class)
+        @SpringBootTest
+        public class StartApplicationTests {
+            @Autowired
+            private AmqpTemplate amqp;
+
+            @Test
+            public void contextLoads() {
+                String msg = &quot;Hello SpringBoot&quot;;
+                amqp.convertAndSend(&quot;boot_exchange&quot;, &quot;item.insert&quot;, msg);
+            }
+        }
+    2. 向MQ中直接发送消息
+        amqp.convertAndSend(&quot;boot_queue&quot;, msg);
+    3. 底层借助JDK自动对消息进行序列化和反序列化.
+5. 从MQ中消费消息
+    @Component
+    public class Listener {
+        @RabbitListener(queues = &quot;boot_queue&quot;)
+        public void listen(String msg) {
+            System.out.println(&quot;消费者：&quot; + msg);
+        }
+    }
+    1. 一旦监听器中发生异常，消息默认回滚到MQ中;
+    2. 对于不希望消息回滚的操作，如发送验证码短信，则使用try-catch捕获异常.
+6. 如果监听的队列不存在，就会报错，那么就应该自动创建不存在的队列和交换器，并把队列绑定到交换器;
+    @RabbitListener(bindings = @QueueBinding(
+        value = @Queue(value = &quot;spring_queue&quot;, durable = &quot;true&quot;), --&gt;声明队列，并持久化
+        exchange = @Exchange(
+            value = &quot;spring_exchange&quot;,
+            ignoreDeclarationExceptions = &quot;true&quot;, --&gt;忽略声明的错误
+            type = ExchangeTypes.TOPIC), --&gt;声明交换器，默认就是持久化
+        key = {&quot;#.#&quot;}))  --&gt;绑定队列到交换器，&quot;#.#&quot;表示监听一切消息
+    public void listen(String msg) {
+        System.out.println(&quot;消费者：&quot; + msg);
+    }
+7. 在实际开发中，可能还会配置更多参数
+    spring:
+        rabbitmq:
+            host: 192.168.103.30
+            username: java
+            password: 123456
+            virtual-host: /techsel
+            template:  # 设置AmqpTemplate
+                retry: # 发送失败的重试机制
+                    enabled: true  # 开启
+                    initial-interval: 10000ms  # 重试周期10s(第一次等待10s后再重新发送)
+                    max-interval: 30000ms  # 最大重试周期，超过30s，则不再重试
+                    multiplier: 2  # 每次重试的基数
+                exchange: ly.item.change # 设置默认交换机
+            publisher-confirms: true  #开启生产者确认机制
+    1. 第一次重试等待10s，第二次重试等待2*10s，第三次等待2*2*10s，已经超过了最大重试周期30s，则不再重试;
+    2. 在发送消息时，如果不指定交换机，则使用默认交换机ly.item.change，而不是队列
+        amqp.convertAndSend(&quot;item.insert&quot;, msg); //item.insert是消息类型，而不再是队列名称
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/03/SpringBoot整合/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/04/03/SpringBoot整合/" itemprop="url">SpringBoot整合</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-03T00:00:00+08:00">
+                2016-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="整合MyBatis"><a href="#整合MyBatis" class="headerlink" title="整合MyBatis"></a>整合MyBatis</h2><pre><code>1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;
     &lt;dependency&gt;
         &lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;
         &lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;
@@ -3182,8 +3431,7 @@ Esc：退出编辑模式或末行模式；
     &lt;/dependency&gt;
 3. 创建配置文件 resources/application.properties，配置数据库连接信息(覆盖默认配置)
     spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
-    spring.datasource.url=jdbc:mysql://host:port/database
-            ?serverTimezone=Asia/Shanghai&amp;setUnicode=true&amp;characterEncoding=utf8
+    spring.datasource.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
     spring.datasource.username=root
     spring.datasource.password=123456
 4. 实体类(POJO)：cn.boot.pojo.User
@@ -3243,20 +3491,7 @@ Esc：退出编辑模式或末行模式；
             return &quot;Hello SpringBoot&quot;;
         }
     }
-</code></pre><h3 id="整合Junit"><a href="#整合Junit" class="headerlink" title="整合Junit"></a>整合Junit</h3><pre><code>1. Junit的起步依赖：spring-boot-starter-test
-2. 在test目录下创建测试类：cn.boot.TestIbatis
-    @RunWith(SpringRunner.class)
-    @SpringBootTest(classes=引导类.class)
-    public class TestIbatis {
-        @Autowired
-        private IUserMapper userMapper;  //注入Mapper对象
-
-        @Test
-        public void test() {
-            List&lt;User&gt; users = userMapper.findAll();
-        }
-    }
-</code></pre><h3 id="集成Spring-Data-JPA"><a href="#集成Spring-Data-JPA" class="headerlink" title="集成Spring Data JPA"></a>集成Spring Data JPA</h3><pre><code>1. 引入起步依赖：spring-boot-starter-data-jpa
+</code></pre><h2 id="集成Spring-Data-JPA"><a href="#集成Spring-Data-JPA" class="headerlink" title="集成Spring Data JPA"></a>集成Spring Data JPA</h2><pre><code>1. 引入起步依赖：spring-boot-starter-data-jpa
     &lt;dependency&gt;
         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
         &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
@@ -3311,392 +3546,123 @@ Esc：退出编辑模式或末行模式；
         &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
         &lt;version&gt;2.3.1&lt;/version&gt;
     &lt;/dependency&gt;
-</code></pre><h3 id="集成Redis"><a href="#集成Redis" class="headerlink" title="集成Redis"></a>集成Redis</h3><pre><code>1. 引入起步依赖：spring-boot-starter-data-redis
-2. application.properties
-    #Redis的连接信息
-    spring.redis.host=127.0.0.1
-    spring.redis.port=6379
-    spring.redis.database=0  //配置Redis的数据库编号，默认就是0
-3. 注入RedisTemplate，测试Redis
-    @RunWith(SpringRunner.class)
-    @SpringBootTest(classes=引导类.class)
-    public class TestIbatis {
-        @Autowired
-        private RedisTemplate&lt;String, String&gt; redisTemplate;
+</code></pre><h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><pre><code>1. Redis官方推荐的Java客户端有很多，常用的有Jedis、Redisson...
+2. 其中，Redisson基于Redis实现了很多常用的结构，甚至还有分布式锁和同步器;
+3. Spring对Redis做了集成，SpringDataRedis，最初是基于Jedis，Spring5.0开始转向响应式编程，
+   所以 SpringDataRedis 重新采用一套响应式编程实现，性能比Jedis更高;
+4. SpringDataRedis属于Spring Data的一部分，也为Redis提供了一个Template对象：RedisTemplate
+</code></pre><h3 id="整合Redis"><a href="#整合Redis" class="headerlink" title="整合Redis"></a>整合Redis</h3><pre><code>1. Redis的启动器：spring-boot-starter-data-redis
+2. 在 application.yml 中，配置Redis的连接信息
+    spring:
+        redis:
+            host: 192.168.103.30
+            port: 6379  # 默认6379
+            database: 0  #配置Redis的数据库编号，默认就是0
+3. 在测试类中，注入 RedisTemplate 对象，操作Redis数据库
+    @Autowired
+    private RedisTemplate redis;
 
+    @Test
+    public void contest() {
+
+    }
+4. redis.opsForValue()、opsForList()、opsForSet()、opsForZSet()、opsForHash() 对应Redis中的5种数据结构，
+   封装到不同的 Operations 对象中;
+    1. 字符串操作对象：ValueOperations ops = redis.opsForValue();
+    2. opsForXXX() 在获取Operations对象时做了单例优化，可以不创建Operations对象的变量;
+5. redis.boundXXXOps(key)：以绑定key的方式创建 Operations 对象，后续操作不需要再指定key
+</code></pre><h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><pre><code>1. RedisTemplate 其实是带有泛型的：RedisTemplate&lt;K, V&gt;，分别代表Key、Value的类型;
+2. 虽然Redis的key和value通常都是字符串类型：RedisTemplate&lt;String, String&gt;，但底层存储时仍是二进制字节;
+3. 泛型的 K、V 可以指定任意类型，RedisTemplate自动把这些类型转为字节进行存储，因为默认使用JDK的序列化工具;
+4. 在命令行上查看时，Redis不会转换JDK序列化的结果，可读性很差，所以通常把对象转为JSON字符串，然后存储到Redis中;
+5. 考虑到这种转换会很频繁，所以Spring提供了RedisTemplate的子类：SpringRedisTemplate，它的序列化工具不再是JDK，
+   而是string.getBytes()，在命令行上查看时，Redis能够自动再转为字符串;
+6. 当然RedisTemplate也允许自定义序列化工具。
+7. 短信验证码的发送
+    1. 把发送事件推送到RabbitMQ中，由消费者调用短信的API;
+    2. 短信发送成功后，使用Redis记录下当前手机号，key=sms:phone:手机号，value=当前时间戳，并设置过期时间;
+    3. 每次收到发送短信的消息时，先从Redis中获取手机号，如果没有或者时间已经超过了1分钟，则发送，否则不发送，
+    避免短信服务的限流;
+</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
+    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
+    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
+2. 通用Mapper的启动器：mapper-spring-boot-starter
+    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
+    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
+    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
+    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
+    spring:
+        datasource:
+            ...... # driver-class-name、url、username、password
+    mybatis:
+        type-aliases-package: cn.boot.pojo
+3. Dao层接口需要继承 Mapper 接口，泛型为实体类
+    public interface UserMapper extends Mapper&lt;User&gt; {
+        //Mapper中已经提供了常用的CRUD方法
+    }
+    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
+    2. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了.
+4. 在启动类上注解通用Mapper的 @MapperScan , 声明扫描Mapper/Dao层接口所在的包
+    @SpringBootApplication
+    @MapperScan(&quot;cn.boot.mapper&quot;)
+    public class StartQuickBoot {
+        ...
+    }
+5. 实体类相关
+    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
+    2. @Id 注解在属性上，指定主键;
+    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
+    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
+    @Data
+    @Table(name=&quot;tl_user&quot;)
+    public class User {
+        @Id
+        @KeySql(userGeneratedKeys=true)
+        private Integer id;  //自增长的主键
+        private String username;
+        @Transient
+        private String remark;  //额外的属性
+    }
+6. 测试
+    @RunWith(SpringRunner.class)
+    @SpringBootTest
+    public class UserMapperTest {
         @Autowired
-        private UserRepository userRepository;
+        private UserMapper mapper;
 
         @Test
         public void test() {
-            //1.从Redis缓存中获取数据，数据的形式是JSON字符串
-            String userJson = redisTemplate.boundValueOps(&quot;key&quot;).get();
-            if(null == userJson) {
-                //2.从MySQL数据库中查询数据
-                List&lt;User&gt; users = userRepository.findAll();
-                //3.把数据存入Redis：web的起步依赖中已经包含了spring-mvc相关的依赖
-                //使用jackson把List集合转为JSON字符串
-                ObjectMapper mapper = new ObjectMapper();
-                userJson = mapper.writeValueAsString(users);
-                redisTemplate.boundValueOps(&quot;key&quot;).set(userJson);
-            }
-            System.out.println(userJson);
+            User u = mapper.selectByPrimaryKey(8);  //按主键查询：where id=8
         }
     }
-</code></pre><hr>
+7. Service层：使用 @Transactional 注解引入事务;
+    @Service
+    public class UserService {
+        @Autowired
+        private UserMapper mapper;
 
-          
-        
-      
-    </div>
-    
-    
-    
+        public User findById(Integer id) {
+            return mapper.selectByPrimaryKey(id);
+        }
+        @Transactional
+        public void insertUser(User user) {  //插入数据时使用事务
+            mapper.insert(user);
+        }
+    }
+8. 使用Controller测试
+    @Slf4j
+    @RestController
+    @RequestMapping(&quot;/user&quot;)
+    public class UserMapperTest {
+        @Autowired
+        private UserService service;  //注入Service对象
 
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/26/模块化与私服/" itemprop="url">模块化与私服</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-26T00:00:00+08:00">
-                2016-03-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块;
-2. 模块之间的关系：
-    1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
-    2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
-    3. 如果想引用另一个Maven工程，则需要把工程打包发布到本地仓库中，再其坐标即可建立依赖关系;
-3. 父工程：New Project --&gt; 不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
-    1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
-    2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
-    3. 打包方式：pom
-        &lt;packaging&gt;pom&lt;/packaging&gt;
-    4. &lt;dependencyManagement&gt; 管理的依赖和插件不会传递给子工程
-        &lt;dependencyManagement&gt;
-            &lt;dependencies&gt;
-                &lt;!-- 这些依赖不会传递给子工程 --&gt;
-            &lt;/dependencies&gt;
-        &lt;/dependencyManagement&gt;
-        &lt;dependencies&gt;
-            &lt;!-- 这些依赖会传递给子工程 --&gt;
-        &lt;/dependencies&gt;
-4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
-    1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
-    2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
-    3. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt;，列出拥有的子模块;
-    4. 依赖包的作用域(scope)默认是compile，父工程的依赖包传递给子工程的过程中，scope为test的依赖可能丢失;
-    5. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
-5. Dao模块：resources/spring/applicationContext-dao.xml，只配置Dao层相关
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xsi:schemaLocation=&quot;
-            http://www.springframework.org/schema/beans
-            https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
-
-        &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
-            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-            &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
-        &lt;/bean&gt;
-
-        &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
-            &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
-        &lt;/bean&gt;
-
-        &lt;context:property-placeholder location=&quot;classpath:db.properties&quot; /&gt;
-        &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
-            &lt;property name=&quot;driverClass&quot; value=&quot;${jdbc.driver}&quot; /&gt;
-            &lt;property name=&quot;jdbcUrl&quot; value=&quot;${jdbc.url}&quot; /&gt;
-            &lt;property name=&quot;user&quot; value=&quot;${jdbc.username}&quot; /&gt;
-            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
-        &lt;/bean&gt;
-    &lt;/beans&gt;
-6. Service模块
-    1. resources/spring/applicationContext-service.xml，只配置Service层相关
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
-        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xsi:schemaLocation=&quot;
-            http://www.springframework.org/schema/beans
-            https://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/context
-            https://www.springframework.org/schema/context/spring-context.xsd
-            http://www.springframework.org/schema/tx
-            https://www.springframework.org/schema/tx/spring-tx.xsd
-            http://www.springframework.org/schema/aop
-            https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
-
-        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
-        &lt;bean id=&quot;manager&quot; 
-                class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
-            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-        &lt;/bean&gt;
-        &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
-            &lt;tx:attributes&gt;
-                &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
-                &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
-            &lt;/tx:attributes&gt;
-        &lt;/tx:advice&gt;
-        &lt;aop:config&gt;
-            &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
-        &lt;/aop:config&gt;
-    &lt;/beans&gt;
-    2. pom.xml：引入Dao模块的坐标
-        &lt;dependencies&gt;
-            &lt;dependency&gt;
-                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
-                &lt;artifactId&gt;ssmdao&lt;/artifactId&gt;
-                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-            &lt;/dependency&gt;
-        &lt;/dependencies&gt;
-7. Web模块
-    1. springmvc.xml、web.xml 都和未拆分前相同;
-    2. Spring的配置文件：resources/applicationContext.xml，把Dao和Service的部分合并到一起;
-        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-        &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-            xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
-            &lt;!-- 导入Dao部分和Service部分的Spring配置文件 --&gt;
-            &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot;/&gt;
-            &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot;/&gt;
-        &lt;/beans&gt;
-    3. pom.xml：引入Service模块的坐标
-        &lt;dependencies&gt;
-            &lt;dependency&gt;
-                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
-                &lt;artifactId&gt;ssmservice&lt;/artifactId&gt;
-                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-            &lt;/dependency&gt;
-        &lt;/dependencies&gt;
-    4. 删除 pom.xml 中默认生成的JDK版本相关的&lt;properties&gt;，使用父工程中配置的JDK版本;
-    5. 默认也生成了的&lt;build&gt;，也可以删除，父工程中已经配置了Tomcat7插件;
-</code></pre><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><pre><code>1. log4j.properties 放在 Web模块/resources 目录中，启动项目;
-2. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
-3. 配置本地的Tomcat，启动服务器，运行项目;
-4. 方式三：选择 Web 工程的 tomcat7:run
-    1. Maven项目在运行时会扫描 pom.xml，如果本地仓库没有引入的依赖，则从中央仓库下载，再找不到就报错;
-    2. Web工程中引入了Service工程的坐标，但Service工程是本地项目，并没有发布到本地仓库，所以运行失败;
-    3. 因此要把Service工程发布到本地仓库，但Service工程又引入了Dao工程的坐标，所以只能去发布父工程;
-    4. 在右侧的Maven面板上，双击父工程的Lifecycle -&gt; install，等待安装成功;
-    5. 启动Web工程的 tomcat7:run，运行项目;
-</code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
-2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
-3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
-    1. 安装、卸载、运行：nexus.bat install，nexus.bat uninstall，nexus.bat start
-    2. 查看启动后的服务：右击计算机 -&gt; 管理 -&gt; 服务和应用程序 -&gt; 服务，在列表中查找 nexus;
-4. nuxus的全局配置文件：conf/nexus.properties，默认使用的端口号是8081;
-5. 启动图形化界面时，确保8081端口未被占用：http://localhost:8081/nexus
-    1. 默认用户名和密码：admin，admin123
-    2. 左侧导航栏：点击Repositories --&gt; 浏览仓库，查看仓库信息、地址;
-    3. Add添加仓库，选择仓库类型：Hosted、Proxy、Virtual，还可以创建仓库组;
-6. 创建不同的仓库，管理不同的依赖包
-    1. 存放测试包的仓库Snapshots(hosted)，发布包的仓库Releases(hosted);
-    2. 第三方包的仓库3rd party(hosted)，中央仓库的代理仓库Central(proxy);
-    3. 创建仓库组，把已有的仓库按顺序添加到组中，在本地仓库在私服中查找依赖包时，就能按照仓库的顺序查找，
-    最后由代理仓库转到中央仓库中去查找;
-</code></pre><h3 id="发布私服"><a href="#发布私服" class="headerlink" title="发布私服"></a>发布私服</h3><pre><code>1. Maven的 settings.xml，配置私服仓库的信息
-    &lt;servers&gt;
-        &lt;server&gt;
-            &lt;id&gt;releases&lt;/id&gt;  ===&gt;指定私服仓库的ID
-            &lt;username&gt;admin&lt;/username&gt;  ===&gt;私服的用户名密码
-            &lt;password&gt;admin123&lt;/password&gt;
-        &lt;/server&gt;
-        &lt;server&gt;
-            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;指定私服仓库的ID
-            &lt;username&gt;admin&lt;/username&gt;
-            &lt;password&gt;admin123&lt;/password&gt;
-        &lt;/server&gt;
-    &lt;/servers&gt;
-2. 要发布哪个项目/模块，就配置它的 pom.xml
-    &lt;distributionManagement&gt;
-        &lt;!-- 配置发布的仓库ID和地址 --&gt;
-        &lt;repository&gt;  ===&gt;正式版的配置，明确发布到存放正式包的仓库
-            &lt;id&gt;releases&lt;/id&gt;  ===&gt;此ID必须在 settings.xml 中已经配置过了
-            &lt;url&gt;http://localhost:8081/nexus/content/repositories/releases/&lt;/url&gt;
-        &lt;/repository&gt;
-        &lt;snapshotRepository&gt;
-            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;测试版的配置，明确发布到存放测试包的仓库
-            &lt;url&gt;http://localhost:8081/nexus/content/repositories/snapshots/&lt;/url&gt;
-        &lt;/snapshotRepository&gt;
-    &lt;/distributionManagement&gt;
-    1. 执行Lifecycle --&gt; deploy
-    2. 执行前面的生命周期时，其后面的生命周期也会执行，所以 install 命令的执行，会把项目/模块安装到本地仓库;
-</code></pre><h3 id="从私服下载jar"><a href="#从私服下载jar" class="headerlink" title="从私服下载jar"></a>从私服下载jar</h3><pre><code>Maven的 settings.xml
-    &lt;profiles&gt;
-        &lt;profile&gt; 
-            &lt;id&gt;dev&lt;/id&gt;  ===&gt;profile的id
-            &lt;repositories&gt;
-                &lt;repository&gt;  ==&gt;仓库id，repositories可以配置多个仓库，保证id不重复
-                    &lt;id&gt;nexus&lt;/id&gt;  ==&gt;仓库地址，即nexus仓库组的地址
-                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;
-                    &lt;releases&gt;
-                        &lt;enabled&gt;true&lt;/enabled&gt; ==&gt;是否下载releases构件
-                    &lt;/releases&gt;
-                    &lt;snapshots&gt;
-                        &lt;enabled&gt;true&lt;/enabled&gt;  ==&gt;是否下载snapshots构件
-                    &lt;/snapshots&gt;
-                &lt;/repository&gt;
-            &lt;/repositories&gt;
-            &lt;pluginRepositories&gt;  ==&gt;插件仓库，Maven的运行依赖插件，也需要从私服下载插件
-                &lt;pluginRepository&gt; ==&gt;插件仓库的id不允许重复，否则后者会覆盖前者
-                    &lt;id&gt;public&lt;/id&gt;  ==&gt;配置为仓库组，仓库组的id
-                    &lt;name&gt;Public Repositories&lt;/name&gt;  ==&gt;仓库组的名字
-                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;  ==&gt;仓库组的地址
-                &lt;/pluginRepository&gt;
-            &lt;/pluginRepositories&gt;
-        &lt;/profile&gt;
-    &lt;/profiles&gt;
-    &lt;activeProfiles&gt;
-        &lt;activeProfile&gt;dev&lt;/activeProfile&gt;  ==&gt;激活id=dev的profile
-    &lt;/activeProfiles&gt;
-</code></pre><h3 id="按照第三方jar包"><a href="#按照第三方jar包" class="headerlink" title="按照第三方jar包"></a>按照第三方jar包</h3><pre><code>1. 把第三方jar包安装到本地仓库，如fastjson.jar
-    1. 查看fastjson.jar的坐标：groupId、artifactId、version;
-    2. 进入fastjson.jar所在的目录，执行命令:
-    mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
-    -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
-    3. 如果不在fastjson.jar的目录，则需要指定绝对路径： -Dfile=D:\download\fastjson-1.1.37.jar
-2. 把第三方jar包安装到私服
-    1. 在Maven的 settings.xml 中，添加存放第三方jar包的仓库信息
-        &lt;server&gt;
-            &lt;id&gt;thirdparty&lt;/id&gt;
-            &lt;username&gt;admin&lt;/username&gt;
-            &lt;password&gt;admin123&lt;/password&gt;
-        &lt;/server&gt;
-    2. 进入jar所在目录
-        mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
-        -Dfile=fastjson-1.1.37.jar -Dpackaging=jar  -DrepositoryId=thirdparty 
-        -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/
-        1. -Durl：私服的仓库地址;
-        2. -DrepositoryId：私服的仓库ID;
-    3. 如果不在jar包所在目录，-Dfile=jar包的绝对路径;
+        @GetMapping(&quot;/{id}&quot;)
+        public User test(@PathVariable(&quot;id&quot;) Integer id) {
+            log.debug(&quot;test service&quot;);
+            return service.findById(id);
+        }
+    }
 </code></pre><hr>
 
           
@@ -3737,7 +3703,7 @@ Esc：退出编辑模式或末行模式；
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3783,7 +3749,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3805,7 +3771,7 @@ Esc：退出编辑模式或末行模式；
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

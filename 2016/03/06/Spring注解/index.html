@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="IoC注解1. @Component：创建对象，&amp;lt;bean&amp;gt;标签的功能，把类对象存入Spring容器中     @Component(&amp;quot;userService&amp;quot;)  ---&amp;gt;@Component(value=&amp;quot;userService&amp;quot;)     public class UserServiceImpl implements IUserSer">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-05T11:43:02.002Z">
+<meta property="og:updated_time" content="2019-05-17T13:21:38.550Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring注解">
 <meta name="twitter:description" content="IoC注解1. @Component：创建对象，&amp;lt;bean&amp;gt;标签的功能，把类对象存入Spring容器中     @Component(&amp;quot;userService&amp;quot;)  ---&amp;gt;@Component(value=&amp;quot;userService&amp;quot;)     public class UserServiceImpl implements IUserSer">
@@ -609,13 +609,13 @@
         jdbc.url = jdbc:mysql:......
         jdbc.user = root
         jdbc.password = 123456
-    2. 在主配置文件上使用 PropertySource 注解引入properties文件
+    2. 在主配置类上注解 @PropertySource，引入properties文件，那么其子配置类都可以通过EL表达式获取键-值
         @ComponentScan({&quot;com.test&quot;})
         @Import(JdbcConf.class)
         @PropertySource(&quot;classpath:jdbcConf.properties&quot;)
         public class SpringConfiguration { }
     3. 在子配置类JdbcConf 中使用Spring的EL表达式，获取properties中的key-value值
-        public class JdbcConf {
+        public class JdbcConf { --&gt;亦或者直接在JdbcConf类上注解 @PropertySource(...)
             @Value(&quot;${jdbc.driver}&quot;)
             private String driver;
 
@@ -783,7 +783,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -805,7 +805,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

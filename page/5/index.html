@@ -232,6 +232,1480 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/06/Spring注解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/06/Spring注解/" itemprop="url">Spring注解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-06T00:00:00+08:00">
+                2016-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="IoC注解"><a href="#IoC注解" class="headerlink" title="IoC注解"></a>IoC注解</h2><pre><code>1. @Component：创建对象，&lt;bean&gt;标签的功能，把类对象存入Spring容器中
+    @Component(&quot;userService&quot;)  ---&gt;@Component(value=&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        ......
+    }
+    1. value属性就是Bean对象的id，如果直接使用 @Component，而不指定value，则默认id为
+    首字母小写的类名userServiceImpl;
+    2. 在配置文件 bean.xml 中导入context命名空间和约束，并告知Spring扫描哪个包下的注解
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+        &lt;!-- 告知Spring在创建容器时要扫描的包 --&gt;
+        &lt;context:component-scan base-package=&quot;项目的包名&quot;&gt;&lt;/context:component-scan&gt;
+    &lt;/beans&gt;
+    3. 通过注解创建对象
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IUserService us = (IUserService)ac.getBean(&quot;userService&quot;);
+2. Spring为了三层架构更加清晰, 还有三个与 Component 功能相同的衍生注解
+    1. Controller：一般用于表现层；
+    2. Service：一般用于表现层；
+    3. Repository：一般用在持久层。
+3. Scope：指定Bean对象的作用范围，同&lt;bean&gt;上的scope属性；
+    1. value属性：指定取值范围;
+    2. 常用取值：singleton、prototype.
+4. 生命周期相关
+    1. PreDestroy：指定销毁方法，&lt;bean&gt;上的destroy-method;
+    2. PostConstruct：指定初始化方法，&lt;bean&gt;上的init-method;
+        @Component(&quot;userService&quot;)
+        @Scope(&quot;prototype&quot;)  --------&gt;指定为多例
+        public class UserServiceImpl implements IUserService {
+            @PostConstruct
+            public void init() {
+                ......//Bean的初始化
+            }
+            @PreDestroy
+            public void destroy() {
+                ......//Bean的销毁
+            }
+        }
+</code></pre><h3 id="注入数据的注解"><a href="#注入数据的注解" class="headerlink" title="注入数据的注解"></a>注入数据的注解</h3><pre><code>1. @Autowired：自动按照类型注入；
+    1. 只要容器中有唯一的一个Bean对象与要注入的变量类型匹配，就可以注入成功；
+    2. 可以用在变量上，也可以用在方法上；
+    @Repository(&quot;userDao&quot;)
+    public class UserDaoImpl implements IUserDao {
+        public void saveUser() { ... }
+    }
+    @Service(&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        private IUserDao dao;
+        public void saveUser() {
+            dao.saveUser();
+        }
+    }
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    //指定getBean()的第二个参数，则不需要再强转类型
+    IUserService us = ac.getBean(&quot;userService&quot;, IUserService.class);
+    us.saveUser();  //内部可以调用Dao对象的方法，dao不再是null
+    3. 如果IoC有多个匹配的Bean对象，Spring会取出这些Bean对象的id，然后使用变量名与这些id
+    进行匹配，有则匹配，否则报错；
+        @Repository(&quot;userDao1&quot;)
+        public class UserDao1Impl implements IUserDao {
+            public void saveUser() { ... }
+        }
+        @Repository(&quot;userDao2&quot;)
+        public class UserDao2Impl implements IUserDao {
+            public void saveUser() { ... }
+        }
+        @Service(&quot;userService&quot;)
+        public class UserServiceImpl implements IUserService {
+            @Autowired
+            private IUserDao userDao2;  //与 UserDao2Impl 相匹配
+            ......
+        }
+    4. 不再需要setter
+2. @Qualifier：在按照类中注入的基础上，再按照名称注入；
+    1. 在给类成员注入时，不能单独使用; 但给方法参数注入时，可以单独使用;
+    2. 属性value：指定注入Bean对象的id;
+    @Service(&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        @Qualifier(&quot;userDao2&quot;)  --&gt; 注入 UserDao2Impl 对象
+        private IUserDao dao;
+        ......
+    }
+3. @Resource：按照Bean的id注入，且可以单独使用，属性name用于指定注入Bean的id;
+    @Resource(name=&quot;userDao2&quot;)  --&gt;如果不指定name属性，默认把属性变量名作为Bean的id
+    private IUserDao dao;
+4. 这三种注解都只能注入IoC容器管理的Bean对象，不能注入基本数据类型，而集合类型只能使用XML实现注入;
+5. Value：用于注入基本数据类型，属性value用于指定数据的值；
+    1. 它可以使用Spring的SpEL(Spring的EL表达式);
+    2. SpEL的写法：${表达式}，虽然与JSP的EL表达式写法相同，但出现的位置并不相同；
+</code></pre><h2 id="Spring整合数据库操作"><a href="#Spring整合数据库操作" class="headerlink" title="Spring整合数据库操作"></a>Spring整合数据库操作</h2><pre><code>1. Dbutils：由Apache提供，主要封装了JDBC，简化Dao层的操作，又不会影响性能；
+    1. 三个核心类：DbUtils、QueryRunner、ResultSetHandle
+    2. DbUtils：连接数据库对象，控制连接，jdbc辅助方法的集合类，线程安全；
+    3. QueryRunner：SQL语句的操作对象，线程安全；
+        1. QueryRunner()：无参构造，创建一个与数据库无关的QueryRunner对象，需要提供一个
+        Connection对象，它可以手动控制事务;
+            Connection.setAutoCommit(false); //设置手动管理事务
+            Connection.commit(); //手动提交事务
+        2. QueryRunner(DataSource ds)：有参构造，创建一个与数据库关联的对象，不需要提供
+        Connection对象，自动管理事务;
+        3. DataSource：数据库连接池对象，由c3p0提供;
+        4. update()：用于执行DDL(create、alter、drop);
+        5. query()：用于执行DML(insert、update、delete);
+        6. batch()：执行批处理.
+    4. ResultSetHandle：封装数据的策略对象，将封装结果集中的数据转换到另一个对象。
+2. c3p0：连接池，为了提高应用程序与数据库之间的访问效率，简单易用、连接复用、连接管理;
+3. 引入依赖：spring-context、commons-dbutils、c3p0、mysql-connector-java
+4. 持久层、业务层
+    1. 实体类：com.test.domain.User
+        public class User {
+            //id、name、age
+        }
+    2. 持久层Dao：com.test.dao.IUserDao
+        public interface IUserDao {
+            //CRUD
+        }
+        public class UserDaoImpl implements IUserDao {
+            private QueryRunner runner;
+            //setter
+            public List&lt;User&gt; findAll() { //查询所有
+                return runner.query(&quot;select * from user&quot;, 
+                            new BeanListHandler&lt;User&gt;(User.class));
+            }
+            public List&lt;User&gt; findById(int id) { //查询一个
+                return runner.query(&quot;select * from user where id=?&quot;, 
+                                    new BeanHandler&lt;User&gt;(User.class), id);
+            }
+            public void save(User u) { //保存
+                runner.update(&quot;insert into user(name, age) values(?, ?)&quot;, 
+                                                    u.getName(), u.getAge());
+            }
+            public void update(User u) { //更新
+                runner.update(&quot;update user set name=?,age=? where id=?&quot;, 
+                                        u.getName(), u.getAge(), u.getId());
+            }
+            public void delete(int id) { //删除
+                runner.update(&quot;delete from user where id=?&quot;, id);
+            }
+        }
+3. 业务层Service：com.test.service.IUserService
+    public interface IUserService { ...... }
+    public class UserServiceImpl implements IUserService {
+        private IUserDao dao;
+        //setter
+        ......
+    }
+4. 配置Spring：resources/bean.xml
+    &lt;bean id=&quot;userService&quot; class=&quot;com.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;property name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;userDao&quot; class=&quot;com.test.dao.impl.UserDaoImpl&quot;&gt;
+        &lt;property name=&quot;runner&quot; ref=&quot;runner&quot;&gt;&lt;property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;runner&quot; class=&quot;org.apache.commons.dbutils.QueryRunner&quot; scope=&quot;prototype&quot;&gt;
+        &lt;constructor-arg name=&quot;ds&quot; ref=&quot;dataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+        &lt;!-- 链接数据库的信息 --&gt;
+        &lt;property name=&quot;driverClass&quot; value=&quot;com.mysql.cj.jdbc.Driver&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;jdbcUrl&quot; value=&quot;jdbc:mysql:......&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;user&quot; value=&quot;root&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;password&quot; value=&quot;123456&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+    1. QueryRunner设置为多例对象，避免多线程之间相互干扰;
+    2. 开始使用：
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
+    List&lt;User&gt; us = service.findAll(); //查询所有
+6. 修改为注解配置
+    1. 在 bean.xml 的约束中，增加context的命名空间；
+    2. 移除UserServiceImpl和UserDaoImpl的&lt;bean&gt;，告知Spring创建容器时要扫描的包；
+    &lt;context:component-scan base-package=&quot;com.test&quot;&gt;&lt;/context:component-scan&gt;
+    &lt;bean id=&quot;runner&quot; class=&quot;org.apache.commons.dbutils.QueryRunner&quot; scope=&quot;prototype&quot;&gt;
+        &lt;constructor-arg name=&quot;ds&quot; ref=&quot;dataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+        ...... &lt;!-- 链接数据库的信息 --&gt;
+    &lt;/bean&gt;
+    3. 为 UserServiceImpl和UserDaoImpl 添加注解，并移除其中的setter.
+        @Repository(&quot;userDao&quot;)
+        public class UserDaoImpl implements IUserDao {
+            @Autowired
+            private QueryRunner runner;
+            ......
+        }
+        @Service(&quot;userService&quot;)
+        public class UserServiceImpl implements IUserService {
+            @Autowired
+            private IUserDao dao;
+            ......
+        }
+</code></pre><h3 id="Spring新注解"><a href="#Spring新注解" class="headerlink" title="Spring新注解"></a>Spring新注解</h3><pre><code>1. Configuration：声明一个类为配置类，用于取代配置文件 bean.xml;
+2. ComponentScan：指定创建容器时要扫描的包;
+    1. value属性和basePackages属性的作用相同，都是指定包名;
+    2. 此注解的功能等同于 bean.xml 中的 &lt;context:component-scan&gt;
+3. Bean：把当前方法的返回值作为bean对象，存入Spring的IoC容器中;
+    1. name属性：指定bean的id，不显式声明id时，默认为当前方法名;
+    2. 此注解可以取代&lt;bean id=&quot;runner&quot; ···&gt; 和 &lt;bean id=&quot;dataSource&quot; ···&gt;
+    3. @Scope：指定bean对象的作用范围;
+        @Configuration
+        @ComponentScan(basePackages=&quot;com.test&quot;)
+        public class SpringConfiguration {
+            @Bean(name=&quot;runner&quot;)
+            @Scope(&quot;prototype&quot;)
+            public QueryRunner createQueryRunner(DataSource dataSource) {
+                return new QueryRunner(dataSource);
+            }
+            @Bean(name=&quot;dataSource&quot;)
+            public DataSource createDataSource() {
+                ComboPooledDataSource ds = new ComboPooledDataSource();
+                ds.setDriverClass(&quot;com.mysql.cj.jdbc.Driver&quot;);
+                ds.setJdbcUrl(&quot;jdbc:mysql:......&quot;);
+                ds.setUser(&quot;root&quot;);
+                ds.setPassword(&quot;123456&quot;);
+                return ds;
+            }
+        }
+    4. 在使用注解配置方法时，如果方法上有参数(也是bean对象)，Spring会去容器中查找有没有
+    与此参数对应的bean对象，查找方式与Autowired相同;
+        1. 如果有且只有一个匹配的bean对象，则匹配成功;
+        2. 如果有多个匹配的bean对象，则根据参数名与bean的id进行匹配.
+    5. 另外，方法的参数上可以单独使用 @Qualifier，明确指定要匹配的bean对象;
+    @Bean(name=&quot;runner&quot;)
+    @Scope(&quot;prototype&quot;)
+    public QueryRunner createQueryRunner(@Qualifier(&quot;ds2&quot;) DataSource dataSource) {
+        return new QueryRunner(dataSource);
+    }
+    @Bean(name=&quot;ds1&quot;)
+    public DataSource createDataSource() { ... }
+
+    @Bean(name=&quot;ds2&quot;)
+    public DataSource createDataSource() { ... }
+    6. @Qualifier(&quot;ds2&quot;) 指定去匹配 @Bean(name=&quot;ds2&quot;) 的方法.
+4. 使用 AnnotationConfigApplicationContext 加载配置类，获取bean对象
+    ApplicationContext ac = 
+        new AnnotationConfigApplicationContext(SpringConfiguration.class);
+    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
+</code></pre><h3 id="分解注解类"><a href="#分解注解类" class="headerlink" title="分解注解类"></a>分解注解类</h3><pre><code>1. 为了便于管理，一个主配置类可以分为多个子配置类，如把JDBC相关的配置放在 JdbcConf类 中;
+    @Configuration
+    public class JdbcConf {   //全类名为config.JdbcConf
+        @Bean(name=&quot;runner&quot;)
+        @Scope(&quot;prototype&quot;)
+        public QueryRunner createQueryRunner(DataSource ds) { ... }
+        @Bean(name=&quot;ds&quot;)
+        public DataSource createDataSource() { ... }
+    }
+2. 在主配置类中声明要扫描的包，包括子配置文件所在的包
+    @Configuration
+    @ComponentScan({&quot;com.test&quot;, &quot;config&quot;})
+    public class SpringConfiguration { }
+3. 在创建ApplicationContext对象时，如果直接把配置类作为参数，则可省略 @Configuration，
+   也不需要扫描配置类所在的包；
+    public class JdbcConf { ... }
+
+    @ComponentScan({&quot;com.test&quot;})
+    public class SpringConfiguration { }
+
+    ApplicationContext ac = new AnnotationConfigApplicationContext(
+                                    SpringConfiguration.class, JdbcConf.class);
+4. Import：导入其他的配置类
+    1. 被导入的配置类上可以使用 @Configuration，也可以不声明它所在的包;
+    public class JdbcConf { ... }
+
+    @ComponentScan({&quot;com.test&quot;})
+    @Import(JdbcConf.class)
+    public class SpringConfiguration { }
+
+    ApplicationContext ac = 
+            new AnnotationConfigApplicationContext(SpringConfiguration.class);
+    2. 此时，SpringConfiguration称为父配置类，JdbcConf称为子配置类
+5. PropertySource：加载properties文件;
+    1. value属性：指定文件的名称和路径;
+    2. classpath关键字：表示类路径下;
+        resources/spring/conf/jdbc.properties ---&gt; 
+                    @PropertySource(&quot;classpath:spring/conf/jdbc.properties&quot;)
+6. 抽取出数据库连接的信息
+    1. 在resources目录下创建 jdbcConf.properties
+        jdbc.driver = com.mysql.cj.jdbc.Driver
+        jdbc.url = jdbc:mysql:......
+        jdbc.user = root
+        jdbc.password = 123456
+    2. 在主配置类上注解 @PropertySource，引入properties文件，那么其子配置类都可以通过EL表达式获取键-值
+        @ComponentScan({&quot;com.test&quot;})
+        @Import(JdbcConf.class)
+        @PropertySource(&quot;classpath:jdbcConf.properties&quot;)
+        public class SpringConfiguration { }
+    3. 在子配置类JdbcConf 中使用Spring的EL表达式，获取properties中的key-value值
+        public class JdbcConf { --&gt;亦或者直接在JdbcConf类上注解 @PropertySource(...)
+            @Value(&quot;${jdbc.driver}&quot;)
+            private String driver;
+
+            @Value(&quot;${jdbc.url}&quot;)
+            private String url;
+
+            @Value(&quot;${jdbc.user}&quot;)
+            private String user;
+
+            @Value(&quot;${jdbc.password}&quot;)
+            private String password;
+
+            @Bean(name=&quot;dataSource&quot;)
+            public DataSource createDataSource() {
+                ComboPooledDataSource ds = new ComboPooledDataSource();
+                ds.setDriverClass(driver);
+                ds.setJdbcUrl(url);
+                ds.setUser(user);
+                ds.setPassword(password);
+                return ds;
+            }
+            ......
+        }
+</code></pre><h2 id="Spring整合Junit"><a href="#Spring整合Junit" class="headerlink" title="Spring整合Junit"></a>Spring整合Junit</h2><pre><code>1. Junit单元测试中没有直接提供main()，是因为它集成了一个main()
+    1. Junit会判断测试类中有哪些方法上使用了 @Test;
+    2. Junit main()只会执行有 @Test 的方法.
+2. Junit并不关心Spring框架;
+    1. 在执行测试方法时，Junit也不会关心Spring的配置文件/配置类，更不会创建IoC容器;
+    2. 没有IoC容器，在测试类中使用 @Autowired，也无法实现注入.
+3. spring-test：Spring整合junit测试框架; 加入依赖：spring-test、junit
+4. @RunWith：Junit提供的注解，把 main() 替换成Spring提供的;
+5. @ContextConfiguration：告知Spring的运行器，创建IoC容器使用的是XML还是注解，并指定其位置;
+    1. locations属性：指定XML文件的位置，使用classpath关键字，表示在类路径下;
+        @ContextConfiguration(locations=&quot;classpath:bean.xml&quot;)
+    2. classes属性：指定注解类所在的位置；
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(classes=SpringConfiguration.class)
+    public class UserTest {
+        @Autowired
+        private IUserService service;
+
+        @Test
+        public void testFindAll() {
+            List&lt;User&gt; us = service.findAll();
+        }
+    }
+6. 另外，Spring5.x版本时，junit的版本必须为4.12+
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/05/Spring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/05/Spring/" itemprop="url">Spring</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-05T00:00:00+08:00">
+                2016-03-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><pre><code>1. Spring是分层的JavaSE/EE应用full-stack(全栈)轻量级开源框架;
+    1. 目的是解决企业级应用开发的复杂性，简化Java开发，适用于任何Java应用;
+    2. Spring的成功来源于理念，而不是技术本身，以IoC(控制反转)和AOP(面向切面编程)为核心;
+    3. 优势：.
+2. 发展历程
+    1. 1997年IBM提出了EJB的思想，1998年SUN制定并开发EJB1.0;
+    2. Spring之父Rod Johnson，2002年阐述了J2EE使用EJB开发设计的优点及解决方案;
+    3. 2004年Rod Johnson阐述了J2EE不使用EJB的解决方案，也就是Spring的雏形；
+    4. 2017年9月发布了Spring的最新版Spring5.0通用版(GA).
+3. 优势：低侵入/低耦合、声明式事务管理、无缝集成其他框架、降低Java开发难度
+    1. 解耦：IoC容器可以将对象间的依赖关系交由Spring控制，降低耦合，专注于上层应用；
+    2. AOP编程：Spring的AOP功能让许多传统OOP难以实现的功能，更加容易；
+    3. 声明式事务管理：使用配置文件取代单调烦闷的事物管理；
+    4. 方便程序的测试：可以用非容器依赖的编程方式，实现几乎所有的测试工作；
+    5. 方便集成各种优秀的框架，提供直接支持，降低框架的使用难度；
+    6. Spring对JavaEE API进行了一层简单的封装，但却大为降低了API的使用难度。
+4. Spring Framework Runtime 体系结构
+</code></pre><p><img src="//hellomyshadow.github.io/2016/03/05/Spring/framework.jpg" alt="Spring"></p>
+<pre><code>1. Core Container：核心容器，Spring的IoC容器，其他部分的运行必须依赖于核心容器；
+2. 核心容器的上面一层是AOP相关的部分；
+3. Data Access：持久层解决方案；
+4. Test：单元测试，也依赖于核心容器才能运行。
+</code></pre><h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><pre><code>1. 耦合：程序间的依赖关系，包括类之间的依赖、方法间的依赖；
+2. 解耦：降低程序间的依赖关系，应做到编译期不依赖，运行时才依赖；
+</code></pre><h3 id="类之间的依赖"><a href="#类之间的依赖" class="headerlink" title="类之间的依赖"></a>类之间的依赖</h3><pre><code>1. 以装载数据库的驱动为例
+    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;);
+    DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+    1. 这两种方式都可以装载驱动，但第一种装载是通过字符串，第二种需要使用具体的类；
+    2. 如果当前没有MySQL的相关依赖包，那么第二种在运行时就会报错，这就是类之间的依赖；
+    3. 而且，如果切换成装载Oracle驱动，仍需要去修改全限定类名的字符串。
+2. 解耦的思路
+    1. 使用反射来创建对象，避免使用 new 关键字；
+    2. 通过读取配置文件来获取类的全限定类名。
+</code></pre><h3 id="工厂模式解耦"><a href="#工厂模式解耦" class="headerlink" title="工厂模式解耦"></a>工厂模式解耦</h3><pre><code>1. 非解耦的持久层Dao与业务层Service
+    1. Dao接口及其实现类
+        public interface IUserDao {
+            void save(User u);
+        }
+        public class UserDaoImpl implements IUserDao {
+            public void save(User u) {
+                //连接数据库，插入一条记录
+            }
+        }
+    2. Service接口及其实现类
+        public interface IUserService {
+            void save(User u);
+        }
+        public class UserServiceImpl implements IUserService {
+            private IUserDao dao = new UserDaoImpl();
+            public void save(User u) {
+                ......//before
+                dao.save(u);  //调用Dao的方法
+                ......//after
+            }
+        }
+    3. App调用Service
+        IUserService service = new UserServiceImpl();
+        service.save(new User());
+2. 工厂模式解耦
+    1. 在resource目录下创建配置文件，如bean.properties，配置Dao与Service的实现类；
+        userService = it.demo.cn.service.impl.UserServiceImpl
+        userDao = it.demo.cn.dao.impl.UserDaoImpl
+    2. Bean工厂：用于反射创建/生产Service和Dao的对象；
+        public class BeanFactory {
+            private static Properties prop;
+            static {
+                try {
+                    prop = new Properties();
+                    //使用类加载器获取resources目录下的文件
+                    InputStream is = BeanFactory.class.getClassLoader()
+                                    .getResourceAsStream(&quot;bean.properties&quot;);
+                    prop.load(is);
+                } catch (Exception e) {
+                    throw new ExceptionInInitializerError(&quot;初始化配置文件失败！&quot;);
+                }
+            }
+            public static Object getBean(String beanName) {
+                //根据Bean的名称获取Bean对象
+                String beanPath = prop.getProperty(beanName);
+                Object bean = Class.forName(beanPath).newInstance();
+                return bean;
+            }
+        }
+    3. 通过Bean工厂创建Dao对象和Service对象
+        public class UserServiceImpl implements IUserService {
+            private IUserDao dao = (IUserDao) BeanFactory.getBean(&quot;userDao&quot;);
+            public void save(User u) {
+                dao.save(u);
+            }
+        }
+    IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot;);
+    service.save(new User());
+3. 但是，这种方式并不能保证Dao和Service对象的单例，需要在Bean工厂中增加一个Map结构的容器，
+   存储Dao和Service的对象；
+    public class BeanFactory {
+        private static Properties prop;
+        private static Map&lt;String, Object&gt; beans;  //Map结构的容器
+        static {
+            try {
+                prop = new Properties();
+                InputStream is = BeanFactory.class.getClassLoader()
+                                .getResourceAsStream(&quot;bean.properties&quot;);
+                prop.load(is);
+                beans = new HashMap&lt;String, Object&gt;();  //实例化容器
+                Enumeration keys = prop.keys();  //取出配置文件中的所有key
+                while (keys.hasMoreElements()) {
+                    //事先创建好配置文件中的对象，存入容器，作为单例对象使用
+                    String k = keys.nextElement().toString();
+                    String beanPath = prop.getProperty(k);
+                    Object val = Class.forName(beanPath).newInstance();
+                    beans.put(k, val);
+                }
+            } catch (Exception e) {
+                throw new ExceptionInInitializerError(&quot;初始化配置文件失败！&quot;);
+            }
+        }
+        public static Object getBean(String beanName) {
+            //直接返回容器中的Bean对象
+            return beans.get(beanName);
+        }
+    }
+</code></pre><h2 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h2><pre><code>private IUserDao dao = new UserDaoImpl(); 与
+private IUserDao dao = (IUserDao) BeanFactory.getBean(&quot;userDao&quot;);
+-----------------------------------------------------------------
+IUserService service = new UserServiceImpl(); 与
+IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot;);
+1. 与new创建对象相比，通过Bean工厂创建对象，切断了App与资源(Dao/Service)的直接联系，
+   交由Bean工厂控制资源、提供资源，这就是IoC;
+2. 之所以称为IoC，而不叫降低解耦，是因为把对象控制的权力交给了工厂(框架)，控制反转不再是
+   面向对象编程的专业术语;
+3. IoC包括依赖注入(DI)和依赖查找(DL);
+4. IoC的作用：消减计算机程序的耦合，并不能完全消除.
+</code></pre><h3 id="Spring的IoC"><a href="#Spring的IoC" class="headerlink" title="Spring的IoC"></a>Spring的IoC</h3><pre><code>1. 添加Spring的IoC依赖
+    &lt;packaging&gt;jar&lt;/packaging&gt;  ---&gt;项目的打包方式为jar
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+            &lt;version&gt;5.1.6.RELEASE&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 在resources目录下创建配置文件，bean.xml
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+        &lt;!--把对象的创建交给Spring来管理--&gt;
+        &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;&lt;/bean&gt;
+        &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
+    &lt;/beans&gt;
+3. 获取Spring的IoC核心容器，根据id获取对象
+    //1. 解析配置文件，获取核心容器对象
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    //2. 根据id获取Bean对象
+    IUserDao dao = (IUserDao) ac.getBean(&quot;userDao&quot;);
+    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
+4. ApplicationContext的三个常用实现类
+    1. ClassPathXmlApplicationContext：加载类路径下的配置文件，配置文件必须在类路径下;
+    2. FileSystemXmlApplicationContext：加载磁盘任意路径下的配置文件，必须有访问权限;
+        new ClassPathXmlApplicationContext(&quot;D:\\workplace\\test\\bean.xml&quot;);
+    3. AnnotationConfigApplicationContext：用于读取注解类创建的容器.
+        new AnnotationConfigApplicationContext(XXXConfig.class);
+5. Spring中，ApplicationContext与BeanFactory的区别
+    1. ApplicationContext：它在构建核心容器时，会立即创建Bean对象，即一旦读取完配置文件，
+    立即创建文件中配置的对象；
+    2. BeanFactory：它是顶层接口，采用延迟加载的方式创建Bean对象，即在根据id获取对象时，
+    才真正的创建Bean对象；
+        Resource res = new ClassPathResource(&quot;bean.xml&quot;);
+        BeanFactory factory = new XmlBeanFactory(res);
+        IUserDao dao = (IUserDao) factory.getBean(&quot;userDao&quot;);
+    3. ApplicationContext适用于单例对象，BeanFactory适用于多例对象。
+</code></pre><h3 id="Spring对Bean的管理"><a href="#Spring对Bean的管理" class="headerlink" title="Spring对Bean的管理"></a>Spring对Bean的管理</h3><pre><code>1. 创建Bean的三种方式
+    1. 使用默认构造函数创建，&lt;bean&gt;上只有id和class属性，此时类中必须要有默认构造函数，
+    否则无法创建Bean对象;
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;&lt;/bean&gt;
+    2. 使用普通工厂中的方法创建Bean对象，并存入Spring的IoC容器;
+        public class ServiceFactory {  //工厂类
+            public IUserService getUserService() {
+                return new UserServiceImpl();
+            }
+        }
+    &lt;bean id=&quot;servFac&quot; class=&quot;cn.test.factory.ServiceFactory&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;userService&quot; factory-bean=&quot;servFac&quot; -----&gt;&gt;引用id为servFac的&lt;bean&gt;
+                            factory-method=&quot;getUserService&quot;&gt;&lt;/bean&gt;
+        //创建Bean对象
+        IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
+    3. 使用工厂中的静态方法创建对象
+        public class ServiceFactory {  //工厂类
+            public static IUserService getUserService() {
+                return new UserServiceImpl();
+            }
+        }
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.factory.ServiceFactory&quot; 
+                                    factory-method=&quot;getUserService&quot;&gt;&lt;/bean&gt;
+    //创建Bean对象
+    IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
+2. Bean的作用范围
+    1. Bean对象默认就是单例的;
+        IUserService us1 = (IUserService) ac.getBean(&quot;userService&quot;);
+        IUserService us2 = (IUserService) ac.getBean(&quot;userService&quot;);
+        us1==us2;  --&gt;true
+    2. &lt;bean&gt;的 scope 属性：用于指定bean的作用范围;
+        1. singleton：默认值，单例;
+        2. prototype：多例，每次 getBean() 时，Spring就会创建一个新的对象;
+        3. request：作用于web应用的请求范围;
+        4. session：作用于web应用的会话范围;
+        5. global-session：作用于集群环境的全局会话范围，如果不是集群，等效于session.
+3. Bean的生命周期
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot; 
+        init-method=&quot;init&quot; destroy-method=&quot;destroy&quot;&gt;&lt;/bean&gt;
+    1. init-method=&quot;init&quot;：指定Bean对象的初始化方法，UserServiceImpl.init();
+    2. destory-method=&quot;destroy&quot;：指定Bean对象的销毁方法，UserServiceImpl.destory();  
+    3. 单例对象：随着容器的创建而创建，随着容器的消亡而消亡;
+        //1. 获取核心容器对象：执行 UserServiceImpl.init()
+        ClassPathXmlApplicationContext ac = 
+                new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+        //2. 根据id获取Bean对象
+        IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
+        //3. 手动销毁容器：执行 UserServiceImpl.destroy()
+        ac.close();
+    4. 多例对象：scope=&quot;prototype&quot;，每次使用对象时由Spring创建，但Spring无法控制销毁，
+    只能由Java垃圾回收器销毁.
+</code></pre><h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><pre><code>1. IoC降低了程序间的耦合(依赖关系)，一个类需要引用另一个类对象时，我们只需要在Spring的
+   配置文件中说明两个类的依赖关系，交由Spring去维护这种依赖关系，这就是依赖注入;
+2. 能注入的数据：基本类型、Bean对象(在配置文件中或者注解配置过的bean)、复杂/集合类型;
+3. 注入的三种方式：使用构造函数、setter、注解
+</code></pre><h4 id="构造函数注入"><a href="#构造函数注入" class="headerlink" title="构造函数注入"></a>构造函数注入</h4><pre><code>public class UserServiceImpl implements IUserService {
+    private String name;  //基本类型
+    private int age;
+    private Date birthday;  //对象
+    private IUserDao dao;
+    public UserServiceImpl(String name, int age, Date birthday, IUserDao dao){
+        this.name = name;  this.age = age;
+        this.birthday = birthday;  this.dao = dao;
+    }
+}
+1. 使用&lt;bean&gt;的子标签 &lt;constructor-arg&gt;，相关属性：
+    1. type：注入数据的类型，也就是构造函数上的某个参数类型;
+    2. index: 参数的索引位置，从 0 开始;
+    3. name：参数名称;
+    4. value：参数值，提供基本数据类型的数据;
+    5. ref：参数值，引用另一个&lt;bean&gt;对象的数据;
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;constructor-arg name=&quot;name&quot; value=&quot;Java&quot;&gt;&lt;constructor-arg&gt;
+        &lt;constructor-arg name=&quot;age&quot; value=&quot;18&quot;&gt;&lt;constructor-arg&gt;
+        &lt;constructor-arg name=&quot;birthday&quot; ref=&quot;now&quot;&gt;&lt;constructor-arg&gt;
+        &lt;constructor-arg name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;now&quot; class=&quot;java.util.Date&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
+2. 弊端：这种方式只能匹配一个固定的构造函数，改变了Bean对象的实例化方式，在创建对象时，
+   即使用不到这些数据，也必须提供，否则Spring无法创建对象.
+</code></pre><h4 id="setter注入"><a href="#setter注入" class="headerlink" title="setter注入"></a>setter注入</h4><pre><code>public class UserServiceImpl implements IUserService {
+    private String name;  //基本类型
+    private int age;
+    private Date birthday;  //对象
+    private IUserDao dao;
+    //setter是必须的，可以没有getter
+}
+1. 使用&lt;bean&gt;的子标签 &lt;property&gt;，相关属性：
+    1. name：setter的方法名，取set后的字母、并把首字母转为小写;
+        age--&gt;setUserAge()--&gt;userAge，
+    2. value、ref
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;property name=&quot;name&quot; value=&quot;Java&quot;&gt;&lt;property&gt;
+        &lt;property name=&quot;age&quot; value=&quot;20&quot;&gt;&lt;property&gt;
+        &lt;property name=&quot;birthday&quot; ref=&quot;now&quot;&gt;&lt;property&gt;
+        &lt;property name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;now&quot; class=&quot;java.util.Date&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
+2. 这种方式解决了构造函数注入的弊端，创建对象时没有明确的限制，直接使用默认构造函数;
+3. 弊端：如果某个成员必须有值(构造函数被重载，存在有参构造函数)，获取对象时可能没有配置
+   此成员的setter，导致此成员没有值.
+</code></pre><h4 id="复杂类型-集合对象的注入"><a href="#复杂类型-集合对象的注入" class="headerlink" title="复杂类型/集合对象的注入"></a>复杂类型/集合对象的注入</h4><pre><code>public class UserServiceImpl implements IUserService {
+    private String[] myArr;  //数组
+    private List&lt;String&gt; myList;  //List集合
+    private Set&lt;String&gt; mySet;  //Set集合
+    private Map&lt;String, String&gt; myMap;  //Map集合
+    private Properties myProp;  //Properties
+    //setter是必须的
+}
+1. 使用&lt;property&gt;的子标签
+    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;property name=&quot;myArr&quot;&gt;
+            &lt;array&gt;
+                &lt;value&gt;AAA&lt;/value&gt;
+                &lt;value&gt;BBB&lt;/value&gt;
+            &lt;/array&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;myList&quot;&gt;
+            &lt;list&gt;
+                &lt;value&gt;AAA&lt;/value&gt;
+                &lt;value&gt;BBB&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;mySet&quot;&gt;
+            &lt;set&gt;
+                &lt;value&gt;AAA&lt;/value&gt;
+                &lt;value&gt;BBB&lt;/value&gt;
+            &lt;/set&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;myMap&quot;&gt;
+            &lt;map&gt;
+                &lt;!-- 两种配置key-value的方式 --&gt;
+                &lt;entry key=&quot;testA&quot; value=&quot;AAA&quot;&gt;&lt;/entry&gt;
+                &lt;entry key=&quot;testB&quot;&gt;
+                    &lt;value&gt;BBB&lt;/value&gt;
+                &lt;/entry&gt;
+            &lt;/map&gt;
+        &lt;property&gt;
+        &lt;property name=&quot;myProp&quot;&gt;
+            &lt;props&gt;
+                &lt;prop key=&quot;testA&quot;&gt;AAA&lt;/prop&gt;
+                &lt;prop key=&quot;testB&quot;&gt;BBB&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;property&gt;
+    &lt;/bean&gt;
+2. 结构相同，标签是可以互换的，list、array、set是一类，map、props是一类。
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/02/Mybatis进阶/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/02/Mybatis进阶/" itemprop="url">Mybatis进阶</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-02T00:00:00+08:00">
+                2016-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h2><pre><code>事物的四大特性：ACID
+1. A：原子性，要么全部被执行，要么全部不执行；
+2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态；
+3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务；
+4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。
+</code></pre><h3 id="并发下的事务"><a href="#并发下的事务" class="headerlink" title="并发下的事务"></a>并发下的事务</h3><pre><code>1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的情况下，会出现各种问题；
+2. 主要有五种问题：第一类丢失更新、第二类丢失更新、脏读、不可重复读、幻读；
+3. 脏读：事务A读到了事务B还没有提交的数据；
+    1. 账户余额1000元，事务A开启事务，此时切换到事务B，事务B开启事务--&gt;取走100元
+    2. 此时又切换回事务A，因为事务B并没有提交，事务A读取的仍是1000元，这就是脏读
+4. 不可重复读：在同一个事务里读取了两次某个数据，结果不一致；
+    1. 事务A开启事务--&gt;查出账户余额为1000元
+    2. 此时切换到事务B，事务B开启事务--&gt;取走100元--&gt;提交，账户余额变为900元
+    3. 此时又切换回事务A，事务A再查一次的账户余额为900元
+    4. 那么对于事务A，在同一个事务内两次读取的数据不一致，这就是不可重复读。
+5. 幻读：在同一个事务里的操作中发现了未被操作的数据；
+    1. 事务A开启事务--&gt;修改所有学生当天签到状况为false
+    2. 此时切换到事务B，事务B开启事务--&gt;插入了一条学生数据
+    3. 此时又切换回事务A，事务A提交时发现了一条自己没有修改过的数据，这就是幻读。
+    4. 幻读出现的前提：并发的事务中有事务发生了插入、删除操作。
+6. 事务隔离级别就是为了解决这几种问题。
+</code></pre><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><pre><code>1. 事务隔离级别越高，在并发下产生的问题就越少，但同时付出的性能消耗也越大，因此很多时候必须
+   在并发性和性能之间做一个权衡；
+2. 设立事务隔离级别的目的：为了让不同的项目可以根据自己的并发情况，选择合适的事务隔离级别；
+   对于在事务隔离级别之外会产生的并发问题，在代码中做补偿；
+3. 事务隔离级别有4种，但是像Spring会提供5种；
+1. DEFAULT：默认隔离级别
+    1. Spring配置事务时，将 isolation 设置为 DEFAULT，则使用数据库的默认事务隔离级别；
+    2. 每种数据库支持的事务隔离级别是不一样的。
+2. READ_UNCOMMITTED：读未提交
+    1. 能够读取到没有被提交的数据，所以无法解决脏读、不可重复读、幻读，很少使用；
+3. READ_COMMITED：读已提交
+    1. 能够读到那些已经提交的数据，所以能防止脏读，但是无法限制不可重复读和幻读；
+    2. 此级别下，写数据只会锁住相应的行。
+4. REPEATABLE_READ：重复读取
+    1. 在数据读出来之后加锁，类似 select * from XXX for update，明确数据读取出来就是为了
+    更新用的，所以要加一把锁，防止别人修改它；
+    2. 读取了一条数据，这个事务不结束，其他事务就不可以修改这条记录，解决了脏读、不可重复读的
+    问题，但无法解决幻读的问题。
+5. SERLALIZABLE：串行化，加锁读，最高的事务隔离级别
+    1. 不管多少事务，必须执行完一个事务的所有子事务之后，才可以执行下一个事务的所有子事务，
+    这样就解决了脏读、不可重复读和幻读的问题了；
+    2. 此级别下，读写数据都会锁住整张表。
+1. 虽然隔离级别越高，越能保证数据的完整性和一致性，但对并发性能的影响也越大；
+2. 一般情况下会设置为READ_COMMITED，此时避免了脏读，并发性也还不错，之后再通过其他手段解决
+   不可重复读和幻读的问题；
+3. MySQL的事务隔离级别
+    1. 对于MySql，其默认事务级别是REPEATABLE_READ，虽然定义上无法解决幻读的问题，但MySql
+    使用了一种 Next key-lock 的算法来实现REPEATABLE_READ，这种算法能够解决幻读问题；
+    2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围
+    锁住，其他事务如果想要在此范围内进行数据操作，那么就会被阻塞，因而MySql在此级别下就已经
+    具备了Serializable级别的事务隔离性。
+    3. 查看事务隔离级别
+        select @@tx_isolation;  --&gt;旧版MySQL
+        select @@transaction_isolation;  --&gt;旧版MySQL
+        show variables like &apos;transaction_isolation&apos;;
+    4. 开启一个事务：start transaction;
+    5. 回滚当前事务：rollback;
+    6. 提交当前事务：commit;
+4. MySQL设置当前会话的事务隔离级别：SET session TRANSACTION ISOLATION LEVEL 隔离级别
+    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
+    2. 对于 Mybatis getSqlSession()，只针对本次拿到的Session有效；
+    3. 对于CMD命令行，只在本次窗口有效。
+5. MySQL设置全局事务隔离级别：SET global TRANSACTION ISOLATION LEVEL 隔离级别
+    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
+    2. 修改了全局的事务隔离级别，那么对此后所有的会话都有效，当前已经存在的会话则不受影响.
+</code></pre><h2 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h2><pre><code>1. 表与表之间的关系：一对一、一对多、多对多
+2. 新创建一张表account，外键字段uid 关联user表的主键id
+3. 创建表account的实体类
+    public class Account implements Serializable {
+        private int id;  //主键
+        private int uid;  //外键，关联user表的主键id
+        private double money;
+        // getter、setter
+    }
+4. 同理，新建Dao接口：com.test.dao.IAccountDao
+    public interface IAccountDao {
+        List&lt;Account&gt; findAll();
+    }
+5. 在主配置文件 SqlMapConfig.xml 配置 &lt;typeAliases&gt; 和 &lt;mappers&gt;
+    &lt;typeAliases&gt;
+        &lt;package name=&quot;com.test.domain&quot; /&gt;
+    &lt;/typeAliases&gt;
+    ......
+    &lt;mappers&gt;
+        &lt;package name=&quot;com.test.dao&quot; /&gt;
+    &lt;/mappers&gt;
+6. 创建 resources/com/test/dao/IAccountDao.xml
+    &lt;mapper namespace=&quot;com.test.dao.IAccountDao&quot;&gt;
+        &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.Account&quot;&gt;
+            select * from account
+        &lt;/select&gt;
+    &lt;/mapper&gt;
+</code></pre><h3 id="一对一查询"><a href="#一对一查询" class="headerlink" title="一对一查询"></a>一对一查询</h3><pre><code>1. account表--&gt;user表：一对一的关系
+2. 查询account的所有字段，只查询user表的username字段
+    1. 新增一个实体类AccountUser，继承自Account
+        public class AccountUser extends Account {
+            private String username;  //user表的字段
+            //getter、setter
+        }
+    2. 在 IAccountDao 接口中新增方法：List&lt;AccountUser&gt; findAccount();
+    3. 在 IAccountDao.xml 中配置SQL语句
+        &lt;select id=&quot;findAccount&quot; resultType=&quot;accountuser&quot;&gt;
+            select u.username, a.* from account a, user u where u.id=a.uid
+        &lt;/select&gt;
+3. 但是，这并不是常用的方式，而是将 从表(user) 的实体类封装到 主表(account) 的实体类中
+    public class Account implements Serializable {
+        private User user;  //从表user的实体类属性
+        ......
+    }
+4. 在 IAccountDao.xml 使用 &lt;resultMap&gt; 配置一对一的关系映射
+    &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
+        &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+        &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+        &lt;!-- 一对一的映射关系，配置封装User的属性 --&gt;
+        &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;/association&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
+        &lt;!-- 查询出两张表的所有字段，并对account表的id属性重命名为aid--&gt;
+        select u.*, a.id as aid, a.uid, a.money from account a, user u 
+         where u.id=a.uid
+        同
+        select u.*, a.id as aid, a.uid, a.money from account a 
+         left join user u on u.id=a.uid
+    &lt;/select&gt;
+    1. &lt;resultMap&gt; 上的 type属性 使用的是实体类的别名；
+    2. 如果查询结果中包含两张表的同名字段，则必须对其中一个字段做重命名，如account表的主键
+    字段(id--&gt;aid)，否则查询结果会出现错误；
+    3. SQL语句上重命名了account表的主键字段，所以对应&lt;id&gt;上的column属性也为aid.
+5. &lt;association&gt;标签用于配置一对一的映射关系
+    1. 属性column：主表account的外键字段;
+    2. 属性property：实体类Account 中封装从表实体类User的对象属性user;
+    3. 属性javaType：声明从表实体类User的全类名，也可以使用实体类的别名;
+    4. 标签内配置的是从表(user)字段与实体类(User)属性的映射关系.
+6. 连接查询与子查询
+    1. 表的连接查询都可以替换为子查询，但不是所有的子查询都可以替换为表连接查询；
+    2. 数据库对连接查询做了优化，而子查询是多次查询，效率较低，但胜在方便灵活。
+</code></pre><h3 id="一对多查询"><a href="#一对多查询" class="headerlink" title="一对多查询"></a>一对多查询</h3><pre><code>1. user表--&gt;account表：一对多的关系
+2. 在实体类User 中增加实体类Account 的集合
+    public class User implements Serializable {
+        private List&lt;Account&gt; accounts;  //从表user的实体类集合属性
+        ......
+    }
+3. 在 IUserDao.xml 中配置 &lt;resultMap&gt;
+    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;!-- 配置User对象中的实体类集合 --&gt;
+        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
+            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+        &lt;/collection&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
+        select u.*, a.id as aid, a.uid, a.money from user u 
+         left join account a on u.id=a.uid
+    &lt;/select&gt;
+4. &lt;collection&gt;标签用于配置一对多的关系映射
+    1. 属性ofType：从表account的实体类，也可以使用别名；
+    2. 属性property：实体类User 中封装从表实体类Account的集合属性accounts;
+    3. 同理，涉及到两张表的同名字段，要在SQL语句上对字段重命名(id--&gt;aid)
+</code></pre><h3 id="多对多查询"><a href="#多对多查询" class="headerlink" title="多对多查询"></a>多对多查询</h3><pre><code>1. 对于存在多对多关系的两张表，需要引入中间表(也叫做连接表)
+    1. 中间表包含两个实体表的主键，作为外键，建立两张表的联系；
+    2. 中间表的主键，可以使用两个外键作为联合主键，不必新增一个专门的主键字段；
+    3. 中间表也可以有普通字段，此时为了逻辑清晰，则增加一个主键字段。
+2. 角色表role与用户表user具有多对多的关系，同时新建一张中间表user_role
+    create table user_role(
+        uid int,
+        rid int,
+        foreign key(uid) references user(id),
+        foreign key(rid) references role(id),
+        primary key(uid,rid));  -------------&gt;两个外键作为联合主键
+3. 用户表user和角色表role的实体类中，包含对方的对象集合
+    public class User implements Serializable {
+        private int id;
+        private String username;
+        private List&lt;Role&gt; roles;
+        //getter、setter
+    }
+
+    public class Role implements Serializable {
+        private int id;
+        private String rolename;
+        private List&lt;User&gt; users;
+        //getter、setter
+    }
+4. 查询角色表role时，关联对应的用户表user
+    1. 角色表的Dao接口：IRoleDao
+        public interface IRoleDao {
+            List&lt;Role&gt; findAll();
+        }
+    2. 角色表的映射配置文件 IRoleDao.xml
+        &lt;resultMap id=&quot;roleUserMap&quot; type=&quot;role&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;rid&quot; /&gt;  ---&gt;SQL语句上重命名了同名字段
+            &lt;result property=&quot;rolename&quot; column=&quot;role_name&quot; /&gt;
+            &lt;!-- 配置Role对象中的实体类集合 --&gt;
+            &lt;collection property=&quot;users&quot; ofType=&quot;user&quot;&gt;
+                &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+                &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+            &lt;/collection&gt;
+        &lt;/resultMap&gt;
+        &lt;select id=&quot;findAll&quot; resultMap=&quot;roleUserMap&quot;&gt;
+            select u.*, r.id as rid, r.role_name from role r 
+             left outer join user_role ur on r.id=ur.rid 
+             left outer join user u on u.id=ur.uid
+        &lt;/select&gt;
+5. 查询用户表时，关联对应的角色表数据，IuserDao接口、IUserDao.xml 中的配置同理.
+</code></pre><h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><pre><code>1. JNDI：Java Naming and Directory Interface，SUN公司提供的一套标准的命名系统接口；
+2. JNDI也属于JavaEE技术，目的是模仿Windows系统中的注册表，在服务器中注册数据源；
+3. 注册表其实是Map结构，key存放的是路径+名称
+4. Tomcat服务器启动时，也准备了一个这样的Map结构，Key是字符串(路径+名称)，Value是Object
+    1. 路径的directory是固定的，name是可以自定义的；
+    2. value中存放的内容通过配置文件的方式指定。
+</code></pre><h3 id="JavaWeb项目与JNDI"><a href="#JavaWeb项目与JNDI" class="headerlink" title="JavaWeb项目与JNDI"></a>JavaWeb项目与JNDI</h3><pre><code>1. 在JavaWeb项目中使用JNDI，必须在 webapp 目录下创建 META-INF 目录
+    1. 在 META-INF 目录下创建配置文件context.xml
+        &lt;Context&gt;
+            &lt;Resource
+                name=&quot;jdbc/test_ibatis&quot; type=&quot;javax.sql.DataSource&quot; 
+                auth=&quot;Container&quot; 
+                maxActive=&quot;20&quot;
+                maxWait=&quot;10000&quot;
+                maxIdle=&quot;5&quot;
+                username=&quot;root&quot;
+                password=&quot;123456&quot;
+                driverClassName=&quot;com.mysql.jdbc.Driver&quot;
+                url=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot;
+            /&gt;
+        &lt;/Context&gt;
+    2. name：Map结构中key路径的名称部分;
+    3. type：value中存储的对象;
+    4. auth：指定提供者，Container表示容器，此时指Tomcat;
+    5. maxActive：最大活动连接;
+    6. maxWait：最大等待时长;
+    7. maxIdle：最大空闲数;
+    8. 属性username、password、driverClassName、url：数据库的连接信息.
+2. 主配置文件 SqlMapConfig.xml
+    &lt;dataSource type=&quot;JNDI&quot;&gt;
+        &lt;property name=&quot;data_source&quot; value=&quot;java:comp/env/jdbc/test_ibatis&quot; /&gt;
+    &lt;/dataSource&gt;
+    1. java:comp/env/jdbc 就是key路径中固定的directory部分;
+    2. context.xml中已经包含了数据库的连接信息，不需要再额外配置。
+3. 使用Mybatis操作数据库时，必须经过Tomcat，所以只能在Servlet/JSP中使用，测试模块中不能使用.
+</code></pre><h2 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h2><pre><code>1. 延迟加载：在真正使用数据时才发起查询，不用的时候就不查询，这就是按需加载，亦或懒加载；
+    1. 一对多，多对多：通常采用延迟加载；
+    2. 多对一，一对一：通常采用默认的立即加载。
+2. 一对一的延迟加载：表account--&gt;表user
+    1. 在主配置文件 SqlMapConfig.xml 中开启延迟加载
+    &lt;configuration&gt;
+        &lt;settings&gt;
+            &lt;!-- 延迟加载的全局开关 --&gt;
+            &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;
+            &lt;!-- 大于Mybatis3.4.1的默认值为false，表示按需加载每个属性 --&gt;
+            &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
+            &lt;!-- 开启驼峰扫描 --&gt;
+            &lt;setting name=&quot;mapUnderscoreToCamelCase&quot; value=&quot;true&quot; /&gt;
+        &lt;/settings&gt;
+    &lt;/configuration&gt;
+    2. 开启驼峰扫描之后，可以自动将SQL语句中带下划线的字段，转换为驼峰标志，再去匹配实体类中的属性;
+        1. 比如字段user_type，在Java实体类中的属性通常为驼峰式：userType
+        2. 如果不开启驼峰扫描，在SQL语句中需要使用 AS 实现映射匹配;
+        select user_type as userType from user
+        3. 但开启了Mybatis的驼峰匹配之后，就可以自动匹配：select user_type from user
+    3. IUserDao接口 与 IUserDao.xml
+        User findById(int id);  //根据主键 id 查询user表
+        &lt;select id=&quot;findById&quot; parameterType=&quot;int&quot; resultType=&quot;user&quot;&gt;
+            select * from user where id=#{uid}
+        &lt;/select&gt;
+    4. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
+        &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
+            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
+            &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot; 
+                    select=&quot;com.test.dao.IUserDao.findById&quot;&gt;&lt;/association&gt;
+        &lt;/resultMap&gt;
+        &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
+            select * from account  ---&gt;不能再使用连接查询，否则延迟加载是无效的
+        &lt;/select&gt;
+    5. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
+3. 一对多的延迟加载：表user--&gt;表account
+    1. IAccountDao接口 与 IAccountDao.xml
+        //根据外键 uid 去查询account表
+        List&lt;Account&gt; findByUid(int uid);
+        &lt;select id=&quot;findByUid&quot; parameterType=&quot;int&quot; resultType=&quot;account&quot;&gt;
+            select * from account where uid=#{uid}
+        &lt;/select&gt;
+    2. IUserDao.xml：配置 &lt;collection&gt; 上的select属性
+    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
+        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
+        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot; 
+            select=&quot;com.test.dao.IAccountDao.findByUid&quot; column=&quot;id&quot;&gt;&lt;/collection&gt;
+    &lt;/resultMap&gt;
+    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
+        select * from user  ---&gt;不能再使用连接查询
+    &lt;/select&gt;
+</code></pre><h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><pre><code>1. 缓存就是存在于内存中的数据，减少与数据库的交互次数，提高执行效率；
+2. 适用于缓存的数据：经常查询的，且不经常改变的，数据的正确与否对最终结果影响不大的；
+3. 一级缓存：SqlSession对象的缓存，无需特殊配置
+    1. 每个SqlSession对象会提供一块独有的Map结构的区域，缓存查询的结果；
+    User u1 = dao.findById(2);  User u2 = dao.findById(2); //连续两次查询同一条数据
+    u1==u2;  --&gt; true
+    2. 手动清空一级缓存：session.clearCache();
+    3. 为了保证数据的一致性，当发生数据的插入/更新/删除，或者调用SqlSession的commit()、
+    close()等方法时，会立即清空当前SqlSession的一级缓存，让后续的SQL重新查询数据库。
+4. 二级缓存：SqlSessionFactory对象的缓存
+    1. 由同一个SqlSessionFactory创建的所有SqlSession对象，共享二级缓存；
+    2. 在主配置文件 SqlMapConfig.xml 中开启全局缓存，默认就是开启的
+        &lt;settings&gt;
+            &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot; /&gt;
+        &lt;/settings&gt;
+    3. 在映射配置文件 IUserDao.xml 中开启user的二级缓存
+        &lt;cache /&gt;
+        &lt;select id=&quot;findById&quot; resultType=&quot;user&quot; useCache=&quot;true&quot;&gt;
+            select * from user where id=#{uid}
+        &lt;/select&gt;
+5. 二级缓存中存储的是散装数据，当使用二级缓存数据时，这些数据会封装成一个新的User对象，
+   所以比较两次查询的结果时，返回false.
+</code></pre><h2 id="注解开发"><a href="#注解开发" class="headerlink" title="注解开发"></a>注解开发</h2><pre><code>1. Mybatis的注解开发：针对的是Dao的映射配置文件，目的是省略映射配置文件
+2. CRUD的对应注解：@Insert、@Select、@Update、@Delete，在Dao接口的方法上使用
+3. 使用注解时，如果resources目录下还存在映射配置文件，不管是否使用了此配置文件，都会报错；
+4. 单表的CRUD：IUserDao接口
+    1. 查询：@Select
+        @Select(&quot;select * from user&quot;)
+        List&lt;User&gt; findAll();
+
+        @Select(&quot;select * from user where name like #{username}&quot;)  或
+        @Select(&quot;select * from user where name like &apos;%${value}%&apos;&quot;)
+        List&lt;User&gt; findByName(String username);
+
+        @Select(&quot;select count(id) from user&quot;)
+        int findTotal();
+    2. 插入：@Insert
+        @Insert(&quot;insert into user(name, age) values(#{username}, #{age})&quot;)
+        void saveUser(User u);
+    3. 更新：@Update
+        @Update(&quot;update user set name=#{username}, age=#{age} where id=#{id}&quot;)
+        void updateUser(User u);
+    4. 删除：@Delete
+        @Delete(&quot;delete from user where id=#{id}&quot;)
+        void deleteUser(int id);
+5. 实体类的属性名与表字段名不匹配：id--&gt;uId，name--&gt;username
+    @Select(&quot;select * from user&quot;)
+    @Results(id=&quot;userMap&quot;, value={
+        @Result(id=true, column=&quot;id&quot;, property=&quot;uId&quot;),
+        @Result(column=&quot;name&quot;, property=&quot;username&quot;)
+    })
+    List&lt;User&gt; findAll();
+
+    @Select(&quot;select * from user where id=#{id}&quot;)
+    @ResultMap(value={&quot;userMap&quot;})  --&gt;复用id命名的@Results，支持多个
+    User findById(int id);
+</code></pre><h3 id="多表的CRUD"><a href="#多表的CRUD" class="headerlink" title="多表的CRUD"></a>多表的CRUD</h3><pre><code>1. 一对一：表account--&gt;表user
+    1. IAccountDao接口
+    @Select(&quot;select * from account&quot;)
+    @Results(id=&quot;accountMap&quot;, value={
+        @Result(id=true, column=&quot;id&quot;, property=&quot;id&quot;),
+        @Result(column=&quot;uid&quot;, property=&quot;uid&quot;),
+        @Result(column=&quot;money&quot;, property=&quot;money&quot;),
+        @Result(column=&quot;uid&quot;, property=&quot;user&quot;, one=@One(
+            select=&quot;com.test.dao.IUserDao.findById&quot;, fetchType=FetchType.EAGER
+        ))
+    })
+    List&lt;Account&gt; findAll();
+    2. @One 用于一对一的关联查询，调用 IUserDao.findById()，接收参数为uid;
+    3. select属性用于指定要调用的全限定方法名，fetchType属性用于配置加载的时机;
+    4. FetchType有3个属性：LAZY(懒加载)、EAGER(立即加载)、DEFAULT.
+2. 一对多：表user--&gt;表account，
+    @Select(&quot;select * from user&quot;)
+    @Results(id=&quot;userMap&quot;, value={
+        @Result(id=true, column=&quot;id&quot;, property=&quot;uId&quot;),
+        @Result(column=&quot;name&quot;, property=&quot;username&quot;),
+        @Result(column=&quot;id&quot;, property=&quot;accounts&quot;, many=@Many(
+            select=&quot;com.test.dao.IAccountDao.findByUid&quot;, fetchType=FetchType.LAZY
+        ))
+    })
+    List&lt;User&gt; findAll();
+3. 配置二级缓存
+    1. 在主配置文件 SqlMapConfig.xml 中开启缓存;
+    2. 在Dao接口上使用注解@CacheNamespace
+    @CacheNamespace(blocking = true)
+    public interface IUserDao { ... }
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/01/Mybatis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2754,955 +4228,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/05/Java网络编程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/05/Java网络编程/" itemprop="url">Java网络编程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-05T00:00:00+08:00">
-                2016-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Ip相关的类：InetAddress"><a href="#Ip相关的类：InetAddress" class="headerlink" title="Ip相关的类：InetAddress"></a>Ip相关的类：InetAddress</h2><pre><code>1. 获取本机的Ip、hostname
-    InetAddress addr = InetAddress.getLocalHost();
-    String ip = addr.getHostAddress();
-    String hostName = addr.getHostName(); //计算机名
-2. 根据域名获取Ip、hostname
-    InetAddress addr = InetAddress.getByName(&quot;www.baidu.com&quot;); //内部是NDS解析
-    String ip = addr.getHostAddress(); //Ip
-    String hostName = addr.getHostName(); //域名www.baidu.com
-3. 如果getByName(&quot;Ip地址&quot;)，getHostName()获取的仍是Ip，而不是域名；
-4. 子类：Inet4Address、Inet6Address
-</code></pre><h2 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h2><pre><code>1. 端口号表示一个16位的二进制整数，2个字节，对应十进制0-65535
-    1. 公认端口0-1023，如80是http协议的默认端口
-    2. 注册端口1024-49151(分配给用户进程/应用程序)
-    3. 动态/私有端口49152-65535
-2. windows命令
-    1. netstat -ano  ---&gt; 查看所有的端口号
-    2. netstat -ano|findstr &quot;808&quot;  ---&gt; 查看指定端口号
-    3. tasklist|findstr &quot;808&quot;  ---&gt; 查看指定进程
-3. InetSocketAddress：包含端口号，用于socket通信
-    InetSocketAddress s = new InetSocketAddress(&quot;127.0.0.1/localhost&quot;, 8080);
-    s.getHostName();  s.getAddress();  s.getPort();
-</code></pre><h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><pre><code>1. URL和URN都是URI的子集
-    1. URI：统一资源标识符，表示一个资源，比如一个具体的人
-    2. URL：统一资源定位符，用地址定位一个资源，比如XX省XX市XX区...XX单元XX室的主人
-    3. URN：统一资源名称，用名称定位一个资源，但不明确资源的位置，比如身份证号+姓名去找人
-2. 网络三大基石：HTML、HTTP、URL
-3. URL由4部分组成：协议、资源所在的主机域名、端口号、资源文件名
-4. URL url = new URL(&quot;http://www.baidu.com:80/index.html#aa?xx=xxx&quot;);
-    1. url.getProtocol()：协议名
-    2. url.getDefaultPort()：获取与此URL关联的协议的默认端口号
-    3. url.getHost()：主机名/域名
-    4. url.getFile()：端口号后的所有内容
-    5. url.getPath()：端口号后、参数前的内容
-    6. url.getQuery()：参数部分
-    7. url.getRef()：锚点
-5. 相对路径构建URL
-    URL u1 = new URL(&quot;http://www.baidu.com/aa/&quot;);
-    URL u2 = new URL(u, &quot;b.html&quot;); --&gt; http://www.baidu.com/aa/b.html
-6. 发起请求
-    1. 抓取网络数据，非浏览器访问
-    InputStream is = url.openStream();
-    BufferedReader br = new BufferedReader(new InputStreamReader(is, &quot;UTF-8&quot;));
-    String msg = null;
-    while(null != (msg=br.readLine())) {
-        System.out.println(msg);
-    }
-    br.close();
-    2. 模拟浏览器访问
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestMethod(&quot;GET&quot;);  --&gt;设置请求方式
-    conn.setRequestProperty(&quot;User-Agent&quot;, &quot;value&quot;); --&gt;设置请求头
-    BufferedReader br = new BufferedReader(
-        new InputStreamReader(conn.getInputStream(), &quot;GBK&quot;));
-</code></pre><h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><pre><code>1. DatagramSocket：用于发送/接受数据包的套接字；
-2. DatagramPacket：数据包；
-3. 发送端
-    DatagramSocket client = new DatagramSocket(8888);
-    String data = &quot;Hello I&apos;m Client&quot;;
-    byte[] bys = data.getBytes();
-    //发送给&quot;127.0.0.1:9999&quot;
-    DatagramPacket packet = new DatagramPacket(bys, 0, bys.length, 
-        new InetSocketAddress(&quot;127.0.0.1&quot;, 9999));
-    client.send(packet);
-    client.close();
-4. 接收端
-    DatagramSocket server = new DatagramSocket(9999); --&gt; 监听端口9999
-    byte[] container = new byte[1024*60];
-    DatagramPacket packet = new DatagramPacket(container, 0, container.length);
-    server.receive(packet);
-    byte[] bys = packet.getData();
-    int len = packet.getLength();
-    String data = new String(bys, 0, len);
-    server.close();
-</code></pre><h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><pre><code>1. 服务端：ServerSocket
-    ServerSocket server = new ServerSocket(8889);
-    Socket client = server.accept(); --&gt;阻塞式，等待客户端连接
-    DataInputStream dis = new DataInputStream(client.getInputStream());
-    String data = dis.readUTF(); --&gt;客户端的数据
-    dis.close();
-    client.close();
-    server.close();
-    1. 通过每一次连接的client，向对应的客户端响应数据
-    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-    dos.writeUTF(&quot;hello I&apos;m Server&quot;); --&gt;向客户端响应数据
-    dos.flush();
-    dos.close();
-2. 客户端：Socket
-    //指定服务端的Ip和端口号，发起连接请求
-    Socket client = new Socket(&quot;127.0.0.1&quot;, 8889);
-    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-    dos.writeUTF(&quot;hello I&apos;m Client&quot;); --&gt;向服务端写入数据
-    dos.flush();
-    dos.close();
-    client.close();
-    1. client接收服务端的响应数据
-    DataInputStream dis = new DataInputStream(client.getInputStream());
-    String data = dis.readUTF(); --&gt;接收响应数据
-    dis.close();
-3. HTTP底层正是TCP，浏览器作为客户端，也可以直接访问TCP服务器端.
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/03/Java多线程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/03/Java多线程/" itemprop="url">Java多线程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-03T00:00:00+08:00">
-                2016-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><pre><code>1. 线程状态
-</code></pre><p><img src="https://i.imgur.com/vLw2xgt.jpg" alt></p>
-<pre><code>    1. Thread.State：线程的状态，NEW(尚未启动的线程)、RUNNABLE、BLOCKED、WAITING、
-    TIMED_WAITING、TERMINATED(已退出的线程)
-    2. RUNNABLE：包含就绪状态和运行状态；
-    3. getState()：获取线程的状态。
-2. 线程的 stop() 方法已经被废弃，因为线程的终止可以通过一个boolean型的标志位变量完成；
-3. sleep() yield() join()
-    1. sleep() 表示休眠，会阻塞线程，且不会释放锁，睡眠时间到了之后，重新进入就绪状态；
-    常用于模拟网络延迟、倒计时...
-    2. yield() 则礼让出CPU的执行权，线程进入就绪状态；
-    3. join() 插队，待此线程执行完成后，再执行其他线程，这段时间内，其他线程处于阻塞状态；
-4. 优先级：线程的优先级并不能决定哪个线程先执行，优先级高的线程被执行的概率相对会高一些；
-    1. setPriority(priority)：设置线程的优先级，范围1-10，在 start() 之前设置有效；
-    2. Thread.MIN_PRIORITY，Thread.MAX_PRIORITY，Thread.NORM_PRIORITY：1，10，5
-5. 线程分为用户线程和守护线程，默认的线程都是用户线程
-    1. 虚拟机JVM会确保所有的用户线程执行完毕，再退出程序，但不会等待守护线程执行完毕；
-    2. 如后台记录操作日志、监控内存使用等
-    3. setDaemon(true)：把线程设置为守护线程，在 start() 之前调用。
-6. Thread.currentThread()：获取当前线程；
-7. isAlive()：线程是否还活着。
-</code></pre><h2 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h2><pre><code>1. 线程同步：synchronized，队列
-    1. 若将一个大的方法声明为synchronized，将会大大影响效率；
-    2. 与大的synchronized方法相比，synchronized块能在一定程度上减少性能的损失；
-    3. 使用 synchronized 的关键在于，第一要锁对目标，第二要取舍synchronized块的面积。
-2. 同步块的锁：
-    1. 同步方法的锁是this，表示当前对象，不可改变；
-    2. 同步块的锁可以指定，锁住的目标更明确，还能减小锁的面积。
-3. 并发容器：CopyOnWriteArrayList，加锁的ArrayList，保证在写入数据时的安全；
-4. 死锁：相互持有对方的锁，需要避免锁的嵌套。
-</code></pre><h3 id="并发协作"><a href="#并发协作" class="headerlink" title="并发协作"></a>并发协作</h3><pre><code>1. 生产者与消费者模式：线程同步问题，生产者和消费者共享同一资源，且生产者和消费者相互依赖；
-    1. synchronized只是阻止并发更新同一共享资源，实现同步，但并不能实现线程间的通信；
-    2. 管程法：利用并发缓冲容器实现；
-    3. 信号灯法：借助标志位实现；
-    4. wait()，notify()，notifyAll()
-2. 管程法
-    1. 容器满了，则生产者等待；容器为空时，则消费者等待；
-    2. 容器中有元素时，唤醒消费者取出；消费者取出元素之后，唤醒生产者存入；
-    class Food {  --&gt; 生产/消费的对象
-        public int count;
-        public Food(int c) { this.count = c; }
-    }
-    3. 容器具备同步的存入和取出方法
-    class Container {
-        private Food[] foodList = new Food[10];  private int count = 0;
-        public synchronized void push(Food f) {  ---&gt; 同步方法的锁默认是this
-            if ((this.foodList.length-1)==count) {
-                this.wait(); --&gt; 容器满了，生产者进入等待
-            }
-            this.foodList[count] = f;  count++;
-            this.notifyAll();   ----&gt; 容器中已经有了元素，唤醒消费者
-        }
-        public synchronized Food pop() {
-            if (count &lt; 1) {
-                this.wait(); --&gt; 容器为空，生产者进入等待
-            }
-            count--;  Food f = this.foodList[count];
-            this.notifyAll();   ----&gt; 消费者取出了元素，唤醒生产者
-            return f;
-        }
-    }
-    4. 生产者和消费者的线程
-    class Producter extends Thread {
-        private Container con;
-        public Producter(Container con) { this.con = con; }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                this.con.push(new Food(i+1)); ---&gt; 生产者向容器中存入元素
-                System.out.println(&quot;生产第 &quot;+(i+1)+&quot; 个&quot;);
-            }
-        }
-    }
-    class Customer extends Thread {
-        private Container con;
-        public Customer(Container con) { this.con = con; }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                Food food = this.con.pop(); ---&gt; 消费者从容器中取出元素
-                System.out.println(&quot;消费第 &quot;+(food.count)+&quot; 个&quot;);
-            }
-        }
-    }
-    5. 生产者和消费者操作的必须是同一个容器
-    Container con = new Container();
-    Producter p = new Producter(con);  Customer c = new Customer(con);
-    p.start();  c.start();
-3. 信号灯法
-    1. 标志位为true，让生产者等待，消费者运行完成后，设置标志位为false，并唤醒生产者；
-    2. 反之，让消费者等待，生产者运行完成后，设置标志位为true，并唤醒消费者；
-    class Tv {
-        private String show;   --&gt; 生产和消费的元素
-        private boolean flag;  --&gt; 标志位
-        public synchronized void play(String show) {
-            if (this.flag) {
-                this.wait();   --&gt; 生产者等待
-            }
-            this.show = show;
-            this.flag = !this.flag;  --&gt; 标志位取反
-            this.notifyAll();  --&gt; 唤醒消费者
-        }
-        public synchronized String watch() {
-            if (!this.flag) {
-                this.wait();   --&gt; 消费者等待
-            }
-            this.flag = !this.flag;  --&gt; 标志位取反
-            this.notifyAll();  --&gt; 唤醒生产者
-            return show;
-        }
-    }
-    3. 生产者和消费者的线程
-    class Actor extends Thread {
-        private Tv tv;
-        public Actor(Tv tv) {  this.tv = tv;  }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                String show = i%2==0?&quot;跳舞&quot;:&quot;唱歌&quot;;
-                this.tv.play(show);
-                System.out.println(&quot;生产者：&quot; + show + &quot;::&quot; + i);
-            }
-        }
-    }
-    class Audience extends Thread {
-        private Tv tv;
-        public Audience(Tv tv) {  this.tv = tv;  }
-        public void run() {
-            for (int i=0; i&lt;100; i++) {
-                System.out.println(&quot;消费者：&quot; + this.tv.watch() + &quot;::&quot; + i);
-            }
-        }
-    }
-    Tv tv = new Tv();
-    Actor actor = new Actor(tv);  Audience audience = new Audience(tv);
-    actor.start();  audience.start();
-</code></pre><h2 id="定时调度"><a href="#定时调度" class="headerlink" title="定时调度"></a>定时调度</h2><pre><code>1. Timer和TimerTask
-    class EvenTask extends TimerTask {  --&gt; 任务线程
-        public void run() { ... }
-    }
-    Timer t = new Timer();  --&gt; 定时器
-    EvenTask task = new EvenTask();
-    1. t.schedule(task, 3000);  ----&gt; 3s后执行一次
-    2. t.schedule(task, 3000, 1000);  ----&gt; 3s后每隔1s执行一次
-    3. t.schedule(task, date);  -----&gt; 指定时间定时执行
-2. 调度框架：quartz
-</code></pre><h2 id="指令重排"><a href="#指令重排" class="headerlink" title="指令重排"></a>指令重排</h2><pre><code>1. HappenBefore：虚拟机优化代码顺序，导致执行顺序可能与编写代码的顺序不一致，称为指令重排
-2. 指令重排是编译器或运行时环境为了优化程序性能而采取的对指令进行重新排序执行的一种手段
-3. CPU执行指令的步骤
-    从内存中获取一条指令 --&gt; 解码指令，取值 --&gt; 操作值，得到结果 --&gt; 把结果写回寄存器中
-4. 编译器和处理器在重排指令时，遵守数据依赖性，不会改变存在数据依赖关系的两个操作的执行顺序
-5. 在虚拟机层面和硬件层面，都可能出现指令重排
-    1. 在虚拟机层面：内存操作速度远慢于CPU运行速度，为了避免CPU空置的影响；
-    2. 在硬件层面：CPU速度比缓存速度快。
-</code></pre><h2 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h2><pre><code>1. volatile保证线程间的可见性，当线程A修改变量X后，其后的其他线程能看到变量X的变动；
-2. 线程有自己的工作内存，且彼此独立、互补可见；
-    1. 工作内存不仅包含了线程内部定义的局部变量，也包含了线程所需要使用的共享变量的副本；
-    2. 为了提高效率，线程并不会每次都从主内存中读取共享变量。
-3. volatile的变量符合两个规则
-    1. 线程对变量修改之后，要立刻写到主内存
-    2. 线程对变量读取的时候，要从主内存中读，而不是缓存(工作内存)
-4. volatile不能保证原子性
-    1. 比如x=x+1分为3步：从内存中获取x，对x加1，再把结果写回内存中
-    2. volatile并不能保证这3步同时发生，只能保证变量x的结果发生变化后，对每个线程都可见
-5. volatile是一个轻量级的synchronized
-    private volatile static int num = 0;
-    new Thread(()-&gt;{
-        while (num==0) {} ---&gt; 不执行任何具体任务
-    }).start();
-    Thread.sleep(1000);
-    num = 1;
-    1. 如果不使用volatile修饰，1s后的num虽然已经置为1，但因为子线程执行空的while循环，
-    造成CPU很繁忙，来不及把变量num同步给子线程的内存空间，所以子线程始终不会结束；
-    2. 一旦while(num==0){}中执行了具体任务，CPU就有可能把num=1同步给子线程的内存空间，
-    结束while循环；
-    3. 变量num使用volatile修饰，子线程中的while(num==0){}每次都从主内存中读取num的值，
-    所以在1s之后，num被置为1，也会立即被子线程的while(num==0)所感知，终止循环。
-6. 单例模式之懒汉式的并发控制：双重检测、指令重排
-    public class LittleBable {
-        //volatile防止new对象的过程中指令重排，造成其他线程访问一个还有初始化完成的对象
-        private static volatile LittleBable instance;
-        private LittleBable() {}
-        public static LittleBable getInstance() {
-            if (null != instance) { return instance; } //双重检测，防止不必要的同步
-            synchronized (LittleBable.class) {
-                if (null == instance) {  instance = new LittleBable(); }
-            }
-            return instance;
-        }
-    }
-</code></pre><h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h2><pre><code>1. ThreadLocal是线程局部变量的存储空间，虽然被多个线程共享，但能使线程安全；
-    private static ThreadLocal&lt;Interger&gt; tl = new ThreadLocal&lt;&gt;();
-    1. JDK建议把ThreadLocal声明为private static
-    2. 泛型为Integer，默认值为null   --&gt; tl.get(); --&gt; null
-    3. 指定默认值
-    new ThreadLocal&lt;&gt;(){ protected Integer initialValue(){ return 20; } };
-    4. JDK8的新特性
-    private static ThreadLocal&lt;Interger&gt; tl = ThreadLocal.withInitial(()-&gt;20);
-    5. 设置新的值：tl.set(100);
-2. 多个线程在获取/设置ThreadLocal时，相互不会影响；
-    tl.set(100); --&gt; 在主线程中修改为100 --&gt; tl.get(); --&gt; 100
-    new Thread(()-&gt;{
-        tl.get(); --&gt; 在子线程中仍是默认值20 --&gt; tl.set(100);  --&gt; tl.get(); --&gt; 100
-    }).start();
-3. 上下文环境问题
-    class TestRun implements Runnable {
-        public TestRun() { tl.set(33); }
-        public void run() { tl.get();  -----&gt; 20 }
-    }
-    new Thread(new TestRun()).start(); --&gt; 在主线程中执行
-    1. 创建对象是在主线程中进行的，所以TestRun的构造函数也是在主线程中，tl.set(33); 设置
-    的是主线程的ThreadLocal变量
-    2. run()才是在子线程中执行的，所以获取ThreadLocal的变量仍是默认值20
-</code></pre><h3 id="InheritableThreadLocal"><a href="#InheritableThreadLocal" class="headerlink" title="InheritableThreadLocal"></a>InheritableThreadLocal</h3><pre><code>1. InheritableThreadLocal：上下文环境的可继承ThreadLocal
-2. 子线程会从当前上下文环境拷贝一份ThreadLocal，重新设置ThreadLocal也不会影响原上下文
-    private static ThreadLocal&lt;Integer&gt; tl = new InheritableThreadLocal&lt;&gt;();
-    tl.set(100);
-    new Thread(()-&gt;{
-        tl.get();  ---&gt; 100
-        tl.set(200);  ---&gt; tl.get(); --&gt; 200
-    }).start();
-    tl.get();  --&gt; 100
-3. ThreadLocal的应用
-    1. 最常见的是为每个线程绑定一个数据库连接，HTTP请求，用户身份信息...
-    2. Hibernate的Session工具类：HibernateUtil
-    3. 通过不同的线程对象设置Bean属性，保证各个线程Bean对象的独立性。
-</code></pre><h2 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h2><pre><code>1. 锁作为保证并发共享数据一致性的工具，大多数内置锁都是可重入的，也就是可以延续使用；
-2. 可重入
-    1. 如果某个线程试图获取一个已经由它自己持有的锁时，那么此请求会立即成功，且会将这个锁
-    的计数值加1；
-    2. 当线程退出同步代码块时，计数器会递减，当计数值为0时，锁释放。
-    3. 如果没有可重入锁的支持，在第二次试图获得锁时，将进入死锁状态；
-    synchronized(this) { --&gt; 第一次获取锁
-        while(true) {
-            synchronized(this) { } --&gt; 第二次获取同一把锁
-        }
-    }
-    public synchronized void testA() { }
-    public synchronized void testB() { }
-    public synchronized void testAll() {
-        this.testA();  --&gt; 第二次获取同一把锁
-        this.testB();
-    }
-3. 不可重入锁
-    class Lock {
-        private boolean isLocked = false;
-        public synchronized void lock() {
-            while(isLocked){ --&gt; 锁已经被占用了，则等待
-                wait();
-            }
-            isLocked = true;
-        }
-        public synchronized void unlock() {
-            isLocked = false;
-            notify();  ---&gt; 释放锁，唤醒一个等待的线程
-        }
-    }
-    Lock lock = new Lock();
-    public void doSomething() {
-        lock.lock();
-        // ......
-        lock.unlock();
-    }
-    public void test() {
-        lock.lock();  --&gt; 上锁
-        doSomething(); --&gt; 内部继续上同一把锁，但lock是不可重入的，所以陷入死锁状态
-        lock.unlock();
-    }
-4. 可重入锁的实现原理
-    class Lock {
-        private boolean isLocked = false;
-        private Thread t = null;
-        private int count = 0; ---&gt; 计数器
-        public synchronized void lock() {
-            //对同一个线程放行，同一个线程可以重复上同一把锁
-            Thread currentT = Thread.currentThread()
-            while(isLocked &amp;&amp; (t!=currentT)){
-                wait();  --&gt; 不是同一个线程，且锁已经被占用时，则等待
-            }
-            isLocked = true;  t = currentT;  count++;
-        }
-        public synchronized void unlock() {
-            if(Thread.currentThread() == t) {
-                count--;
-                if(count == 0) { --&gt; 计数器为0时，当前线程才能释放锁
-                    isLocked = false;
-                    notify();  ---&gt; 唤醒一个等待的线程
-                    t = null;
-                }
-            }
-        }
-    }
-</code></pre><h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><pre><code>1. 悲观锁：synchronized是独占锁(悲观锁)，会导致其他所有线程挂起，等待持有锁的线程释放锁
-2. 乐观锁：完成某项操作时，每次不加锁，而是假设没有冲突，如果因为冲突失败就重试，直至成功
-3. CAS：Compare and Swap，比较并交换，乐观锁的实现，如购物时的秒杀功能
-    1. 有三个值：一个当前内存值V，旧的预期值A，将更新的值B
-    2. 先获取内存中的值V，再将V与原值A比较，如果相等，则修改为B，并返回true，否则不修改，
-    返回false
-    3. CAS是一组原子操作，不会被外部打断；
-    4. CAS属于硬件级别的操作(利用CPU的CAS指令，同时借助JNI来完成的非阻塞算法)，效率比加锁
-    操作高；
-    5. ABA问题：如果变量V初次读取时是A，且在准备赋值时检查到它仍是A，此时并不能保证变量V
-    没被修改过，如果在这期间曾被修改成B，然后又改回A，那CAS操作就会误认为它从来没有修改过。
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/02/Java基础/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/02/Java基础/" itemprop="url">Java基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-02T00:00:00+08:00">
-                2016-01-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h2><pre><code>1. 浮点数的精确计算：BigDecimal，java.math包中的类
-    1. 相减
-    BigDecimal db1 = BigDecimal.valueOf(1.0);  --&gt; 浮点数1.0
-    db1 = db1.subtract(BigDecimal.valueOf(0.1));  --&gt; 1.0 - 0.1
-    2. 相除
-    BigDecimal db2 = BigDecimal.valueOf(0.1);
-    BigDecimal db3 = BigDecimal.valueOf(1.0/10.0);
-    System.out.println(db2.equals(db3)); --&gt; true
-2. 自动类型转换：容量小的类型自动向容量大的类型转换
-    1. 特例：byte b = 123;
-    2. 123 本身是 int 类型(Java中的数值默认是int类型)，byte类型的范围为-128~127
-    3. 所以，123 可以直接赋值给 byte类型(自动转为byte类型)。
-3. 溢出
-    1. int m = 1000000000;  int y = 20;
-    2. int t = m * y; --&gt; 负数(溢出导致)
-    3. long t = m * (long)y; --&gt; 20000000000
-4. Java5提供了可变长参数
-    public void print(int n, String... args){
-        for(String temp: args){ } --&gt;遍历可变长参数
-    }
-    print(2, &quot;a&quot;);  print(2, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;);
-5. TreeMap与TreeSet
-    1. TreeMap：红黑二叉树的典型实现，按照key自增长的方向排序；
-    2. TreeSet：内部维持了一个简化版的TreeMap，通过key存储Set的元素；
-    3. 如果存储的是对象，此对象应实现 Comparable 接口，以便于对其进行排序。
-6. lambda表达式：JDK8新特性
-    1. 针对的是只包含一个方法的接口，如Runnable
-    new Thread(new Runnable(){
-        public void run(){ System.out.println(&quot;start Run&quot;); }
-    }).start();
-    new Thread(()-&gt; {
-        System.out.println(&quot;start Run&quot;);
-    }).start();
-    2. Thread是Runnable的代理对象(静态代理)。
-7. 静态代理
-    1. 代理对象和原对象都实现同一个接口
-    interface Task {  void work();  }
-    2. 原对象
-    class Stuff implements Sask {
-        public void work() { }
-    }
-    3. 静态代理对象
-    class StaticProxy implements Task {
-        private Task target;
-        public StaticProxy(Task target) {
-            this.target = target;
-        }
-        public void work() {
-            this.start();
-            this.target.work();
-            this.end();
-        }
-        private void start(){ }
-        private void end(){ }
-    }
-    4. 通过代理对象，执行原对象的任务方法
-    new StaticProxy(new Stuff()).work();
-8. 多线程之Callable
-    1. Callable是一个接口，包含方法call()，接收一个泛型，默认是Object，作为call()的
-    返回值类型
-    public class CLoader implements Callable&lt;Boolean&gt; {  --&gt; 泛型指定为Boolean
-        public Boolean call() throw Exception {
-            ...... //执行任务
-            return true
-        }
-    }
-    CLoader cd1 = new CLoader(); CLoader cd2 = new CLoader();
-    2. 使用线程池，创建服务
-    ExecutorService es = Executors.newFixedThreadPool(2);
-    3. 提交执行
-    Future&lt;Boolean&gt; ft1 = es.submit(cd1);  Future&lt;Boolean&gt; ft2 = es.submit(cd2);
-    4. 获取结果
-    boolean re1 = ft1.get();  boolean re2 = ft2.get();
-    5. 关闭服务
-    es.shutdownNow();
-    6. 与Thread/Runnable的 run() 相比，call()可以抛出异常，而 run() 不能抛出异常，只能
-    try-catch捕获。
-</code></pre><h2 id="JDK10新特性"><a href="#JDK10新特性" class="headerlink" title="JDK10新特性"></a>JDK10新特性</h2><pre><code>1. 局部变量类型推断
-    1. var：保留类型(不是关键字)，只针对局部变量
-    public void test() {
-        var i = 10;
-        var s = &quot;abc&quot;;
-        var list = new ArrayList&lt;&gt;();
-        var user = new User();
-    }
-    2. 不允许对var变量赋值null，编译器认为毫无意义，因为null就是null类型
-    var a = null; --&gt; 编译器报错
-    3. 不允许对方法的参数使用var，因为参数没有值，无法推断类型
-2. 垃圾收集器的优化
-    1. JDK9：新生代使用ParNew收集器，老年代使用Parallel Obl收集器
-    2. JDK10：G1(Garbage-First) 全收集器
-3. 新增73个新功能扩展API
-    1. java.util.list/Set/Map新增静态方法copyOf()，按照其迭代顺序返回一个不可修改的集合
-    var list = new ArrayList&lt;String&gt;();  list.add(&quot;a&quot;);  list.add(&quot;b&quot;);
-    var cl = List.copyOf(list);
-    2. java.io.ByteArrayOutputStream新增方法toString(charset)，通过指定的字符集编码，
-    将缓冲区的内容转为字符串
-    3. java.io.PrintStream/PrintWriter，新增三个构造方法，方法参数上可以指定字符集
-    4. java.io.Reader新增transferTo()，将Reader中读取的所有字符串，按照读取的顺序写入给
-    指定Writer
-    var r = new BufferedReader(new InputStreamReader(
-        new FileInputStream(&quot;d:/a.txt&quot;), &quot;GBK&quot;));
-    var p = new PrintWriter(new File(&quot;d:/c.txt&quot;));
-    r.transferTo(p);
-    p.flush();  p.close();  r.close();
-    5. java.util.Formatter/Scanner 新增三个构造器，需要一个charset参数，解决乱码问题
-</code></pre><h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><pre><code>1. XML：可扩展标记语言
-2. XML声明：定义XML的版本和编码信息
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-3. 注释：&lt;!-- 注释 --&gt;
-4. DTD：Document Type Definition，用于约束XML的文档格式
-5. XSD：XML Schema，DTD的替代者，XSD本身也是XML
-</code></pre><h3 id="XML解析"><a href="#XML解析" class="headerlink" title="XML解析"></a>XML解析</h3><pre><code>1. DOM解析：官方解析方式，基于XML树，会加载整个文档，比较消耗资源，适用于多次访问XML
-2. SAX解析：基于事件的流式解析，自顶向下，不会加载整个文档，解析速度快，占用内存少；
-    1. SAX无法知道父子标签，也无法随机访问某个标签；只能读取XML，不能修改；
-    2. SAXParserFactory、SAXParser、继承DefaultHandler自定义解析器、定义对应的JavaBean
-    3. DOM和SAX都是原生解析方式，JDOM和DOM4J是第三方解析框架
-3. JDOM：比DOM更快，仅使用具体类，而不使用接口
-4. dom4j：JDOM的升级版，功能强大，性能优异，使用接口，而不使用实现类
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3748,7 +4278,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3770,7 +4300,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

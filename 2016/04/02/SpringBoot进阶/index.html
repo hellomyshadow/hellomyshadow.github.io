@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
+<meta name="description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot进阶">
 <meta property="og:url" content="http://hellomyshadow.github.io/2016/04/02/SpringBoot进阶/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
+<meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-09T13:24:43.359Z">
+<meta property="og:updated_time" content="2019-05-17T14:00:03.830Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot进阶">
-<meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping    来帮助简化常用的HTTP方法的映射;     1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);     2. @P">
+<meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
 
 
 
@@ -323,9 +323,8 @@
 
       
         <h2 id="SpringMVC新增注解"><a href="#SpringMVC新增注解" class="headerlink" title="SpringMVC新增注解"></a>SpringMVC新增注解</h2><pre><code>1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping
-   来帮助简化常用的HTTP方法的映射;
-    1. @GetMapping是一个组合注解，等效于 @RequestMapping(method=RequestMethod.GET);
-    2. @PostMapping是 @RequestMapping(method=RequestMethod.POST) 的缩写;
+    1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);
+    2. @PostMapping 是 @RequestMapping(method=RequestMethod.POST) 的缩写;
 2. @RestController：相当于 @ResponseBody + @Controller 的组合;
     @RestController
     @RequestMapping(&quot;/user&quot;)
@@ -337,151 +336,23 @@
         }
     }
     1. @RestController 的方法都只能返回String、Object、Json等实体对象;
-    2. 方法返回的对象数据会被jackson转为JSON字符串，写入响应体中;
+    2. SpringBoot已经引入了jackson, 返回的对象会被jackson转为JSON字符串，写入响应体中;
     3. 如果想要跳转页面，则用 ModelAndView 封装;
     @GetMapping(&quot;/index&quot;)
     public ModelAndView toIndex() {
         ModelAndView mv = new ModelAndView(&quot;index&quot;);
         return mv;
     }
-</code></pre><h2 id="属性注入"><a href="#属性注入" class="headerlink" title="属性注入"></a>属性注入</h2><h3 id="Spring的属性注入"><a href="#Spring的属性注入" class="headerlink" title="Spring的属性注入"></a>Spring的属性注入</h3><pre><code>1. Druid是Java语言中最好的数据库连接池，能够提供强大的监控和扩展功能，引入其依赖坐标：druid
-2. Java配置主要依靠Java类和注解，比较常用的注解如下：
-    1. @Configuration：声明一个类为配置类，代替XML配置文件;
-    2. @Bean：声明在方法上，将方法的返回值加入到IoC Bean容器，代替&lt;bean&gt;标签;
-    3. @Value：属性注入;
-    4. @PropertySource：指定外部属性配置文件.
-4. JDBC相关的配置类JdbcConfig
-    1. 数据库的连接信息：resources/jdbc.properties
-        jdbc.driverClassName=com.mysql.cj.jdbc.Driver
-        jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-        jdbc.username=root
-        jdbc.password=123456
-    2. JDBC配置类JdbcConfig
-        @Configuration
-        @PropertySource(&quot;classpath:jdbc.properties&quot;)
-        public class JdbcConfig {
-            @Value(&quot;${jdbc.driverClassName}&quot;)
-            private String driverClassName;
-            ... //url、username、password
-
-            @Bean
-            public DataSource getDataSource() {
-                DruidDataSource ds = new DruidDataSource();
-                ds.setDriverClassName(driverClassName);
-                ds.setUrl(url);
-                ds.setUsername(username);
-                ds.setPassword(password);
-                return ds;
-            }
-        }
-</code></pre><h3 id="SpringBoot的属性注入"><a href="#SpringBoot的属性注入" class="headerlink" title="SpringBoot的属性注入"></a>SpringBoot的属性注入</h3><pre><code>1. SpringBoot对Spring的属性注入做了优化，引入Druid的依赖坐标;
-2. SpringBoot的配置文件：resources/application.properties
-    jdbc.driverClassName=com.mysql.cj.jdbc.Driver
-    jdbc.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-    jdbc.username=root
-    jdbc.password=123456
-3. lombok：通过注解的方式，在编译时自动生成构造器、getter/setter、equals、hashcode、toString()
+</code></pre><h2 id="lombok"><a href="#lombok" class="headerlink" title="lombok"></a>lombok</h2><pre><code>1. lombok：通过注解的方式，在编译时自动生成构造器、getter/setter、equals、hashcode、toString()
     &lt;dependency&gt;
         &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
         &lt;artifactId&gt;lombok&lt;/artifactId&gt;
         &lt;version&gt;1.18.6&lt;/version&gt;
         &lt;scope&gt;provided&lt;/scope&gt;
     &lt;/dependency&gt;
-    1. 常用的注解：@Data、@Slf4j，都是注解在类上;
-    2. @Data：在编译期自动生成getter、setter... 源码中没有变化，只存在于编译生成的class文件中;
-    3. @Slf4j：等效于在类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class)
-    4. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
-4. SpringBoot的配置文件是自动加载的，定义一个POJO，专门用于映射JDBC相关的字段;
-    1. @ConfigurationProperties：把配置文件中的键值数据映射到当前Java类的属性上;
-        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
-        @Data
-        public class JdbcProperties {
-            private String driverClassName;
-            private String url;
-            private String username;
-            private String password;
-        }
-    2. prefix属性：声明配置文件中的字段前缀.
-5. JdbcProperties有多种使用方式
-    1. 在 JdbcProperties 上注解 @Component，添加进Spring IoC容器中，供其他Bean对象使用;
-    2. @EnableConfigurationProperties：使用 @ConfigurationProperties 注解的Java类;
-    @Configuration
-    @EnableConfigurationProperties(JdbcProperties.class)
-    public class JdbcConfig {
-        @Autowired
-        private JdbcProperties jdbc;  //1. @Autowired的方式注入JdbcProperties对象
-
-        public JdbcConfig(JdbcProperties jdbc) { //2.构造方法的方式注入JdbcProperties对象
-
-        }
-        @Bean
-        public DataSource getDataSource(JdbcProperties prop) {  //3.方法参数的方式注入
-            DruidDataSource ds = new DruidDataSource();
-            ds.setDriverClassName(prop.getDriverClassName());
-            ds.setUrl(prop.getUrl());
-            ds.setUsername(prop.getUsername());
-            ds.setPassword(prop.getPassword());
-            return ds;
-        }
-    }
-6. 如果只有一个Bean对象使用JDBC的连接信息，还可以优雅地映射配置文件中的键值
-    1. 不需要属性映射类JdbcProperties，直接在对应Bean对象上使用 @ConfigurationProperties
-    @Configuration
-    public class JdbcConfig {
-        @Bean
-        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
-        public DataSource getDataSource(JdbcProperties prop) {
-            return new DruidDataSource();
-        }
-    }
-    2. getDataSource() 返回一个DruidDataSource对象，@ConfigurationProperties注解在此对象上;
-    3. jdbc.driverClassName、jdbc.url... 的字段值映射到DruidDataSource对象中的同名属性上.
-</code></pre><h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><pre><code>1. yaml/yml
-    jdbc:
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-        username: root
-        password: 123456
-        user:
-            name: Java
-            age: 21
-            language:
-                    - java
-                    - php
-                    - ios
-===&gt;
-    @Data
-    public class JdbcProperties {
-        private String driverClassName;
-        private String url;
-        private String username;
-        private String password;
-        private User user = new User();
-        class User {
-            private String name;
-            private int age;
-            private List&lt;String&gt; language;
-        }
-    }
-2. resources/application.yaml
-    1. 自定义SpringMVC的默认配置
-        server:
-            port: 8888    # 配置服务器的端口号
-            servlet:
-                path: &quot;*.do&quot;    # 访问映射路径，默认是&quot;/&quot;，会影响所有的请求路径
-    2. Log4j相关
-        logging:    # 日志配置(log4j相关的依赖已经被集成)
-            level:    # 控制日志级别，是一个Map集合
-                cn.boot: debug    # cn.boot包下的日志级别为debug
-                org.springframework: debug
-3. ResourceProperties中定义了静态资源的查找方向
-    classpath:/META-INF/resources/
-    classpath:/resources/
-    classpath:/static/
-    classpath:/public/
-    1. 注意：classpath 指的就是 src/main/resources 目录;
-    2. META-INF/resources、resources、static、public 都是 src/main/resources/ 下的目录;
-    3. 比如创建resources/static目录，放入图片、CSS、JS、HTML等静态资源，然后就能访问这些资源了;
+2. @Data：注解在Java类上，在编译期自动生成getter、setter... 源码中没有变化，只存在于编译生成的class文件中;
+3. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
+4. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
 </code></pre><h2 id="自定义拦截器"><a href="#自定义拦截器" class="headerlink" title="自定义拦截器"></a>自定义拦截器</h2><pre><code>    @Slf4j
     public class MyInterceptor implements HandlerInterceptor {
         public boolean preHandle(......) {
@@ -502,103 +373,37 @@
             registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/**&quot;); //Ant风格的路径
         }
     }
-</code></pre><h2 id="整合连接池"><a href="#整合连接池" class="headerlink" title="整合连接池"></a>整合连接池</h2><pre><code>1. DBCP是一款老牌的JDBC连接池，出自Apache;
+</code></pre><h2 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h2><pre><code>1. DBCP是一款老牌的JDBC连接池，出自Apache;
 2. cp30与Druid都是连接池，一个JDBC组件，速度都差不多;
     1. Hibernate默认使用c3p0;
     2. Druid可以监控每一条SQL语句的执行性能，从而优化SQL语句.
-3. 速度最快的JDBC连接池是HikariCP(追光者)，Spring也已经默认支持了HikariCP;
-4. Spring提供的JDBC启动器：spring-boot-starter-jdbc，使用Spring默认的连接池，无需再手动引入;
-5. 连接池只是一个JDBC组件，还需要配置数据库驱动，如mysql-connector-java(MySQL)
-6. 在 application.yaml 中，配置Spring启动器中的默认连接池：连接数据库的4大参数;
+3. 速度最快的JDBC连接池是HikariCP(追光者)，Spring默认支持HikariCP;
+4. Spring提供的JDBC启动器：spring-boot-starter-jdbc，SpringBoot默认集成，无需手动引入;
+5. 连接池只是一个JDBC组件，还需要配置数据库驱动，如MySQL的驱动依赖：mysql-connector-java
+6. 在 application.yml 中，配置Spring启动器中的默认连接池：连接数据库的4大参数;
     spring:
         datasource:
             driver-class-name: com.mysql.cj.jdbc.Driver
             url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
             username: root
             password: 123456
-7. 如果想使用其他连接池，如druid，只需要引入druid的依赖，再配置 spring.datasource.type
+7. 默认使用的连接池是HikariCP，如果想使用其他连接池，如阿里的druid
+    1. 引入druid的依赖，配置spring.datasource.type
     spring:
         datasource:
             type: com.alibaba.druid.pool.DruidDataSource
             ...... # driver-class-name、url、username、password
-</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>2. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
-    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
-    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
-3. 通用Mapper的启动器：mapper-spring-boot-starter
-    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
-    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
-    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
-    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
-    spring:
-        datasource:
-            ...... # driver-class-name、url、username、password
-    mybatis:
-        type-aliases-package: cn.boot.pojo
-4. Dao层接口需要继承 Mapper 接口，泛型为实体类
-    public interface UserMapper extends Mapper&lt;User&gt; {
-        //Mapper中已经提供了常用的CRUD方法
-    }
-    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
-    2. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了.
-5. 在启动类上注解通用Mapper的 @MapperScan , 声明扫描Mapper/Dao层接口所在的包
-    @SpringBootApplication
-    @MapperScan(&quot;cn.boot.mapper&quot;)
-    public class StartQuickBoot {
-        ...
-    }
-6. 实体类相关
-    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
-    2. @Id 注解在属性上，指定主键;
-    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
-    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
-    @Data
-    @Table(name=&quot;tl_user&quot;)
-    public class User {
-        @Id
-        @KeySql(userGeneratedKeys=true)
-        private Integer id;  //自增长的主键
-        private String username;
-        @Transient
-        private String remark;  //额外的属性
-    }
-7. 测试
+</code></pre><h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><pre><code>1. Junit的起步依赖：spring-boot-starter-test
+2. 在test目录下创建测试类
     @RunWith(SpringRunner.class)
-    @SpringBootTest
-    public class UserMapperTest {
+    @SpringBootTest(classes=引导类.class)
+    public class TestClient {
         @Autowired
-        private UserMapper mapper;
+        private IUserMapper userMapper;  //注入Mapper对象
 
         @Test
         public void test() {
-            User u = mapper.selectByPrimaryKey(8);  //按主键查询：where id=8
-        }
-    }
-8. Service层：使用 @Transactional 注解引入事务;
-    @Service
-    public class UserService {
-        @Autowired
-        private UserMapper mapper;
-
-        public User findById(Integer id) {
-            return mapper.selectByPrimaryKey(id);
-        }
-        @Transactional
-        public void insertUser(User user) {  //插入数据时使用事务
-            mapper.insert(user);
-        }
-    }
-9. 使用Controller测试
-    @Slf4j
-    @RestController
-    @RequestMapping(&quot;/user&quot;)
-    public class UserMapperTest {
-        @Autowired
-        private UserService service;  //注入Service对象
-
-        @GetMapping(&quot;/{id}&quot;)
-        public User test(@PathVariable(&quot;id&quot;) Integer id) {
-            log.debug(&quot;test service&quot;);
-            return service.findById(id);
+            List&lt;User&gt; users = userMapper.findAll();
         }
     }
 </code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略所致，同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，
@@ -710,8 +515,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/04/03/SpringBoot整合/" rel="prev" title="SpringBoot整合">
+                SpringBoot整合 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -789,7 +594,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -811,7 +616,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -844,7 +649,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringMVC新增注解"><span class="nav-number">1.</span> <span class="nav-text">SpringMVC新增注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性注入"><span class="nav-number">2.</span> <span class="nav-text">属性注入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring的属性注入"><span class="nav-number">2.1.</span> <span class="nav-text">Spring的属性注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot的属性注入"><span class="nav-number">2.2.</span> <span class="nav-text">SpringBoot的属性注入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">3.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义拦截器"><span class="nav-number">4.</span> <span class="nav-text">自定义拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整合连接池"><span class="nav-number">5.</span> <span class="nav-text">整合连接池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用Mapper"><span class="nav-number">6.</span> <span class="nav-text">通用Mapper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">7.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">7.1.</span> <span class="nav-text">CORS</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringMVC新增注解"><span class="nav-number">1.</span> <span class="nav-text">SpringMVC新增注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lombok"><span class="nav-number">2.</span> <span class="nav-text">lombok</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义拦截器"><span class="nav-number">3.</span> <span class="nav-text">自定义拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接池"><span class="nav-number">4.</span> <span class="nav-text">连接池</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">5.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">6.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">6.1.</span> <span class="nav-text">CORS</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-29T15:00:15.002Z">
+<meta property="og:updated_time" content="2019-05-16T11:58:39.955Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC进阶">
 <meta name="twitter:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
@@ -496,6 +496,9 @@
 5. 上传标签的name属性值为upload，方法参数MultipartFile的变量名也必须为upload;
     @RequestMapping(path=&quot;/fileupload&quot;)
     public String uploadFile(HttpServletRequest req, MultipartFile upload) {
+        //获取其他参数
+        String xxx = req.getParameter(&quot;xxx&quot;);
+
         //获取上传目录的绝对路径
         String path = req.getSession().getServletContext().getRealPath(&quot;/uploads/&quot;);
         File file = new File(path);
@@ -771,7 +774,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -793,7 +796,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

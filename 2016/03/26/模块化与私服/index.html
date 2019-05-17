@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-09T13:14:47.939Z">
+<meta property="og:updated_time" content="2019-05-10T14:46:06.806Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="模块化与私服">
 <meta name="twitter:description" content="拆分与聚合1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块; 2. 模块之间的关系：     1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;     2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;     3. 如果想引用另一个Maven工">
@@ -332,15 +332,23 @@
     2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
     3. 打包方式：pom
         &lt;packaging&gt;pom&lt;/packaging&gt;
-    4. &lt;dependencyManagement&gt; 管理的依赖和插件不会传递给子工程
+    4. &lt;dependencyManagement&gt; 管理的依赖和插件不会传递给子工程，但能够统一管理它们的版本号
+        &lt;properties&gt;
+            &lt;mysql.version&gt;8.0.16&lt;/mysql.version&gt;
+        &lt;/properties&gt;
         &lt;dependencyManagement&gt;
             &lt;dependencies&gt;
-                &lt;!-- 这些依赖不会传递给子工程 --&gt;
+                &lt;dependency&gt;
+                    &lt;groupId&gt;mysql&lt;/groupId&gt;
+                    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+                    &lt;version&gt;${mysql.version}&lt;/version&gt;
+                &lt;/dependency&gt;
             &lt;/dependencies&gt;
         &lt;/dependencyManagement&gt;
         &lt;dependencies&gt;
-            &lt;!-- 这些依赖会传递给子工程 --&gt;
+            &lt;!-- 这些依赖会直接传递给子工程 --&gt;
         &lt;/dependencies&gt;
+    5. 在子工程中引入依赖 mysql-connector-java 时，无需再指定版本节点&lt;version&gt;
 4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
     1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
     2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
@@ -654,7 +662,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">53</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -676,7 +684,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
