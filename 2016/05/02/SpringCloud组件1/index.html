@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud组件1">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg">
+<meta property="og:updated_time" content="2019-05-19T14:24:08.807Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud组件1">
+<meta name="twitter:description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
+<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/">
+
+
+
+
+
+  <title>SpringCloud组件1 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringCloud组件1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-02T00:00:00+08:00">
+                2016-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Eureka"><a href="#Eureka" class="headerlink" title="Eureka"></a>Eureka</h2><pre><code>1. Eureka注册中心：服务的管理
+    1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，
+    由Eureka把查找符合的服务提供者;
+    2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;
+    3. 这样就是实现了服务的自动注册、发现、状态监控;
+2. Eureka的基本架构
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg" alt="Eureka"></p>
+<pre><code>    1. Eureka既是服务注册中心，也是一个独立的服务，还可以是一个集群，对外暴露自己的地址;
+    2. 服务提供者：启动后向Eureka注册自己的信息，包括地址、提供什么服务;
+    3. 服务消费者：向Eureka订阅服务，Eureka会将对应服务的地址列表发送给消费者，并定期更新;
+    4. 心跳：服务提供者定期通过HTTP向Eureka刷新自己的状态;
+3. Eureka架构的三个核心角色
+    1. 服务注册中心：Eureka的服务端应用，提供服务注册和发现功能;
+    2. 服务提供者：提供服务的应用，可以是SpringBoot应用，也可以是其他任意技术实现，对外提供Rest风格的服务;
+    3. 服务消费者：消费应用从注册中心获取服务列表，从而得知每个服务提供者的信息，知道去哪儿调用服务;
+4. 创建子工程eurekaserver，作为Eureka服务注册中心
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    1. application.yml
+        server:
+            port: 8761  #官方默认的Eureka端口号
+    2. 创建启动器，并注解 @EnableEurekaServer 启用Eureka
+        @EnableEurekaServer
+        @SpringBootApplication
+        public class EurekaServer {
+            public static void main(String[] args) {
+                SpringApplication.run(EurekaServer.class, args);
+            }
+        }
+5. SpringCloud的Eureka依赖中，已经实现了服务的发现、注册、状态监控等功能;
+6. 启动服务，访问注册中心的管理平台：http://localhost:8761/
+</code></pre><h3 id="报错问题"><a href="#报错问题" class="headerlink" title="报错问题"></a>报错问题</h3><pre><code>1. 导致无法启动的版本问题：java.lang.NoSuchMethodError: com.google.gson.GsonBuilder.setLenient()
+2. 启动时可能不停地报 eureka-client的相关错误，但能访问注册中心
+    1. Eureka是一个注册中心，一定不能宕掉，所以会搭建Eureka服务集群，而集群中的Eureka之间也需要注册和通信;
+    2. 所以Eureka既是服务端，又是客户端，Eureka服务启动时会去尝试注册其他Eueka服务，但又没有其他Eureka服务可以注册，
+    所以才会报错;
+    3. 解决方式：让当前Eureka服务注册自己，在 application.yml 中配置注册地址;
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    4. 重新启动服务，会报错一次，因为自己还没有启动完成，所以会注册失败一次;
+3. Eureka服务注册中心作为客户端尝试注册自己时，也可能报错：
+    java.net.ConnectException: Connection refused: connect
+    TransportException: Cannot execute request on any known server
+    1. 解决方式：禁用它的客户端注册行为
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka
+                    register-with-eureka: false
+                    fetch-registry: false
+    2. 但是，禁用了注册行为之后，Eureka注册中心的服务列表上是空的，不会再列出当前Eureka服务了.
+4. 在服务启动时，可能使用的是当前主机的拨号IP地址，而不是回环地址，则在配置文件中明确指定使用IP地址;
+    eureka:
+        instance:
+            prefer-ip-address: true
+            ip-address: 127.0.0.1
+5. 在注册中心的服务列表上显示UNKNOWN，是因为没有配置服务名称，通常情况下会把服务名称作为服务的ID;
+    spring:
+        application:
+            name: eureka-server  # 配置Eureka服务名称
+</code></pre><h3 id="服务的注册"><a href="#服务的注册" class="headerlink" title="服务的注册"></a>服务的注册</h3><pre><code>1. 服务提供者
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    1. application.yml
+        spring:
+            application:
+                name: user-service  # 指定服务名称
+            datasource:
+                ......
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka  # 配置注册中心的地址
+    2. @EnableDiscoveryClient：注解在启动器上，启动自动注册服务，不要使用 @EnableEurekaClient;
+    3. SpringCloud集成的注册中心不仅仅只有Eureka，还有consul、Zookeeper... @EnableDiscoveryClient都能兼容;
+        @EnableDiscoveryClient
+        @SpringBootApplication
+        @MapperScan(&quot;cn.cloud.mapper&quot;)
+        public class UserApplication {
+            ...
+        }
+    4. SpringBoot版本和SpringCloud版本不兼容时，启动时可能报错：
+        The bean &apos;dataSource&apos;, defined in BeanDefinition defined ... and overriding is disabled.
+2. 服务消费者
+    1. 引入Eureka客户端的依赖、添加注解@EnableDiscoveryClient、修改配置文件;
+        spring:
+            application:
+                name: consumer-service
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka
+    2. web层：根据服务ID获取服务实例，调用服务功能
+        @RestController
+        @RequestMapping(&quot;consumer&quot;)
+        public class ConsumerController {
+            @Autowired
+            private RestTemplate rest;
+
+            @Autowired
+            private DiscoveryClient client;
+
+            @GetMapping(&quot;{id}&quot;)
+            public User findById(@PathVariable(&quot;id&quot;) Long id) {
+                //获取服务的实例并不是一个，是因为在集群环境中，一个服务可以启动多次
+                List&lt;ServiceInstance&gt; instances =  client.getInstances(&quot;user-service&quot;); 
+                ServiceInstance inst = instances.get(0);
+                String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
+                User user = rest.getForObject(url, User.class);
+                return user;
+            }
+        }
+3. 先启动Eureka服务，再启动其他两个服务;
+    1. 查看注册中心的服务列表，有三个服务：EUREKA-SERVER、USER-SERVICE、CONSUMER-SERVICE
+    2. 测试服务的消费方：http://localhost:8080/consumer/9
+</code></pre><h3 id="Eureka集群"><a href="#Eureka集群" class="headerlink" title="Eureka集群"></a>Eureka集群</h3><pre><code>1. 多个Eureka服务注册中心相互注册为服务，形成一个高可用的Eureka注册中心集群;
+2. 服务同步：当服务注册到Eureka集群中的某个节点时，它会把服务的信息同步给集群中的每个节点，从而实现数据同步;
+    1. 注册中心之间相互注册，比如A、B、C三个注册中间，A注册B、C，B注册A、C，C注册A、B
+        Eureka-1 &lt;===&gt; Eureka-2
+        Client ==&gt; Eureka-1， Client ==&gt; Eureka-2
+    2. 一个服务注册到任意一个注册中心上，都可以获取到完整的服务列表.
+3. 搭建注册中心的集群：采用一个Eureka服务、多个实例的方式;
+    1. 修改工程eureka-server，注册另一个端口号为8762的Eureka服务
+        server:
+            port: 8761
+        spring:
+            application:
+                name: eureka-server
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8762/eureka
+    2. 启动服务，读取配置文件，此时因为找不到端口号8762的Eureka服务，控制台会不停报错;
+    3. IDEA不允许同一个应用启动两次，但可以复制启动器：
+    Edit Configurations... --&gt; 选中 EurekaServer(eureka-server工程) --&gt; 复制 --&gt; 
+        Name: EurekaServer2，(Configuration，VM options: -Dserver.port=8762，固定使用端口号8762)
+    4. 修改工程eureka-server的配置文件：端口号8762，注册到端口号8761的Eureka服务上
+    server:
+        port: 8762 
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    5. 启动 EurekaServer2 服务(8762)，它就会注册到已经启动的 EurekaServer 服务(8761)上;
+    6. 同时，EurekaServer(8761)也会发现并注册到 EurekaServer2(8762)上，停止报错;
+4. EurekaServer(8761) 和 EurekaServer2(8762) 的 spring.application.name 是相同的，这就一个服务的多个实例;
+    1. 它们之间会共享服务列表信息，从而实现Eureka服务注册中心的集群;
+    2. 访问8761和8762的注册中心，它们的服务列表是相同的，且 eureka-server 服务显示有两个实例;
+5. 启动的问题：eureka-server 服务并没有两个实例，8761注册不了8762，而且8762上的服务实例不稳定，会变成1个;
+    1. 让Eureka在注册其他Eureka时，同时注册自己;
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
+    2. 但是，测试发现这种方式并不完全有效，需要继续探索...
+6. 客户端(服务提供者和消费者)的注册：
+    1. 服务要注册到Eureka集群上，必须要注册到每一个Eureka节点上;
+    2. 多个Eureka注册中心的地址以 , 隔开
+    spring:
+        application:
+            name: consumer-service
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
+</code></pre><h3 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h3><pre><code>1. 客户端启动时会检测配置文件中的 eureka.client.register-with-eureka 参数，默认值为true;
+2. 如果为true，则会向EurekaServer发起一个Rest请求，并携带自己的元数据信息，EurekaServer会把这些信息保存到
+    一个双层Map结构中： Map&lt;String, Map&lt;String, ServiceInstance&gt;&gt;
+    1. 第一层Map的key就是服务的ID，一般就是配置的 spring.application.name
+    2. 第二次Map的key是服务的实例ID，一般为host+serviceId+port，如 localhost:user-service:8081
+    3. 值是服务的实例对象，也就是说，一个服务可以同时启动多个实例，从而形成集群;
+3. 如果配置为false，那么它就不会申请注册服务；同理，如果EurekaServer配置了这个参数为false，它也不会注册自己了;
+</code></pre><h3 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h3><pre><code>1. 服务的续约(renew)：在注册服务完成后，客户端会维持一个心跳，定时向EurekaServer发起Rest请求，说明自己处于活跃状态;
+2. 有两个重要参数可以修改服务续约的行为：
+    eureka:
+        instance:
+            lease-renewal-interval-in-seconds: 30  # 服务续约的间隔，默认30s
+            lease-expiration-duration-in-seconds: 90  # 服务失效时间，默认90s
+    1. 服务每隔 30s 向注册中心发送一次心跳，证明自己处于活跃状态;
+    2. 如果超过 90s 还没有发送心跳，EurekaService就认为该服务宕机了;
+3. 服务还会从EurekaService中自动拉取当前的服务列表，并缓存在本地，默认每隔 30s 重新拉取并更新数据;
+    eureka:
+        client:
+            fetch-registry: true  # 是否从注册中心拉取数据，默认为true
+            registry-fetch-interval-seconds: 30  # 每次拉取数据的间隔时间，默认30s
+4. 默认每隔30s拉取一次服务列表，所以刚刚启动的服务消费者无法访问服务提供者;
+</code></pre><h3 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h3><pre><code>1. 服务下线：当服务正常关闭时，它会触发一个服务下线的REST请求给EurekaServer，注册中心接收到之后，会把该服务置为下线状态;
+2. 失效剔除
+    1. 有时候可能由于内存溢出或网络故障等原因，导致服务不能正常工作，而服务注册中心并未受到&quot;服务下线&quot;的请求;
+    2. 相对于服务续约操作，注册中心在启动时会创建一个定时任务，默认每隔 60s 将当前列表中超过失效时间(默认90s)的服务剔除;
+3. 在注册中心的配置文件中，修改定时任务的轮询时间
+    eureka:
+        server:
+            eviction-interval-timer-in-ms: 60000  #默认60s
+</code></pre><h3 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h3><pre><code>1. 关闭一个服务，就会在注册中心的管理平台上出现一条警告：EMERGENCY... JUST TO BE SAFE. 这就触发了Eureka的自我保护机制;
+2. 当服务未按时进行服务续约时，Eureka会统计服务实例最近15min心跳续约的比例是否低于85%;
+3. 在生产环境下，因为网络延迟等原因，服务续约超时的比例很可能超标，但此时就把服务从列表中剔除并不妥当，因为服务可能没有宕机;
+4. Eureka在这段时间内不会剔除任何服务，直到网络恢复正常;
+5. 这就保证了在生产环境下，大多数服务依然可用，不过也有可能获取到失败的服务实例，因此服务调用者必须做好服务的失败容错;
+6. 在注册中心关闭自我保护，默认是打开的
+    eureka:
+        server:
+            enable-self-preservation: false  # 默认为true
+</code></pre><h2 id="负载均衡之Ribbon"><a href="#负载均衡之Ribbon" class="headerlink" title="负载均衡之Ribbon"></a>负载均衡之Ribbon</h2><pre><code>1. 在集群环境下，服务提供方会有很多个实例，服务消费者在获取服务列表后，就需要通过负载均衡算法选择一个服务实例;
+2. Eureka中集成了Netflix发布的负载均衡组件：Ribbon
+3. Ribbon默认提供了很多负载均衡算法，如轮询、随机、Hash... 还可以自定义负载均衡算法;
+4. 复制一份服务提供者user-service --&gt; Name: UserApplication2，VM options: -Dserver.port=8082
+5. 在服务消费者中
+    1. 引入Ribbon依赖
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    2. 方式一：获取服务实例(不常用)
+        @Autowired
+        private RestTemplate rest;
+
+        @Autowired
+        private RibbonLoadBalancerClient client;  //另外还要注册Bean对象
+
+        @GetMapping(&quot;{id}&quot;)
+        public User findById(@PathVariable(&quot;id&quot;) Long id) {
+            //默认负载均衡算法是轮询
+            ServiceInstance instance = client.choose(&quot;user-service&quot;); 
+            String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
+            User user = rest.getForObject(url, User.class);
+            return user;
+        }
+    3. 方式二：在注册 RestTemplate 的方法上注解 @LoadBalanced
+        @Bean
+        @LoadBalanced
+        public RestTemplate getRestTemplate() {
+            return new RestTemplate();
+        }
+        1. @LoadBalanced 内置拦截器会拦截 RestTemplate 的请求，通过负载均衡算法选择一个服务实例;
+        2. 发起请求的URL：http://服务ID/资源路径
+        @GetMapping(&quot;{id}&quot;)
+        public User findById(@PathVariable(&quot;id&quot;) Long id) {
+            String url = &quot;http://user-service/user/&quot; + id;
+            User user = rest.getForObject(url, User.class);
+            return user;
+        }
+6. 负载均衡策略
+    1. Ribbon默认采用的负载均衡策略是轮询，对应的规则对象RoundRobinRule
+    2. 修改方式：服务ID.ribbon.NFLoadBalancerRuleClassName，值就是IRule的实现类
+    3. 在服务消费者中配置
+    user-service:  # 查找的服务实例
+        ribbon:
+            NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #采用随机规则的负载均衡策略
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/01/SpringCloud/" rel="next" title="SpringCloud">
+                <i class="fa fa-chevron-left"></i> SpringCloud
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/03/SpringCloud组件2/" rel="prev" title="SpringCloud组件2">
+                SpringCloud组件2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka"><span class="nav-number">1.</span> <span class="nav-text">Eureka</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#报错问题"><span class="nav-number">1.1.</span> <span class="nav-text">报错问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务的注册"><span class="nav-number">1.2.</span> <span class="nav-text">服务的注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eureka集群"><span class="nav-number">1.3.</span> <span class="nav-text">Eureka集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务注册"><span class="nav-number">1.4.</span> <span class="nav-text">服务注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务续约"><span class="nav-number">1.5.</span> <span class="nav-text">服务续约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#失效剔除"><span class="nav-number">1.6.</span> <span class="nav-text">失效剔除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自我保护"><span class="nav-number">1.7.</span> <span class="nav-text">自我保护</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#负载均衡之Ribbon"><span class="nav-number">2.</span> <span class="nav-text">负载均衡之Ribbon</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

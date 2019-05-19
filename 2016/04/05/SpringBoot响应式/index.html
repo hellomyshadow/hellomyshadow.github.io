@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="响应式编程1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor 2. 响应式依赖于事件驱动，异步非阻塞，观察者模式; 3. 响应式编程与传统编程的技术对比  4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器; Spring WebFlux1. Spring WebFlux 是Spring5.0">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot响应式">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="响应式编程1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor 2. 响应式依赖于事件驱动，异步非阻塞，观察者模式; 3. 响应式编程与传统编程的技术对比  4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器; Spring WebFlux1. Spring WebFlux 是Spring5.0">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/响应式.png">
+<meta property="og:updated_time" content="2019-05-19T04:10:04.994Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot响应式">
+<meta name="twitter:description" content="响应式编程1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor 2. 响应式依赖于事件驱动，异步非阻塞，观察者模式; 3. 响应式编程与传统编程的技术对比  4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器; Spring WebFlux1. Spring WebFlux 是Spring5.0">
+<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/响应式.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/">
+
+
+
+
+
+  <title>SpringBoot响应式 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringBoot响应式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-05T00:00:00+08:00">
+                2016-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h2><pre><code>1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor
+2. 响应式依赖于事件驱动，异步非阻塞，观察者模式;
+3. 响应式编程与传统编程的技术对比
+</code></pre><p><img src="//hellomyshadow.github.io/2016/04/05/SpringBoot响应式/响应式.png" alt="响应式"></p>
+<pre><code>4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器;
+</code></pre><h2 id="Spring-WebFlux"><a href="#Spring-WebFlux" class="headerlink" title="Spring WebFlux"></a>Spring WebFlux</h2><pre><code>1. Spring WebFlux 是Spring5.0引进的一个响应式Web框架，通过Reactor项目实现 Reactive Streams 规范;
+2. 与SpringMVC不同，Spring WebFlux不需要Servlet API，完全异步非阻塞，事件驱动，流;
+3. Flux、Mono
+    1. Mono：包含 0 或 1 个元素的异步序列，单一对象，比如根据ID去Redis中查询唯一的用户，Mono&lt;User&gt;
+    2. Flux：包含 - 到 N 个元素的异步序列，数据列表对象，比如在Redis中查询一组用户，Flux&lt;User&gt;
+    3. Mono 和 Flux 之间可以进行转换;
+4. Spring WebFlux有两种风格：基于功能、基于注解
+    1. 基于注解的方式非常接近于SpringMVC模型
+    @RestController 
+    @RequestMapping(&quot;/users&quot;)
+    public class UserController {
+        @GetMapping(&quot;/{user}&quot;)
+        public Mono&lt;User&gt; getUser(@PathVariable Long user) {
+            ...
+        }
+        @GetMapping(&quot;/{user}/customers&quot;)
+        public Flux &lt;Customer&gt; getUserCustomers(@PathVariable Long user) {
+            ...
+        }
+        @DeleteMapping(&quot;/{user}&quot;)
+        public Mono &lt;User&gt; deleteUser(@PathVariable Long user) {
+            ...
+        }
+    }
+    2. 基于功能：路由配置与请求的实际处理逻辑是分开的
+    @Configuration
+    public class RoutingConfiguration {
+        @Bean
+        public RouterFunction &lt;ServerResponse&gt; monoRouterFunction（UserHandler userHandler）{
+            return route(GET(&quot;/{user}&quot;).and(accept(APPLICATION_JSON))，userHandler :: getUser)
+                .andRoute(GET(&quot;/{user}/customers&quot;)
+                .and(accept(APPLICATION_JSON))，userHandler :: getUserCustomers)
+                .andRoute(DELETE(&quot;/{user}&quot;).and(accept(APPLICATION_JSON))，userHandler :: deleteUser);
+        }
+    }
+    @Component
+    public class UserHandler {
+        public Mono &lt;ServerResponse&gt; getUser(ServerRequest request) {
+            ...
+        }
+        public Mono &lt;ServerResponse&gt; getUserCustomers(ServerRequest request) {
+            ...
+        }
+        public Mono &lt;ServerResponse&gt; deleteUser(ServerRequest request) {
+            ...
+        }
+    }
+5. Spring WebFlux应用不严格依赖于Servlet API，因此不能作为 war 文件部署，也不能使用 src/main/webapp 目录;
+6. 除了REST Web服务，Spring WebFlux还提供了动态HTML，支持各种模板引擎：Thymeleaf、FreeMarker...
+</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. 创建SpringBoot项目
+    1. WebFlux的启动器：spring-boot-starter-webflux
+    2. 如果同时存在spring-boot-starter-web，则会优先使用SpringMVC模式，而不是Spring WebFlux
+2. WebFlux中，请求和响应对象也不再是ServletRequest和ServletResponse，而是ServerRequest和ServerResponse
+3. 创建基于注解的Controller
+    @RestController 
+    @RequestMapping(&quot;/api&quot;)
+    public class TestController {
+        @GetMapping(&quot;/test&quot;)
+        public Mono&lt;String&gt; test() {
+            return Mono.just(&quot;Hello WebFlux&quot;);
+        }
+    }
+4. 启动：默认容器Netty 8080端口，Netty started on port(s): 8080
+    http://localhost:8080/api/test  ==&gt; Hello WebFlux
+5. 创建User
+    public class User {
+        private String id;
+        private String name;
+        ......
+    }
+6. 创建Service，模拟CURD
+    @Service
+    public class UserService {
+        private static final Map&lt;String, User&gt; dataMap = new HashMap&lt;&gt;();
+        static {
+            dataMap.put(&quot;1&quot;, new User(&quot;1&quot;, &quot;Java&quot;));
+            dataMap.put(&quot;2&quot;, new User(&quot;2&quot;, &quot;Python&quot;));
+            dataMap.put(&quot;3&quot;, new User(&quot;3&quot;, &quot;Node&quot;));
+            dataMap.put(&quot;4&quot;, new User(&quot;4&quot;, &quot;Node&quot;));
+        }
+        public Flux&lt;User&gt; getList() {
+            Collection&lt;User&gt; list = dataMap.values();
+            //把 Collection 转为一个异步序列
+            return Flux.fromIterable(list);
+        }
+        public Mono&lt;User&gt; getById(String id) {
+            return Mono.justOrEmpty(dataMap.get(id));
+        }
+        public Mono&lt;User&gt; delById(String id) {
+            return Mono.justOrEmpty(dataMap.remove(id));
+        }
+    }
+7. Controller方法
+    @Autowired
+    private UserService service;
+
+    @GetMapping(&quot;/find&quot;)
+    public Mono&lt;User&gt; findById(String id) {
+        return service.getById(id);
+    }
+
+    @GetMapping(&quot;/list&quot;)
+    public Flux&lt;User&gt; getList() {
+        return service.getList();
+    }
+
+    http://localhost:8080/api/find?id=2  ==&gt; {&quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Python&quot;}
+8. 模拟耗时的查询一组用户时，每查询到一个就响应一个，而不是等待全部查询结束之后再响应
+    @GetMapping(value = &quot;/list&quot;, produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Flux&lt;String&gt; getList() {
+        //每条数据延迟2s再响应
+        return service.getList().delayElements(Duration.ofSeconds(2));
+    }
+    http://localhost:8080/api/list  ==&gt; 不考虑网络延迟，每隔2s收到一条数据
+    1. produces=MediaType.APPLICATION_STREAM_JSON_VALUE 必须声明响应类型是流;
+    2. 如果不声明为流数据，则会等查询到所有数据之后，转为JSON字符串，然后再响应给前端;
+</code></pre><h3 id="响应式客户端"><a href="#响应式客户端" class="headerlink" title="响应式客户端"></a>响应式客户端</h3><pre><code>1. WebFlux的客户端WebClient，响应式客户端;
+2. 在测试类中使用
+    @Test
+    public void testBase() {
+        Mono&lt;String&gt; body = WebClient.create().get()
+            .uri(&quot;http://localhost:8080/api/find?id=2&quot;)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve().bodyToMono(String.class);
+        System.out.println(body.block());
+    }
+    @Test
+    public void testPlace() {
+        Mono&lt;String&gt; body = WebClient.create().get()
+            .uri(&quot;http://localhost:8080/api/find?id={id}&quot;, 2)  //支持占位符
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve().bodyToMono(String.class);
+    }
+</code></pre><h2 id="服务端推送技术"><a href="#服务端推送技术" class="headerlink" title="服务端推送技术"></a>服务端推送技术</h2><pre><code>1. 客户端轮询：AJAX定时拉取数据;
+2. WebSocket：全双工通信，基于TCP协议，Socket.IO是基于WebSocket的框架，屏蔽了底层细节，使用更方便;
+3. SSE：Server Send Event，HTML5新标准，用于从服务端实时推送数据到浏览器，本质上是一个HTTP长连接;
+</code></pre><h3 id="SSE"><a href="#SSE" class="headerlink" title="SSE"></a>SSE</h3><pre><code>1. 服务端
+    1. 引入依赖：spring-boot-starter-webflux
+    @RestController 
+    @RequestMapping(&quot;/sse&quot;)
+    public class TestController {
+        //数据类型必须设置为event-stream
+        @RequestMapping(value = &quot;/test&quot;, produces = &quot;text/event-stream;charset=UTF-8&quot;)
+        public String test() {
+            Thread.sleep(2000); //模拟业务处理
+            return &quot;Hello SSE : &quot; + Math.random();
+        }
+    }
+    2. 在静态资源目录下创建index.html
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        var source = new EventSource(&quot;sse/test&quot;);
+        source.onmessage = function(evt) {
+            console.log(evt.data);
+        }
+    &lt;/script&gt;
+2. 客户端：必须支持SSE
+    http://localhost:8080/index.html  //大约每2s收到一条消息，本质上是HTTP长连接，所以仍是发起请求
+</code></pre><h2 id="Actuator"><a href="#Actuator" class="headerlink" title="Actuator"></a>Actuator</h2><pre><code>1. Actuator：用于监控和管理生产环境的组件，启动器为spring-boot-starter-actuator
+2. 启动SpringBoot项目，出于安全考虑，默认只开启了三个端点
+    1. http://localhost:8080/actuator  --&gt; 查看可用的端点
+    2. http://localhost:8080/actuator/health  --&gt; {&quot;status&quot;: &quot;UP&quot;}  UP 表示应用启动且状态正常
+    3. http://localhost:8080/actuator/info  --&gt; 查看详细信息，{} 表示无信息
+    4. 对于SpringBoot2.0之前的版本，端点路径上不带 /actuator
+3. 在配置文件中，设置开启的监控端点
+    1. 开启所有端点
+        management.endpoints.web.exposure.include=*
+    2. 启动项目时，控制台上会列出可访问的端点，比如/actuator/env，/actuator/metrics ...
+    3. 有些端点会暴露敏感信息，比如 /actuator/env 就会暴露应用端口号、数据库连接信息、系统信息...
+        management.endpoints.web.exposure.include=metrics  #开启某一个
+        management.endpoints.web.exposure.exclude=metrics  #关闭某一个
+4. 常用的端点
+    /actuator/health  --&gt; 应用健康指标
+    /actuator/metrics  --&gt; 应用的基本指标列表
+    /actuator/metrics/{name}  --&gt; 某个具体的指标
+    /actuator/env  --&gt; 显示来自Spring的ConfigurableEnvironment的属性
+5. SpringBoot Admin：可视化的监控管理;
+6. 还可以自己开发脚本进行监控;
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
+2. 主域名和子域名之间也是跨域，cookie也无法访问;
+3. 同源策略限制的行为：
+    1. Cookie、LocalStorage 和 IndexDB 无法读取;
+    2. DOM 和 JS对象无法获得;
+    3. AJAX 请求不能发送.
+4. 注意：
+    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
+    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+5. 解决跨域问题的方案有很多：
+    1. 通过jsonp跨域
+    2. document.domain + iframe跨域
+    3. location.hash + iframe
+    4. window.name + iframe跨域
+    5. postMessage跨域
+    6. 跨域资源共享(CORS)
+    7. 前端通过Nginx解决跨域问题
+    8. nodejs中间件代理跨域
+    9. WebSocket协议跨域
+6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
+    2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
+    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
+</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享;
+2. CORS需要浏览器和服务器同时支持;
+    1. 所有浏览器都支持该功能，IE浏览器不能低于IE10;
+    2. 整个CORS通信过程都是浏览器自动完成，不需要用户参与;
+    3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
+    4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，但用户不会有感觉;
+    5. 实现CORS通信的关键是服务器，只要服务器实现了CORS接口，就可以跨源通信.
+3. CORS与JSONP相比：
+    1. JSONP只能实现GET请求，而CORS支持所有类型的HTTP请求;
+    2. 使用CORS，开发者仍可以使用普通的AJAX发起请求和获得数据，比起JSONP有更好的错误处理;
+    3. JSONP主要被老浏览器支持，它们往往不支持CORS，而绝大多数现代浏览器都已经支持了CORS.
+4. SpringMVC4.2开始，支持使用 @CrossOrigin 解决跨域问题;
+    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
+    2. value、origins属性：允许可访问的域列表;
+    3. maxAge属性：准备响应前的缓存持续的最大时间(s);
+    4. allowedHeaders、exposedHeaders、methods、allowCredentials
+5. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
+    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
+    3. withCredentials:true 表示对附带身份凭证的请求，服务器不得设置 Access-Control-Allow-Origin=&quot;&quot;,
+    因为请求头中携带了Cookie，如果Access-Control-Allow-Origin=&quot;&quot;，请求将会失败;
+    而设置 Access-Control-Allow-Origin=&quot;http://foo.example&quot;，则会请求成功;
+    其次服务器需要设置 Access-Control-Allow-Credentials:true，否则响应内容不会返回给客户端;
+6. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
+7. 对于不支持 @CrossOrigin 的版本，可以在Filter中拦截此请求，手动添加允许跨域的请求头;
+    setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);
+8. SpringMVC的XML配置文件中，全局配置CORS
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/**&quot; /&gt;
+    &lt;/mvc:cors&gt;
+    1. 更加细粒度的配置：
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/api/**&quot;
+            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
+            allowed-methods=&quot;GET, PUT&quot;
+            allowed-headers=&quot;header1, header2, header3&quot;
+            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
+            max-age=&quot;3600&quot; /&gt;
+        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
+    &lt;/mvc:cors&gt;
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/03/SpringBoot整合/" rel="next" title="SpringBoot整合">
+                <i class="fa fa-chevron-left"></i> SpringBoot整合
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/09/RabbitMQ/" rel="prev" title="RabbitMQ">
+                RabbitMQ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#响应式编程"><span class="nav-number">1.</span> <span class="nav-text">响应式编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-WebFlux"><span class="nav-number">2.</span> <span class="nav-text">Spring WebFlux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">2.1.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应式客户端"><span class="nav-number">2.2.</span> <span class="nav-text">响应式客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端推送技术"><span class="nav-number">3.</span> <span class="nav-text">服务端推送技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSE"><span class="nav-number">3.1.</span> <span class="nav-text">SSE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Actuator"><span class="nav-number">4.</span> <span class="nav-text">Actuator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">5.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">5.1.</span> <span class="nav-text">CORS</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

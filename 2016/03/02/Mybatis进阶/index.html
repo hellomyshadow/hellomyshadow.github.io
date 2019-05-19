@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-04T02:52:00.698Z">
+<meta property="og:updated_time" content="2019-05-18T12:25:45.493Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis进阶">
 <meta name="twitter:description" content="事物事物的四大特性：ACID 1. A：原子性，要么全部被执行，要么全部不执行； 2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态； 3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务； 4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。 并发下的事务1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的">
@@ -343,8 +343,7 @@
     3. 此时又切换回事务A，事务A提交时发现了一条自己没有修改过的数据，这就是幻读。
     4. 幻读出现的前提：并发的事务中有事务发生了插入、删除操作。
 6. 事务隔离级别就是为了解决这几种问题。
-</code></pre><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><pre><code>1. 事务隔离级别越高，在并发下产生的问题就越少，但同时付出的性能消耗也越大，因此很多时候必须
-   在并发性和性能之间做一个权衡；
+</code></pre><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><pre><code>1. 事务隔离级别越高，在并发下产生的问题就越少，同时消耗的性能也越大，因此很多时候必须在并发性和性能之间做一个权衡;
 2. 设立事务隔离级别的目的：为了让不同的项目可以根据自己的并发情况，选择合适的事务隔离级别；
    对于在事务隔离级别之外会产生的并发问题，在代码中做补偿；
 3. 事务隔离级别有4种，但是像Spring会提供5种；
@@ -357,23 +356,19 @@
     1. 能够读到那些已经提交的数据，所以能防止脏读，但是无法限制不可重复读和幻读；
     2. 此级别下，写数据只会锁住相应的行。
 4. REPEATABLE_READ：重复读取
-    1. 在数据读出来之后加锁，类似 select * from XXX for update，明确数据读取出来就是为了
-    更新用的，所以要加一把锁，防止别人修改它；
-    2. 读取了一条数据，这个事务不结束，其他事务就不可以修改这条记录，解决了脏读、不可重复读的
-    问题，但无法解决幻读的问题。
+    1. 在数据读出来之后加锁，类似 select * from XXX for update，明确数据读取出来就是为了更新用的，
+    所以要加一把锁，防止别人修改它;
+    2. 读取了一条数据，这个事务不结束，其他事务就不可以修改这条记录，解决了脏读、不可重复读的问题，但无法解决幻读;
 5. SERLALIZABLE：串行化，加锁读，最高的事务隔离级别
-    1. 不管多少事务，必须执行完一个事务的所有子事务之后，才可以执行下一个事务的所有子事务，
-    这样就解决了脏读、不可重复读和幻读的问题了；
+    1. 不管多少事务，必须执行完一个事务的所有子事务之后，才可以执行下一个事务，这样就解决了脏读、不可重复读和幻读;
     2. 此级别下，读写数据都会锁住整张表。
 1. 虽然隔离级别越高，越能保证数据的完整性和一致性，但对并发性能的影响也越大；
-2. 一般情况下会设置为READ_COMMITED，此时避免了脏读，并发性也还不错，之后再通过其他手段解决
-   不可重复读和幻读的问题；
+2. 一般情况下会设置为READ_COMMITED，此时避免了脏读，并发性也还不错，之后再通过其他手段解决不可重复读和幻读的问题;
 3. MySQL的事务隔离级别
-    1. 对于MySql，其默认事务级别是REPEATABLE_READ，虽然定义上无法解决幻读的问题，但MySql
-    使用了一种 Next key-lock 的算法来实现REPEATABLE_READ，这种算法能够解决幻读问题；
-    2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围
-    锁住，其他事务如果想要在此范围内进行数据操作，那么就会被阻塞，因而MySql在此级别下就已经
-    具备了Serializable级别的事务隔离性。
+    1. 对于MySql，其默认事务级别是REPEATABLE_READ，虽然定义上无法解决幻读的问题，但MySql使用了一种
+    Next key-lock 的算法来实现REPEATABLE_READ，这种算法能够解决幻读问题；
+    2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围锁住，
+    其他事务如果在此范围内进行数据操作，就会被阻塞，因而MySql在此级别下就已经具备了Serializable级别的事务隔离性;
     3. 查看事务隔离级别
         select @@tx_isolation;  --&gt;旧版MySQL
         select @@transaction_isolation;  --&gt;旧版MySQL
@@ -452,8 +447,7 @@
          left join user u on u.id=a.uid
     &lt;/select&gt;
     1. &lt;resultMap&gt; 上的 type属性 使用的是实体类的别名；
-    2. 如果查询结果中包含两张表的同名字段，则必须对其中一个字段做重命名，如account表的主键
-    字段(id--&gt;aid)，否则查询结果会出现错误；
+    2. 如果查询结果中包含两张表的同名字段，必须重命名其中一个字段，如account表的主键字段(id--&gt;aid)，否则结果错误;
     3. SQL语句上重命名了account表的主键字段，所以对应&lt;id&gt;上的column属性也为aid.
 5. &lt;association&gt;标签用于配置一对一的映射关系
     1. 属性column：主表account的外键字段;
@@ -552,8 +546,7 @@
                 username=&quot;root&quot;
                 password=&quot;123456&quot;
                 driverClassName=&quot;com.mysql.jdbc.Driver&quot;
-                url=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot;
-            /&gt;
+                url=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot; /&gt;
         &lt;/Context&gt;
     2. name：Map结构中key路径的名称部分;
     3. type：value中存储的对象;
@@ -630,8 +623,8 @@
     User u1 = dao.findById(2);  User u2 = dao.findById(2); //连续两次查询同一条数据
     u1==u2;  --&gt; true
     2. 手动清空一级缓存：session.clearCache();
-    3. 为了保证数据的一致性，当发生数据的插入/更新/删除，或者调用SqlSession的commit()、
-    close()等方法时，会立即清空当前SqlSession的一级缓存，让后续的SQL重新查询数据库。
+    3. 为了保证数据的一致性，当发生数据的插入/更新/删除，或者调用SqlSession的commit()、close()等方法时，
+    会立即清空当前SqlSession的一级缓存，让后续的SQL重新查询数据库。
 4. 二级缓存：SqlSessionFactory对象的缓存
     1. 由同一个SqlSessionFactory创建的所有SqlSession对象，共享二级缓存；
     2. 在主配置文件 SqlMapConfig.xml 中开启全局缓存，默认就是开启的
@@ -643,14 +636,16 @@
         &lt;select id=&quot;findById&quot; resultType=&quot;user&quot; useCache=&quot;true&quot;&gt;
             select * from user where id=#{uid}
         &lt;/select&gt;
-5. 二级缓存中存储的是散装数据，当使用二级缓存数据时，这些数据会封装成一个新的User对象，
-   所以比较两次查询的结果时，返回false.
+5. 二级缓存中存储的是散装数据，使用缓存数据时，这些数据会封装成一个新的User对象，所以比较两次查询结果时，返回false.
 </code></pre><h2 id="注解开发"><a href="#注解开发" class="headerlink" title="注解开发"></a>注解开发</h2><pre><code>1. Mybatis的注解开发：针对的是Dao的映射配置文件，目的是省略映射配置文件
 2. CRUD的对应注解：@Insert、@Select、@Update、@Delete，在Dao接口的方法上使用
 3. 使用注解时，如果resources目录下还存在映射配置文件，不管是否使用了此配置文件，都会报错；
 4. 单表的CRUD：IUserDao接口
     1. 查询：@Select
         @Select(&quot;select * from user&quot;)
+        @Results(id=&quot;accountMap&quot;, value={
+            @Result(column=&quot;create_time&quot;, property=&quot;createTime&quot;)  --&gt;数据库字段与POJO对象属性的映射关系
+        })
         List&lt;User&gt; findAll();
 
         @Select(&quot;select * from user where name like #{username}&quot;)  或
@@ -661,7 +656,8 @@
         int findTotal();
     2. 插入：@Insert
         @Insert(&quot;insert into user(name, age) values(#{username}, #{age})&quot;)
-        void saveUser(User u);
+        @Options(useGeneratedKeys=true, keyProperty=&quot;id&quot;, keyColumn=&quot;id&quot;)  --&gt;属性与字段的映射
+        void saveUser(User u);   ---&gt; useGeneratedKeys=true 表示自增长的主键
     3. 更新：@Update
         @Update(&quot;update user set name=#{username}, age=#{age} where id=#{id}&quot;)
         void updateUser(User u);
@@ -829,7 +825,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

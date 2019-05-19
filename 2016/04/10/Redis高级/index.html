@@ -83,11 +83,11 @@
 <meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis高级">
-<meta property="og:url" content="http://hellomyshadow.github.io/2016/04/15/Redis高级/index.html">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/04/10/Redis高级/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-16T14:23:00.119Z">
+<meta property="og:updated_time" content="2019-05-19T04:13:41.643Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis高级">
 <meta name="twitter:description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
@@ -120,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://hellomyshadow.github.io/2016/04/15/Redis高级/">
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/04/10/Redis高级/">
 
 
 
@@ -233,7 +233,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/15/Redis高级/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/10/Redis高级/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -262,8 +262,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-15T00:00:00+08:00">
-                2016-04-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-10T00:00:00+08:00">
+                2016-04-10
               </time>
             
 
@@ -346,45 +346,46 @@
     bind 127.0.0.1
 5. 当客户端闲置多长时间后关闭连接，如果指定为0，表示关闭该功能
     timeout 300
-6. 指定日志记录级别，Redis共支持四个级别：debug、verbose、notice、warning，默认为verbose
-    loglevel verbose
-7. 日志记录方式，默认为标准输出，如果配置Redis为守护进程方式运行，而这里又配置为日志记录方式为标准输出，
-   则日志将会发送给/dev/null
-    logfile stdout
-8. 设置数据库的数量，默认为16，编号0-15，默认操作是 0 号数据库
+6. 设置数据库的数量，默认为16，编号0-15，默认操作是 0 号数据库
     databases 16
-9. RDB方式的持久化，默认方式
+    1. 虽然分了16个数据库，但其实只是逻辑划分，并不是物理地把硬盘容量分成16份;
+    2. 某号数据库存储了数据之后，才会分配容量，所以完全可以把所有的数据都存储在0号数据库;
+7. RDB方式的持久化，默认方式
     save 900 1
     save 300 10
     save 60 10000
-10. 指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩;
+8. 指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩;
     rdbcompression yes
     1. 如果为了节省CPU时间，可以关闭该选项，但会导致数据库文件变的巨大.
-11. 指定本地数据库文件名，默认值为dump.rdb
+9. 指定本地数据库文件名，默认值为dump.rdb
     dbfilename dump.rdb
-12. 指定本地数据库存放目录，默认就是当前目录
+10. 指定本地数据库存放目录，默认就是当前目录
     dir ./
-13. 当本机为slav服务时，设置master服务的IP地址及端口，在Redis启动时，它会自动从master进行数据同步
+11. 当本机为slav服务时，设置master服务的IP地址及端口，在Redis启动时，它会自动从master进行数据同步
     slaveof &lt;masterip&gt; &lt;masterport&gt;
-14. 当master服务设置了密码保护时，slav服务连接master的密码
+12. 当master服务设置了密码保护时，slav服务连接master的密码
     masterauth &lt;master-password&gt;
-15. 设置Redis连接密码，如果配置了密码，客户端在连接Redis时需要通过AUTH &lt;password&gt;命令提供密码，默认关闭
+13. 设置Redis连接密码，如果配置了密码，客户端在连接Redis时需要通过AUTH &lt;password&gt;命令提供密码，默认关闭
     requirepass foobared
-16. 设置同一时间最大客户端连接数，默认无限制;
+    1. 登录时提供密码：redis-cli -h IP地址 -p 端口号 -a 密码
+    2. 在登录时不提供密码，通过 auth 命令验证密码
+        redis-cli -h IP地址 -p 端口号
+        &gt;&gt; auth 密码
+14. 设置同一时间最大客户端连接数，默认无限制;
     maxclients 128
     1. Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件描述符数;
     2. 如果设置 maxclients 0，表示不作限制;
     3. 当客户端连接数到达限制时，Redis会关闭新的连接并向客户端返回max number of clients reached错误信息.
-17. 指定Redis最大内存限制
+15. 指定Redis最大内存限制
     maxmemory &lt;bytes&gt;
     1. Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key;
     2. 如果这种方式处理后，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读取操作;
     3. Redis新的 vm 机制会把 Key 存放内存，Value 存放在 swap 区.
-18. AOF方式的持久化，默认关闭
+16. AOF方式的持久化，默认关闭
     appendonly no
     appendfilename appendonly.aof
     appendfsync everysec  # no  always  everysec
-19. 指定包含的其它配置文件
+17. 指定包含的其它配置文件
     include /path/to/local.conf
     1. 在同一主机上，多个Redis实例可以使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件.
 </code></pre><h3 id="远程访问"><a href="#远程访问" class="headerlink" title="远程访问"></a>远程访问</h3><pre><code>1. Redis默认不允许远程访问，修改配置文件：
@@ -442,11 +443,24 @@
   5. AOF文件重写
       1. 当记录命令过多时，必然会出现对同一个key的多次写操作，此时只需要记录最后一条即可，前面的记录都毫无意义;
       2. 因此，当满足一定条件时，Redis会对AOF文件进行重写，移除对同一个key的多次操作命令，只保留最后一条;
-auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-percentage 100
     1. 当前的AOF文件大小超过上一次重写时的AOF文件大小的百分之多少时，会再次进行重写;
     2. 如果之前没有重写过，则以启动时的AOF文件大小为依据;
-auto-aof-rewrite-min-size 64mb
+    auto-aof-rewrite-min-size 64mb
     1. 限制允许重写的最小AOF文件大小，通常在AOF文件很小的时候、即使其中有些冗余的命令，也是可以忽略的;
+</code></pre><h2 id="高级命令"><a href="#高级命令" class="headerlink" title="高级命令"></a>高级命令</h2><pre><code>1. 通配符：*
+    1. keys *：所有的键;
+    2. keys list*：以 list 开头的所有键;
+2. 过期时间
+    1. expire [key] [time]：为一个已经存在的key设置过期时间;
+    2. ttl [key]：查看一个key的剩余过期时间，-2 表示已经过期了，-1 表示没有设置过期时间;
+    3. persist [key]：取消过期时间;
+3. move [key] [数据库编号]：把key移动到指定的数据库;
+4. rename [key] [newkey]：对key重命名
+5. dbsize：查看当前数据库的key数量
+6. info：查看Redis的详细信息
+7. flushdb、flushall：清空当前数据库、清空所有数据库
+8. config get *：查看 redis.conf 的所有配置项
 </code></pre><h2 id="订阅发布"><a href="#订阅发布" class="headerlink" title="订阅发布"></a>订阅发布</h2><pre><code>1. Redis的发布订阅是一种消息通信模式：发送者发送消息，订阅者接收消息，客户端可以订阅任意数量的频道;
 2. 订阅频道
     1. subscribe 频道1 频道2 ... : 订阅指定的一个或多个频道;
@@ -489,19 +503,7 @@ auto-aof-rewrite-min-size 64mb
     1. 一组命令必须同时执行，或者都不执行;
     2. 保证一组命令在执行过程中不被其他命令插入;
     3. 商品秒杀活动、转账;
-</code></pre><h2 id="缓存的数据一致性"><a href="#缓存的数据一致性" class="headerlink" title="缓存的数据一致性"></a>缓存的数据一致性</h2><pre><code>1. Redis缓存与MySQL中的数据要保证一致性;
-2. 实时同步：适用于对一致性要求比较高的业务;
-    1. 缓存中不存在，则去数据库查询，并保存到缓存中;
-    2. 如果数据库中的数据修改了，缓存也要修改;
-3. 在SpringBoot中，采用注解的方式来完成 if-else 的工作
-    1. @Cacheable：查询时使用，Long类型需要转为String类型，否则会抛出异常;
-    2. @CachePut：更新时使用，此注解一定会从数据库中查询数据;
-    3. @CacheEvict：删除时使用;
-    4. @Caching：组合用法;
-4. 异步队列：对于并发程度较高的情况，则采用异步消息队列的方式同步;
-5. 阿里的同步工具canal：模拟MySQL slave和master(主从)的同步机制，监控DB bitlog的日志更新来触发缓存的更新;
-6. 采用UDF自定义函数的方式：面向MySQL的API进行编程，利用触发器进行缓存同步，UDF主要由C/C++实现;
-</code></pre><h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><h3 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h3><pre><code>1. 缓存穿透
+</code></pre><h2 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h2><pre><code>1. 缓存穿透
     1. 查询一个不存在数据时，缓存中没有，就需要从数据库中查询，查不到数据就不写入缓存中，导致每次请求
     这个不存在的数据时，都要到数据库中去查询，造成缓存穿透;
     2. 解决方式：持久层查询不到数据时，就缓存一个空结果(空字符串)，每次查询时先判断缓存中是否存在key，
@@ -521,7 +523,19 @@ auto-aof-rewrite-min-size 64mb
         4. 设置标签缓存，并设置过期时间，标签缓存过期后，异步更新实际缓存;
 4. 缓存预热：在项目即将发布上线之前，清空Redis数据库，然后由开发者把所有的功能调试一遍，
    这样Redis中就有了一些缓存数据，然后再发布项目，这样做也是为了避免大量用户同时去查询MySQL数据库了;
-</code></pre><h3 id="高并发思路"><a href="#高并发思路" class="headerlink" title="高并发思路"></a>高并发思路</h3><pre><code>1. 在实际项目中，一般不会只是用一台Redis
+</code></pre><h3 id="数据一致性"><a href="#数据一致性" class="headerlink" title="数据一致性"></a>数据一致性</h3><pre><code>1. 数据一致性：Redis缓存与MySQL中的数据要保证一致性;
+2. 实时同步：适用于对一致性要求比较高的业务;
+    1. 缓存中不存在，则去数据库查询，并保存到缓存中;
+    2. 如果数据库中的数据修改了，缓存也要修改;
+3. 在SpringBoot中，采用注解的方式来完成 if-else 的工作
+    1. @Cacheable：查询时使用，Long类型需要转为String类型，否则会抛出异常;
+    2. @CachePut：更新时使用，此注解一定会从数据库中查询数据;
+    3. @CacheEvict：删除时使用;
+    4. @Caching：组合用法;
+4. 异步队列：对于并发程度较高的情况，则采用异步消息队列的方式同步;
+5. 阿里的同步工具canal：模拟MySQL slave和master(主从)的同步机制，监控DB bitlog的日志更新来触发缓存的更新;
+6. 采用UDF自定义函数的方式：面向MySQL的API进行编程，利用触发器进行缓存同步，UDF主要由C/C++实现;
+</code></pre><h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><pre><code>1. 在实际项目中，一般不会只是用一台Redis
     1. 从结构上来说，单个Redis服务器会发生单点故障，并且一台服务器处理所有的请求负载，压力较大;
     2. 从容量上来说，单个Redis服务器的内存容量有限，就算容量为256G，也不能都用作Redis存储内存，
     单台Redis最大使用内存不应超过20G;
@@ -529,11 +543,24 @@ auto-aof-rewrite-min-size 64mb
 3. 在方法论中，提高系统并发能力的方式主要有两种：垂直扩展、水平扩展
     1. 垂直扩展：提升单机的处理能力，包括增强单机硬件性能、提升单机架构性能;
     2. 水平扩展：增加服务器数量，线性扩充系统性能;
-</code></pre><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><pre><code>1. 一个Redis服务有多个复制品，这个服务称为Master，其他复制品称为Slaves
-2. 在Redis主从模式中，一台主库可以有多个从库，但一个从库只能有一个主库;
-3. Redis默认支持主从复制，配置极其简单::自行百度
-4. 单机主从复制(一台机器，多个Redis服务)，集群主从复制
-</code></pre><h2 id="集群：Redis-Cluster"><a href="#集群：Redis-Cluster" class="headerlink" title="集群：Redis-Cluster"></a>集群：Redis-Cluster</h2><pre><code>1. Redis搭建集群的方案有多种，Redis3.0之前大多采用哨兵模式、主从复制;
+</code></pre><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><pre><code>1. 一个Redis服务有多个复制品，这个服务称为Master，其他复制品称为Slaves;
+2. 在Redis主从模式中，一台主库可以有多个从库，但一个从库只能有一个主库，从库还可以连接到其他从库;
+3. 主从复制不会阻塞Master和Slaves，在同步数据时，它们可以继续处理Client的请求;
+4. 主从复制实现了数据备份，读写分离;
+5. 单机主从复制(一台机器，多个Redis服务)，集群主从复制;
+    1. A、B、C三个服务器，A作为Master，B、C作为Slave
+    2. A [redis.conf]
+        bind 192.168.11.8  #使用本机地址，不能使用回环地址
+    3. B [redis.conf]
+        bind 192.168.11.12
+        slaveof 192.168.1.11 6379  #配置Master的IP和端口号
+    4. C [redis.conf]
+        bind 192.168.11.34
+        slaveof 192.168.1.11 6379  #配置Master的IP和端口号
+    5. 启动三台服务器上的Redis服务
+6. redis-cli 登录某个Redis，通过 info 命令可以查看当前Redis的信息
+7. Slave不支持写命令(set)，只能读(get)，否则会报错：(error) READONLY ... read only slave.
+</code></pre><h2 id="集群：Redis-Cluster"><a href="#集群：Redis-Cluster" class="headerlink" title="集群：Redis-Cluster"></a>集群：Redis-Cluster</h2><pre><code>1. Redis搭建集群的方案有多种，Redis3.0之前大多采用哨兵模式、主从复制、分片技术;
 2. 从Redis3.0开始支持 redis-cluster 集群，至少需要 3(Master)+3(Slave) 才能搭建集群;
 </code></pre><h3 id="去中心化"><a href="#去中心化" class="headerlink" title="去中心化"></a>去中心化</h3><pre><code>1. Redis-Cluster采用去中心化结构，每个节点都保存数据和整个集群状态，每个节点都和其他所有节点连接;
 2. 所有节点彼此互联(PING-PONG机制)，内部使用二进制协议优化传输速度和带宽;
@@ -558,18 +585,23 @@ auto-aof-rewrite-min-size 64mb
 1. 创建Redis节点安装目录(集群目录)
     mkdir /usr/local/redis_cluster
 2. 在 redis_cluster 目录下，创建6个文件夹：7001-7006，分别代表6个节点
-    mkdir 7001 7002 ... 7006
+    mkdir 7001，mkdir 7002，mkdir 7003，mkdir 7004，mkdir 7005，mkdir 7006
 3. 把 redis.conf 分别拷贝到这6个目录下，修改这些目录下的redis.conf，以7001为例
-    bind 192.168.103.30  # 直接注释掉(必配)
+    bind 192.168.13.22  # 直接注释掉，或者使用本机IP，不能使用回环地址(必配)
     port  7001  # 绑定端口号，分别对应7001-7006，以区分Redis服务(必配)
     protected-mode no  #如果不设置密码，则关闭保护模式(必配)
     daemonize  yes  # redis后台运行(守护进程的方式)
+
+    dir ./   # 确保数据文件在各自的目录下，/usr/local/redis_cluster/7001/
+
     pidfile  /var/run/redis_7001.pid  # 修改PID进程文件名(必配)
     logfile  /usr/local/redis_cluster/7001/redis.log  #日志文件名
 
     cluster-enabled  yes  # 开启集群(必配)
     cluster-config-file  nodes_7001.conf  # 集群节点的配置文件(必配)
     cluster-node-timeout  15000  #集群节点的超时时间
+
+    apppendonly yes  #开启AOF持久化
 4. 启动各个节点
     1. 在编译安装Redis的目录中，有一个src目录，分别拷贝到 7001-7006 目录中;
     2. 分别进入 7001-7006 目录下，使用 sudo src/redis-server ./redis.conf 命令启动当前的Redis服务;  
@@ -580,50 +612,61 @@ auto-aof-rewrite-min-size 64mb
     1. 连接：src/redis-cli -p 7001
     2. 停止：src/redis-cli -p 7001 shutdown  //正常关闭，数据会自动保存
     3. kill -9 PID  //非正常关闭，断电，数据容易丢失
-6. 创建集群：Redis5.0以下
-    1. src目录下命令 redis-trib.rb
-        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
-    2. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
-    3. redis-trib.rb 依赖 Ruby 环境
+</code></pre><h4 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h4><pre><code>1. Redis-v5.0以下版本
+    1. 依赖 Ruby 环境
         yum -y install ruby ruby-devel rubygems rpm-build   #安装Ruby
         gem install redis  # gem是ruby的一个工具包，可能会报错，要求Ruby版本为2.2.2以上
-    4. 执行 redis-trib.rb create ... 命令，创建集群;
-7. 创建集群：Redis5.0+
-    1. 从 Redis5.0 开始，不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 来创建集群;
+     或：
+        yum install ruby
+        yum install rubygems
+        gem install redis
+    2. src目录下命令 redis-trib.rb
+        1. 注释 bind
+        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
+        2. bind 192.168.13.22
+        redis-trib.rb create --replicas 1 192.168.13.22:7001 ... 192.168.13.22:7006
+    3. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
+2. 创建集群：Redis5.0+
+    1. 从 Redis5.0 开始，创建集群不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 命令;
         redis-cli --cluster create 127.0.0.1:7001 ... 127.0.0.1:7006 --cluster-replicas 1
+
         ===&gt; Can I set the above configuration?   yes
-        [OK] All 16384 slots covered.  ===&gt;集群创建成功
-    2. 常见报错：Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
-    3. 解决方式：逐个连接Redis服务，清空数据库：flushall
-    4. Redis服务的重启，不需要再执行创建集群的命令，启动所有Redis服务，集群自动开启;
-[- 访问集群 -]
-    redis-cli -h IP -c -p PORT -a Password  # -c表示连接redis集群
-1. 访问redis集群中的任意一个节点
-    redis-cli -h 127.0.0.1 -c -p 7001  ==&gt; 没有设置密码，不需要使用 -a
+        [OK] All 16384 slots covered.  ===&gt; 集群创建成功
+    2. 默认情况下，前三个会被创建为Master节点，后三个会被创建为Slave节点，且1-4，2-5，3-6的主从配置;
+    3. 在分配 Slot 时，只分配给Master，因为 Slave 不支持写命令，只负责读数据;
+3. 常见报错
+    Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
+    1. 逐个连接Redis服务，清空数据库：flushall
+5. 关闭集群时，需要逐个关闭集群中的节点;
+    redis-cli -c -h IP -p PORT shutdown
+6. 重启集群时，不再需要执行创建集群的命令，开启所有Redis服务即可.
+</code></pre><h4 id="访问集群"><a href="#访问集群" class="headerlink" title="访问集群"></a>访问集群</h4><pre><code>    redis-cli -c -h IP -p PORT -a Password  # -c表示连接redis集群
+1. 登录Redis集群中的任意一个节点
+    redis-cli -c -h 127.0.0.1 -p 7001  ==&gt; 没有设置密码，不需要使用 -a
 2. 登录之后的命令
-    1. info：查看所有信息;
+    1. info：查看当前Redis服务的详细信息;
     2. info replication：只查看replication，当前节点的身份、状态等信息;
     3. cluster nodes：查看当前集群中的所有节点，及其主从关系;
         7ffc63c7283a05b799d553002bf1d14ef413a655 127.0.0.1:7004@17004 slave 9e191422······
         9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 127.0.0.1:7002@17002 master - 0 155······
         ······
-        1. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
-        2. 每个节点都会记录其他节点的ID，而不是通过IP或端口号，因为IP/端口号可能变化，而ID在整个生命周期内是不会变的;
-    4. set/get数据时，可能会提示 Redirected to slot [xxxx] located at 127.0.0.1:700x，表示集群搭建成功.
+    4. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
+    5. 每个节点都会记录其他节点的ID，因为IP或端口号可能发生变化，而ID在整个生命周期内是不会变的;
 3. Redis Cluster采用去中心化、去中间件的设计，即集群中的每个节点都是平等的，都保存各自的数据和整个集群的状态;
     1. 每个节点都和其他节点连接，而且这些连接保持活跃，保证了只需要连接集群中的任意节点，就可以获取到其他节点的数据;
-    2. get的数据被存储在哪个slot下，就重定向到该slot所分配的节点去获取数据，整个数据查找过程由 Redis Cluster 完成.
+    2. 在某个主节点中写入数据时，并不是一定会把数据存储该节点中，它会考虑整个集群环境，有时会重定向到其他主节点;
+        登录7001 --&gt; set name Java --&gt; Redirected to slot [xxxx] located at 127.0.0.1:7002
+        登录7002 或者 其从节点7005 --&gt; keys * --&gt; name
+    3. 在读数据时，Redis Cluster 会在整个集群中查找，数据被存储在哪个 Slot 中，则重定向到该Slot所属的节点;
+        登录7001，keys * --&gt; 空的，但执行 get name --&gt; 重定向到7002 --&gt; Java
 4. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
 5. Java使用 Jedis 访问Redis集群
     //在nodes中指定每个节点的地址
     Set&lt;HostAndPort&gt; nodes = new HashSet&lt;&gt;();
     nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7001));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7002));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7003));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7004));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7005));
+    ......
     nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7006));
-    //创建一个JedisCluster对象，jedisCluster在系统中是单例的
+    //创建一个JedisCluster对象，在系统中是单例的
     JedisCluster cluster = new JedisCluster(nodes);
     cluster.set(&quot;name&quot;, &quot;Hello World&quot;);
     cluster.set(&quot;value&quot;, &quot;100&quot;);
@@ -662,7 +705,7 @@ auto-aof-rewrite-min-size 64mb
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/04/12/RabbitMQ/" rel="next" title="RabbitMQ">
+              <a href="/2016/04/09/RabbitMQ/" rel="next" title="RabbitMQ">
                 <i class="fa fa-chevron-left"></i> RabbitMQ
               </a>
             
@@ -672,8 +715,8 @@ auto-aof-rewrite-min-size 64mb
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/01/SpringCloud/" rel="prev" title="SpringCloud">
+                SpringCloud <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -751,7 +794,7 @@ auto-aof-rewrite-min-size 64mb
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -806,7 +849,7 @@ auto-aof-rewrite-min-size 64mb
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-conf"><span class="nav-number">2.</span> <span class="nav-text">redis.conf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#远程访问"><span class="nav-number">2.1.</span> <span class="nav-text">远程访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据淘汰策略"><span class="nav-number">2.2.</span> <span class="nav-text">数据淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">2.3.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF"><span class="nav-number">2.4.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订阅发布"><span class="nav-number">3.</span> <span class="nav-text">订阅发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">4.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存的数据一致性"><span class="nav-number">5.</span> <span class="nav-text">缓存的数据一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高并发"><span class="nav-number">6.</span> <span class="nav-text">高并发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存问题"><span class="nav-number">6.1.</span> <span class="nav-text">缓存问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高并发思路"><span class="nav-number">6.2.</span> <span class="nav-text">高并发思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从复制"><span class="nav-number">6.3.</span> <span class="nav-text">主从复制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群：Redis-Cluster"><span class="nav-number">7.</span> <span class="nav-text">集群：Redis-Cluster</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#去中心化"><span class="nav-number">7.1.</span> <span class="nav-text">去中心化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容错性"><span class="nav-number">7.2.</span> <span class="nav-text">容错性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点分配"><span class="nav-number">7.3.</span> <span class="nav-text">节点分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建集群"><span class="nav-number">7.4.</span> <span class="nav-text">搭建集群</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-conf"><span class="nav-number">2.</span> <span class="nav-text">redis.conf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#远程访问"><span class="nav-number">2.1.</span> <span class="nav-text">远程访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据淘汰策略"><span class="nav-number">2.2.</span> <span class="nav-text">数据淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">2.3.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF"><span class="nav-number">2.4.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级命令"><span class="nav-number">3.</span> <span class="nav-text">高级命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订阅发布"><span class="nav-number">4.</span> <span class="nav-text">订阅发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">5.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存问题"><span class="nav-number">6.</span> <span class="nav-text">缓存问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据一致性"><span class="nav-number">6.1.</span> <span class="nav-text">数据一致性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高并发"><span class="nav-number">7.</span> <span class="nav-text">高并发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主从复制"><span class="nav-number">7.1.</span> <span class="nav-text">主从复制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群：Redis-Cluster"><span class="nav-number">8.</span> <span class="nav-text">集群：Redis-Cluster</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#去中心化"><span class="nav-number">8.1.</span> <span class="nav-text">去中心化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容错性"><span class="nav-number">8.2.</span> <span class="nav-text">容错性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点分配"><span class="nav-number">8.3.</span> <span class="nav-text">节点分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建集群"><span class="nav-number">8.4.</span> <span class="nav-text">搭建集群</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建集群"><span class="nav-number">8.4.1.</span> <span class="nav-text">创建集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#访问集群"><span class="nav-number">8.4.2.</span> <span class="nav-text">访问集群</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

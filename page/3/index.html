@@ -2429,7 +2429,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/15/Redis高级/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -2448,7 +2448,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/04/15/Redis高级/" itemprop="url">Redis高级</a></h1>
+                <a class="post-title-link" href="/2016/05/04/SpringCloud组件3/" itemprop="url">SpringCloud组件3</a></h1>
         
 
         <div class="post-meta">
@@ -2460,8 +2460,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-15T00:00:00+08:00">
-                2016-04-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-04T00:00:00+08:00">
+                2016-05-04
               </time>
             
 
@@ -2522,316 +2522,205 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><pre><code>1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能；
-2. Redis与Memcache
-    1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；
-    2. 实现方式：Redis是单线程，Memcache是多线程；
-    3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memcache的数据只存储在内存中，没有持久化功能；
-    4. Redis除了基本的 k-v 结构，还支持多种其他复杂结构、事务等高级功能，它已经不仅仅是一个缓存服务；
-    5. Memcache只支持基本的 k-v 结构，功能相对单一；
-    6. 可用性：Redis支持主从复制、数据分片、哨兵监控；Memcache没有分片功能，需要从客户端支持。
-3. 安装
-    cd /usr/local/
-    wget http://download.redis.io/releases/redis-5.0.4.tar.gz
-    tar -zxvf /redis-5.0.4.tar.gz
-    cd redis-5.0.4
-    make &amp;&amp; make install
-</code></pre><h2 id="redis-conf"><a href="#redis-conf" class="headerlink" title="redis.conf"></a>redis.conf</h2><pre><code>1. Redis默认不是以守护进程的方式运行，可以通过该配置项修改，使用yes启用守护进程
-    daemonize no
-2. 当Redis以守护进程方式运行时，Redis默认会把pid写入/var/run/redis.pid文件
-    pidfile /var/run/redis.pid
-3. Redis监听端口，默认为6379
-    port 6379
-4. 绑定的主机地址
-    bind 127.0.0.1
-5. 当客户端闲置多长时间后关闭连接，如果指定为0，表示关闭该功能
-    timeout 300
-6. 指定日志记录级别，Redis共支持四个级别：debug、verbose、notice、warning，默认为verbose
-    loglevel verbose
-7. 日志记录方式，默认为标准输出，如果配置Redis为守护进程方式运行，而这里又配置为日志记录方式为标准输出，
-   则日志将会发送给/dev/null
-    logfile stdout
-8. 设置数据库的数量，默认为16，编号0-15，默认操作是 0 号数据库
-    databases 16
-9. RDB方式的持久化，默认方式
-    save 900 1
-    save 300 10
-    save 60 10000
-10. 指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩;
-    rdbcompression yes
-    1. 如果为了节省CPU时间，可以关闭该选项，但会导致数据库文件变的巨大.
-11. 指定本地数据库文件名，默认值为dump.rdb
-    dbfilename dump.rdb
-12. 指定本地数据库存放目录，默认就是当前目录
-    dir ./
-13. 当本机为slav服务时，设置master服务的IP地址及端口，在Redis启动时，它会自动从master进行数据同步
-    slaveof &lt;masterip&gt; &lt;masterport&gt;
-14. 当master服务设置了密码保护时，slav服务连接master的密码
-    masterauth &lt;master-password&gt;
-15. 设置Redis连接密码，如果配置了密码，客户端在连接Redis时需要通过AUTH &lt;password&gt;命令提供密码，默认关闭
-    requirepass foobared
-16. 设置同一时间最大客户端连接数，默认无限制;
-    maxclients 128
-    1. Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件描述符数;
-    2. 如果设置 maxclients 0，表示不作限制;
-    3. 当客户端连接数到达限制时，Redis会关闭新的连接并向客户端返回max number of clients reached错误信息.
-17. 指定Redis最大内存限制
-    maxmemory &lt;bytes&gt;
-    1. Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key;
-    2. 如果这种方式处理后，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读取操作;
-    3. Redis新的 vm 机制会把 Key 存放内存，Value 存放在 swap 区.
-18. AOF方式的持久化，默认关闭
-    appendonly no
-    appendfilename appendonly.aof
-    appendfsync everysec  # no  always  everysec
-19. 指定包含的其它配置文件
-    include /path/to/local.conf
-    1. 在同一主机上，多个Redis实例可以使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件.
-</code></pre><h3 id="远程访问"><a href="#远程访问" class="headerlink" title="远程访问"></a>远程访问</h3><pre><code>1. Redis默认不允许远程访问，修改配置文件：
-    1. bind 127.0.0.1 # 注释掉 或者 改为本机的IP地址
-    2. protected-mode no  # 如果不设置密码，则关闭保护模式
-    3. deamonize yes  # 后台启动运行Redis
-2. Redis数据库由一个整数索引标识，而不是一个具体的数据库名称，默认操作的数据库是0号;
-    1. select 数据库索引：切换数据库;
-    2. move key 数据库索引：移动key到指定数据库;
-    3. flushdb：清空当前数据库的key;
-    4. flushall：清空所有数据库的key.
-</code></pre><h3 id="数据淘汰策略"><a href="#数据淘汰策略" class="headerlink" title="数据淘汰策略"></a>数据淘汰策略</h3><pre><code>1. Redis脚本：Redis使用 Lua 解释器来执行脚本，Redis2.6通过内嵌支持 Lua 环境，执行脚本的常用命令为 EVAL
-2. Redis数据淘汰策略
-    1. Redis官方的警告：当内存不足时，Redis会根据配置的缓存策略淘汰部分Key，以保证写入成功;
-    2. 当无淘汰策略 或者没有找到合适的key时，Redis直接返回 Out of Memory 错误;
-    3. 在配置文件 redis.conf 中，允许设置的最大缓存大小：maxmemory 512G
-3. Redis提供的数据淘汰策略
-    1. volatile-lru：从已设置过期时间的数据集中，挑选最近最少使用的数据淘汰;
-    2. volatile-lfu：从已设置过期的key中，淘汰一段时间内使用次数最少的;
-    3. volatile-ttl：从已设置过期时间的数据集中，淘汰最近将要过期的数据;
-    4. volatile-random：从已设置过期时间的数据集中，随机选择淘汰的数据;
-    5. allkeys-lru：从数据集中，淘汰最近最少使用的数据;
-    6. allkeys-lfu：从所有key中，淘汰一段时间内使用次数最少的;
-    7. allkeys-random：从数据集中，随机选择淘汰的数据;
-    8. no-enviction：不采用任何淘汰策略，默认配置.
-4. 在平时使用时，应尽量主动设置/更新key的过期时间，主动剔除不活跃的旧数据，有助于提升查询性能.
-</code></pre><h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><pre><code>1. RDB：默认持久化方案，当满足一定条件时，Redis会自动将内存中的数据全部持久到硬盘文件中;
-    1. 在配置文件redis.conf中配置RDB的条件：save (time) (count)
-    2. 当满足在time(秒)时间内，至少进行了count次修改后，触发持久化条件，进行RDB快照
-2. 默认配置(三者是或的关系)
-    save 900 1  # 15分钟内，有至少1个键被更改，则触发RDB快照
-    save 300 10  # 5分钟内，有至少10个键被更改
-    save 60 10000  # 1分钟内，至少有10000个键被更改
-3. 以快照的方式写入到二进制文件中，默认文件名：dump.rdb
-    dbfilename dump.rdb  #本地数据库文件
-    dir  ./  #本地数据库的存放路径，./ 表示当前目录
-4. 快照：保存数据、还原数据极快，适用于灾难性备份;
-5. 触发快照的条件，除了配置文件中配置的RDB快照，在服务器正常关闭时，shutdown，也会触发快照;
-2. RDB的流程：
-    1. Redis使用fork函数来复制一份当前进程(父进程)的副本(子进程);
-    2. 父进程继续接收并处理请求，子进程开始把内存中的数据写入硬盘中的临时文件;
-    3. 子进程写完后，会使用临时文件替代旧的RDB文件;
-</code></pre><h3 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h3><pre><code>1. AOF：把每一条服务端接收到的写命令都记录下来，每隔一定时间，写入硬盘的AOF文件中;
-    1. 当服务器重启后，重新执行这些命令，恢复数据;
-    appendonly yes  # 开启AOF
-    2. 每收到写命令时，都会记录到文件中，默认文件名：appendonly.aof
-2. 这种方式没有RDB快照的限制，适用于Redis意外宕机的数据恢复;
-3. AOF的缺点也很明显，占用较大的内存，所以Redis的默认持久化策略是RDB
-4. AOF写入的频率：同步策略三选一
-    appendfsync always  # 每次都同步(最安全但最慢)
-    appendfsync everysec  # 每秒同步(默认)
-    appendfsync no  # 不主动同步，由操作系统来决定(最快但不安全)
-    1. 默认情况下，文件会先写入到系统的缓存中，系统每30s同步一次，才会真正写入到硬盘;
-    2. 如果在这30s内，服务器宕机，那么数据也会丢失;
-  5. AOF文件重写
-      1. 当记录命令过多时，必然会出现对同一个key的多次写操作，此时只需要记录最后一条即可，前面的记录都毫无意义;
-      2. 因此，当满足一定条件时，Redis会对AOF文件进行重写，移除对同一个key的多次操作命令，只保留最后一条;
-auto-aof-rewrite-percentage 100
-    1. 当前的AOF文件大小超过上一次重写时的AOF文件大小的百分之多少时，会再次进行重写;
-    2. 如果之前没有重写过，则以启动时的AOF文件大小为依据;
-auto-aof-rewrite-min-size 64mb
-    1. 限制允许重写的最小AOF文件大小，通常在AOF文件很小的时候、即使其中有些冗余的命令，也是可以忽略的;
-</code></pre><h2 id="订阅发布"><a href="#订阅发布" class="headerlink" title="订阅发布"></a>订阅发布</h2><pre><code>1. Redis的发布订阅是一种消息通信模式：发送者发送消息，订阅者接收消息，客户端可以订阅任意数量的频道;
-2. 订阅频道
-    1. subscribe 频道1 频道2 ... : 订阅指定的一个或多个频道;
-    2. psubscribe 模式1 模式2... : 订阅一个或多个符合指定模式的频道;
-3. 发布频道
-    publish 频道1 消息
-4. 退订频道
-    1. unsubscribe 频道1 频道2 ...
-    2. punsubscribe 模式1 模式2 ...
-5. 比如：客户端1、2 订阅频道cctv5，客户端3 向频道cctv5 发布消息，客户端1、2 就会受到订阅的消息;
-6. 应用：构建实时消息系统，如普通的即时聊天、群聊等功能；
-    1. 在一个博客网站，有100个粉丝订阅了AA，当AA发布新文章时，就可以推送消息给这100个粉丝;
-    2. 微信公众号模式;
-</code></pre><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><pre><code>1. Redis事务可以一次执行多个命令，按顺序串行化执行，且执行过程中不许加塞;
-    1. 批量操作在发送 EXEC 命令前被放入队列缓存;
-    2. 收到 EXEC 命令后，进入事务执行，事务中任何命令执行失败，其余命令依然被执行;
-    3. 在事务执行过程中，其他客户端提交的命令请求不会插入到事务执行序列中;
-    4. 总的来说，Redis会将一个事务中的所有命令序列化，然后按顺序执行，且不允许出现加塞行为.
-2. 事务经历的三个阶段：开启事务 --&gt; 命令入列 --&gt; 执行事务;
-3. A向B转账
-    multi  #开启事务，以后的命令会依次进入到序列中
-    get account:a
-    get account:b
-    decrby account:a 50  #A减50
-    incrby account:b 50  #B加50
-    exec  #执行事务
-4. discard：取消事务，放弃队列中的所有命令；开启了事务，但不想执行 exec 命令时，可执行 discard 命令取消事务;
-5. 错误处理：
-    1. 如果队列中的某个命令出现错误，比如操作的key不存在，属于逻辑业务的错误，那么这条命令不再执行，
-    而其他命令仍照常执行，而且不会回滚;
-    2. 但如果某个命令出现报告错误(语法错误)，比如输入的命令不存在，Redis会立即报错，那么Redis会取消事务，
-    所有命令都不会执行;
-6. watch/unwatch
-    1. 当两个事务同时操作同一个key时，可能会导致数据的不一致;
-    2. watch key key ... : 监视key，在开启事务之后、执行事务之前，这个key被其他命令改动了，
-    那么当前事务将会被打断，并回滚;
-    3. unwatch：取消对所有key的监视;
-    4. 如果在执行 watch 命令之后，只要执行了 exec 或 discard 命令，watch会自动取消，无需再执行 unwatch 命令.
-7. 应用场景：
-    1. 一组命令必须同时执行，或者都不执行;
-    2. 保证一组命令在执行过程中不被其他命令插入;
-    3. 商品秒杀活动、转账;
-</code></pre><h2 id="缓存的数据一致性"><a href="#缓存的数据一致性" class="headerlink" title="缓存的数据一致性"></a>缓存的数据一致性</h2><pre><code>1. Redis缓存与MySQL中的数据要保证一致性;
-2. 实时同步：适用于对一致性要求比较高的业务;
-    1. 缓存中不存在，则去数据库查询，并保存到缓存中;
-    2. 如果数据库中的数据修改了，缓存也要修改;
-3. 在SpringBoot中，采用注解的方式来完成 if-else 的工作
-    1. @Cacheable：查询时使用，Long类型需要转为String类型，否则会抛出异常;
-    2. @CachePut：更新时使用，此注解一定会从数据库中查询数据;
-    3. @CacheEvict：删除时使用;
-    4. @Caching：组合用法;
-4. 异步队列：对于并发程度较高的情况，则采用异步消息队列的方式同步;
-5. 阿里的同步工具canal：模拟MySQL slave和master(主从)的同步机制，监控DB bitlog的日志更新来触发缓存的更新;
-6. 采用UDF自定义函数的方式：面向MySQL的API进行编程，利用触发器进行缓存同步，UDF主要由C/C++实现;
-</code></pre><h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><h3 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h3><pre><code>1. 缓存穿透
-    1. 查询一个不存在数据时，缓存中没有，就需要从数据库中查询，查不到数据就不写入缓存中，导致每次请求
-    这个不存在的数据时，都要到数据库中去查询，造成缓存穿透;
-    2. 解决方式：持久层查询不到数据时，就缓存一个空结果(空字符串)，每次查询时先判断缓存中是否存在key，
-    如果有，则直接返回空值，表示此数据不存在，否则就去查询数据库;
-    3. 另外，持久层 insert 此数据时，及时清除查询的key，或者设置空结果的缓存时间;
-2. 缓存雪崩
-    1. 如果缓存集中在一段时间内失效，发生大量的缓存穿透，所有的查询都落在数据库上，造成缓存雪崩;
-    2. 缓存雪崩没有完美的解决方案，应分析用户行为，尽量将缓存失效时间均匀分布;
-    3. 大多数系统设计者会考虑加锁/分布式锁，或者队列的方式来保证单线程/进程去写缓存，从而避免失效时
-    大量的并发请求落在数据库上;
-3. 热点key
-    1. 某个key访问非常频繁，当key失效时，将会有大量线程来构建缓存，导致负载增加，系统崩溃;
-    2. 解决方案：
-        1. 使用锁，单机使用synchronized、lock等，分布式使用分布式锁;
-        2. 不设置缓存过期时间，而是在对应的value里设置一个时间，如果检测到超过了这个时间，则异步更新缓存;
-        3. 在value里设置一个比过期时间t0小的过期时间t1，当t1过期时，延长t1，并更新缓存;
-        4. 设置标签缓存，并设置过期时间，标签缓存过期后，异步更新实际缓存;
-4. 缓存预热：在项目即将发布上线之前，清空Redis数据库，然后由开发者把所有的功能调试一遍，
-   这样Redis中就有了一些缓存数据，然后再发布项目，这样做也是为了避免大量用户同时去查询MySQL数据库了;
-</code></pre><h3 id="高并发思路"><a href="#高并发思路" class="headerlink" title="高并发思路"></a>高并发思路</h3><pre><code>1. 在实际项目中，一般不会只是用一台Redis
-    1. 从结构上来说，单个Redis服务器会发生单点故障，并且一台服务器处理所有的请求负载，压力较大;
-    2. 从容量上来说，单个Redis服务器的内存容量有限，就算容量为256G，也不能都用作Redis存储内存，
-    单台Redis最大使用内存不应超过20G;
-2. 高并发的指标：响应时间、吞吐量、每秒查询率QPS、并发用户...
-3. 在方法论中，提高系统并发能力的方式主要有两种：垂直扩展、水平扩展
-    1. 垂直扩展：提升单机的处理能力，包括增强单机硬件性能、提升单机架构性能;
-    2. 水平扩展：增加服务器数量，线性扩充系统性能;
-</code></pre><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><pre><code>1. 一个Redis服务有多个复制品，这个服务称为Master，其他复制品称为Slaves
-2. 在Redis主从模式中，一台主库可以有多个从库，但一个从库只能有一个主库;
-3. Redis默认支持主从复制，配置极其简单::自行百度
-4. 单机主从复制(一台机器，多个Redis服务)，集群主从复制
-</code></pre><h2 id="集群：Redis-Cluster"><a href="#集群：Redis-Cluster" class="headerlink" title="集群：Redis-Cluster"></a>集群：Redis-Cluster</h2><pre><code>1. Redis搭建集群的方案有多种，Redis3.0之前大多采用哨兵模式、主从复制;
-2. 从Redis3.0开始支持 redis-cluster 集群，至少需要 3(Master)+3(Slave) 才能搭建集群;
-</code></pre><h3 id="去中心化"><a href="#去中心化" class="headerlink" title="去中心化"></a>去中心化</h3><pre><code>1. Redis-Cluster采用去中心化结构，每个节点都保存数据和整个集群状态，每个节点都和其他所有节点连接;
-2. 所有节点彼此互联(PING-PONG机制)，内部使用二进制协议优化传输速度和带宽;
-3. 节点的fail是通过集群中超过半数的节点检测失效时才生效;
-4. 客户端与Redis节点直连，不需要中间Proxy层，客户端只需要连接集群中的任意一个节点即可;
-5. Redis-Cluster把所有的物理节点映射到 0-16383 slot上，Cluster负责维护;
-6. Redis集群预分配 16384 个哈希槽，在Redis集群中放置一个 key-value 时，Redis先对key使用 crc16 算法
-   计算出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽，
-   Redis会根据节点数量大致均等地将哈希槽映射到不同的节点上;
-</code></pre><h3 id="容错性"><a href="#容错性" class="headerlink" title="容错性"></a>容错性</h3><pre><code>1. 投票机制：由集群中所有的Master参与，如果半数以上的Master节点与当前Master节点通信超时，则认为当前Master节点挂掉;
-2. 如果集群中的某个Master挂掉，且它没有Slave，则集群进入fail状态，也可以认为集群的Slot映射 0-16383 不完整时进入fail状态;
-3. 如果集群超过半数以上的Master挂掉，无论是否有Slave，集群都进入fail状态.
-</code></pre><h3 id="节点分配"><a href="#节点分配" class="headerlink" title="节点分配"></a>节点分配</h3><pre><code>1. 三个主节点分别是A、B、C，它们可以是一台机器上的三个端口，也可以是三台不同的服务器;
-2. 采用哈希槽的方式来分配 16384 个Slot时，三个节点分别承担的Slot区间：A[0-5460]，B[5461-10922]，C[10923-16383]
-3. 新增一个主节点D，Cluster会从各个主节点的前面各取一部分Slot到 D 上;
-    1. A 覆盖 [1365-5460]，B 覆盖 [6827-10922]，C 覆盖 [12288-16383]
-    2. D 覆盖 [0-1364，5461-6826，10923-12287]
-4. Redis-Cluster的节点分配体现了去中心化思想，不会去优待任何节点;
-</code></pre><h3 id="搭建集群"><a href="#搭建集群" class="headerlink" title="搭建集群"></a>搭建集群</h3><pre><code>1. 集群中至少应该有奇数个节点，同时每个节点至少有1个备份节点，主节点、备份节点由 Redis-Cluster 确定;
-2. 真集群 - 至少6台机器，假集群 - 一台机器中存在6个Redis服务;
-[- 使用一台机器模拟：ubuntu、redis-v5.0.4、一台机器模拟 -]
-1. 创建Redis节点安装目录(集群目录)
-    mkdir /usr/local/redis_cluster
-2. 在 redis_cluster 目录下，创建6个文件夹：7001-7006，分别代表6个节点
-    mkdir 7001 7002 ... 7006
-3. 把 redis.conf 分别拷贝到这6个目录下，修改这些目录下的redis.conf，以7001为例
-    bind 192.168.103.30  # 直接注释掉(必配)
-    port  7001  # 绑定端口号，分别对应7001-7006，以区分Redis服务(必配)
-    protected-mode no  #如果不设置密码，则关闭保护模式(必配)
-    daemonize  yes  # redis后台运行(守护进程的方式)
-    pidfile  /var/run/redis_7001.pid  # 修改PID进程文件名(必配)
-    logfile  /usr/local/redis_cluster/7001/redis.log  #日志文件名
-
-    cluster-enabled  yes  # 开启集群(必配)
-    cluster-config-file  nodes_7001.conf  # 集群节点的配置文件(必配)
-    cluster-node-timeout  15000  #集群节点的超时时间
-4. 启动各个节点
-    1. 在编译安装Redis的目录中，有一个src目录，分别拷贝到 7001-7006 目录中;
-    2. 分别进入 7001-7006 目录下，使用 sudo src/redis-server ./redis.conf 命令启动当前的Redis服务;  
-    3. 当然，也可以不拷贝src目录，使用同一个 redis-server 命令，指定不同的配置文件，启动6个Redis服务;
-    4. 切记：启动时一定要有权限，因为设置后台运行之后，如果没有权限，它不会提示！
-    5. 查看启动的服务：ps -ef | grep -i redis
-5. 客户端连接/断开节点，测试单个Redis服务
-    1. 连接：src/redis-cli -p 7001
-    2. 停止：src/redis-cli -p 7001 shutdown  //正常关闭，数据会自动保存
-    3. kill -9 PID  //非正常关闭，断电，数据容易丢失
-6. 创建集群：Redis5.0以下
-    1. src目录下命令 redis-trib.rb
-        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
-    2. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
-    3. redis-trib.rb 依赖 Ruby 环境
-        yum -y install ruby ruby-devel rubygems rpm-build   #安装Ruby
-        gem install redis  # gem是ruby的一个工具包，可能会报错，要求Ruby版本为2.2.2以上
-    4. 执行 redis-trib.rb create ... 命令，创建集群;
-7. 创建集群：Redis5.0+
-    1. 从 Redis5.0 开始，不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 来创建集群;
-        redis-cli --cluster create 127.0.0.1:7001 ... 127.0.0.1:7006 --cluster-replicas 1
-        ===&gt; Can I set the above configuration?   yes
-        [OK] All 16384 slots covered.  ===&gt;集群创建成功
-    2. 常见报错：Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
-    3. 解决方式：逐个连接Redis服务，清空数据库：flushall
-    4. Redis服务的重启，不需要再执行创建集群的命令，启动所有Redis服务，集群自动开启;
-[- 访问集群 -]
-    redis-cli -h IP -c -p PORT -a Password  # -c表示连接redis集群
-1. 访问redis集群中的任意一个节点
-    redis-cli -h 127.0.0.1 -c -p 7001  ==&gt; 没有设置密码，不需要使用 -a
-2. 登录之后的命令
-    1. info：查看所有信息;
-    2. info replication：只查看replication，当前节点的身份、状态等信息;
-    3. cluster nodes：查看当前集群中的所有节点，及其主从关系;
-        7ffc63c7283a05b799d553002bf1d14ef413a655 127.0.0.1:7004@17004 slave 9e191422······
-        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 127.0.0.1:7002@17002 master - 0 155······
-        ······
-        1. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
-        2. 每个节点都会记录其他节点的ID，而不是通过IP或端口号，因为IP/端口号可能变化，而ID在整个生命周期内是不会变的;
-    4. set/get数据时，可能会提示 Redirected to slot [xxxx] located at 127.0.0.1:700x，表示集群搭建成功.
-3. Redis Cluster采用去中心化、去中间件的设计，即集群中的每个节点都是平等的，都保存各自的数据和整个集群的状态;
-    1. 每个节点都和其他节点连接，而且这些连接保持活跃，保证了只需要连接集群中的任意节点，就可以获取到其他节点的数据;
-    2. get的数据被存储在哪个slot下，就重定向到该slot所分配的节点去获取数据，整个数据查找过程由 Redis Cluster 完成.
-4. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
-5. Java使用 Jedis 访问Redis集群
-    //在nodes中指定每个节点的地址
-    Set&lt;HostAndPort&gt; nodes = new HashSet&lt;&gt;();
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7001));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7002));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7003));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7004));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7005));
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7006));
-    //创建一个JedisCluster对象，jedisCluster在系统中是单例的
-    JedisCluster cluster = new JedisCluster(nodes);
-    cluster.set(&quot;name&quot;, &quot;Hello World&quot;);
-    cluster.set(&quot;value&quot;, &quot;100&quot;);
-    String name = cluster.get(&quot;name&quot;);
-    String value = cluster.get(&quot;value&quot;);
-    //系统关闭时关闭JedisCluster
-    cluster.close();
-</code></pre><hr>
+            <h2 id="网关之Zuul"><a href="#网关之Zuul" class="headerlink" title="网关之Zuul"></a>网关之Zuul</h2><ol>
+<li>Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用；</li>
+<li>Zuul的核心是一系列的过滤器，这些过滤器的功能：</li>
+</ol>
+<p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg" alt="Zuul"></p>
+<pre><code>1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求；
+2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图；
+3. 动态路由：动态地将请求路由到不同的后端集群；
+4. 压力测试：逐渐增加指向集群的流量，以了解性能；
+5. 负载分配：为每一种负载类型分配对应容量，并弃用超过限定值的请求；
+6. 静态响应处理：在边缘位置直接建立部分响应，从而避免转发到内部集群；
+7. 多区域弹性：跨越AWS Region 进行数据路由，旨在实现ELB使用的多样化，以及让系统的边缘更贴近系统的使用者；
+</code></pre><ol start="3">
+<li>SpringCloud对Zuul做了整合与增强；目前Zuul使用的默认HTTP客户端是Apache HttpClient，<br> 也可以使用RestClient，okhttp3.OkHttpClient<ol>
+<li>启用RestClient时，配置 ribbon.restclient.enabled=true</li>
+<li>启用okhttp3.OkHttpClient，则配置 ribbon.okhttp.enabled=true</li>
+</ol>
+</li>
+<li>网关就是整个系统的入口，如果没有网关进行控制，外界可以访问系统中的任何服务，甚至可以把自己的服务注册到系统的注册中心；</li>
+<li>网关的核心功能：过滤和路由</li>
+<li>Zuul加入后的架构<br> [图片]<ol>
+<li>不管是来自客户端的请求，还是服务内部的调用，一切对服务的请求都会经过Zuul，然后再由网关来实现鉴权、动态路由等操作；</li>
+<li>Zuul就是服务的统一入口；</li>
+</ol>
+</li>
+<li><p>在父工程下创建一个子工程gateway</p>
+<ol>
+<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-netflix-zuul</artifactid><br> </dependency></li>
+<li>Zuul依赖中已经引入了 web、hystrix、ribbon 等依赖</li>
+<li>创建启动类，注解 @EnableZuulProxy，而不是 @EnableZuulServer，因为它的功能不完善，太单一；<br> @EnableZuulProxy<br> @SpringBootApplication<br> public class GatewayApplication {<pre><code>...
+</code></pre> }</li>
+<li><p>配置<br> server:</p>
+<pre><code>port: 8090
+</code></pre><p> spring:</p>
+<pre><code>application:
+    name: gateway
+</code></pre><p> zuul:</p>
+<pre><code>routes:  #配置路由规则
+    hehe: #路由ID，值是key-value，作为一条路由规则
+        path: /user-service/**   #匹配的路径，以/user-service开头的所有路径
+        url: http://127.0.0.1:8081  #转发的路径，即转发的服务提供者
+</code></pre></li>
+<li><p>/user-service 只作为匹配路径的前缀，** 才会被转发<br> <a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></p>
+</li>
+</ol>
+</li>
+<li><p>使用Eureka的客户端依赖，注册服务，拉取服务列表</p>
+<ol>
+<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-netflix-eureka-client</artifactid><br> </dependency></li>
+<li>配置<br> eureka:<pre><code>client:
+    service-url:
+        defaultZone: http://127.0.0.1:8761/eureka
+</code></pre> zuul:<pre><code>routes:
+    hehe:
+        path: /user-service/**
+        serviceId: user-service  #指定要转发的服务ID
+</code></pre></li>
+<li>Zull底层根据配置的 serviceId，使用 EurekaClient 获取服务列表，通过Ribbon的负载均衡算法，获取一个服务实例；</li>
+<li>测试：<a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a></li>
+<li>既然路由ID可以自由命名，那么就简化配置方案：<br> zuul:<pre><code>routes:
+    user-service: /user-service/**  #key是转发的服务ID，value是匹配的路径
+</code></pre></li>
+<li>事实上，Zuul默认就是这么配置的，它会拉取所有的服务列表，把它们都默认配置为：服务ID: /服务ID/**</li>
+<li>也就是说，如果不需要更改映射路径，zuul.routes 可以不用配置，但即使手动更改了映射路径，/服务ID/** 的方式依然有效<br> zuul:<pre><code>routes:
+    user-service: /user/**  # 映射匹配的路径为 /user
+</code></pre> <a href="http://127.0.0.1:8090/user/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/user/9</a> 等效于 <a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a></li>
+<li>当然，有些服务不想让 Zuul 自动配置，则让Zuul忽略：<br> zuul:<pre><code>ignored-services:  #忽略注册的服务
+    - consumer-service
+</code></pre> <a href="http://127.0.0.1:8090/consumer-service/consumer/9" target="_blank" rel="noopener">http://127.0.0.1:8090/consumer-service/consumer/9</a>  不可以再访问</li>
+<li><p>转发前缀：匹配路径的前缀默认是不转发给微服务的，strip-prefix 属性可以控制是否转发，默认值是true<br> zuul:</p>
+<pre><code>routes:
+    user-service:
+        path: /user/**
+        serviceId: user-service
+        strip-prefix: false  #转发前缀
+ignored-services:
+    - consumer-service
+</code></pre><ol>
+<li>访问：<a href="http://127.0.0.1:8090/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a><br> 测试发现：带有服务ID的前缀 <a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a> 依然可以访问</li>
+<li>转发前缀的全局配置：zuul.strip-prefix<br> zuul:<pre><code>routes:
+    user-service:
+        path: /user/**
+        serviceId: user-service
+strip-prefix: false
+然而，测试发现：并不能去掉前缀，访问时仍然要加上前缀 http://127.0.0.1:8090/user/user/9
+</code></pre></li>
+<li><p>如果路由规则是简化配置，zuul.strip-prefix属性无效。<br> zuul:</p>
+<pre><code>routes:
+    user-service: /user/**
+strip-prefix: false  # 无效，不会转发前缀
+</code></pre><p> <a href="http://127.0.0.1:8090/user/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></p>
+</li>
+</ol>
+</li>
+<li><p>全局添加前缀：所有请求的前面都必须加上的前缀<br>zuul:</p>
+<pre><code>prefix: /api  #全局前缀
+routes:
+    user-service: /user/**  # /user 是局部前缀
+</code></pre><p><a href="http://127.0.0.1:8090/api/user/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/api/user/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></p>
+<ol>
+<li>局部 strip-prefix=false 只对局部前缀有效，不会转发全局前缀<br>zuul:<br> prefix: /api<br> routes:<pre><code>user-service:
+    path: /user/**
+    serviceId: user-service
+    strip-prefix: false
+</code></pre><a href="http://127.0.0.1:8090/api/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/api/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a><h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/过滤器.jpg" alt="Zuul"></p>
+<ol>
+<li>Zuul作为网关的一个重要功能，就是实现请求的鉴权(权限控制)，通过Zuul提供的过滤器实现；</li>
+<li>ZuulFilter 是过滤器的顶级父类，最重要的方法有4个<br> public abstract ZuulFilter implements IZuulFilter {<pre><code>abstract public String filterType();
+abstract public int filterOrder(); 
+boolean shouldFilter();  //来自IZuulFilter
+Object run() throws ZuulException;  //来自IZuulFilter
+......
+</code></pre> }<ol>
+<li>filterType()：过滤器的类型，4种类型<ol>
+<li>pre：请求在被路由之前执行，前置过滤器</li>
+<li>routing：在路由请求时执行</li>
+<li>post：在routing和error过滤器之后调用，后置过滤器</li>
+<li>error：处理请求时发生错误调用，异常处理器</li>
+</ol>
+</li>
+<li>filterOrder()：过滤器的执行顺序，数值越小，优先级越高</li>
+<li>shouldFilter()：是否过滤</li>
+<li>run()：过滤器执行的逻辑</li>
+</ol>
+</li>
+<li>过滤器的执行生命周期<br> [图片]<ol>
+<li>正常流程：请求到达 –&gt; pre Filter –&gt; routing Filter –&gt; 进行路由 –&gt; 请求到达真正的服务提供者 –&gt;<br>返回处理结果 –&gt; post Filter –&gt; 响应数据</li>
+<li>异常流程：<ol>
+<li>在整个过程中，pre/routing Filter出现异常 –&gt; error Filter 处理完毕后，将请求交给 post Filter –&gt; 响应数据</li>
+<li>如果 error Filter 出现异常，最终也会进入post Filter，然后响应数据；</li>
+<li>如果 post Filter 出现异常，会进入 error Filter，但与 pre/routing Filter 不同，请求不会再到达 post Filter了</li>
+</ol>
+</li>
+<li>前置过滤器的应用：权限控制，限流(限制流量，限制某个用户在一段时间内只能访问一次，限制最多只能有1000个人访问等等)</li>
+<li>后置处理器和异常处理器通常结合使用，做一些通用的异常处理；</li>
+<li>服务调用时长统计：pre 和 post Filter 结合使用。</li>
+</ol>
+</li>
+<li>Zuul内置了很多过滤器，也允许自定义过滤器，比如模拟登录的校验，如果请求中有 access-token 参数，则放行<ol>
+<li>在网关模块gateway中，自定义过滤器<br>@Component  –&gt;加入Spring IoC容器<br>public class LoginFilter extends ZuulFilter {<br> public String filterType() {<pre><code>return FilterConstants.PRE_TYPE;  // 前置过滤器
+</code></pre> }<br> public int filterOrder() {<pre><code>return FilterConstants.PRE_DECORATION_FILTER_ORDER -  1;  //等待把请求参数处理完，再做拦截
+</code></pre> }<br> public boolean shouldFilter() {<pre><code>return true;
+</code></pre> }<br> public Object run() throws ZuulException {<pre><code>//1. 在内置的过滤器中，查看如何获取Request对象
+//1-1. 获取请求上下文，生命周期：一次请求，即从请求到达Zuul，到最终响应数据；只限Zuul中使用，不会带到微服务中
+RequestContext ctx = RequestContext.getCurrentContext();
+//1-2. 获取当前的请求对象
+HttpServletRequest request = ctx.getRequest();
+//2. 获取请求参数
+String token = request.getParameter(&quot;access-token&quot;);
+//3. 判断是否存在 access-token 
+if(StringUtils.isBlank(token)) {  ---&gt;引入Apache的工具类依赖：commons-lang3
+    //trim() 内部会多次截取字符串，效率非常差，所以StringUtils.isBlank()内部没用trim()
+    //不存在，则认为没有登录，拦截请求
+    ctx.setSendZuulResponse(false); //拦截
+    ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());  //设置响应状态码403
+}
+return null;
+</code></pre> }<br>}</li>
+<li>测试<br><a href="http://127.0.0.1:8090/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/9</a>  –&gt; 请求被拒绝，403<br><a href="http://127.0.0.1:8090/user/9?access-token=123" target="_blank" rel="noopener">http://127.0.0.1:8090/user/9?access-token=123</a> –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></li>
+</ol>
+</li>
+<li>负载均衡和服务熔断<ol>
+<li>Zuul默认集成了Ribbon负载均衡和Hystrix熔断机制，但所有的超时策略都是默认值，比如熔断超时时间为1s，很容易触发</li>
+<li>手动配置<br> hystrix:<pre><code>command:
+    default:
+        execution:
+            isolation:
+                thread:
+                    timeoutInMilliseconds: 6000  #6s超时
+</code></pre> ribbon:<pre><code>ConnectTimeout: 500  #默认1000
+ReadTimeout: 2000  #默认1000
+MaxAutoRetriesNextServer: 1  # 不同服务实例的重试次数，一个服务多个实例，在不同服务实例之间重试，默认为1
+MaxAutoRetries: 0  # 对当前服务实例的重试次数，默认为0，不重试
+</code></pre></li>
+<li>内部在计算时，Ribbon的超时总时长 不能大于 hystrix熔断的超时时长，否则Ribbon还没有超时，服务就已经熔断了！</li>
+<li>Ribbon超时总时长的计算规则：(ConnectTimeout+ReadTimeout)<em>(MaxAutoRetries+1)</em>(MaxAutoRetriesNextServer+1)</li>
+<li>所以默认情况下，Ribbon超时总时长=(1000+1000)<em>(0+1)</em>(1+1)=4000ms</li>
+</ol>
+</li>
+<li>Zuul的高可用性<ol>
+<li>Zuul也是一个服务，那么就可以启用多个Zuul服务，自动注册到Eureka，形成集群；</li>
+<li>如果是服务内部访问，访问Zuul，自动负载均衡，没有问题；但是，Zuul更多是外部访问，如PC、移动端，它们并不知道有这么多网关地址，无法通过Eureka进行负载均衡；</li>
+<li>此时就会使用其他的服务网关，来对Zuul进行代理，比如Nginx<br>用户请求 –&gt; Nginx –&gt; Zuul-1、Zuul-2 … –&gt; Service-1、Service-2 …</li>
+</ol>
+</li>
+<li>Eureka、Ribbon、Hystrix、Feign、Zuul 这些只是SpringCloud的一小部分，还有更多组件</li>
+<li>spring-cloud-config：统一配置中心，让微服务自动从Git上拉取最新的配置，并缓存，不再手动更改配置文件；<br> 使用Git的Webhook钩子，还可以实现主动通知配置中心，告知配置发生了变化，那么配置中心会通过消息总线、通知所有的微服务、去更新配置；</li>
+<li>spring-cloud-bus：消息总线，底层是消息队列，RabbitMQ或kafuka</li>
+<li>spring-cloud-stream：消息通信</li>
+<li>spring-cloud-hystrix-dashboard：容错统计，形成图形化界面</li>
+<li>spring-cloud-sleuth：链路追踪，结合Zipkin，便于追踪服务的错误</li>
+</ol>
+<hr>
 
           
         
@@ -2880,7 +2769,7 @@ auto-aof-rewrite-min-size 64mb
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/12/RabbitMQ/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -2899,7 +2788,7 @@ auto-aof-rewrite-min-size 64mb
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/04/12/RabbitMQ/" itemprop="url">RabbitMQ</a></h1>
+                <a class="post-title-link" href="/2016/05/03/SpringCloud组件2/" itemprop="url">SpringCloud组件2</a></h1>
         
 
         <div class="post-meta">
@@ -2911,8 +2800,8 @@ auto-aof-rewrite-min-size 64mb
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-12T00:00:00+08:00">
-                2016-04-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-03T00:00:00+08:00">
+                2016-05-03
               </time>
             
 
@@ -2973,309 +2862,233 @@ auto-aof-rewrite-min-size 64mb
       
         
           
-            <h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><pre><code>1. 消息队列是典型的 生产者、消费者 模型，简称MQ;
-2. MQ是消息通信的模型，并发的具体实现，目前实现MQ的两种主流方式是：AMQP、JMS
-3. AMQP：高级消息队列协议，一个进程间传递异步消息的应用层协议，为面向消息的中间件设计；
-4. JMS：由Sun公司早期提出的消息标准，为Java应用提供统一的消息操作，与JDBC担任类似的角色；
-5. AMQP与JMS
-    1. JMS定义了统一的接口，规范消息操作；AMQP是通过协议来统一数据交互的格式；
-    2. JMS限定了必须使用Java语言；AMQP只是一种协议，实现方式是跨语言的；
-    3. JMS规定了两种消息模型，而AMQP的消息模型更加丰富。
-6. 常见的MQ
-    1. ActiveMQ：Apache，基于JMS；
-    2. RabbitMQ：采用Erlang语言开发，基于AMQP，可靠性、稳定性好；
-    3. RocketMQ：阿里巴巴，基于JMS，目前交给Apache；
-    4. Kafka：分布式消息系统，高吞吐量。
-</code></pre><h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><pre><code>1. RabbitMQ最初起源于金融系统，用于在分布式系统中存储、转发消息；
-    1. 可靠性：RabbitMQ使用诸如持久化、传输确认、发布确认等机制来保证可靠性；
-    2. 灵活的路由：在消息进入队列之前，通过 Exchange 来路由消息；
-    3. 消息集群：多个 RabbitMQ 服务器可以组成一个集群，形成一个逻辑 Broker；
-    4. 高可用：队列可以在集群中的机器上进行镜像，使得在部分节点出问题的情况下仍然可用；
-    5. 多种协议：RabbitMQ支持多种消息队列协议，比如 STOMP、MQTT...
-    6. 多语言客户端：RabbitMQ几乎支持所有常用语言，比如Java、.NET、Ruby...
-    7. 管理界面：RabbitMQ提供了一个易用的用户界面，可以监控和管理消息Broker；
-    8. 追踪机制：如果消息异常，RabbitMQ提供了消息跟踪机制，从而查找出原因；
-    9. 插件机制：RabbitMQ提供了许多插件，可以从多方面进行扩展，也可以自定义插件。
-2. 安装RabbitMQ，启动服务，配置环境和用户、权限...
-3. Web管理平台的默认端口号是15672，使用配置的用户去登录管理平台：http://localhost:15672
-    1. 创建虚拟主机
-        Admin --&gt; Virtual Hosts --&gt; Add virtual host --&gt; 输入Name，如/test
-        Admin --&gt; Users --&gt; 选择一个用户 --&gt; Permissions
-    2. Current permissions：当前拥有的虚拟主机；
-    3. Set permission：为用户添加虚拟主机。
-4. RabbitMQ是一个消息的代理者(Message Broker)，负责接收消息并传递消息，传递二进制数据。
-</code></pre><h2 id="消息模型"><a href="#消息模型" class="headerlink" title="消息模型"></a>消息模型</h2><pre><code>1. RabbitMQ提供了6种消息模型，但第6种其实属于RPC(远程服务调用)，并不算是MQ；
-    https://www.rabbitmq.com/getstarted.html
-2. 搭建环境(两种方式)
-    1. 创建SpringBoot项目进行测试，引入启动器：spring-boot-starter-amqp
-    2. 创建普通的Maven Java项目，引入依赖：spring-rabbit、slf4j-nop
-</code></pre><h3 id="模型一：Hello-World"><a href="#模型一：Hello-World" class="headerlink" title="模型一：Hello World"></a>模型一：Hello World</h3><pre><code>1. 模型：Producer --&gt; MQ --&gt; Consumer，单个生产者和单个消费者
-2. 创建连接的工具类
-    public class ConnectionUtil {
-        public static Connection getConnection() throws IOException, TimeoutException {
-            //定义连接工厂
-            ConnectionFactory factory = new ConnectionFactory();
-            //设置服务地址和端口
-            factory.setHost(&quot;192.168.103.30&quot;);
-            //Web管理端的默认端口号是15672，访问服务的默认端口号是5672
-            factory.setPort(5672);
-            //设置账号信息：虚拟主机及其对应的用户名、密码
-            factory.setVirtualHost(&quot;/techsel&quot;); //虚拟主机
-            factory.setUsername(&quot;java&quot;);  //用户名
-            factory.setPassword(&quot;123456&quot;);  //密码
-            //通过工厂获取连接
-            return factory.newConnection();
-        }
-    }
-3. 生产者
-    public class Send {
-        //队列名称
-        private static final String QUEUE_NAME = &quot;simple_queue&quot;;
+            <h2 id="Hystrix"><a href="#Hystrix" class="headerlink" title="Hystrix"></a>Hystrix</h2><ol>
+<li>Hystrix：Netflix公司的一款组件，是一种保护机制；</li>
+<li>Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败；</li>
+<li>雪崩问题：<ol>
+<li>微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路；</li>
+<li>一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应，那么Tomcat的这个线程也不会被释放，越来越多的用户请求到来时，随之越来越多的线程会阻塞，服务器支持的线程和并发数量是有限的，最后会导致服务器资源耗尽，从而会导致其他服务都不可用，这就是雪崩效应；</li>
+<li>比如一个汽车生产线，如果某个零件因为种种原因无法供应，那么整台车就无法装配，陷入等待零件状态；如果很多车型都需要这个零件，那么整个车间都会陷入等待状态，导致所有生产都陷入瘫痪；</li>
+<li>Hystrix解决雪崩问题的手段主要有两种方式：线程隔离、服务熔断</li>
+</ol>
+</li>
+<li>线程隔离，服务降级<ol>
+<li>线程隔离：Hystrix为每个依赖服务调用分配一个小线程池，如果线程池已满，调用会被立即拒绝，默认不采用排队，加速失败的判定时间；</li>
+<li>用户的请求不再直接访问服务，而是通过线程池中的空闲线程来访问，如果线程池已满或者请求超时，则会进行降级处理；</li>
+<li>服务降级：优先保证核心服务，而非核心服务不可用或弱可用；</li>
+<li>用户的请求故障时，不会被阻塞，更不会无限等待或者返回系统崩溃，至少可以看到一个执行结果，比如等待超过5s，则返回服务器繁忙的友好提示信息；</li>
+<li>服务降级虽然导致请求失败，但不会导致阻塞，而且最多会影响这个依赖服务对应的线程池中的资源，对其他服务没有影响；</li>
+<li>触发 Hystrix 服务降级的两种情况：线程池已满、请求超时</li>
+</ol>
+</li>
+<li><p>在服务消费方做降级处理：</p>
+<ol>
+<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-netflix-hystrix</artifactid><br> </dependency></li>
+<li><p>在启动类上注解 @EnableCircuitBreaker，启用Hystrix，注解 @EnableHystrix 也可以，但无法启用服务熔断<br> @EnableCircuitBreaker<br> @EnableDiscoveryClient<br> @SpringBootApplication<br> public class ConsumerApplication {</p>
+<pre><code>@Bean
+@LoadBalanced
+public RestTemplate getRestTemplate() {
+    return new RestTemplate();
+}
 
-        public static void main(String[] args) throws IOException, TimeoutException {
-            //创建连接，在Web管理平台：Connections 上会多一条连接信息
-            Connection conn = ConnectionUtil.getConnection();
-            //创建通道，在Web管理平台：Channels 上会多一条通道信息
-            Channel channel = conn.createChannel();
-            //声明队列: 设置队列名称, ...
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            //消息内容
-            String message = &quot;Hello RabbitMQ&quot;;
-            //向指定的队列中发送消息，在Web管理平台：Queues 上可以查看消息通道及其详细信息
-            channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes());
-            //关闭通道和连接
-            channel.close();
-            conn.close();
-        }
-    }
-4. 消费者
-    public class Recv {
-        //队列名称：与生产者声明的队列名称一致
-        private static final String QUEUE_NAME = &quot;simple_queue&quot;;
+public static void main(String[] args) {
+    SpringApplication.run(ConsumerApplication.class, args);
+}
+</code></pre><p> }</p>
+</li>
+<li>注解 @SpringCloudApplication 集成了 @EnableCircuitBreaker、@EnableDiscoveryClient、@SpringBootApplication<br> @SpringCloudApplication<br> public class ConsumerApplication {<pre><code>...
+</code></pre> }</li>
+<li><p>Web层，在方法上注解 @HystrixCommand 开启降级处理，fallbackMethod属性指定错误处理的方法名<br> @GetMapping(“{id}”)<br> @HystrixCommand(fallbackMethod = “findByIdFallback”)<br> public String findById(@PathVariable(“id”) Long id) {</p>
+<pre><code>String url = &quot;http://user-service/user/&quot; + id;
+String user = rest.getForObject(url, String.class);  //返回一个字符串，不再转为POJO对象
+return user;
+</code></pre><p> }</p>
+<p> public String findByIdFallback(Long id) {</p>
+<pre><code>return &quot;服务器繁忙！&quot;
+</code></pre><p> }</p>
+</li>
+<li>注意：熔断的的降级处理方法必须和正常请求的方法：参数列表和返回值保证一致；</li>
+<li>在服务提供方加延迟，测试降级处理<br> @Service<br> public class UserService {<pre><code>@Autowired
+private UserMapper mapper;
+public User findById(Long id) {
+    Thread.sleep(2000L);
+    return mapper.selectByPrimaryKey(id);
+}
+</code></pre> }</li>
+<li>启用降级处理时，默认超过1s获取不到响应结果，就会触发服务降级；</li>
+<li><p>@DefaultProperties：注解在Controller类上，配置默认Fallback<br> @RestController<br> @RequestMapping(“consumer”)<br> @DefaultProperties(defaultFallback = “defFallback”)<br> public class ConsumerController {</p>
+<pre><code>@Autowired
+private RestTemplate rest;
 
-        public static void main(String[] args) throws IOException, TimeoutException {
-            Connection conn = ConnectionUtil.getConnection();
-            Channel channel = conn.createChannel();
-            //声明队列
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            //定义队列的消费者
-            DefaultConsumer consumer = new DefaultConsumer(channel){
-                //消费的回调方法：消费者会一致阻塞，只要MQ中一有消息，就回调此方法，进行消费
-                public void handleDelivery(String consumerTag, Envelope envelope, 
-                    AMQP.BasicProperties properties, byte[] body) throws IOException {
-                    //消费消息: body
-                    String message = new String(body);
-                    System.out.println(&quot;消费者：&quot; + message);
-                }
-            };
-            //监听队列：绑定消息队列和消费者，参数2表示：是否自动进行消息确认(手动/自动ACK)
-            channel.basicConsume(QUEUE_NAME, true, consumer);
-        }
-    }
-5. 启动消费者，监听队列，等待消费消息；再启动生产者，生产消息；在Web管理平台上跟踪连接、通道、消息;
-</code></pre><h3 id="消费者的消息确认机制"><a href="#消费者的消息确认机制" class="headerlink" title="消费者的消息确认机制"></a>消费者的消息确认机制</h3><pre><code>1. 消息确认机制：Acknowlege，当消费者获取消息之后，会向RabbitMQ发送回执ACK，告知消息已经被接收;
-2. RabbitMQ收到回执的ACK后，就会立即删除消息;
-3. 回执ACK有两种情况：自动ACK、手动ACK
-    1. 自动ACK：消息一旦被接收，消费者自动发送ACK;
-        channel.basicConsume(QUEUE_NAME, true, consumer);
-    2. 手动ACK：消息接收后，不发送ACK，去手动调用;
-        channel.basicConsume(QUEUE_NAME, false, consumer);
-4. 在自动回执ACK时，回调方法 handleDelivery() 尚未开始执行，但消息已经从MQ中删除了，一旦回调方法中
-   发生了异常，消息就找不回来了，所以就需要 手动ACK 的方案，确保一些重要的消息不会丢失；
-5. 手动ACK：等待处理逻辑执行完成，再手动回执ACK，从而避免消息的丢失；
-    public void handleDelivery(...) {
-        String message = new String(body);
-        int i = 1/0;  //发生逻辑错误
-        //手动回执ACK
-        channel.basicAck(envelope.getDeliveryTag(), false);
-    }
-    1. 因为发生了逻辑错误，没有手动回执ACK，消息会回滚MQ中，然后再分发给其他消费者，保证消息不会被删除;
-    2. 但是，因为当前消费者没有ACK，在没有断开重连之前，MQ不会再把消息分发给它，所以如果没有其他消费者，
-    就可能造成消息堆积，从而影响MQ的速度.
-</code></pre><h3 id="模型二：Work-queues"><a href="#模型二：Work-queues" class="headerlink" title="模型二：Work queues"></a>模型二：Work queues</h3><pre><code>1. 如果消息处理比较耗时，生产消息的速度远远大于消费消息的速度，那么就可能造成消息堆积;
-2. 模型：Producer --&gt; MQ --&gt; Consumer1、Consumer2，让多个消费者绑定到一个队列上，共同消费队列的消息;
-3. 生产者发送消息
-    for (int i=0; i&lt;100; i++) {
-        String message = &quot;Hello RabbitMQ : &quot; + i;
-        channel.basicPublish(&quot;&quot;, QUEUE_NAME, null, message.getBytes());
-        Thread.sleep(i * 2);  //休眠一段时间，让消费者去消费消息
-    }
-4. 消费者消费消息：创建两个消费者，绑定同一个队列
-    1. 消费者性能相同，则消费能力相同
-        public void handleDelivery(...) {  ---&gt;消费者-1的回调方法
-            String message = new String(body);
-            System.out.println(&quot;消费者111：&quot; + message);
-            //使用手动ACK
-            channel.basicAck(envelope.getDeliveryTag(), false);
-        }
-        public void handleDelivery(...) {  ---&gt;消费者-2的回调方法
-            String message = new String(body);
-            System.out.println(&quot;消费者222：&quot; + message);
-            //使用手动ACK
-            channel.basicAck(envelope.getDeliveryTag(), false);
-        }
-    2. 消费者性能不同，消费者-1的机器配置较差
-        public void handleDelivery(...) {  ---&gt;消费者-2的回调方法
-            String message = new String(body);
-            Thread.sleep(500);  ---&gt; 模拟消费者-2的性能较差，处理消息速度慢
-            System.out.println(&quot;消费者222：&quot; + message);
-        }
-5. 对比结果可知：无论消费者的性能是否相同，它们处理消息的数量总是相同的；
-6. 也就是说，不管消费者是否已经消费完消息(发送回执ACK)，MQ总是平均分配消息给每个消费者；
-7. 让MQ不要平分消息给消费者，让性能好的消费者多消费，性能差的消费者少消费;
-    1. 在每个消息者中，设置 Channel 每次同时只能处理1条消息，在没有回执ACK时，不要再分配消息
-        channel.basicQos(1);
-</code></pre><h3 id="模型三：Publish-Subscribe"><a href="#模型三：Publish-Subscribe" class="headerlink" title="模型三：Publish/Subscribe"></a>模型三：Publish/Subscribe</h3><pre><code>1. 模型3、4、5其实是类似的，都是订阅模型，在生产者和MQ之间增加了一层交换器exchange;
-2. 生产者永远不会把消息直接发给MQ，实际上，生产者也不关心消息是否会被发送给MQ;
-3. 生产者只负责把消息发给交换器，由交换器去决定是把消息传递给所有MQ，还是特定的MQ，亦或者是丢弃消息;
-4. 交换器处理消息的方式，取决于不同的交换类型：direct、topic、headers、fanout，其中headers不常用;
-5. 模型三称为订阅/发布模型，也称为广播，属于交换类型fanout
-    Producer --&gt; X --&gt; MQ1-&gt;Consumer1、MQ2-&gt;Consumer2
-6. 生产者
-    1. 不再直接声明队列，而是声明交换器，并指定交换类型为fanout
-    private static final String EXCHANGE_NAME = &quot;fanout_exchange&quot;;
-    //声明交换器
-    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.FANOUT);
-    2. 发布消息到交换器
-    String message = &quot;Hello RabbitMQ&quot;;
-    channel.basicPublish(EXCHANGE_NAME, &quot;&quot;, null, message.getBytes());
-    3. 在Web管理平台的 Exchanges 上，可以查看创建的交换器.
-7. 消费者
-    private static final String EXCHANGE_NAME = &quot;fanout_exchange&quot;;
-    1. 消费者1、2 使用不同的队列：
-        QUEUE_NAME = &quot;fanout_queue_1&quot;;
-        QUEUE_NAME = &quot;fanout_queue_2&quot;;
-    2. 声明队列之后，把队列绑定到交换器上，其实就是订阅消息
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;&quot;);
-8. 启动消费者1、2，再启动生产者，两个消费者都会收到消息.
-</code></pre><h3 id="模型四：Routing"><a href="#模型四：Routing" class="headerlink" title="模型四：Routing"></a>模型四：Routing</h3><pre><code>1. 设置交换类型为direct，与模型三不同的是：它可以订阅不同的消息类型(Routingkey)，实现定向发布;
-2. 生产者
-    1. 声明交换器
-    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.DIRECT);
-    2. 在发送消息时，指定消息的类型
-    channel.basicPublish(EXCHANGE_NAME, &quot;delete&quot;, null, message.getBytes());
-3. 消费者：在绑定队列到交换器时，指定监听的消息类型；
-    1. 消费者-1：监听2种消息类型
-    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;insert&quot;);
-    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;delete&quot;);
-    2. 消费者-2：只关心1种消息类型
-    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;delete&quot;);
-4. 生产者发送消息类型delete时，消费者-1、2都会收到消息；发送消息类型insert时，只有消费者-1能收到.
-</code></pre><h3 id="模型五：Topics"><a href="#模型五：Topics" class="headerlink" title="模型五：Topics"></a>模型五：Topics</h3><pre><code>1. 设置交换类型为topic，与模型四不同的是，它可以使用通配符;
-2. 消息类型通常都是一个或多个单词组成，单词之间以 . 分割，如item.insert
-3. 通配符的类型和规则
-    1. #：匹配一个或多个词，如audit.# 可以匹配 audit.irs.corp、audit.del
-    2. *：只能匹配一个词，如audit.* 只能匹配 audit.del、audit.ins
-4. 生产者
-    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.TOPIC);
-    channel.basicPublish(EXCHANGE_NAME, &quot;intem.delete&quot;, null, message.getBytes());
-5. 消费者
-    channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;item.*&quot;);
-</code></pre><h3 id="消息丢失"><a href="#消息丢失" class="headerlink" title="消息丢失"></a>消息丢失</h3><pre><code>1. 手动回执ACK的方式并不能完全解决消息丢失的问题，比如MQ服务器宕机了;
-2. 虽然集群MQ全部宕机的几率很小，但宕机总会导致消息的丢失，这就需要消息的持久化;
-3. RabbitMQ默认不会持久化消息，重启RabbitMQ服务，会发现交换器、队列、消息统统丢失了;
-    1. 交换器的持久化：生产者声明交换器时，设置第三个参数为true
-    channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.TOPIC, true);
-    2. 队列的持久化：消费者声明队列时，设置第二个参数为true
-    channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-4. 消息持久化：生产者发送消息时，设置消息参数BasicProperties
-    1. BasicProperties的构造方法特别多，所以它提供了枚举类型MessageProperties，封装了常用设置;
-    2. 是否持久化的区别在于：BasicProperties构造方法上的参数deliveryMode，2表示启用持久化;
-    3. 默认枚举值BASIC，持久化的枚举值：PERSISTENT_TEXT_PLAIN(文本类型)、PERSISTENT_BASIC(二进制数据流)
-    //发送的是字符串，则可以使用文本类型
-    channel.basicPublish(EXCHANGE_NAME, &quot;item.delete&quot;, MessageProperties.PERSISTENT_TEXT_PLAIN,
-        message.getBytes());
-5. 生产者确认机制
-    1. 手动回执解决了消费者丢失消息，持久化解决了RabbitMQ丢失消息，但生产者在发送消息到MQ时，也可能发送失败;
-    2. 消费者确认机制：消费者收到消息，向MQ发送回执ACK;
-    3. 生产者确认机制：MQ收到消息，向生产者发送确认回执;
-    4. 在生产者中，开启生产者确认;
-        Channel channel = conn.createChannel();
-        channel.confirmSelect();
-    5. 通过生产者确认的相关API，处理消息回执;
-        channel.addConfirmListener(...);  //监听器
-        channel.waitForConfirms([long]);  //等待机制
-        channel.waitForConfirmsOrDie([long]);  //等待机制
-6. 解决消息丢失
-    1. 消费者确认机制(ACK)
-    2. 持久化
-    3. 可靠消息服务：在发送消息前，将消息持久化到数据库，并记录状态
-    4. 生产者确认机制
-7. 消息发送失败的重试问题：可能导致消息的重复性
-    1. 因为网络等原因，导致消息发送时间特别长，但仍发送成功，由于发送时间超时，生产者又发送了一次，导致消息重复;
-    2. 在金融方面，消息的重复性可能导致灾难性问题，此时就需要保证消息处理方的幂等性;
-    3. 幂等性：同一个接口被重复执行时，其结果应该是一致的;
-    4. 有些接口天生就是幂等的，如查询接口；有些接口就不是幂等的，如新增、删除、修改;
-    5. 要保证幂等性，就应该在接口中加入一些特殊的标识，以判断重复性操作，通常是在一定时间内去判断.
-</code></pre><h2 id="SpringBoot整合RabbitMQ"><a href="#SpringBoot整合RabbitMQ" class="headerlink" title="SpringBoot整合RabbitMQ"></a>SpringBoot整合RabbitMQ</h2><pre><code>1. 创建SpringBoot的项目，引入AMQP的启动器：spring-boot-starter-amqp
-2. spring-rabbit 与 spring-amqp
-    1. spring-amqp 是对AMQP协议的抽象实现;
-    2. spring-rabbit 是对协议的具体实现，也是目前的唯一实现，底层使用的就是RabbitMQ.
-3. 在配置文件 application.yml 中，配置RabbitMQ的连接信息
-    spring:
-        rabbitmq:
-            host: 192.168.103.30
-            username: java
-            password: 123456
-            virtual-host: /techsel
-4. Spring也为AMQP提供了Template：AmqpTemplate
-    1. 向交换器发送消息
-        @RunWith(SpringRunner.class)
-        @SpringBootTest
-        public class StartApplicationTests {
+@GetMapping(&quot;{id}&quot;)
+@HystrixCommand  -----&gt;启用降级
+public String findById(@PathVariable(&quot;id&quot;) Long id) {
+    String url = &quot;http://user-service/user/&quot; + id;
+    String user = rest.getForObject(url, String.class);  //返回一个字符串，不再转为POJO对象
+    return user;
+}
+
+public String defFallback() {
+    return &quot;服务器繁忙！&quot;
+}
+</code></pre><p> }</p>
+<ol>
+<li>默认Fallback指向的方法不能有参数列表；</li>
+</ol>
+</li>
+<li>不同的业务，超时时间应该是不同的，@HystrixCommand的属性commandProperties<br> @GetMapping(“{id}”)<br> @HystrixCommand(commandProperties = {<pre><code>@HystrixPropery(name=&quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value=&quot;2000&quot;) #2s超时
+</code></pre> })<br> public String findById(@PathVariable(“id”) Long id) {<pre><code>...
+</code></pre> }<ol>
+<li>全局配置默认超时时间：在消费者的配置文件中<br>hystrix:<br> command:<pre><code>default:
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000  #3s超时
+</code></pre></li>
+<li>@HystrixCommand中不要再配置的超时属性；</li>
+<li>还可以只针对某个调用的服务，甚至某个方法去配置超时时间<br>hystrix:<br> command:<pre><code>default:
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000  #3s超时
+user-service:  #调用该服务时，启用降级处理的超时时间
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000
+findById:  #调用该方法时，启用降级处理的超时时间
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000
+</code></pre></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>服务熔断</li>
+</ol>
+<p><img src="//hellomyshadow.github.io/2016/05/03/SpringCloud组件2/熔断器模型.jpg" alt="Zuul"></p>
+<pre><code>1. 熔断器又叫断路器，Circult Breaker，类似家用的电路熔断器(保险丝)，如果电路发生短路，会立刻熔断电路，避免发生灾难；
+2. 在分布式系统中，服务调用方可以自己进行判断某些服务反应慢或者存在大量超时的情况时，能够主动熔断，防止整个系统被拖垮；
+3. 不同于保险丝不会重连，Hystrix可以实现弹性容错，当情况好转后，可以自动重连；
+4. @EnableCircuitBreaker 同时会启用Hystrix熔断器；
+5. Hystrix的熔断机模型
+[模型]
+    1. 三种状态：Closed、Open、Half Open
+    2. Closed：熔断器关闭状态，所有请求都能正常访问；
+    3. Open：熔断器打开，所有请求被降级处理；默认情况下，如果请求次数超过20，且失败比例达到50%(阈值)，则打开熔断器；
+    4. Half Open：熔断器处于半开状态，Closed状态不是永久的，关闭后会进入休眠状态(默认5s)，称为休眠时间窗，随后熔断器会自动进入半开状态，放进一部分请求通过，测试该服务是否正常，如果请求仍然失败，则重新进入Open状态，直到放进的请求完全成功，才会进入Closed状态
+6. 测试
+    1. 服务提供者：取消的2s延迟
+        @Service
+        public class UserService {
             @Autowired
-            private AmqpTemplate amqp;
-
-            @Test
-            public void contextLoads() {
-                String msg = &quot;Hello SpringBoot&quot;;
-                amqp.convertAndSend(&quot;boot_exchange&quot;, &quot;item.insert&quot;, msg);
+            private UserMapper mapper;
+            public User findById(Long id) {
+                return mapper.selectByPrimaryKey(id);
             }
         }
-    2. 向MQ中直接发送消息
-        amqp.convertAndSend(&quot;boot_queue&quot;, msg);
-    3. 底层借助JDK自动对消息进行序列化和反序列化.
-5. 从MQ中消费消息
-    @Component
-    public class Listener {
-        @RabbitListener(queues = &quot;boot_queue&quot;)
-        public void listen(String msg) {
-            System.out.println(&quot;消费者：&quot; + msg);
+    2. 在服务消费者中，通过抛出异常的方式，手动控制熔断器断开，并且配置熔断器的参数
+    @GetMapping(&quot;{id}&quot;)
+    @HystrixCommand(commandProperties = {
+        @HystrixProperty(name=&quot;circuitBreaker.requestVolumeThreshold&quot;, value=&quot;10&quot;),  #10次请求，默认20
+        @HystrixProperty(name=&quot;circuitBreaker.errorThresholdPercentage&quot;, value=&quot;60&quot;), #失败比率60%，默认50
+        @HystrixProperty(name=&quot;circuitBreaker.sleepWindowInMilliseconds&quot;, value=&quot;10000&quot;),  #休眠时间10s，默认5s
+    })  --&gt; 对同一个服务发起10次请求，超过6次都是失败的，则开启熔断器，休眠10s后，进入半开状态，放进一部分请求进行测试
+    public String findById(@PathVariable(&quot;id&quot;) Long id) {
+        if(id%2 == 0) {
+            throw new RuntimeException(&quot;&quot;); //抛出异常会直接触发熔断
         }
+        String url = &quot;http://user-service/user/&quot; + id;
+        String user = rest.getForObject(url, String.class);
+        return user;
     }
-    1. 一旦监听器中发生异常，消息默认回滚到MQ中;
-    2. 对于不希望消息回滚的操作，如发送验证码短信，则使用try-catch捕获异常.
-6. 如果监听的队列不存在，就会报错，那么就应该自动创建不存在的队列和交换器，并把队列绑定到交换器;
-    @RabbitListener(bindings = @QueueBinding(
-        value = @Queue(value = &quot;spring_queue&quot;, durable = &quot;true&quot;), --&gt;声明队列，并持久化
-        exchange = @Exchange(
-            value = &quot;spring_exchange&quot;,
-            ignoreDeclarationExceptions = &quot;true&quot;, --&gt;忽略声明的错误
-            type = ExchangeTypes.TOPIC), --&gt;声明交换器，默认就是持久化
-        key = {&quot;#.#&quot;}))  --&gt;绑定队列到交换器，&quot;#.#&quot;表示监听一切消息
-    public void listen(String msg) {
-        System.out.println(&quot;消费者：&quot; + msg);
-    }
-7. 在实际开发中，可能还会配置更多参数
-    spring:
-        rabbitmq:
-            host: 192.168.103.30
-            username: java
-            password: 123456
-            virtual-host: /techsel
-            template:  # 设置AmqpTemplate
-                retry: # 发送失败的重试机制
-                    enabled: true  # 开启
-                    initial-interval: 10000ms  # 重试周期10s(第一次等待10s后再重新发送)
-                    max-interval: 30000ms  # 最大重试周期，超过30s，则不再重试
-                    multiplier: 2  # 每次重试的基数
-                exchange: ly.item.change # 设置默认交换机
-            publisher-confirms: true  #开启生产者确认机制
-    1. 第一次重试等待10s，第二次重试等待2*10s，第三次等待2*2*10s，已经超过了最大重试周期30s，则不再重试;
-    2. 在发送消息时，如果不指定交换机，则使用默认交换机ly.item.change，而不是队列
-        amqp.convertAndSend(&quot;item.insert&quot;, msg); //item.insert是消息类型，而不再是队列名称
-</code></pre><hr>
+    3. 测试：
+        http://localhost:8080/consumer/1  --&gt;正常返回
+        http://localhost:8080/consumer/2 --&gt; 抛出异常，服务降级处理，返回&quot;服务器繁忙！&quot;
+        快速访问 http://localhost:8080/consumer/2 超过10次，然后再立即访问 http://localhost:8080/consumer/1
+        服务也会被降级处理，返回 &quot;服务器繁忙！&quot;，10s后又可以正常获取数据
+</code></pre><h3 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h3><ol>
+<li>Feign：简化服务调用，可以把Rest的请求进行隐藏，伪装成类似SpringMVC的Controller，无需再拼接URL、参数等等；<pre><code>String url = &quot;http://user-service/user/&quot; + id;
+String user = rest.getForObject(url, String.class);
+</code></pre></li>
+<li><p>服务消费者中：</p>
+<ol>
+<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-openfeign</artifactid><br> </dependency></li>
+<li>Feign内部已经依赖了Ribbon和Hystrix，所以在 pom.xml 不用手动引入Ribbon依赖，但Hystrix依赖最好还是要引入；</li>
+<li>在启动器类上注解 @EnableFeignClients，启用Feign，并去除RestTemplate的注册<br> @EnableFeignClients<br> @SpringCloudApplication<br> public class ConsumerApplication {<pre><code>public static void main(String[] args) {
+    SpringApplication.run(ConsumerApplication.class, args);
+}
+</code></pre> }</li>
+<li>Feign客户端接口<br> @FeignClient(“user-service”)<br> public interface UserClient {<pre><code>@GetMapping(&quot;user/{id}&quot;)  --&gt;请求资源路径
+User findById(@PathVariable(&quot;id&quot;) Long id);
+</code></pre> }<ol>
+<li>@FeignClient：声明Feign客户端，指定服务ID，再交给Ribbon实现负载均衡；</li>
+<li>内部完全使用 SpringMVC的注解，Feign会根据注解生成URL；</li>
+<li>Feign会通过动态代理，为Feign客户端接口生成实现类，类似Mybatis的mapper</li>
+</ol>
+</li>
+<li><p>使用Feign的客户端发起请求<br> @RestController<br> @RequestMapping(“consumer”)<br> public class ConsumerController {</p>
+<pre><code>@Autowired
+private UserClient client;
+
+@GetMapping(&quot;{id}&quot;)
+public User findById(@PathVariable(&quot;id&quot;) Long id) {
+    User user = client.findById(id);
+    return user;
+}
+</code></pre><p> }</p>
+</li>
+</ol>
+</li>
+<li>Feign内部集成了Ribbon依赖和自动配置，配置Ribbon的超时时间<br> ribbon:<pre><code>ConnectTimeout: 500  #连接超时时间为500ms，超过500ms没有连接上服务，则抛出异常
+ReadTimeout: 2000  #读取数据的超时时间2s，超过2s还没有获取到响应，则抛出异常
+</code></pre></li>
+<li>Feign集成的Hystrix使用方式<ol>
+<li>默认是关闭的，在配置文件中开启<br>feign:<br> hystrix:<pre><code>enabled: true  #开启Feign的熔断功能
+</code></pre></li>
+<li>在注解 @FeignClient 中配置属性 falback，属性值是一个类.class，且这个类要实现注解的接口，用于处理服务降级<br> @FeignClient(value = “user-service”, fallback = UserClientFallback.class)<br> public interface UserClient {<pre><code>@GetMapping(&quot;user/{id}&quot;)  --&gt;请求资源路径
+User findById(@PathVariable(&quot;id&quot;) Long id);
+</code></pre> }<br> @Component  –&gt;注入到Spring中<br> public class UserClientFallback implements UserClient {<pre><code>public User findById(Long id) {  //服务降级的处理
+    User u = new User();
+    u.setId(id);
+    u.setName(&quot;未知用户！&quot;);
+    return u;  //响应数据
+}
+</code></pre> }</li>
+<li>关闭 user-service 服务，访问服务消费者：<a href="http://localhost:8080/consumer/1" target="_blank" rel="noopener">http://localhost:8080/consumer/1</a></li>
+</ol>
+</li>
+<li>请求压缩<ol>
+<li>Feign支持对请求和响应进行GZIP压缩，以减少通信过程中的性能损耗；</li>
+<li>开启压缩<br>feign:<br> compression:<pre><code>request:
+    enabled: true  #开启请求压缩
+    mime-types: text/html,application/xml,application/json  #设置压缩的数据类型
+    min-request-size: 2048  # 触发压缩的大小下限
+response:
+    enabled: true  #开启响应压缩
+</code></pre></li>
+</ol>
+</li>
+<li>日志级别<ol>
+<li>通过 logging.level.xx=debug 来设置日志级别，但是它对Feign客户端没有效果，因为 @FeignClient 注解的客户端在动态代理时，都会生成一个新的 Feign.Logger 实例，需要额外指定这个日志级别</li>
+<li>设置 cn.cloud 包下的日志级别都是 debug<br> logging:<pre><code>level:
+    cn.cloud: debug
+</code></pre></li>
+<li>使用配置类定义日志级别<br> @Configuration<br> public class FeignConf {<pre><code>@Bean
+Logger.Level feignLoggerLevel() {
+    return Logger.Level.FULL;  //设置日志级别为FULL，另外还有NONE、BASIC、HEADERS...
+}
+</code></pre> }</li>
+<li>NONE：不记录任何日志信息，默认值；</li>
+<li>BASIC：仅记录请求的方法、URL以及响应状态码和执行时间；</li>
+<li>HEADERS：在BASIC的基础上，额外记录了请求和响应的头信息；</li>
+<li>在Feign客户端的注解上，指定配置类<br>@FeignClient(value = “user-service”, fallback = UserClientFallback.class, configuration = FeignConf.class)<br>public interface UserClient {<br> @GetMapping(“user/{id}”)  –&gt;请求资源路径<br> User findById(@PathVariable(“id”) Long id);<br>}</li>
+</ol>
+</li>
+</ol>
+<hr>
 
           
         
@@ -3324,7 +3137,7 @@ auto-aof-rewrite-min-size 64mb
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/03/SpringBoot整合/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -3343,7 +3156,7 @@ auto-aof-rewrite-min-size 64mb
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/04/03/SpringBoot整合/" itemprop="url">SpringBoot整合</a></h1>
+                <a class="post-title-link" href="/2016/05/02/SpringCloud组件1/" itemprop="url">SpringCloud组件1</a></h1>
         
 
         <div class="post-meta">
@@ -3355,8 +3168,8 @@ auto-aof-rewrite-min-size 64mb
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-03T00:00:00+08:00">
-                2016-04-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-02T00:00:00+08:00">
+                2016-05-02
               </time>
             
 
@@ -3417,252 +3230,261 @@ auto-aof-rewrite-min-size 64mb
       
         
           
-            <h2 id="整合MyBatis"><a href="#整合MyBatis" class="headerlink" title="整合MyBatis"></a>整合MyBatis</h2><pre><code>1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;
+            <h2 id="Eureka"><a href="#Eureka" class="headerlink" title="Eureka"></a>Eureka</h2><pre><code>1. Eureka注册中心：服务的管理
+    1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，
+    由Eureka把查找符合的服务提供者;
+    2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;
+    3. 这样就是实现了服务的自动注册、发现、状态监控;
+2. Eureka的基本架构
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg" alt="Eureka"></p>
+<pre><code>    1. Eureka既是服务注册中心，也是一个独立的服务，还可以是一个集群，对外暴露自己的地址;
+    2. 服务提供者：启动后向Eureka注册自己的信息，包括地址、提供什么服务;
+    3. 服务消费者：向Eureka订阅服务，Eureka会将对应服务的地址列表发送给消费者，并定期更新;
+    4. 心跳：服务提供者定期通过HTTP向Eureka刷新自己的状态;
+3. Eureka架构的三个核心角色
+    1. 服务注册中心：Eureka的服务端应用，提供服务注册和发现功能;
+    2. 服务提供者：提供服务的应用，可以是SpringBoot应用，也可以是其他任意技术实现，对外提供Rest风格的服务;
+    3. 服务消费者：消费应用从注册中心获取服务列表，从而得知每个服务提供者的信息，知道去哪儿调用服务;
+4. 创建子工程eurekaserver，作为Eureka服务注册中心
     &lt;dependency&gt;
-        &lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;
-        &lt;version&gt;2.0.1&lt;/version&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
     &lt;/dependency&gt;
-2. MySQL的连接驱动
-    &lt;dependency&gt;
-        &lt;groupId&gt;mysql&lt;/groupId&gt;
-        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-        &lt;version&gt;8.0.16&lt;/version&gt;
-    &lt;/dependency&gt;
-3. 创建配置文件 resources/application.properties，配置数据库连接信息(覆盖默认配置)
-    spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
-    spring.datasource.url=jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-    spring.datasource.username=root
-    spring.datasource.password=123456
-4. 实体类(POJO)：cn.boot.pojo.User
-    public class User {
-        private Integer id;  //尽量使用包装类型
-        private String username;
-        private String password;
-        ... //getter、setter
-    }
-5. Dao层：cn.boot.mapper.IUserMapper，Mybatis的两个注解 @Mapper、@MapperScan
-    @Mapper
-    @Repository
-    public interface IUserMapper {
-        List&lt;User&gt; findAll();
-    }
-    1. @Mapper：修饰在Dao层接口上，为其生成实现类;
-    2. @MapperScan：修饰在引导类上，指定Mapper接口所在的包，为包下的所有接口生成实现类;
+    1. application.yml
+        server:
+            port: 8761  #官方默认的Eureka端口号
+    2. 创建启动器，并注解 @EnableEurekaServer 启用Eureka
+        @EnableEurekaServer
         @SpringBootApplication
-        @MapperScan(basePackages={&quot;cn.boot.mapper&quot;})
-        public class BootdemoApplication {
-             ...
+        public class EurekaServer {
+            public static void main(String[] args) {
+                SpringApplication.run(EurekaServer.class, args);
+            }
         }
-    3. 在使用 @Autowired 注入Dao时，IDE会报错，但能运行，在Dao层接口上注解 @Repository 可以消除错误.
-6. 建立POJO与Dao的映射关系
-    1. 映射配置文件的方式：resources/mapper/IUserMapper.xml
-        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-        &lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;
-                &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
-        &lt;mapper namespace=&quot;cn.boot.mapper.IUserMapper&quot;&gt;
-            &lt;select id=&quot;findAll&quot; resultType=&quot;user&quot;&gt;
-                select * from user
-            &lt;/select&gt;
-        &lt;/mapper&gt;
-    2. 注解的方式
-        @Mapper
-        public interface IUserMapper {
-            @Select(&quot;select * from user&quot;)
-            List&lt;User&gt; findAll();
-        }
-7. 在 application.properties 中配置Mybatis的信息
-    # 开启驼峰扫描
-    mybatis.configuration.map-underscore-to-camel-case: true
-    # 配置POJO别名的扫描包
-    mybatis.type-aliases-package=cn.boot.pojo
-    #加载Mybatis的映射文件(如果使用映射配置文件的方式)
-    mybatis.mapper-locations=classpath:mapper/*Mapper.xml
-8. 在Controller中，使用 @Autowired 注入Dao(Mapper)对象
-    @Controller
-    public class QuickController {
-        @Autowired
-        private IUserMapper userMapper;
-
-        @RequestMapping(&quot;/test&quot;)
-        @ResponseBody
-        public String test() {
-            List&lt;User&gt; users = userMapper.findAll();
-            return &quot;Hello SpringBoot&quot;;
-        }
-    }
-</code></pre><h2 id="集成Spring-Data-JPA"><a href="#集成Spring-Data-JPA" class="headerlink" title="集成Spring Data JPA"></a>集成Spring Data JPA</h2><pre><code>1. 引入起步依赖：spring-boot-starter-data-jpa
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. 引入MySQL连接驱动：
-    &lt;dependency&gt;
-        &lt;groupId&gt;mysql&lt;/groupId&gt;
-        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-        &lt;version&gt;8.0.16&lt;/version&gt;
-    &lt;/dependency&gt;
-3. application.properties
-    # MySQL连接信息
-    spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
-    spring.datasource.url=jdbc:mysql:...
-    spring.datasource.username=root
-    spring.datasource.password=123456
-    # JPA的配置信息
-    spring.jpa.database=MySQL
-    spring.jpa.show-sql=true
-    spring.jpa.generate-ddl=true
-    spring.jpa.hibernate.ddl-auto=update
-    spring.jpa.hibernate.naming_strategy=org.hibernate.cfg.ImprovedNamingStrategy
-4. 创建POJO
-    @Entity  --&gt;javax.persistence.Entity
-    public class User {
-        @Id
-        @GeneratedValue(strategy=GenerationType.IDENTITY)
-        private Long id;  //使用包装类型
-        private String username;
-        private String password;
-        ... //getter、setter
-    }
-5. Dao层接口：cn.boot.repository.UserRepository
-    public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
-        List&lt;User&gt; findAll();
-    }
-6. 使用junit测试：测试失败，等学了JPA再说吧
-    @RunWith(SpringRunner.class)
-    @SpringBootTest(classes=引导类.class)
-    public class TestIbatis {
-        @Autowired
-        private UserRepository userRepository;  //注入Repository对象
-
-        @Test
-        public void test() {
-            List&lt;User&gt; users = userRepository.findAll();
-        }
-    }
-7. JDK9环境可能报异常：JAXBException，是因为缺少依赖;
-    &lt;dependency&gt;
-        &lt;groupId&gt;javax.xml.bind&lt;/groupId&gt;
-        &lt;artifactId&gt;jaxb-api&lt;/artifactId&gt;
-        &lt;version&gt;2.3.1&lt;/version&gt;
-    &lt;/dependency&gt;
-</code></pre><h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><pre><code>1. Redis官方推荐的Java客户端有很多，常用的有Jedis、Redisson...
-2. 其中，Redisson基于Redis实现了很多常用的结构，甚至还有分布式锁和同步器;
-3. Spring对Redis做了集成，SpringDataRedis，最初是基于Jedis，Spring5.0开始转向响应式编程，
-   所以 SpringDataRedis 重新采用一套响应式编程实现，性能比Jedis更高;
-4. SpringDataRedis属于Spring Data的一部分，也为Redis提供了一个Template对象：RedisTemplate
-</code></pre><h3 id="整合Redis"><a href="#整合Redis" class="headerlink" title="整合Redis"></a>整合Redis</h3><pre><code>1. Redis的启动器：spring-boot-starter-data-redis
-2. 在 application.yml 中，配置Redis的连接信息
+5. SpringCloud的Eureka依赖中，已经实现了服务的发现、注册、状态监控等功能;
+6. 启动服务，访问注册中心的管理平台：http://localhost:8761/
+</code></pre><h3 id="报错问题"><a href="#报错问题" class="headerlink" title="报错问题"></a>报错问题</h3><pre><code>1. 导致无法启动的版本问题：java.lang.NoSuchMethodError: com.google.gson.GsonBuilder.setLenient()
+2. 启动时可能不停地报 eureka-client的相关错误，但能访问注册中心
+    1. Eureka是一个注册中心，一定不能宕掉，所以会搭建Eureka服务集群，而集群中的Eureka之间也需要注册和通信;
+    2. 所以Eureka既是服务端，又是客户端，Eureka服务启动时会去尝试注册其他Eueka服务，但又没有其他Eureka服务可以注册，
+    所以才会报错;
+    3. 解决方式：让当前Eureka服务注册自己，在 application.yml 中配置注册地址;
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    4. 重新启动服务，会报错一次，因为自己还没有启动完成，所以会注册失败一次;
+3. Eureka服务注册中心作为客户端尝试注册自己时，也可能报错：
+    java.net.ConnectException: Connection refused: connect
+    TransportException: Cannot execute request on any known server
+    1. 解决方式：禁用它的客户端注册行为
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka
+                    register-with-eureka: false
+                    fetch-registry: false
+    2. 但是，禁用了注册行为之后，Eureka注册中心的服务列表上是空的，不会再列出当前Eureka服务了.
+4. 在服务启动时，可能使用的是当前主机的拨号IP地址，而不是回环地址，则在配置文件中明确指定使用IP地址;
+    eureka:
+        instance:
+            prefer-ip-address: true
+            ip-address: 127.0.0.1
+5. 在注册中心的服务列表上显示UNKNOWN，是因为没有配置服务名称，通常情况下会把服务名称作为服务的ID;
     spring:
-        redis:
-            host: 192.168.103.30
-            port: 6379  # 默认6379
-            database: 0  #配置Redis的数据库编号，默认就是0
-3. 在测试类中，注入 RedisTemplate 对象，操作Redis数据库
-    @Autowired
-    private RedisTemplate redis;
+        application:
+            name: eureka-server  # 配置Eureka服务名称
+</code></pre><h3 id="服务的注册"><a href="#服务的注册" class="headerlink" title="服务的注册"></a>服务的注册</h3><pre><code>1. 服务提供者
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    1. application.yml
+        spring:
+            application:
+                name: user-service  # 指定服务名称
+            datasource:
+                ......
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka  # 配置注册中心的地址
+    2. @EnableDiscoveryClient：注解在启动器上，启动自动注册服务，不要使用 @EnableEurekaClient;
+    3. SpringCloud集成的注册中心不仅仅只有Eureka，还有consul、Zookeeper... @EnableDiscoveryClient都能兼容;
+        @EnableDiscoveryClient
+        @SpringBootApplication
+        @MapperScan(&quot;cn.cloud.mapper&quot;)
+        public class UserApplication {
+            ...
+        }
+    4. SpringBoot版本和SpringCloud版本不兼容时，启动时可能报错：
+        The bean &apos;dataSource&apos;, defined in BeanDefinition defined ... and overriding is disabled.
+2. 服务消费者
+    1. 引入Eureka客户端的依赖、添加注解@EnableDiscoveryClient、修改配置文件;
+        spring:
+            application:
+                name: consumer-service
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka
+    2. web层：根据服务ID获取服务实例，调用服务功能
+        @RestController
+        @RequestMapping(&quot;consumer&quot;)
+        public class ConsumerController {
+            @Autowired
+            private RestTemplate rest;
 
-    @Test
-    public void contest() {
+            @Autowired
+            private DiscoveryClient client;
 
-    }
-4. redis.opsForValue()、opsForList()、opsForSet()、opsForZSet()、opsForHash() 对应Redis中的5种数据结构，
-   封装到不同的 Operations 对象中;
-    1. 字符串操作对象：ValueOperations ops = redis.opsForValue();
-    2. opsForXXX() 在获取Operations对象时做了单例优化，可以不创建Operations对象的变量;
-5. redis.boundXXXOps(key)：以绑定key的方式创建 Operations 对象，后续操作不需要再指定key
-</code></pre><h3 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h3><pre><code>1. RedisTemplate 其实是带有泛型的：RedisTemplate&lt;K, V&gt;，分别代表Key、Value的类型;
-2. 虽然Redis的key和value通常都是字符串类型：RedisTemplate&lt;String, String&gt;，但底层存储时仍是二进制字节;
-3. 泛型的 K、V 可以指定任意类型，RedisTemplate自动把这些类型转为字节进行存储，因为默认使用JDK的序列化工具;
-4. 在命令行上查看时，Redis不会转换JDK序列化的结果，可读性很差，所以通常把对象转为JSON字符串，然后存储到Redis中;
-5. 考虑到这种转换会很频繁，所以Spring提供了RedisTemplate的子类：SpringRedisTemplate，它的序列化工具不再是JDK，
-   而是string.getBytes()，在命令行上查看时，Redis能够自动再转为字符串;
-6. 当然RedisTemplate也允许自定义序列化工具。
-7. 短信验证码的发送
-    1. 把发送事件推送到RabbitMQ中，由消费者调用短信的API;
-    2. 短信发送成功后，使用Redis记录下当前手机号，key=sms:phone:手机号，value=当前时间戳，并设置过期时间;
-    3. 每次收到发送短信的消息时，先从Redis中获取手机号，如果没有或者时间已经超过了1分钟，则发送，否则不发送，
-    避免短信服务的限流;
-</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
-    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
-    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
-2. 通用Mapper的启动器：mapper-spring-boot-starter
-    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
-    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
-    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
-    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
+            @GetMapping(&quot;{id}&quot;)
+            public User findById(@PathVariable(&quot;id&quot;) Long id) {
+                //获取服务的实例并不是一个，是因为在集群环境中，一个服务可以启动多次
+                List&lt;ServiceInstance&gt; instances =  client.getInstances(&quot;user-service&quot;); 
+                ServiceInstance inst = instances.get(0);
+                String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
+                User user = rest.getForObject(url, User.class);
+                return user;
+            }
+        }
+3. 先启动Eureka服务，再启动其他两个服务;
+    1. 查看注册中心的服务列表，有三个服务：EUREKA-SERVER、USER-SERVICE、CONSUMER-SERVICE
+    2. 测试服务的消费方：http://localhost:8080/consumer/9
+</code></pre><h3 id="Eureka集群"><a href="#Eureka集群" class="headerlink" title="Eureka集群"></a>Eureka集群</h3><pre><code>1. 多个Eureka服务注册中心相互注册为服务，形成一个高可用的Eureka注册中心集群;
+2. 服务同步：当服务注册到Eureka集群中的某个节点时，它会把服务的信息同步给集群中的每个节点，从而实现数据同步;
+    1. 注册中心之间相互注册，比如A、B、C三个注册中间，A注册B、C，B注册A、C，C注册A、B
+        Eureka-1 &lt;===&gt; Eureka-2
+        Client ==&gt; Eureka-1， Client ==&gt; Eureka-2
+    2. 一个服务注册到任意一个注册中心上，都可以获取到完整的服务列表.
+3. 搭建注册中心的集群：采用一个Eureka服务、多个实例的方式;
+    1. 修改工程eureka-server，注册另一个端口号为8762的Eureka服务
+        server:
+            port: 8761
+        spring:
+            application:
+                name: eureka-server
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8762/eureka
+    2. 启动服务，读取配置文件，此时因为找不到端口号8762的Eureka服务，控制台会不停报错;
+    3. IDEA不允许同一个应用启动两次，但可以复制启动器：
+    Edit Configurations... --&gt; 选中 EurekaServer(eureka-server工程) --&gt; 复制 --&gt; 
+        Name: EurekaServer2，(Configuration，VM options: -Dserver.port=8762，固定使用端口号8762)
+    4. 修改工程eureka-server的配置文件：端口号8762，注册到端口号8761的Eureka服务上
+    server:
+        port: 8762 
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    5. 启动 EurekaServer2 服务(8762)，它就会注册到已经启动的 EurekaServer 服务(8761)上;
+    6. 同时，EurekaServer(8761)也会发现并注册到 EurekaServer2(8762)上，停止报错;
+4. EurekaServer(8761) 和 EurekaServer2(8762) 的 spring.application.name 是相同的，这就一个服务的多个实例;
+    1. 它们之间会共享服务列表信息，从而实现Eureka服务注册中心的集群;
+    2. 访问8761和8762的注册中心，它们的服务列表是相同的，且 eureka-server 服务显示有两个实例;
+5. 启动的问题：eureka-server 服务并没有两个实例，8761注册不了8762，而且8762上的服务实例不稳定，会变成1个;
+    1. 让Eureka在注册其他Eureka时，同时注册自己;
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
+    2. 但是，测试发现这种方式并不完全有效，需要继续探索...
+6. 客户端(服务提供者和消费者)的注册：
+    1. 服务要注册到Eureka集群上，必须要注册到每一个Eureka节点上;
+    2. 多个Eureka注册中心的地址以 , 隔开
     spring:
-        datasource:
-            ...... # driver-class-name、url、username、password
-    mybatis:
-        type-aliases-package: cn.boot.pojo
-3. Dao层接口需要继承 Mapper 接口，泛型为实体类
-    public interface UserMapper extends Mapper&lt;User&gt; {
-        //Mapper中已经提供了常用的CRUD方法
-    }
-    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
-    2. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了.
-4. 在启动类上注解通用Mapper的 @MapperScan , 声明扫描Mapper/Dao层接口所在的包
-    @SpringBootApplication
-    @MapperScan(&quot;cn.boot.mapper&quot;)
-    public class StartQuickBoot {
-        ...
-    }
-5. 实体类相关
-    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
-    2. @Id 注解在属性上，指定主键;
-    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
-    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
-    @Data
-    @Table(name=&quot;tl_user&quot;)
-    public class User {
-        @Id
-        @KeySql(userGeneratedKeys=true)
-        private Integer id;  //自增长的主键
-        private String username;
-        @Transient
-        private String remark;  //额外的属性
-    }
-6. 测试
-    @RunWith(SpringRunner.class)
-    @SpringBootTest
-    public class UserMapperTest {
+        application:
+            name: consumer-service
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
+</code></pre><h3 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h3><pre><code>1. 客户端启动时会检测配置文件中的 eureka.client.register-with-eureka 参数，默认值为true;
+2. 如果为true，则会向EurekaServer发起一个Rest请求，并携带自己的元数据信息，EurekaServer会把这些信息保存到
+    一个双层Map结构中： Map&lt;String, Map&lt;String, ServiceInstance&gt;&gt;
+    1. 第一层Map的key就是服务的ID，一般就是配置的 spring.application.name
+    2. 第二次Map的key是服务的实例ID，一般为host+serviceId+port，如 localhost:user-service:8081
+    3. 值是服务的实例对象，也就是说，一个服务可以同时启动多个实例，从而形成集群;
+3. 如果配置为false，那么它就不会申请注册服务；同理，如果EurekaServer配置了这个参数为false，它也不会注册自己了;
+</code></pre><h3 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h3><pre><code>1. 服务的续约(renew)：在注册服务完成后，客户端会维持一个心跳，定时向EurekaServer发起Rest请求，说明自己处于活跃状态;
+2. 有两个重要参数可以修改服务续约的行为：
+    eureka:
+        instance:
+            lease-renewal-interval-in-seconds: 30  # 服务续约的间隔，默认30s
+            lease-expiration-duration-in-seconds: 90  # 服务失效时间，默认90s
+    1. 服务每隔 30s 向注册中心发送一次心跳，证明自己处于活跃状态;
+    2. 如果超过 90s 还没有发送心跳，EurekaService就认为该服务宕机了;
+3. 服务还会从EurekaService中自动拉取当前的服务列表，并缓存在本地，默认每隔 30s 重新拉取并更新数据;
+    eureka:
+        client:
+            fetch-registry: true  # 是否从注册中心拉取数据，默认为true
+            registry-fetch-interval-seconds: 30  # 每次拉取数据的间隔时间，默认30s
+4. 默认每隔30s拉取一次服务列表，所以刚刚启动的服务消费者无法访问服务提供者;
+</code></pre><h3 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h3><pre><code>1. 服务下线：当服务正常关闭时，它会触发一个服务下线的REST请求给EurekaServer，注册中心接收到之后，会把该服务置为下线状态;
+2. 失效剔除
+    1. 有时候可能由于内存溢出或网络故障等原因，导致服务不能正常工作，而服务注册中心并未受到&quot;服务下线&quot;的请求;
+    2. 相对于服务续约操作，注册中心在启动时会创建一个定时任务，默认每隔 60s 将当前列表中超过失效时间(默认90s)的服务剔除;
+3. 在注册中心的配置文件中，修改定时任务的轮询时间
+    eureka:
+        server:
+            eviction-interval-timer-in-ms: 60000  #默认60s
+</code></pre><h3 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h3><pre><code>1. 关闭一个服务，就会在注册中心的管理平台上出现一条警告：EMERGENCY... JUST TO BE SAFE. 这就触发了Eureka的自我保护机制;
+2. 当服务未按时进行服务续约时，Eureka会统计服务实例最近15min心跳续约的比例是否低于85%;
+3. 在生产环境下，因为网络延迟等原因，服务续约超时的比例很可能超标，但此时就把服务从列表中剔除并不妥当，因为服务可能没有宕机;
+4. Eureka在这段时间内不会剔除任何服务，直到网络恢复正常;
+5. 这就保证了在生产环境下，大多数服务依然可用，不过也有可能获取到失败的服务实例，因此服务调用者必须做好服务的失败容错;
+6. 在注册中心关闭自我保护，默认是打开的
+    eureka:
+        server:
+            enable-self-preservation: false  # 默认为true
+</code></pre><h2 id="负载均衡之Ribbon"><a href="#负载均衡之Ribbon" class="headerlink" title="负载均衡之Ribbon"></a>负载均衡之Ribbon</h2><pre><code>1. 在集群环境下，服务提供方会有很多个实例，服务消费者在获取服务列表后，就需要通过负载均衡算法选择一个服务实例;
+2. Eureka中集成了Netflix发布的负载均衡组件：Ribbon
+3. Ribbon默认提供了很多负载均衡算法，如轮询、随机、Hash... 还可以自定义负载均衡算法;
+4. 复制一份服务提供者user-service --&gt; Name: UserApplication2，VM options: -Dserver.port=8082
+5. 在服务消费者中
+    1. 引入Ribbon依赖
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    2. 方式一：获取服务实例(不常用)
         @Autowired
-        private UserMapper mapper;
+        private RestTemplate rest;
 
-        @Test
-        public void test() {
-            User u = mapper.selectByPrimaryKey(8);  //按主键查询：where id=8
-        }
-    }
-7. Service层：使用 @Transactional 注解引入事务;
-    @Service
-    public class UserService {
         @Autowired
-        private UserMapper mapper;
+        private RibbonLoadBalancerClient client;  //另外还要注册Bean对象
 
-        public User findById(Integer id) {
-            return mapper.selectByPrimaryKey(id);
+        @GetMapping(&quot;{id}&quot;)
+        public User findById(@PathVariable(&quot;id&quot;) Long id) {
+            //默认负载均衡算法是轮询
+            ServiceInstance instance = client.choose(&quot;user-service&quot;); 
+            String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
+            User user = rest.getForObject(url, User.class);
+            return user;
         }
-        @Transactional
-        public void insertUser(User user) {  //插入数据时使用事务
-            mapper.insert(user);
+    3. 方式二：在注册 RestTemplate 的方法上注解 @LoadBalanced
+        @Bean
+        @LoadBalanced
+        public RestTemplate getRestTemplate() {
+            return new RestTemplate();
         }
-    }
-8. 使用Controller测试
-    @Slf4j
-    @RestController
-    @RequestMapping(&quot;/user&quot;)
-    public class UserMapperTest {
-        @Autowired
-        private UserService service;  //注入Service对象
-
-        @GetMapping(&quot;/{id}&quot;)
-        public User test(@PathVariable(&quot;id&quot;) Integer id) {
-            log.debug(&quot;test service&quot;);
-            return service.findById(id);
+        1. @LoadBalanced 内置拦截器会拦截 RestTemplate 的请求，通过负载均衡算法选择一个服务实例;
+        2. 发起请求的URL：http://服务ID/资源路径
+        @GetMapping(&quot;{id}&quot;)
+        public User findById(@PathVariable(&quot;id&quot;) Long id) {
+            String url = &quot;http://user-service/user/&quot; + id;
+            User user = rest.getForObject(url, User.class);
+            return user;
         }
-    }
+6. 负载均衡策略
+    1. Ribbon默认采用的负载均衡策略是轮询，对应的规则对象RoundRobinRule
+    2. 修改方式：服务ID.ribbon.NFLoadBalancerRuleClassName，值就是IRule的实现类
+    3. 在服务消费者中配置
+    user-service:  # 查找的服务实例
+        ribbon:
+            NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #采用随机规则的负载均衡策略
 </code></pre><hr>
 
           
@@ -3749,7 +3571,7 @@ auto-aof-rewrite-min-size 64mb
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

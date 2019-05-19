@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-17T13:35:12.867Z">
+<meta property="og:updated_time" content="2019-05-19T01:50:57.205Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot">
 <meta name="twitter:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
@@ -341,30 +341,25 @@
     2. 自动配置：SpringBoot的自动配置是一个运行时(应用程序启动时)的过程;
     2. 考虑了众多因素，才决定Spring配置应该用哪个、不应该用哪个，此过程也是Spring自动完成的。
 6. 在SpringBoot中，默认采用Servlet3.0，它可以完全使用注解取代web.xml了，所以SpringBoot没有了web.xml;
-7. 主流的Java模板引擎：JSP、Velocity、Freemarker、Thymeleaf
-    1. SpringBoot项目是普通的Java工程，没有web.xml，所以通常也不再使用JSP，SpringBoot官方推荐Thymeleaf;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    2. Thymeleaf不仅可以把渲染结果写入Response，还可以写到本地文件中，从而实现页面静态化;
-    3. 页面静态化：把动态渲染的HTML页面变成静态内容保存，比如部署在Nginx中;
-    4. 以后的用户请求到来时，直接访问静态页面，不再经过服务的渲染，从而大大提高并发能力，减小Tomcat的压力.
-</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. 创建一个普通Java项目的Maven工程即可;
-2. 第三方框架要应用在SpringBoot中，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
-3. SpringBoot的项目必须要继承SpringBoot的起步依赖spring-boot-starter-parent
+</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. SpringBoot2.x的依赖环境和版本
+    1. JDK8+，因为SpringBoot2.x底层是Spring Framework5
+    2. Maven3.2+，Gradle4+
+2. 创建一个普通Java项目的Maven工程，添加继承SpringBoot的起步依赖spring-boot-starter-parent
     &lt;parent&gt;
         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
         &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
         &lt;version&gt;2.1.4.RELEASE&lt;/version&gt;
     &lt;/parent&gt;
-4. SpringBoot要集成SpringMVC、进行Web/Controller的开发时，只需要导入web的启动器即可;
+    1. spring-boot-starter-parent 中管理了很多其他依赖的版本，所以 &lt;dependencies&gt; 中引入这些的依赖时，
+    尽量不要配置它们的版本号，沿用 spring-boot-starter-parent 中的版本号;
+    2. Spring对版本的要求比较严格，很多问题都是因为版本不匹配所致.
+3. SpringBoot要集成SpringMVC、进行Web/Controller的开发时，只需要导入web的启动器即可;
     &lt;dependency&gt;
         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
         &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-        &lt;!-- 无需指定版本号(如果无法自动配置，还是要手动指定版本号) --&gt;
+        &lt;!-- 无需指定版本号(如果无法自动配置，则拷贝spring-boot-starter-parent中的版本号) --&gt;
     &lt;/dependency&gt;
-5. 创建一个普通类，使用 @SpringBootApplication 声明为一个SpringBoot的引导类(引导应用程序的入口);
+4. 创建一个普通类，使用 @SpringBootApplication 声明为一个SpringBoot的引导类(引导应用程序的入口);
     1. 在 main() 中运行引导类：SpringApplication.run(引导类.class, 可选参数);
     @SpringBootApplication
     public class StartSpringBoot {
@@ -372,11 +367,11 @@
             SpringApplication.run(StartSpringBoot.class, args);
         }
     }
-6. SpringBoot中内置有Tomcat插件，直接运行 main()，在控制台提示Tomcat启动信息：
+5. SpringBoot中内置有Tomcat插件，直接运行 main()，在控制台提示Tomcat启动信息：
     Tomcat started on port(s): 8080 (http) with context path &apos;&apos;
     1. context path &apos;&apos;：表示web应用的名称(虚拟项目名)为空字符串，访问 http://localhost:8080/ ;
-    2. 当前没有编写任何页面，所以展示的是 Error Page;
-7. 无需任何配置，就可以直接编写Controller层
+    2. 当前没有编写任何页面，所以展示的是 Error Page，但表示已经启动成功了;
+6. 无需任何配置，就可以直接编写Controller层
     @Controller
     public class QuickController {
         @RequestMapping(&quot;/test&quot;)
@@ -385,26 +380,19 @@
             return &quot;Hello SpringBoot&quot;;
         }
     }    ---&gt;http://localhost:8080/test  ---&gt; Hello SpringBoot
-8. IDEA快速创建SpringBoot工程：可以手动选择需要的依赖;
-    New Project -&gt; Spring Initializr -&gt; Next -&gt; 设置项目信息 -&gt; Next -&gt; 选择依赖 -&gt; Finish
-</code></pre><h3 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h3><pre><code>1. 添加起步依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. IDEA默认不支持热部署，需要设置
-    1. Settings --&gt; Compiler --&gt; 勾选 Build project automatically
-    2. Ctrl+Shift+Alt+/ --&gt; Registry --&gt; 勾选 compiler.automake.allow.when.app.running
-3. 每次修改了Controller层之后，等待服务器重启，刷新浏览器页面.
-</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><h3 id="起步依赖"><a href="#起步依赖" class="headerlink" title="起步依赖"></a>起步依赖</h3><pre><code>1. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent;
-2. spring-boot-starter-parent 会对依赖的版本进行管理;
-3. spring-boot-starter-web 中集成了 Tomcat、spring-web、spring-mvc 等Web开发的依赖;
-4. 导入一个启动器的坐标之后，它会根据指定的版本号、去自动管理内部依赖的其他相关库.
-</code></pre><h3 id="自动配置"><a href="#自动配置" class="headerlink" title="自动配置"></a>自动配置</h3><pre><code>1. @SpringBootApplication是组合注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
-2. @SpringBootConfiguration 其实就是 @Configuration，所以引导类也就是一个配置类;
-3. @EnableAutoConfiguration 是自动配置的核心注解，内部使用了 @Import({AutoConfigurationImportSelector.class})
-4. AutoConfigurationImportSelector中就是自动配置的核心源码;
-5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解.
+7. IDEA快速创建SpringBoot工程
+    New Project -&gt; Spring Initializr -&gt; Next -&gt; 设置项目信息 -&gt; Next -&gt; 手动选择依赖 -&gt; Finish
+</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><pre><code>1. 起步依赖
+    1. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent，它会对依赖的版本进行管理;
+    2. SpringBoot项目引入的依赖往往都是starter，它是一个工具集合，里面包含了很多常用的依赖，便于版本管理;
+    3. 比如spring-boot-starter-web，包含了诸如spring-webmvc、spring-web、Tomcat、jackson ...
+    4. 第三方框架要对接SpringBoot项目，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
+2. 自动配置
+    1. @SpringBootApplication是组合注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
+    2. @SpringBootConfiguration 其实就是 @Configuration，所以引导类也就是一个配置类;
+    3. @EnableAutoConfiguration 是自动配置的核心注解，@Import({AutoConfigurationImportSelector.class})
+    4. AutoConfigurationImportSelector 中就是自动配置的核心源码;
+    5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解.
 </code></pre><h2 id="SpringBoot的配置文件"><a href="#SpringBoot的配置文件" class="headerlink" title="SpringBoot的配置文件"></a>SpringBoot的配置文件</h2><pre><code>1. SpringBoot是基于约定的，所以很多配置都是默认值;
 2. 在需要自定义配置时，根据启动器提供的key名，在SpringBoot的配置文件中指定value值即可;
 3. spring-boot-starter-parent 会自动加载 resources 目录下的三类配置文件;
@@ -414,9 +402,8 @@
     server.port=9090    # 配置Tomcat启动的端口号，默认是8080
     server.servlet.context-path=/demo    # 配置web应用虚拟目录名，默认是空字符串
 5. YML一种新型配置文件，也是一种标记语言，有两种扩展名：.yml、.yaml
-    1. YML文件格式是由YAML编写的，YAML是一种能够被电脑识别的数据序列化格式，且易读性强;
+    1. YML文件格式是由YAML编写的，YAML是一种能够被电脑识别的数据序列化格式，且易读性强，以数据为核心，比XML更简洁;
     2. YML文件与脚本语言的交互性强，可以被支持YAML库的编程语言程序导入，如C/C++、Python、Java、C#、PHP、Ruby...
-    3. YML文件以数据为核心，比传统的XML文件更简洁.
 </code></pre><h3 id="yml配置文件"><a href="#yml配置文件" class="headerlink" title="yml配置文件"></a>yml配置文件</h3><pre><code>1. 普通数据
     1. key: value
     2. key和value之间必须有一个空格：name: Jack
@@ -522,10 +509,7 @@
         public DataSource getDataSource(JdbcProperties prop) {
             return new DruidDataSource();
         }
-    }private String ;
-        private String ;
-        private String ;
-        private String ;
+    }
     1. 这种方式不再需要映射配置类JdbcConf，直接在对应Bean对象上使用 @ConfigurationProperties;
     2. DruidDataSource对象中有同名属性：driverClassName、url、username、password，从而实现映射;
 </code></pre><h3 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h3><pre><code>1. ResourceProperties中定义了静态资源的查找方向
@@ -533,7 +517,7 @@
 2. 注意：classpath 指的就是 src/main/resources 目录，这4个目录都在 src/main/resources 目录下;
 3. 这些静态资源目录不受Controller管控，可以直接被访问，用于放入图片、CSS、JS、HTML等静态资源;
 4. 创建 resources/static/index.html，访问：localhost:8080/index.html
-5. 在配置文件中，可以加入自定义的静态资源目录：
+5. 在配置文件 application.yml 中，可以加入自定义的静态资源目录：
     spring:
         resources:
             static-locations:
@@ -541,11 +525,160 @@
                 - classpath:/resources/
                 - classpath:/static/
                 - classpath:/public/
-                - classpath:/test/
                 - classpath:/abc/
-6. Thymeleaf的静态资源默认放在 resources/templates 目录中，它们不能直接访问，只能经过Controller方法转发;
-7. 如果要直接访问 Thymeleaf 的静态资源，只需要把 resources/templates 目录追加在静态资源的目录列表中;
+</code></pre><h2 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h2><pre><code>1. 添加起步依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. IDEA默认不支持热部署，需要设置
+    1. Settings --&gt; Compiler --&gt; 勾选 Build project automatically
+    2. Ctrl+Shift+Alt+/ --&gt; Registry --&gt; 勾选 compiler.automake.allow.when.app.running
+3. 每次修改了Controller层之后，等待服务器重启，刷新浏览器页面;
+4. 在配置文件 application.properties  中，配置不被热部署的文件
+    spring.devtools.restart.exclude=static/**, application.properties
+5. 通过触发器，手动控制热部署
+    1. 创建 resources/trigger.txt，添加内容 verion=1
+    2. 配置触发器
+        spring.devtools.restart.trigger-file=trigger.txt
+    3. 需要热部署时，修改触发器：version=2，保存文件即触发热加载部署;
+</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. SpringBoot项目中，使用 MultipartFile 对象接收上传的文件时，控制文件的大小;
+    1. 在启动类中注册 MultipartConfigElement，设置文件大小
+    @Bean
+    public MultipartConfigElement getMultipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigElement();
+        factory.setMaxFileSize(&quot;10240KB&quot;);  //单个文件最大10240KB
+        factory.setMaxRequestSize(&quot;102400KB&quot;);  //总上传数据最大102400KB
+        return factory.createMultipartConfig();
+    }
+2. 文件服务器：fastdfs，阿里云oss，nginx搭建一个简单的文件服务器;
+3. 上传过程操作的是磁盘的绝对路径，打成了jar包之后，无法直接访问磁盘目录，需要把目录加入静态资源目录列表中;
+    images-path=D:\report\
+    spring.resources.static-locations=classpath:/META-INF/resources/, ... , file:${images-path}
+</code></pre><h2 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h2><pre><code>1. 主流的JavaWeb模板引擎：JSP、Velocity、Freemarker、Thymeleaf
+    1. JSP：动态网页技术，JavaWeb官方推荐，支持EL、JSTL表达式，本质上也是一个Servlet，占用JVM内存;
+    2. Freemarker：文件一般保存为 xxx.ftl，严格依赖MVC模式，不依赖Servlet容器(不占用JVM内存)，内建函数;
+    3. Thymeleaf：SpringBoot主推，轻量级模板引擎，后缀名就是.html，浏览器可以直接访问;
+2. Thymeleaf不推荐在页面中做复杂的逻辑业务，因为解析DOM/XML会占用较大的内存;
+3. Thymeleaf的启动器：spring-boot-starter-thymeleaf
+    spring.thymeleaf.cache=false #是否缓存
+    spring.thymeleaf.mode=HTML5
+    spring.thymeleaf.encoding=UTF-8  #编码
+    spring.thymeleaf.content-type=text/html  #类型
+    spring.thymeleaf.suffix=.html  #文件后缀名
+    spring.thymeleaf.prefix=classpath:/templates/  #前缀：存放路径
+4. 创建 resources/templates/user/info.html
+        @GetMapping(&quot;info&quot;)
+        public String info() {
+            return &quot;user/info&quot;;  ---&gt;渲染resources/templates/user/info.html
+        }
+5. resources/templates 目录不是静态资源目录，需要放在静态资源列表中才能直接访问
     spring.resources.static-locations = classpath:/META-INF/resources/, ... ,classpath:/templates/
+6. 页面静态化
+    1. Thymeleaf不仅可以把渲染结果写入Response，还可以写到本地文件中，从而实现页面静态化;
+    2. 页面静态化：把动态渲染的HTML页面变成静态内容保存，比如部署在Nginx中;
+    3. 以后的用户请求到来时，直接访问静态页面，不再经过服务的渲染，从而大大提高并发能力，减小Tomcat的压力.
+</code></pre><h2 id="多环境配置"><a href="#多环境配置" class="headerlink" title="多环境配置"></a>多环境配置</h2><pre><code>1. 多环境：开发环境、测试环境、预发布环境、生产环境...  不同环境使用不同的配置，如数据库配置;
+2. 多环境切换有很多方式，以 spring.profiles.active 为例
+    1. 创建 resources/config 目录，管理SpringBoot的配置文件，注意：config目录名是固定的;
+    2. 在 config 中创建 application.properties、application-dev.properties、application-test.properties
+    3. application-dev.properties
+        db.url=dev.com
+    4. application-test.properties
+        db.url=test.com
+    5. application.properties
+        db=local.com
+        # 指定使用哪个profile，如果不指定，默认使用当前文件中的配置
+        spring.profiles.active=test  # 使用 application-test 中的配置 db.url=test.com
+3. 映射到Spring IoC容器中的Java类属性上
+    @Value(&quot;${db.url}&quot;)
+    private String url;  //test.com
+</code></pre><h2 id="打包与容器"><a href="#打包与容器" class="headerlink" title="打包与容器"></a>打包与容器</h2><pre><code>1. SpringBoot项目打成jar包
+    1. pom.xml 配置Maven插件
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+    2. 打开右侧Maven面板 --&gt; Lifecycle --&gt; 双击执行 install --&gt; 在target目录下生成xxx.jar
+    3. 如果没有添加插件，执行 java -jar xxx.jar 命令运行jar包时，会报错：no main manifest attribute
+2. SpringBoot项目打成war包
+    1. 修改打包方式：&lt;packaging&gt;war&lt;/packaging&gt;
+    2. 配置打包的项目名称，也就是项目的虚拟目录名
+        &lt;build&gt;
+            &lt;finalName&gt;boottest&lt;/finalName&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/build&gt;
+    3. 修改启动类
+    @SpringBootApplication
+    public class BootTestApplication extends SpringBootServletInitializer {
+        protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+            return builder.sources(BootTestApplication.class);
+        }
+        public static void main(String[] args) {
+            SpringApplication.run(BootTestApplication.class, args);
+        }
+    }
+    4. 执行Lifecycle --&gt; clean，然后执行 install 命令，在target目录下生成 xxx.war
+    5. 把 xxx.war 放在 Tomcat/webapps 目录中，启动Tomcat服务器，xxx.war自动解压;
+    6. 访问：http://localhost:8080/boottest/xxx
+3. SpringBoot默认使用Tomcat容器启动，也可以配置成其他容器
+    1. 去除spring-boot-starter-web中集成的Tomcat
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                    &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+    2. 配置为jetty容器
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-jetty&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    3. 配置为undertow容器
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-undertow&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.undertow&lt;/groupId&gt;
+            &lt;artifactId&gt;undertow.core&lt;/artifactId&gt;
+            &lt;version&gt;1.3.24.Final&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.undertow&lt;/groupId&gt;
+            &lt;artifactId&gt;undertow.servlet&lt;/artifactId&gt;
+            &lt;version&gt;1.3.24.Final&lt;/version&gt;
+        &lt;/dependency&gt;
+4. 使用JMeter测试各个容器的性能;
+</code></pre><h3 id="部署到阿里云"><a href="#部署到阿里云" class="headerlink" title="部署到阿里云"></a>部署到阿里云</h3><pre><code>1. winscp、secureCRT、FileZilla：远程连接Linux的工具，可视化操作
+2. 在Linux上安装JDK
+    1. cd /usr/local/  --&gt; mkdir software --&gt; 下载JDK8压缩包、解压、重命名为jdk8
+    2. 配置环境变量：vim /etc/profile，在尾部插入以下内容
+    export JAVA_HOME=/usr/local/software/jdk8
+    export PATH=$PATH:$JAVA_HOME/bin
+    export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+    export JAVA_HOME PATH CLASSPATH
+    3. 让配置立刻生效：source /etc/profile
+    4. 测试：java -version
+3. 入门级：把SpringBoot项目部署到Linux云服务器上，要开放对应的端口号;
+    1. 去除对生产环境没用的依赖，如热部署spring-boot-starter-test，测试spring-boot-starter-test
+    2. 打成jar包，并上传到Linux服务器上 /usr/local/software/app/
+    3. 启动：java -jar xxx.jar
+4. 守护进程的方式启动：nohup java -jar xxx.jar &amp;   ---&gt; 生成启动日志文件nohup.out
 </code></pre><hr>
 
       
@@ -666,7 +799,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -721,7 +854,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot与Spring"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot与Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">1.1.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#热部署"><span class="nav-number">1.2.</span> <span class="nav-text">热部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的原理"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#起步依赖"><span class="nav-number">2.1.</span> <span class="nav-text">起步依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动配置"><span class="nav-number">2.2.</span> <span class="nav-text">自动配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的配置文件"><span class="nav-number">3.</span> <span class="nav-text">SpringBoot的配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yml配置文件"><span class="nav-number">3.1.</span> <span class="nav-text">yml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#属性映射"><span class="nav-number">3.2.</span> <span class="nav-text">属性映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态资源"><span class="nav-number">3.3.</span> <span class="nav-text">静态资源</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot与Spring"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot与Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">1.1.</span> <span class="nav-text">环境搭建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的原理"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的配置文件"><span class="nav-number">3.</span> <span class="nav-text">SpringBoot的配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yml配置文件"><span class="nav-number">3.1.</span> <span class="nav-text">yml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#属性映射"><span class="nav-number">3.2.</span> <span class="nav-text">属性映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态资源"><span class="nav-number">3.3.</span> <span class="nav-text">静态资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热部署"><span class="nav-number">4.</span> <span class="nav-text">热部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">5.</span> <span class="nav-text">文件上传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板引擎"><span class="nav-number">6.</span> <span class="nav-text">模板引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多环境配置"><span class="nav-number">7.</span> <span class="nav-text">多环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包与容器"><span class="nav-number">8.</span> <span class="nav-text">打包与容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署到阿里云"><span class="nav-number">8.1.</span> <span class="nav-text">部署到阿里云</span></a></li></ol></li></ol></div>
             
 
           </div>

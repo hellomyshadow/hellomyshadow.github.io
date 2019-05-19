@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Hystrix Hystrix：Netflix公司的一款组件，是一种保护机制； Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败； 雪崩问题： 微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路； 一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应，那么Tomcat的这个线程也不会被释放，">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud组件2">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Hystrix Hystrix：Netflix公司的一款组件，是一种保护机制； Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败； 雪崩问题： 微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路； 一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应，那么Tomcat的这个线程也不会被释放，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/熔断器模型.jpg">
+<meta property="og:updated_time" content="2019-05-19T14:30:23.951Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud组件2">
+<meta name="twitter:description" content="Hystrix Hystrix：Netflix公司的一款组件，是一种保护机制； Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败； 雪崩问题： 微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路； 一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应，那么Tomcat的这个线程也不会被释放，">
+<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/熔断器模型.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/">
+
+
+
+
+
+  <title>SpringCloud组件2 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringCloud组件2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-03T00:00:00+08:00">
+                2016-05-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Hystrix"><a href="#Hystrix" class="headerlink" title="Hystrix"></a>Hystrix</h2><ol>
+<li>Hystrix：Netflix公司的一款组件，是一种保护机制；</li>
+<li>Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败；</li>
+<li>雪崩问题：<ol>
+<li>微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路；</li>
+<li>一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应，那么Tomcat的这个线程也不会被释放，越来越多的用户请求到来时，随之越来越多的线程会阻塞，服务器支持的线程和并发数量是有限的，最后会导致服务器资源耗尽，从而会导致其他服务都不可用，这就是雪崩效应；</li>
+<li>比如一个汽车生产线，如果某个零件因为种种原因无法供应，那么整台车就无法装配，陷入等待零件状态；如果很多车型都需要这个零件，那么整个车间都会陷入等待状态，导致所有生产都陷入瘫痪；</li>
+<li>Hystrix解决雪崩问题的手段主要有两种方式：线程隔离、服务熔断</li>
+</ol>
+</li>
+<li>线程隔离，服务降级<ol>
+<li>线程隔离：Hystrix为每个依赖服务调用分配一个小线程池，如果线程池已满，调用会被立即拒绝，默认不采用排队，加速失败的判定时间；</li>
+<li>用户的请求不再直接访问服务，而是通过线程池中的空闲线程来访问，如果线程池已满或者请求超时，则会进行降级处理；</li>
+<li>服务降级：优先保证核心服务，而非核心服务不可用或弱可用；</li>
+<li>用户的请求故障时，不会被阻塞，更不会无限等待或者返回系统崩溃，至少可以看到一个执行结果，比如等待超过5s，则返回服务器繁忙的友好提示信息；</li>
+<li>服务降级虽然导致请求失败，但不会导致阻塞，而且最多会影响这个依赖服务对应的线程池中的资源，对其他服务没有影响；</li>
+<li>触发 Hystrix 服务降级的两种情况：线程池已满、请求超时</li>
+</ol>
+</li>
+<li><p>在服务消费方做降级处理：</p>
+<ol>
+<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-netflix-hystrix</artifactid><br> </dependency></li>
+<li><p>在启动类上注解 @EnableCircuitBreaker，启用Hystrix，注解 @EnableHystrix 也可以，但无法启用服务熔断<br> @EnableCircuitBreaker<br> @EnableDiscoveryClient<br> @SpringBootApplication<br> public class ConsumerApplication {</p>
+<pre><code>@Bean
+@LoadBalanced
+public RestTemplate getRestTemplate() {
+    return new RestTemplate();
+}
+
+public static void main(String[] args) {
+    SpringApplication.run(ConsumerApplication.class, args);
+}
+</code></pre><p> }</p>
+</li>
+<li>注解 @SpringCloudApplication 集成了 @EnableCircuitBreaker、@EnableDiscoveryClient、@SpringBootApplication<br> @SpringCloudApplication<br> public class ConsumerApplication {<pre><code>...
+</code></pre> }</li>
+<li><p>Web层，在方法上注解 @HystrixCommand 开启降级处理，fallbackMethod属性指定错误处理的方法名<br> @GetMapping(“{id}”)<br> @HystrixCommand(fallbackMethod = “findByIdFallback”)<br> public String findById(@PathVariable(“id”) Long id) {</p>
+<pre><code>String url = &quot;http://user-service/user/&quot; + id;
+String user = rest.getForObject(url, String.class);  //返回一个字符串，不再转为POJO对象
+return user;
+</code></pre><p> }</p>
+<p> public String findByIdFallback(Long id) {</p>
+<pre><code>return &quot;服务器繁忙！&quot;
+</code></pre><p> }</p>
+</li>
+<li>注意：熔断的的降级处理方法必须和正常请求的方法：参数列表和返回值保证一致；</li>
+<li>在服务提供方加延迟，测试降级处理<br> @Service<br> public class UserService {<pre><code>@Autowired
+private UserMapper mapper;
+public User findById(Long id) {
+    Thread.sleep(2000L);
+    return mapper.selectByPrimaryKey(id);
+}
+</code></pre> }</li>
+<li>启用降级处理时，默认超过1s获取不到响应结果，就会触发服务降级；</li>
+<li><p>@DefaultProperties：注解在Controller类上，配置默认Fallback<br> @RestController<br> @RequestMapping(“consumer”)<br> @DefaultProperties(defaultFallback = “defFallback”)<br> public class ConsumerController {</p>
+<pre><code>@Autowired
+private RestTemplate rest;
+
+@GetMapping(&quot;{id}&quot;)
+@HystrixCommand  -----&gt;启用降级
+public String findById(@PathVariable(&quot;id&quot;) Long id) {
+    String url = &quot;http://user-service/user/&quot; + id;
+    String user = rest.getForObject(url, String.class);  //返回一个字符串，不再转为POJO对象
+    return user;
+}
+
+public String defFallback() {
+    return &quot;服务器繁忙！&quot;
+}
+</code></pre><p> }</p>
+<ol>
+<li>默认Fallback指向的方法不能有参数列表；</li>
+</ol>
+</li>
+<li>不同的业务，超时时间应该是不同的，@HystrixCommand的属性commandProperties<br> @GetMapping(“{id}”)<br> @HystrixCommand(commandProperties = {<pre><code>@HystrixPropery(name=&quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value=&quot;2000&quot;) #2s超时
+</code></pre> })<br> public String findById(@PathVariable(“id”) Long id) {<pre><code>...
+</code></pre> }<ol>
+<li>全局配置默认超时时间：在消费者的配置文件中<br>hystrix:<br> command:<pre><code>default:
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000  #3s超时
+</code></pre></li>
+<li>@HystrixCommand中不要再配置的超时属性；</li>
+<li>还可以只针对某个调用的服务，甚至某个方法去配置超时时间<br>hystrix:<br> command:<pre><code>default:
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000  #3s超时
+user-service:  #调用该服务时，启用降级处理的超时时间
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000
+findById:  #调用该方法时，启用降级处理的超时时间
+    execution:
+        isolation:
+            thread:
+                timeoutInMilliseconds: 3000
+</code></pre></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>服务熔断</li>
+</ol>
+<p><img src="//hellomyshadow.github.io/2016/05/03/SpringCloud组件2/熔断器模型.jpg" alt="Zuul"></p>
+<pre><code>1. 熔断器又叫断路器，Circult Breaker，类似家用的电路熔断器(保险丝)，如果电路发生短路，会立刻熔断电路，避免发生灾难；
+2. 在分布式系统中，服务调用方可以自己进行判断某些服务反应慢或者存在大量超时的情况时，能够主动熔断，防止整个系统被拖垮；
+3. 不同于保险丝不会重连，Hystrix可以实现弹性容错，当情况好转后，可以自动重连；
+4. @EnableCircuitBreaker 同时会启用Hystrix熔断器；
+5. Hystrix的熔断机模型
+[模型]
+    1. 三种状态：Closed、Open、Half Open
+    2. Closed：熔断器关闭状态，所有请求都能正常访问；
+    3. Open：熔断器打开，所有请求被降级处理；默认情况下，如果请求次数超过20，且失败比例达到50%(阈值)，则打开熔断器；
+    4. Half Open：熔断器处于半开状态，Closed状态不是永久的，关闭后会进入休眠状态(默认5s)，称为休眠时间窗，随后熔断器会自动进入半开状态，放进一部分请求通过，测试该服务是否正常，如果请求仍然失败，则重新进入Open状态，直到放进的请求完全成功，才会进入Closed状态
+6. 测试
+    1. 服务提供者：取消的2s延迟
+        @Service
+        public class UserService {
+            @Autowired
+            private UserMapper mapper;
+            public User findById(Long id) {
+                return mapper.selectByPrimaryKey(id);
+            }
+        }
+    2. 在服务消费者中，通过抛出异常的方式，手动控制熔断器断开，并且配置熔断器的参数
+    @GetMapping(&quot;{id}&quot;)
+    @HystrixCommand(commandProperties = {
+        @HystrixProperty(name=&quot;circuitBreaker.requestVolumeThreshold&quot;, value=&quot;10&quot;),  #10次请求，默认20
+        @HystrixProperty(name=&quot;circuitBreaker.errorThresholdPercentage&quot;, value=&quot;60&quot;), #失败比率60%，默认50
+        @HystrixProperty(name=&quot;circuitBreaker.sleepWindowInMilliseconds&quot;, value=&quot;10000&quot;),  #休眠时间10s，默认5s
+    })  --&gt; 对同一个服务发起10次请求，超过6次都是失败的，则开启熔断器，休眠10s后，进入半开状态，放进一部分请求进行测试
+    public String findById(@PathVariable(&quot;id&quot;) Long id) {
+        if(id%2 == 0) {
+            throw new RuntimeException(&quot;&quot;); //抛出异常会直接触发熔断
+        }
+        String url = &quot;http://user-service/user/&quot; + id;
+        String user = rest.getForObject(url, String.class);
+        return user;
+    }
+    3. 测试：
+        http://localhost:8080/consumer/1  --&gt;正常返回
+        http://localhost:8080/consumer/2 --&gt; 抛出异常，服务降级处理，返回&quot;服务器繁忙！&quot;
+        快速访问 http://localhost:8080/consumer/2 超过10次，然后再立即访问 http://localhost:8080/consumer/1
+        服务也会被降级处理，返回 &quot;服务器繁忙！&quot;，10s后又可以正常获取数据
+</code></pre><h3 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h3><ol>
+<li>Feign：简化服务调用，可以把Rest的请求进行隐藏，伪装成类似SpringMVC的Controller，无需再拼接URL、参数等等；<pre><code>String url = &quot;http://user-service/user/&quot; + id;
+String user = rest.getForObject(url, String.class);
+</code></pre></li>
+<li><p>服务消费者中：</p>
+<ol>
+<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-openfeign</artifactid><br> </dependency></li>
+<li>Feign内部已经依赖了Ribbon和Hystrix，所以在 pom.xml 不用手动引入Ribbon依赖，但Hystrix依赖最好还是要引入；</li>
+<li>在启动器类上注解 @EnableFeignClients，启用Feign，并去除RestTemplate的注册<br> @EnableFeignClients<br> @SpringCloudApplication<br> public class ConsumerApplication {<pre><code>public static void main(String[] args) {
+    SpringApplication.run(ConsumerApplication.class, args);
+}
+</code></pre> }</li>
+<li>Feign客户端接口<br> @FeignClient(“user-service”)<br> public interface UserClient {<pre><code>@GetMapping(&quot;user/{id}&quot;)  --&gt;请求资源路径
+User findById(@PathVariable(&quot;id&quot;) Long id);
+</code></pre> }<ol>
+<li>@FeignClient：声明Feign客户端，指定服务ID，再交给Ribbon实现负载均衡；</li>
+<li>内部完全使用 SpringMVC的注解，Feign会根据注解生成URL；</li>
+<li>Feign会通过动态代理，为Feign客户端接口生成实现类，类似Mybatis的mapper</li>
+</ol>
+</li>
+<li><p>使用Feign的客户端发起请求<br> @RestController<br> @RequestMapping(“consumer”)<br> public class ConsumerController {</p>
+<pre><code>@Autowired
+private UserClient client;
+
+@GetMapping(&quot;{id}&quot;)
+public User findById(@PathVariable(&quot;id&quot;) Long id) {
+    User user = client.findById(id);
+    return user;
+}
+</code></pre><p> }</p>
+</li>
+</ol>
+</li>
+<li>Feign内部集成了Ribbon依赖和自动配置，配置Ribbon的超时时间<br> ribbon:<pre><code>ConnectTimeout: 500  #连接超时时间为500ms，超过500ms没有连接上服务，则抛出异常
+ReadTimeout: 2000  #读取数据的超时时间2s，超过2s还没有获取到响应，则抛出异常
+</code></pre></li>
+<li>Feign集成的Hystrix使用方式<ol>
+<li>默认是关闭的，在配置文件中开启<br>feign:<br> hystrix:<pre><code>enabled: true  #开启Feign的熔断功能
+</code></pre></li>
+<li>在注解 @FeignClient 中配置属性 falback，属性值是一个类.class，且这个类要实现注解的接口，用于处理服务降级<br> @FeignClient(value = “user-service”, fallback = UserClientFallback.class)<br> public interface UserClient {<pre><code>@GetMapping(&quot;user/{id}&quot;)  --&gt;请求资源路径
+User findById(@PathVariable(&quot;id&quot;) Long id);
+</code></pre> }<br> @Component  –&gt;注入到Spring中<br> public class UserClientFallback implements UserClient {<pre><code>public User findById(Long id) {  //服务降级的处理
+    User u = new User();
+    u.setId(id);
+    u.setName(&quot;未知用户！&quot;);
+    return u;  //响应数据
+}
+</code></pre> }</li>
+<li>关闭 user-service 服务，访问服务消费者：<a href="http://localhost:8080/consumer/1" target="_blank" rel="noopener">http://localhost:8080/consumer/1</a></li>
+</ol>
+</li>
+<li>请求压缩<ol>
+<li>Feign支持对请求和响应进行GZIP压缩，以减少通信过程中的性能损耗；</li>
+<li>开启压缩<br>feign:<br> compression:<pre><code>request:
+    enabled: true  #开启请求压缩
+    mime-types: text/html,application/xml,application/json  #设置压缩的数据类型
+    min-request-size: 2048  # 触发压缩的大小下限
+response:
+    enabled: true  #开启响应压缩
+</code></pre></li>
+</ol>
+</li>
+<li>日志级别<ol>
+<li>通过 logging.level.xx=debug 来设置日志级别，但是它对Feign客户端没有效果，因为 @FeignClient 注解的客户端在动态代理时，都会生成一个新的 Feign.Logger 实例，需要额外指定这个日志级别</li>
+<li>设置 cn.cloud 包下的日志级别都是 debug<br> logging:<pre><code>level:
+    cn.cloud: debug
+</code></pre></li>
+<li>使用配置类定义日志级别<br> @Configuration<br> public class FeignConf {<pre><code>@Bean
+Logger.Level feignLoggerLevel() {
+    return Logger.Level.FULL;  //设置日志级别为FULL，另外还有NONE、BASIC、HEADERS...
+}
+</code></pre> }</li>
+<li>NONE：不记录任何日志信息，默认值；</li>
+<li>BASIC：仅记录请求的方法、URL以及响应状态码和执行时间；</li>
+<li>HEADERS：在BASIC的基础上，额外记录了请求和响应的头信息；</li>
+<li>在Feign客户端的注解上，指定配置类<br>@FeignClient(value = “user-service”, fallback = UserClientFallback.class, configuration = FeignConf.class)<br>public interface UserClient {<br> @GetMapping(“user/{id}”)  –&gt;请求资源路径<br> User findById(@PathVariable(“id”) Long id);<br>}</li>
+</ol>
+</li>
+</ol>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/02/SpringCloud组件1/" rel="next" title="SpringCloud组件1">
+                <i class="fa fa-chevron-left"></i> SpringCloud组件1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/04/SpringCloud组件3/" rel="prev" title="SpringCloud组件3">
+                SpringCloud组件3 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hystrix"><span class="nav-number">1.</span> <span class="nav-text">Hystrix</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Feign"><span class="nav-number">1.1.</span> <span class="nav-text">Feign</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

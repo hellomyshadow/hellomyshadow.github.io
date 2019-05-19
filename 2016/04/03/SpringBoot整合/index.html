@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="整合MyBatis1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;org.mybatis.spring.boot&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;gt;mybatis-spring-boot-starter&amp;lt;/artif">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-17T14:17:28.746Z">
+<meta property="og:updated_time" content="2019-05-19T03:24:48.809Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot整合">
 <meta name="twitter:description" content="整合MyBatis1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;org.mybatis.spring.boot&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;gt;mybatis-spring-boot-starter&amp;lt;/artif">
@@ -381,20 +381,87 @@
     mybatis.configuration.map-underscore-to-camel-case: true
     # 配置POJO别名的扫描包
     mybatis.type-aliases-package=cn.boot.pojo
-    #加载Mybatis的映射文件(如果使用映射配置文件的方式)
+    # 加载Mybatis的映射文件(如果使用映射配置文件的方式)
     mybatis.mapper-locations=classpath:mapper/*Mapper.xml
+    # 在控制台打印生成的SQL语句
+    mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
 8. 在Controller中，使用 @Autowired 注入Dao(Mapper)对象
-    @Controller
+    @Slf4j
+    @RestController
     public class QuickController {
         @Autowired
         private IUserMapper userMapper;
 
         @RequestMapping(&quot;/test&quot;)
-        @ResponseBody
         public String test() {
             List&lt;User&gt; users = userMapper.findAll();
             return &quot;Hello SpringBoot&quot;;
         }
+    }
+</code></pre><h3 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h3><pre><code>1. 通用Mapper：一款中国人自己开发的框架，基于Mybatis，只支持单表的CRUD;
+    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
+    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
+2. 通用Mapper的启动器：mapper-spring-boot-starter
+    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
+    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
+    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
+    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
+    spring:
+        datasource:
+            ...... # driver-class-name、url、username、password
+    mybatis:
+        type-aliases-package: cn.boot.pojo
+        configuration:
+            log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+3. Dao层接口需要继承 Mapper 接口，泛型为实体类
+    public interface UserMapper extends Mapper&lt;User&gt; {
+        //Mapper中已经提供了常用的CRUD方法
+    }
+    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
+    2. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了.
+4. 在启动类上注解通用Mapper的 @MapperScan , 声明扫描Mapper/Dao层接口所在的包
+    @SpringBootApplication
+    @MapperScan(&quot;cn.boot.mapper&quot;)
+    public class StartQuickBoot {
+        ...
+    }
+5. 实体类相关
+    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
+    2. @Id 注解在属性上，指定主键;
+    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
+    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
+    @Data
+    @Table(name=&quot;tl_user&quot;)
+    public class User {
+        @Id
+        @KeySql(userGeneratedKeys=true)
+        private Integer id;  //自增长的主键
+        private String username;
+        @Transient
+        private String remark;  //额外的属性
+    }
+6. Service层：使用 @Transactional 注解引入事务;
+    @Service
+    public class UserService {
+        @Autowired
+        private UserMapper mapper;
+
+        public User findById(Integer id) {
+            return mapper.selectByPrimaryKey(id);
+        }
+        @Transactional
+        public void insertUser(User user) {  //插入数据时使用事务
+            mapper.insert(user);
+        }
+    }
+7. Controller层
+    @Autowired
+    private UserService service;  //注入Service对象
+
+    @GetMapping(&quot;/{id}&quot;)
+    public User test(@PathVariable(&quot;id&quot;) Integer id) {
+        log.debug(&quot;test service: {}&quot;, id);
+        return service.findById(id);
     }
 </code></pre><h2 id="集成Spring-Data-JPA"><a href="#集成Spring-Data-JPA" class="headerlink" title="集成Spring Data JPA"></a>集成Spring Data JPA</h2><pre><code>1. 引入起步依赖：spring-boot-starter-data-jpa
     &lt;dependency&gt;
@@ -462,7 +529,13 @@
         redis:
             host: 192.168.103.30
             port: 6379  # 默认6379
-            database: 0  #配置Redis的数据库编号，默认就是0
+            database: 0  # 配置Redis的数据库编号，默认就是0
+            timeout: 3000  # 连接超时时间3s
+            pool:  #连接池
+                max-idle=200 #最大空闲连接，默认值8
+                min-idle=200 #最小空闲连接，默认值0
+                max-active=2000 #最大连接实例，设置为-1，表示不做限制
+                max-wait=1000 #等待可用连接的超时时间，默认值-1，表示永不超时
 3. 在测试类中，注入 RedisTemplate 对象，操作Redis数据库
     @Autowired
     private RedisTemplate redis;
@@ -488,86 +561,100 @@
     2. 短信发送成功后，使用Redis记录下当前手机号，key=sms:phone:手机号，value=当前时间戳，并设置过期时间;
     3. 每次收到发送短信的消息时，先从Redis中获取手机号，如果没有或者时间已经超过了1分钟，则发送，否则不发送，
     避免短信服务的限流;
-</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 通用Mapper：一款中国人自己开发的框架，只支持单表的CRUD;
-    1. 在单表的CURD中，其SQL语句的性能通常是固定的，不像多表的SQL语句那样、有很大的优化余地;
-    2. 所以在单表操作时，完全可以为Dao层的方法自动生成SQL语句，这就是通用Mapper的作用.
-2. 通用Mapper的启动器：mapper-spring-boot-starter
-    1. 启动器中已经引入了 spring-boot-starter、spring-boot-starter-jdbc、mybatis、mybatis-spring
-    2. 所以不能再引入 mybatis-spring-boot-starter、spring-boot-starter-jdbc
-    3. 而且，通用Mapper 默认开启驼峰匹配，无需在 application.yaml 中手动开启;
-    4. 在 application.yaml 中，选择使用Spring的默认连接池，配置数据库连接的4大参数.
-    spring:
-        datasource:
-            ...... # driver-class-name、url、username、password
-    mybatis:
-        type-aliases-package: cn.boot.pojo
-3. Dao层接口需要继承 Mapper 接口，泛型为实体类
-    public interface UserMapper extends Mapper&lt;User&gt; {
-        //Mapper中已经提供了常用的CRUD方法
+</code></pre><h2 id="LogBack"><a href="#LogBack" class="headerlink" title="LogBack"></a>LogBack</h2><pre><code>1. 常用的日志组件：slf4j、log4j、logback、common-logging...
+2. logback：基于log4j，不能单独使用，一般配合slf4j使用;
+3. logback当前分为3个模块：logback-core(基础核心模块)、logback-classic、logback-access
+    1. Logger：日志记录器;
+    2. Appender：指定日志输出的目的地，控制台、文件;
+    3. Layout：日志布局，格式化日志信息的输出;
+5. 日志级别：debug &lt; info &lt; warn &lt; error
+6. 在线工具：https://logback.qos.ch/translator/，把log4j.properties转为logback.xml
+    ===========log4j.properties示例===========
+    ### 设置###
+    log4j.rootLogger = debug,stdout,D,E
+    ### 输出信息到控制抬 ###
+    log4j.appender.stdout = org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.Target = System.out
+    log4j.appender.stdout.layout = org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n
+    ### 输出DEBUG 级别以上的日志到=D://logs/error.log ###
+    log4j.appender.D = org.apache.log4j.DailyRollingFileAppender
+    log4j.appender.D.File = D://logs/log.log
+    log4j.appender.D.Append = true
+    log4j.appender.D.Threshold = DEBUG
+    log4j.appender.D.layout = org.apache.log4j.PatternLayout
+    log4j.appender.D.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+    ### 输出ERROR 级别以上的日志到=D://logs/error.log ###
+    log4j.appender.E = org.apache.log4j.DailyRollingFileAppender
+    log4j.appender.E.File =E://logs/error.log
+    log4j.appender.E.Append = true
+    log4j.appender.E.Threshold = ERROR
+    log4j.appender.E.layout = org.apache.log4j.PatternLayout
+    log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+</code></pre><h3 id="SpringBoot整合logback"><a href="#SpringBoot整合logback" class="headerlink" title="SpringBoot整合logback"></a>SpringBoot整合logback</h3><pre><code>1. Web启动器spring-boot-starter-web 中已经包含了 logback 的相关依赖;
+2. 创建 resources/logback-spring.xml
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+    &lt;configuration&gt;
+        &lt;appender name=&quot;consoleApp&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+            &lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt;
+                &lt;pattern&gt;
+                    %date{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%thread]%logger{56}.%method:%L -%msg%n
+                &lt;/pattern&gt;
+            &lt;/layout&gt;
+        &lt;/appender&gt;
+        &lt;appender name=&quot;fileInfoApp&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+            &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+                &lt;level&gt;ERROR&lt;/level&gt;
+                &lt;onMatch&gt;DENY&lt;/onMatch&gt;
+                &lt;onMismatch&gt;ACCEPT&lt;/onMismatch&gt;
+            &lt;/filter&gt;
+            &lt;encoder&gt;
+                &lt;pattern&gt;
+                    %date{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%thread]%logger{56}.%method:%L -%msg%n
+                &lt;/pattern&gt;
+            &lt;/encoder&gt;
+            &lt;!-- 滚动策略 --&gt;
+            &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+                &lt;!-- 输出到文件的路径 --&gt;
+                &lt;fileNamePattern&gt;app_log/log/app.info.%d.log&lt;/fileNamePattern&gt;
+            &lt;/rollingPolicy&gt;
+        &lt;/appender&gt;
+        &lt;appender name=&quot;fileErrorApp&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+            &lt;filter class=&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;&gt;
+                &lt;level&gt;ERROR&lt;/level&gt;
+            &lt;/filter&gt;
+            &lt;encoder&gt;
+                &lt;pattern&gt;
+                    %date{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%thread]%logger{56}.%method:%L -%msg%n
+                &lt;/pattern&gt;
+            &lt;/encoder&gt;
+            &lt;!-- 设置滚动策略 --&gt;
+            &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+                &lt;!-- 输出到文件的路径 --&gt;
+                &lt;fileNamePattern&gt;app_log/log/app.err.%d.log&lt;/fileNamePattern&gt;
+                &lt;!-- 控制保留的归档文件的最大数量，超出数量就删除旧文件，假设设置每个月滚动，
+                    且&lt;maxHistory&gt; 是1，则只保存最近1个月的文件，删除之前的旧文件 --&gt;
+                &lt;MaxHistory&gt;1&lt;/MaxHistory&gt;
+            &lt;/rollingPolicy&gt;
+        &lt;/appender&gt;
+        &lt;!-- 控制总的输出级别：level=&quot;INFO&quot; 表示只输出大于等于INFO级别的日志，不会有DEBUG日志 --&gt;
+        &lt;root level=&quot;INFO&quot;&gt;  
+            &lt;appender-ref ref=&quot;consoleApp&quot;/&gt;
+            &lt;appender-ref ref=&quot;fileInfoApp&quot;/&gt;
+            &lt;appender-ref ref=&quot;fileErrorApp&quot;/&gt;
+        &lt;/root&gt;
+    &lt;/configuration&gt;
+3. 日志输出
+    @GetMapping(&quot;log&quot;)
+    public String testLog() {
+        log.debug(&quot;this is debug level&quot;);
+        log.info(&quot;this is info level&quot;);
+        log.warn(&quot;this is warn level&quot;);
+        log.error(&quot;this is error level&quot;);
     }
-    1. 通用Mapper底层利用Mybatis的拦截器，动态生成SQL语句，并做了SQL缓存，所以性能很好;
-    2. @MapperScan、@Mapper 要使用通用Mapper包下的注解，不能再使用Mybatis包下的了.
-4. 在启动类上注解通用Mapper的 @MapperScan , 声明扫描Mapper/Dao层接口所在的包
-    @SpringBootApplication
-    @MapperScan(&quot;cn.boot.mapper&quot;)
-    public class StartQuickBoot {
-        ...
-    }
-5. 实体类相关
-    1. 通用Mapper默认会使用实体类名作为数据库表名，@Table(name=&quot;表名&quot;) 用于指定数据库表名;
-    2. @Id 注解在属性上，指定主键;
-    3. 对于自增长的主键，还需要使用 @KeySql(userGeneratedKeys=true) 注解;
-    4. 如果实体类的某个属性不作为数据库的字段，则使用 @Transient 注解;
-    @Data
-    @Table(name=&quot;tl_user&quot;)
-    public class User {
-        @Id
-        @KeySql(userGeneratedKeys=true)
-        private Integer id;  //自增长的主键
-        private String username;
-        @Transient
-        private String remark;  //额外的属性
-    }
-6. 测试
-    @RunWith(SpringRunner.class)
-    @SpringBootTest
-    public class UserMapperTest {
-        @Autowired
-        private UserMapper mapper;
-
-        @Test
-        public void test() {
-            User u = mapper.selectByPrimaryKey(8);  //按主键查询：where id=8
-        }
-    }
-7. Service层：使用 @Transactional 注解引入事务;
-    @Service
-    public class UserService {
-        @Autowired
-        private UserMapper mapper;
-
-        public User findById(Integer id) {
-            return mapper.selectByPrimaryKey(id);
-        }
-        @Transactional
-        public void insertUser(User user) {  //插入数据时使用事务
-            mapper.insert(user);
-        }
-    }
-8. 使用Controller测试
-    @Slf4j
-    @RestController
-    @RequestMapping(&quot;/user&quot;)
-    public class UserMapperTest {
-        @Autowired
-        private UserService service;  //注入Service对象
-
-        @GetMapping(&quot;/{id}&quot;)
-        public User test(@PathVariable(&quot;id&quot;) Integer id) {
-            log.debug(&quot;test service&quot;);
-            return service.findById(id);
-        }
-    }
+    http://localhost:8080/user/log
+4. 在项目目录下生成 app_log/log 目录，其中包含日志文件 app.info.xx.log、app.err.xx.log
+5. 日志文件不仅包括 log 打印的，还有大于INFO级别的系统日志;
 </code></pre><hr>
 
       
@@ -609,8 +696,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/04/12/RabbitMQ/" rel="prev" title="RabbitMQ">
-                RabbitMQ <i class="fa fa-chevron-right"></i>
+              <a href="/2016/04/05/SpringBoot响应式/" rel="prev" title="SpringBoot响应式">
+                SpringBoot响应式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -688,7 +775,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -743,7 +830,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#整合MyBatis"><span class="nav-number">1.</span> <span class="nav-text">整合MyBatis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集成Spring-Data-JPA"><span class="nav-number">2.</span> <span class="nav-text">集成Spring Data JPA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">3.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#整合Redis"><span class="nav-number">3.1.</span> <span class="nav-text">整合Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序列化"><span class="nav-number">3.2.</span> <span class="nav-text">序列化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用Mapper"><span class="nav-number">4.</span> <span class="nav-text">通用Mapper</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#整合MyBatis"><span class="nav-number">1.</span> <span class="nav-text">整合MyBatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通用Mapper"><span class="nav-number">1.1.</span> <span class="nav-text">通用Mapper</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集成Spring-Data-JPA"><span class="nav-number">2.</span> <span class="nav-text">集成Spring Data JPA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">3.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#整合Redis"><span class="nav-number">3.1.</span> <span class="nav-text">整合Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序列化"><span class="nav-number">3.2.</span> <span class="nav-text">序列化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LogBack"><span class="nav-number">4.</span> <span class="nav-text">LogBack</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot整合logback"><span class="nav-number">4.1.</span> <span class="nav-text">SpringBoot整合logback</span></a></li></ol></li></ol></div>
             
 
           </div>

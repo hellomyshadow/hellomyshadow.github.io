@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="系统架构1. 集中式架构     用户 --&amp;gt; [商品管理&amp;lt;-&amp;gt;订单管理&amp;lt;-&amp;gt;用户管理&amp;lt;-&amp;gt;购物车管理&amp;lt;-&amp;gt;权限管理&amp;lt;-&amp;gt;内容管理] --&amp;gt; 数据库     1. 代码耦合、开发维护困难;  无法针对性优化不同模块;     2. 无法水平扩展;  单点容错率底，并发能力差; 2. 垂直拆分     用户 --&amp;gt; [用户">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="系统架构1. 集中式架构     用户 --&amp;gt; [商品管理&amp;lt;-&amp;gt;订单管理&amp;lt;-&amp;gt;用户管理&amp;lt;-&amp;gt;购物车管理&amp;lt;-&amp;gt;权限管理&amp;lt;-&amp;gt;内容管理] --&amp;gt; 数据库     1. 代码耦合、开发维护困难;  无法针对性优化不同模块;     2. 无法水平扩展;  单点容错率底，并发能力差; 2. 垂直拆分     用户 --&amp;gt; [用户">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/分布式服务.jpg">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/SOA.jpg">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/微服务架构.jpg">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/SpringCloud.jpg">
+<meta property="og:updated_time" content="2019-05-19T05:54:44.857Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud">
+<meta name="twitter:description" content="系统架构1. 集中式架构     用户 --&amp;gt; [商品管理&amp;lt;-&amp;gt;订单管理&amp;lt;-&amp;gt;用户管理&amp;lt;-&amp;gt;购物车管理&amp;lt;-&amp;gt;权限管理&amp;lt;-&amp;gt;内容管理] --&amp;gt; 数据库     1. 代码耦合、开发维护困难;  无法针对性优化不同模块;     2. 无法水平扩展;  单点容错率底，并发能力差; 2. 垂直拆分     用户 --&amp;gt; [用户">
+<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/分布式服务.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/05/01/SpringCloud/">
+
+
+
+
+
+  <title>SpringCloud | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/01/SpringCloud/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringCloud</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-01T00:00:00+08:00">
+                2016-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2><pre><code>1. 集中式架构
+    用户 --&gt; [商品管理&lt;-&gt;订单管理&lt;-&gt;用户管理&lt;-&gt;购物车管理&lt;-&gt;权限管理&lt;-&gt;内容管理] --&gt; 数据库
+    1. 代码耦合、开发维护困难;  无法针对性优化不同模块;
+    2. 无法水平扩展;  单点容错率底，并发能力差;
+2. 垂直拆分
+    用户 --&gt; [用户中心、搜索系统、后台管理、认证中心] --&gt; 数据库
+    1. 系统拆分实现了流量分担，解决了并发问题;
+    2. 各个模块独立，可以针对性优化不同模块;
+    3. 方便水平扩展，负载均衡，容错率提供;
+    4. 缺点：系统间相互独立，会造成很多重复开发工作，影响开发相率;
+3. 分布式服务
+    1. 当垂直应用越来越多时，应用之间的交互不可避免，那么就将核心业务提取出来，作为独立的服务，逐渐形成稳定的服务中心，
+    使前端应用能更快地响应多变地市场需求;
+    2. 关键在于：提高业务复用及整合的分布式调用;
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/01/SpringCloud/分布式服务.jpg" alt="分布式服务"></p>
+<pre><code>    1. 优点：抽取了基础服务，系统间相互调用，提高了代码复用和开发效率;
+    2. 缺点：系统间耦合度变高，调用关系错综复杂，难以维护;
+4. 流动计算框架(SOA)，面向服务的架构，服务治理
+    1. 当服务越来越多，容量的评估、小服务资源的浪费等问题逐渐显现，此时需要增加一个调度中心，基于访问压力实时管理集群容量，
+    提高集群利用率;
+    2. 关键在于，提高机器利用率的资源和治理中心(SOA)
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/01/SpringCloud/SOA.jpg" alt="SOA"></p>
+<pre><code>1. 服务注册中心：实现服务自动注册和发现，无需手动记录服务地址;
+2. 服务自动订阅：服务列表自动推送，服务调用透明化，无需关心依赖关系;
+3. 动态监控服务状态的监控报告，手动控制服务状态;
+4. 缺点：
+    1. 服务间会有依赖关系，一旦某个环节出错，会影响较大;
+    2. 服务关系复杂，运维、测试部署困难，不符合DevOps思想;
+</code></pre><h3 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h3><pre><code>1. 微服务看起来与SOA类似，也是服务，都是对系统进行拆分，但还是有一些差别的;
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/01/SpringCloud/微服务架构.jpg" alt="微服务架构"></p>
+<pre><code>2. 微服务的特点：
+    1. 单一职责：微服务中每一个服务都对应唯一的业务能力，做到单一职责；
+    2. 微：服务拆分的粒度很小，比如一个用户管理就可以作为一个服务，每个服务虽小，但&quot;五脏俱全&quot;；
+    3. 面向服务：每个服务都要对外暴露Rest风格的服务接口，外界不关心服务的技术实现，从而做到与平台和语言无关，
+    也不限定使用的技术，只要提供Rest的接口即可;
+    4. 自治：服务间相互独立，互不干扰;
+        1. 团队独立：每个服务都是一个独立的开发团队，人数不能过多;
+        2. 技术独立：因为是面向服务，只需要提供Rest接口，无关使用什么技术实现;
+        3. 前后端分离：采用前后端分离开发，提供统一的Rest接口，后台不再为PC、移动端开发不同接口;
+        4. 数据库分离：每个服务都使用自己的数据源;
+        5. 部署独立：服务间虽有调用，但要做到服务重启不影响其他服务，有利于持续集成和持续交付，每个服务都是独立的组件，
+        可复用，可替换，降低耦合，易维护;
+3. 服务拆分的临界点是非常模糊的，需要对架构非常了解，拥有丰富的经验，具体业务具体分析。
+</code></pre><h2 id="服务调用方式"><a href="#服务调用方式" class="headerlink" title="服务调用方式"></a>服务调用方式</h2><pre><code>1. 无论是微服务还是SOA，都面临着服务间的远程调用问题，常见的两种远程调用方式：RPC、HTTP
+2. RPC：Remote Produce Call，远程过程调用，类似的还有RMI
+    1. 自定义数据格式，基于原生TCP通信，速度快，效率高;
+    2. 早期的WebService，还有当前热门的Dubbo，都是RPC的典型代表;
+3. HTTP：一种网络传输协议，规定了数据传输的格式
+    1. 缺点：消息封装臃肿，相对于RPC，传输速度会慢一些;
+    2. 优势：对服务的提供和调用方没有任何技术限定，自由灵活，更符合微服务的理念;
+    3. 现在热门的Rest风格，就可以通过HTTP协议来实现;
+4. 如果完全采用Java技术栈，Dubbo作为微服务架构是一个不错的选择;
+5. 如果技术栈多样化，而且比较青睐Spring家族，那么SpringCloud搭建微服务是不二之选;
+</code></pre><h2 id="SpringCloud"><a href="#SpringCloud" class="headerlink" title="SpringCloud"></a>SpringCloud</h2><pre><code>1. Java代码间相互调用的主流HTTP客户端：HttpURLConnection(JDK)、HttpClient(Apache)、OKHttp... 但它们的API各不相同;
+2. Spring提供了一个模板工具类 RestTemplate ，基于HTTP客户端的封装，并且实现了对象的JSON的序列化和反序列化;
+3. RestTemplate抽象了HTTP客户端的类型，目前常用的 HttpURLConnection(默认方式)、HttpClient、OKHttp 都支持;
+    1. 在SpringBoot项目中，引入web启动器：spring-boot-starter-web
+    2. 在启动器类中，注册 RestTemplate
+        @Bean
+        public RestTemplate getRestTemplate() {
+            return new RestTemplate();
+        }
+    3. 通过 RestTemplate 去请求另一个工程(端口号9999)，获取JSON数据并封装到POJO对象中
+        @Autowired
+        private RestTemplate rest;
+        @Test
+        public void test() {
+            User user = rest.getForObject(&quot;http:localhost:9999/user/11&quot;, User.class);
+        }
+4. SpringCloud
+    1. SpringCloud是实现微服务的一种架构方式，背后是整个Spring全家桶;
+    2. SpringCloud可以和Spring的各个框架无缝整合，完全支持SpringBoot的开发模式;
+    3. Spring最擅长的就是集成，它其实是把世界上最好的框架集成到自己的项目中;
+    4. SpringCloud也是整合现在非常流行的一些技术，实现 配置管理、服务发现、智能路由、负载均衡、熔断器、控制总线、集群状态...
+    5. 主要涉及的组件包括：Eureka(注册中心)、Zuui(服务网关)、Ribbon(负载均衡)、Feign(服务调用)、Hystix(熔断器)
+    6. 这些组件大都来自Netflix公司，它是做在线视频的公司，流量和压力非常大，所以早期SpringCloud都是采用Netflix的框架;
+5. SpringCloud的版本号没有采用数字，而是A、B、C...开头的单词，据说是伦敦地铁站的名字;
+    1. Angle.RELEASE：2015.3
+    2. Brixton.RELEASE：2016.5
+    3. Camden.RELEASE：2016.9
+    4. Dalston.RELEASE：2017.4
+    5. Edgware.RELEASE：2017.11，基于SpringBoot1.5以下
+    6. Finchley.RELEASE：2018.6，基于SpringBoot2.0
+6. SpringBoot
+    1. SpringBoot1.5.0-RELEASE：2016.4
+    1. SpringBoot2.0.0-RELEASE：2018.3
+7. SpringCloud Finchley.RELEASE 中部分重要组件
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/01/SpringCloud/SpringCloud.jpg" alt="SpringCloud"></p>
+<h2 id="微服务的环境准备"><a href="#微服务的环境准备" class="headerlink" title="微服务的环境准备"></a>微服务的环境准备</h2><pre><code>1. SpringCloud对版本的要求极其严格，版本冲突会带来很多意想不到的问题;
+2. SpringCloud Finchley.RELEASE 搭建微服务时，SpringBoot版本选择v2.0.x，不能是v2.1.x;
+3. 为了操作方便，不为每个服务创建独立的工程，而是创建Maven的聚合工程;
+4. 创建一个父工程，打包方式为pom，统一管理依赖版本;
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.0.4.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring-cloud.version&gt;Finchley.SR1&lt;/spring-cloud.version&gt;  ==&gt;兼容spring-boot2.0.x
+        &lt;mapper.starter.version&gt;2.1.5&lt;/mapper.starter.version&gt;
+        &lt;mysql.version&gt;8.0.16&lt;/mysql.version&gt;
+    &lt;/properties&gt;
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+                &lt;artifactId&gt;mapper-spring-boot-starter&lt;/artifactId&gt;
+                &lt;version&gt;${mapper.starter.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;mysql&lt;/groupId&gt;
+                &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+                &lt;version&gt;${mysql.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;version&gt;1.18.8&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;!-- &lt;version&gt;2.0.4.RELEASE&lt;/version&gt; --&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+5. spring-cloud-dependencies：SpringCloud版本管理的pom，它管理了SpringCloud所有组件的版本，在引入这些组件时，
+    不要再指定版本号;
+    1. SpringCloud-Finchley.xx 只兼容 SpringBoot-v2.0.x
+    2. SpringCloud-Greenwich.xx 可以支持 SpringBoot-v2.1.x
+6. 创建子工程userservice，作为服务提供方，端口号8081
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;version&gt;2.0.4.RELEASE&lt;/version&gt;  --&gt;版本号与SpringBoot保持一致
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;mysql&lt;/groupId&gt;
+        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-spring-boot-starter&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    1. application.yml
+        server:
+            port: 8081
+        spring:
+            datasource:
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql:///db_cloud?serverTimezone=Asia/Shanghai
+                username: root
+                password: 123456
+        mybatis:
+            type-aliases-package: cn.cloud.pojo
+            impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    2. POJO对象
+        @Table(name=&quot;tb_user&quot;)
+        @Data
+        public class User {
+            @Id
+            @KeySql(useGeneratedKeys = true)
+            private Long id;
+            ...
+        }
+    3. Mapper接口
+        public interface UserMapper extends Mapper&lt;User&gt; { }
+    4. Service层
+        @Service
+        public class UserService {
+            @Autowired
+            private UserMapper mapper;
+
+            public User findById(Long id) {
+                return mapper.selectByPrimaryKey(id);
+            }
+        }
+    5. Web层
+        @RestController
+        @RequestMapping(&quot;user&quot;)
+        public class UserController {
+            @Autowired
+            private UserService service;
+
+            @GetMapping(&quot;/{id}&quot;)
+            public User findById(@PathVariable(&quot;id&quot;) Long id) {
+                return service.findById(id);
+            }
+        }
+    6. 启动类
+        @SpringBootApplication
+        @MapperScan(&quot;cn.cloud.mapper&quot;)
+        public class UserApplication {
+            public static void main(String[] args) {
+                SpringApplication.run(UserApplication.class, args);
+            }
+        }
+7. 创建子工程consumerservice，作为服务的消费方，端口号8080
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;version&gt;2.0.4.RELEASE&lt;/version&gt;
+    &lt;/dependency&gt;
+    1. POJO对象
+        @Data
+        public class User {
+            private Long id;
+            ......
+        }
+    2. Web层
+        @RestController
+        @RequestMapping(&quot;consumer&quot;)
+        public class ConsumerController {
+            @Autowired
+            private RestTemplate rest;
+
+            @GetMapping(&quot;{id}&quot;)
+            public User findById(@PathVariable(&quot;id&quot;) Long id) {
+                //访问服务提供者，获取数据
+                String url = &quot;http://localhost:8081/user/&quot; + id;
+                User user = rest.getForObject(url, User.class);
+                return user;
+            }
+        }
+    3. 启动类
+        @SpringBootApplication
+        public class ConsumerApplication {
+            @Bean
+            public RestTemplate getRestTemplate() {
+                return new RestTemplate();
+            }
+            public static void main(String[] args) {
+                SpringApplication.run(ConsumerApplication.class, args);
+            }
+        }
+8. 启动两个服务，点击右下角的提示：Run Dashboard -&gt; Show run ... -&gt; 弹出 Run Dashboard 窗口，便于管理服务;
+    http://localhost:8081/user/9  --&gt; 测试服务的提供方
+    http://localhost:8080/consumer/9  --&gt; 测试服务的消费方
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/10/Redis高级/" rel="next" title="Redis高级">
+                <i class="fa fa-chevron-left"></i> Redis高级
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/02/SpringCloud组件1/" rel="prev" title="SpringCloud组件1">
+                SpringCloud组件1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统架构"><span class="nav-number">1.</span> <span class="nav-text">系统架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#微服务"><span class="nav-number">1.1.</span> <span class="nav-text">微服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务调用方式"><span class="nav-number">2.</span> <span class="nav-text">服务调用方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringCloud"><span class="nav-number">3.</span> <span class="nav-text">SpringCloud</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微服务的环境准备"><span class="nav-number">4.</span> <span class="nav-text">微服务的环境准备</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
