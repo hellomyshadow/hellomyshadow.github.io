@@ -88,7 +88,7 @@
 <meta property="og:description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg">
-<meta property="og:updated_time" content="2019-05-19T14:24:08.807Z">
+<meta property="og:updated_time" content="2019-05-20T12:29:11.311Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud组件1">
 <meta name="twitter:description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
@@ -360,7 +360,7 @@
 </code></pre><h3 id="报错问题"><a href="#报错问题" class="headerlink" title="报错问题"></a>报错问题</h3><pre><code>1. 导致无法启动的版本问题：java.lang.NoSuchMethodError: com.google.gson.GsonBuilder.setLenient()
 2. 启动时可能不停地报 eureka-client的相关错误，但能访问注册中心
     1. Eureka是一个注册中心，一定不能宕掉，所以会搭建Eureka服务集群，而集群中的Eureka之间也需要注册和通信;
-    2. 所以Eureka既是服务端，又是客户端，Eureka服务启动时会去尝试注册其他Eueka服务，但又没有其他Eureka服务可以注册，
+    2. 所以Eureka既是服务端，又是客户端，Eureka服务启动时会尝试注册其他Eueka服务，但又没有其他Eureka服务可以注册，
     所以才会报错;
     3. 解决方式：让当前Eureka服务注册自己，在 application.yml 中配置注册地址;
     eureka:
@@ -475,7 +475,7 @@
                 defaultZone: http://127.0.0.1:8761/eureka
     5. 启动 EurekaServer2 服务(8762)，它就会注册到已经启动的 EurekaServer 服务(8761)上;
     6. 同时，EurekaServer(8761)也会发现并注册到 EurekaServer2(8762)上，停止报错;
-4. EurekaServer(8761) 和 EurekaServer2(8762) 的 spring.application.name 是相同的，这就一个服务的多个实例;
+4. EurekaServer(8761) 和 EurekaServer2(8762) 的 spring.application.name 是相同的，这就是一个服务多个实例;
     1. 它们之间会共享服务列表信息，从而实现Eureka服务注册中心的集群;
     2. 访问8761和8762的注册中心，它们的服务列表是相同的，且 eureka-server 服务显示有两个实例;
 5. 启动的问题：eureka-server 服务并没有两个实例，8761注册不了8762，而且8762上的服务实例不稳定，会变成1个;
@@ -502,7 +502,7 @@
     2. 第二次Map的key是服务的实例ID，一般为host+serviceId+port，如 localhost:user-service:8081
     3. 值是服务的实例对象，也就是说，一个服务可以同时启动多个实例，从而形成集群;
 3. 如果配置为false，那么它就不会申请注册服务；同理，如果EurekaServer配置了这个参数为false，它也不会注册自己了;
-</code></pre><h3 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h3><pre><code>1. 服务的续约(renew)：在注册服务完成后，客户端会维持一个心跳，定时向EurekaServer发起Rest请求，说明自己处于活跃状态;
+</code></pre><h3 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h3><pre><code>1. 服务续约(renew)：在注册服务完成后，客户端会维持一个心跳，定时向Eureka服务发起Rest请求，说明自己处于活跃状态;
 2. 有两个重要参数可以修改服务续约的行为：
     eureka:
         instance:
@@ -516,20 +516,20 @@
             fetch-registry: true  # 是否从注册中心拉取数据，默认为true
             registry-fetch-interval-seconds: 30  # 每次拉取数据的间隔时间，默认30s
 4. 默认每隔30s拉取一次服务列表，所以刚刚启动的服务消费者无法访问服务提供者;
-</code></pre><h3 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h3><pre><code>1. 服务下线：当服务正常关闭时，它会触发一个服务下线的REST请求给EurekaServer，注册中心接收到之后，会把该服务置为下线状态;
+</code></pre><h3 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h3><pre><code>1. 服务正常关闭时，它会触发一个 服务下线 的REST请求给Eureka服务，注册中心接收到之后，会把该服务置为下线状态;
 2. 失效剔除
     1. 有时候可能由于内存溢出或网络故障等原因，导致服务不能正常工作，而服务注册中心并未受到&quot;服务下线&quot;的请求;
-    2. 相对于服务续约操作，注册中心在启动时会创建一个定时任务，默认每隔 60s 将当前列表中超过失效时间(默认90s)的服务剔除;
-3. 在注册中心的配置文件中，修改定时任务的轮询时间
+    2. 相对于renew，注册中心在启动时会创建一个定时任务，默认每隔60s将当前列表中超过失效时间(默认90s)的服务剔除;
+3. 在注册中心的配置文件中，修改定时任务的轮询时间;
     eureka:
         server:
             eviction-interval-timer-in-ms: 60000  #默认60s
-</code></pre><h3 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h3><pre><code>1. 关闭一个服务，就会在注册中心的管理平台上出现一条警告：EMERGENCY... JUST TO BE SAFE. 这就触发了Eureka的自我保护机制;
+</code></pre><h3 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h3><pre><code>1. 关闭一个服务时，就会在注册中心的管理平台上出现一条警告：EMERGENCY... BE SAFE. 这就触发了Eureka的自我保护机制;
 2. 当服务未按时进行服务续约时，Eureka会统计服务实例最近15min心跳续约的比例是否低于85%;
-3. 在生产环境下，因为网络延迟等原因，服务续约超时的比例很可能超标，但此时就把服务从列表中剔除并不妥当，因为服务可能没有宕机;
-4. Eureka在这段时间内不会剔除任何服务，直到网络恢复正常;
-5. 这就保证了在生产环境下，大多数服务依然可用，不过也有可能获取到失败的服务实例，因此服务调用者必须做好服务的失败容错;
-6. 在注册中心关闭自我保护，默认是打开的
+3. 在生产环境下，因为网络延迟等原因，服务续约超时的比例很可能超标，但此时就把服务从列表中剔除并不妥当，
+   因为服务可能没有宕机，Eureka在这段时间内不会剔除任何服务，直到网络恢复正常;
+4. 从而保证在生产环境下，大多数服务依然可用，不过也有可能获取到失败的服务实例，因此服务消费者必须做服务的失败容错;
+5. 在注册中心关闭自我保护，默认是打开的
     eureka:
         server:
             enable-self-preservation: false  # 默认为true

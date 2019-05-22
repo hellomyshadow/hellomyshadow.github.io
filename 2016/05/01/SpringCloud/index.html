@@ -91,7 +91,7 @@
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/SOA.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/微服务架构.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/01/SpringCloud/SpringCloud.jpg">
-<meta property="og:updated_time" content="2019-05-19T05:54:44.857Z">
+<meta property="og:updated_time" content="2019-05-20T12:34:41.832Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud">
 <meta name="twitter:description" content="系统架构1. 集中式架构     用户 --&amp;gt; [商品管理&amp;lt;-&amp;gt;订单管理&amp;lt;-&amp;gt;用户管理&amp;lt;-&amp;gt;购物车管理&amp;lt;-&amp;gt;权限管理&amp;lt;-&amp;gt;内容管理] --&amp;gt; 数据库     1. 代码耦合、开发维护困难;  无法针对性优化不同模块;     2. 无法水平扩展;  单点容错率底，并发能力差; 2. 垂直拆分     用户 --&amp;gt; [用户">
@@ -338,15 +338,15 @@
     3. 方便水平扩展，负载均衡，容错率提供;
     4. 缺点：系统间相互独立，会造成很多重复开发工作，影响开发相率;
 3. 分布式服务
-    1. 当垂直应用越来越多时，应用之间的交互不可避免，那么就将核心业务提取出来，作为独立的服务，逐渐形成稳定的服务中心，
-    使前端应用能更快地响应多变地市场需求;
+    1. 当垂直应用越来越多时，应用之间的交互不可避免，那么就将核心业务提取出来，作为独立的服务，
+    逐渐形成稳定的服务中心，使前端应用能更快地响应多变地市场需求;
     2. 关键在于：提高业务复用及整合的分布式调用;
 </code></pre><p><img src="//hellomyshadow.github.io/2016/05/01/SpringCloud/分布式服务.jpg" alt="分布式服务"></p>
 <pre><code>    1. 优点：抽取了基础服务，系统间相互调用，提高了代码复用和开发效率;
     2. 缺点：系统间耦合度变高，调用关系错综复杂，难以维护;
 4. 流动计算框架(SOA)，面向服务的架构，服务治理
-    1. 当服务越来越多，容量的评估、小服务资源的浪费等问题逐渐显现，此时需要增加一个调度中心，基于访问压力实时管理集群容量，
-    提高集群利用率;
+    1. 当服务越来越多，容量的评估、小服务资源的浪费等问题逐渐显现，此时需要增加一个调度中心，
+    基于访问压力实时管理集群容量，提高集群利用率;
     2. 关键在于，提高机器利用率的资源和治理中心(SOA)
 </code></pre><p><img src="//hellomyshadow.github.io/2016/05/01/SpringCloud/SOA.jpg" alt="SOA"></p>
 <pre><code>1. 服务注册中心：实现服务自动注册和发现，无需手动记录服务地址;
@@ -367,8 +367,8 @@
         2. 技术独立：因为是面向服务，只需要提供Rest接口，无关使用什么技术实现;
         3. 前后端分离：采用前后端分离开发，提供统一的Rest接口，后台不再为PC、移动端开发不同接口;
         4. 数据库分离：每个服务都使用自己的数据源;
-        5. 部署独立：服务间虽有调用，但要做到服务重启不影响其他服务，有利于持续集成和持续交付，每个服务都是独立的组件，
-        可复用，可替换，降低耦合，易维护;
+        5. 部署独立：服务间虽有调用，但要做到服务重启不影响其他服务，有利于持续集成和持续交付，
+        每个服务都是独立的组件，可复用，可替换，降低耦合，易维护;
 3. 服务拆分的临界点是非常模糊的，需要对架构非常了解，拥有丰富的经验，具体业务具体分析。
 </code></pre><h2 id="服务调用方式"><a href="#服务调用方式" class="headerlink" title="服务调用方式"></a>服务调用方式</h2><pre><code>1. 无论是微服务还是SOA，都面临着服务间的远程调用问题，常见的两种远程调用方式：RPC、HTTP
 2. RPC：Remote Produce Call，远程过程调用，类似的还有RMI
@@ -380,7 +380,7 @@
     3. 现在热门的Rest风格，就可以通过HTTP协议来实现;
 4. 如果完全采用Java技术栈，Dubbo作为微服务架构是一个不错的选择;
 5. 如果技术栈多样化，而且比较青睐Spring家族，那么SpringCloud搭建微服务是不二之选;
-</code></pre><h2 id="SpringCloud"><a href="#SpringCloud" class="headerlink" title="SpringCloud"></a>SpringCloud</h2><pre><code>1. Java代码间相互调用的主流HTTP客户端：HttpURLConnection(JDK)、HttpClient(Apache)、OKHttp... 但它们的API各不相同;
+</code></pre><h2 id="SpringCloud"><a href="#SpringCloud" class="headerlink" title="SpringCloud"></a>SpringCloud</h2><pre><code>1. Java代码间相互调用的主流HTTP客户端：HttpURLConnection(JDK)、HttpClient(Apache)、OKHttp... 
 2. Spring提供了一个模板工具类 RestTemplate ，基于HTTP客户端的封装，并且实现了对象的JSON的序列化和反序列化;
 3. RestTemplate抽象了HTTP客户端的类型，目前常用的 HttpURLConnection(默认方式)、HttpClient、OKHttp 都支持;
     1. 在SpringBoot项目中，引入web启动器：spring-boot-starter-web
@@ -400,9 +400,10 @@
     1. SpringCloud是实现微服务的一种架构方式，背后是整个Spring全家桶;
     2. SpringCloud可以和Spring的各个框架无缝整合，完全支持SpringBoot的开发模式;
     3. Spring最擅长的就是集成，它其实是把世界上最好的框架集成到自己的项目中;
-    4. SpringCloud也是整合现在非常流行的一些技术，实现 配置管理、服务发现、智能路由、负载均衡、熔断器、控制总线、集群状态...
+    4. SpringCloud也是整合现在非常流行的一些技术，实现注入 配置管理、服务发现、智能路由、负载均衡、熔断器、
+    控制总线、集群状态...
     5. 主要涉及的组件包括：Eureka(注册中心)、Zuui(服务网关)、Ribbon(负载均衡)、Feign(服务调用)、Hystix(熔断器)
-    6. 这些组件大都来自Netflix公司，它是做在线视频的公司，流量和压力非常大，所以早期SpringCloud都是采用Netflix的框架;
+    6. 这些组件大都来自Netflix公司，它是做在线视频的，流量和压力非常大，所以SpringCloud大多采用Netflix的框架;
 5. SpringCloud的版本号没有采用数字，而是A、B、C...开头的单词，据说是伦敦地铁站的名字;
     1. Angle.RELEASE：2015.3
     2. Brixton.RELEASE：2016.5
@@ -471,10 +472,10 @@
             &lt;/plugin&gt;
         &lt;/plugins&gt;
     &lt;/build&gt;
-5. spring-cloud-dependencies：SpringCloud版本管理的pom，它管理了SpringCloud所有组件的版本，在引入这些组件时，
-    不要再指定版本号;
-    1. SpringCloud-Finchley.xx 只兼容 SpringBoot-v2.0.x
-    2. SpringCloud-Greenwich.xx 可以支持 SpringBoot-v2.1.x
+5. spring-cloud-dependencies：SpringCloud版本管理的pom
+    1. 它管理了SpringCloud所有组件的版本，在引入这些组件时，不要再指定版本号;
+    2. SpringCloud-Finchley.xx 只兼容 SpringBoot-v2.0.x
+    3. SpringCloud-Greenwich.xx 可以支持 SpringBoot-v2.1.x
 6. 创建子工程userservice，作为服务提供方，端口号8081
     &lt;dependency&gt;
         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;

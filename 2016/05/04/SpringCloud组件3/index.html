@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="网关之Zuul Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用； Zuul的核心是一系列的过滤器，这些过滤器的功能：   1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求； 2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图； 3. 动态路由：动态地将请求路由到不同的后端集群； 4. 压">
+<meta name="description" content="网关之Zuul1. 网关的核心功能：过滤和路由 2. Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用; 3. Zuul的核心是一系列的过滤器，这些过滤器的功能：     1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求;     2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图;">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringCloud组件3">
 <meta property="og:url" content="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="网关之Zuul Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用； Zuul的核心是一系列的过滤器，这些过滤器的功能：   1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求； 2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图； 3. 动态路由：动态地将请求路由到不同的后端集群； 4. 压">
+<meta property="og:description" content="网关之Zuul1. 网关的核心功能：过滤和路由 2. Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用; 3. Zuul的核心是一系列的过滤器，这些过滤器的功能：     1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求;     2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图;">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/过滤器.jpg">
-<meta property="og:updated_time" content="2019-05-19T14:29:11.687Z">
+<meta property="og:updated_time" content="2019-05-22T13:44:06.081Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud组件3">
-<meta name="twitter:description" content="网关之Zuul Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用； Zuul的核心是一系列的过滤器，这些过滤器的功能：   1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求； 2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图； 3. 动态路由：动态地将请求路由到不同的后端集群； 4. 压">
+<meta name="twitter:description" content="网关之Zuul1. 网关的核心功能：过滤和路由 2. Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用; 3. Zuul的核心是一系列的过滤器，这些过滤器的功能：     1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求;     2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图;">
 <meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg">
 
 
@@ -325,205 +325,216 @@
       
 
       
-        <h2 id="网关之Zuul"><a href="#网关之Zuul" class="headerlink" title="网关之Zuul"></a>网关之Zuul</h2><ol>
-<li>Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用；</li>
-<li>Zuul的核心是一系列的过滤器，这些过滤器的功能：</li>
-</ol>
-<p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg" alt="Zuul"></p>
-<pre><code>1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求；
-2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图；
-3. 动态路由：动态地将请求路由到不同的后端集群；
-4. 压力测试：逐渐增加指向集群的流量，以了解性能；
-5. 负载分配：为每一种负载类型分配对应容量，并弃用超过限定值的请求；
-6. 静态响应处理：在边缘位置直接建立部分响应，从而避免转发到内部集群；
-7. 多区域弹性：跨越AWS Region 进行数据路由，旨在实现ELB使用的多样化，以及让系统的边缘更贴近系统的使用者；
-</code></pre><ol start="3">
-<li>SpringCloud对Zuul做了整合与增强；目前Zuul使用的默认HTTP客户端是Apache HttpClient，<br> 也可以使用RestClient，okhttp3.OkHttpClient<ol>
-<li>启用RestClient时，配置 ribbon.restclient.enabled=true</li>
-<li>启用okhttp3.OkHttpClient，则配置 ribbon.okhttp.enabled=true</li>
-</ol>
-</li>
-<li>网关就是整个系统的入口，如果没有网关进行控制，外界可以访问系统中的任何服务，甚至可以把自己的服务注册到系统的注册中心；</li>
-<li>网关的核心功能：过滤和路由</li>
-<li>Zuul加入后的架构<br> [图片]<ol>
-<li>不管是来自客户端的请求，还是服务内部的调用，一切对服务的请求都会经过Zuul，然后再由网关来实现鉴权、动态路由等操作；</li>
-<li>Zuul就是服务的统一入口；</li>
-</ol>
-</li>
-<li><p>在父工程下创建一个子工程gateway</p>
-<ol>
-<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-netflix-zuul</artifactid><br> </dependency></li>
-<li>Zuul依赖中已经引入了 web、hystrix、ribbon 等依赖</li>
-<li>创建启动类，注解 @EnableZuulProxy，而不是 @EnableZuulServer，因为它的功能不完善，太单一；<br> @EnableZuulProxy<br> @SpringBootApplication<br> public class GatewayApplication {<pre><code>...
-</code></pre> }</li>
-<li><p>配置<br> server:</p>
-<pre><code>port: 8090
-</code></pre><p> spring:</p>
-<pre><code>application:
-    name: gateway
-</code></pre><p> zuul:</p>
-<pre><code>routes:  #配置路由规则
-    hehe: #路由ID，值是key-value，作为一条路由规则
-        path: /user-service/**   #匹配的路径，以/user-service开头的所有路径
-        url: http://127.0.0.1:8081  #转发的路径，即转发的服务提供者
-</code></pre></li>
-<li><p>/user-service 只作为匹配路径的前缀，** 才会被转发<br> <a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></p>
-</li>
-</ol>
-</li>
-<li><p>使用Eureka的客户端依赖，注册服务，拉取服务列表</p>
-<ol>
-<li>引入依赖 <dependency><br>     <groupid>org.springframework.cloud</groupid><br>     <artifactid>spring-cloud-starter-netflix-eureka-client</artifactid><br> </dependency></li>
-<li>配置<br> eureka:<pre><code>client:
-    service-url:
-        defaultZone: http://127.0.0.1:8761/eureka
-</code></pre> zuul:<pre><code>routes:
-    hehe:
-        path: /user-service/**
-        serviceId: user-service  #指定要转发的服务ID
-</code></pre></li>
-<li>Zull底层根据配置的 serviceId，使用 EurekaClient 获取服务列表，通过Ribbon的负载均衡算法，获取一个服务实例；</li>
-<li>测试：<a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a></li>
-<li>既然路由ID可以自由命名，那么就简化配置方案：<br> zuul:<pre><code>routes:
-    user-service: /user-service/**  #key是转发的服务ID，value是匹配的路径
-</code></pre></li>
-<li>事实上，Zuul默认就是这么配置的，它会拉取所有的服务列表，把它们都默认配置为：服务ID: /服务ID/**</li>
-<li>也就是说，如果不需要更改映射路径，zuul.routes 可以不用配置，但即使手动更改了映射路径，/服务ID/** 的方式依然有效<br> zuul:<pre><code>routes:
-    user-service: /user/**  # 映射匹配的路径为 /user
-</code></pre> <a href="http://127.0.0.1:8090/user/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/user/9</a> 等效于 <a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a></li>
-<li>当然，有些服务不想让 Zuul 自动配置，则让Zuul忽略：<br> zuul:<pre><code>ignored-services:  #忽略注册的服务
-    - consumer-service
-</code></pre> <a href="http://127.0.0.1:8090/consumer-service/consumer/9" target="_blank" rel="noopener">http://127.0.0.1:8090/consumer-service/consumer/9</a>  不可以再访问</li>
-<li><p>转发前缀：匹配路径的前缀默认是不转发给微服务的，strip-prefix 属性可以控制是否转发，默认值是true<br> zuul:</p>
-<pre><code>routes:
-    user-service:
-        path: /user/**
-        serviceId: user-service
-        strip-prefix: false  #转发前缀
-ignored-services:
-    - consumer-service
-</code></pre><ol>
-<li>访问：<a href="http://127.0.0.1:8090/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a><br> 测试发现：带有服务ID的前缀 <a href="http://127.0.0.1:8090/user-service/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user-service/user/9</a> 依然可以访问</li>
-<li>转发前缀的全局配置：zuul.strip-prefix<br> zuul:<pre><code>routes:
-    user-service:
-        path: /user/**
-        serviceId: user-service
-strip-prefix: false
-然而，测试发现：并不能去掉前缀，访问时仍然要加上前缀 http://127.0.0.1:8090/user/user/9
-</code></pre></li>
-<li><p>如果路由规则是简化配置，zuul.strip-prefix属性无效。<br> zuul:</p>
-<pre><code>routes:
-    user-service: /user/**
-strip-prefix: false  # 无效，不会转发前缀
-</code></pre><p> <a href="http://127.0.0.1:8090/user/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></p>
-</li>
-</ol>
-</li>
-<li><p>全局添加前缀：所有请求的前面都必须加上的前缀<br>zuul:</p>
-<pre><code>prefix: /api  #全局前缀
-routes:
-    user-service: /user/**  # /user 是局部前缀
-</code></pre><p><a href="http://127.0.0.1:8090/api/user/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/api/user/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></p>
-<ol>
-<li>局部 strip-prefix=false 只对局部前缀有效，不会转发全局前缀<br>zuul:<br> prefix: /api<br> routes:<pre><code>user-service:
-    path: /user/**
-    serviceId: user-service
-    strip-prefix: false
-</code></pre><a href="http://127.0.0.1:8090/api/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/api/user/9</a>  –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a><h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2></li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/过滤器.jpg" alt="Zuul"></p>
-<ol>
-<li>Zuul作为网关的一个重要功能，就是实现请求的鉴权(权限控制)，通过Zuul提供的过滤器实现；</li>
-<li>ZuulFilter 是过滤器的顶级父类，最重要的方法有4个<br> public abstract ZuulFilter implements IZuulFilter {<pre><code>abstract public String filterType();
-abstract public int filterOrder(); 
-boolean shouldFilter();  //来自IZuulFilter
-Object run() throws ZuulException;  //来自IZuulFilter
-......
-</code></pre> }<ol>
-<li>filterType()：过滤器的类型，4种类型<ol>
-<li>pre：请求在被路由之前执行，前置过滤器</li>
-<li>routing：在路由请求时执行</li>
-<li>post：在routing和error过滤器之后调用，后置过滤器</li>
-<li>error：处理请求时发生错误调用，异常处理器</li>
-</ol>
-</li>
-<li>filterOrder()：过滤器的执行顺序，数值越小，优先级越高</li>
-<li>shouldFilter()：是否过滤</li>
-<li>run()：过滤器执行的逻辑</li>
-</ol>
-</li>
-<li>过滤器的执行生命周期<br> [图片]<ol>
-<li>正常流程：请求到达 –&gt; pre Filter –&gt; routing Filter –&gt; 进行路由 –&gt; 请求到达真正的服务提供者 –&gt;<br>返回处理结果 –&gt; post Filter –&gt; 响应数据</li>
-<li>异常流程：<ol>
-<li>在整个过程中，pre/routing Filter出现异常 –&gt; error Filter 处理完毕后，将请求交给 post Filter –&gt; 响应数据</li>
-<li>如果 error Filter 出现异常，最终也会进入post Filter，然后响应数据；</li>
-<li>如果 post Filter 出现异常，会进入 error Filter，但与 pre/routing Filter 不同，请求不会再到达 post Filter了</li>
-</ol>
-</li>
-<li>前置过滤器的应用：权限控制，限流(限制流量，限制某个用户在一段时间内只能访问一次，限制最多只能有1000个人访问等等)</li>
-<li>后置处理器和异常处理器通常结合使用，做一些通用的异常处理；</li>
-<li>服务调用时长统计：pre 和 post Filter 结合使用。</li>
-</ol>
-</li>
-<li>Zuul内置了很多过滤器，也允许自定义过滤器，比如模拟登录的校验，如果请求中有 access-token 参数，则放行<ol>
-<li>在网关模块gateway中，自定义过滤器<br>@Component  –&gt;加入Spring IoC容器<br>public class LoginFilter extends ZuulFilter {<br> public String filterType() {<pre><code>return FilterConstants.PRE_TYPE;  // 前置过滤器
-</code></pre> }<br> public int filterOrder() {<pre><code>return FilterConstants.PRE_DECORATION_FILTER_ORDER -  1;  //等待把请求参数处理完，再做拦截
-</code></pre> }<br> public boolean shouldFilter() {<pre><code>return true;
-</code></pre> }<br> public Object run() throws ZuulException {<pre><code>//1. 在内置的过滤器中，查看如何获取Request对象
-//1-1. 获取请求上下文，生命周期：一次请求，即从请求到达Zuul，到最终响应数据；只限Zuul中使用，不会带到微服务中
-RequestContext ctx = RequestContext.getCurrentContext();
-//1-2. 获取当前的请求对象
-HttpServletRequest request = ctx.getRequest();
-//2. 获取请求参数
-String token = request.getParameter(&quot;access-token&quot;);
-//3. 判断是否存在 access-token 
-if(StringUtils.isBlank(token)) {  ---&gt;引入Apache的工具类依赖：commons-lang3
-    //trim() 内部会多次截取字符串，效率非常差，所以StringUtils.isBlank()内部没用trim()
-    //不存在，则认为没有登录，拦截请求
-    ctx.setSendZuulResponse(false); //拦截
-    ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());  //设置响应状态码403
-}
-return null;
-</code></pre> }<br>}</li>
-<li>测试<br><a href="http://127.0.0.1:8090/user/9" target="_blank" rel="noopener">http://127.0.0.1:8090/user/9</a>  –&gt; 请求被拒绝，403<br><a href="http://127.0.0.1:8090/user/9?access-token=123" target="_blank" rel="noopener">http://127.0.0.1:8090/user/9?access-token=123</a> –&gt; <a href="http://127.0.0.1:8081/user/9" target="_blank" rel="noopener">http://127.0.0.1:8081/user/9</a></li>
-</ol>
-</li>
-<li>负载均衡和服务熔断<ol>
-<li>Zuul默认集成了Ribbon负载均衡和Hystrix熔断机制，但所有的超时策略都是默认值，比如熔断超时时间为1s，很容易触发</li>
-<li>手动配置<br> hystrix:<pre><code>command:
-    default:
-        execution:
-            isolation:
-                thread:
-                    timeoutInMilliseconds: 6000  #6s超时
-</code></pre> ribbon:<pre><code>ConnectTimeout: 500  #默认1000
-ReadTimeout: 2000  #默认1000
-MaxAutoRetriesNextServer: 1  # 不同服务实例的重试次数，一个服务多个实例，在不同服务实例之间重试，默认为1
-MaxAutoRetries: 0  # 对当前服务实例的重试次数，默认为0，不重试
-</code></pre></li>
-<li>内部在计算时，Ribbon的超时总时长 不能大于 hystrix熔断的超时时长，否则Ribbon还没有超时，服务就已经熔断了！</li>
-<li>Ribbon超时总时长的计算规则：(ConnectTimeout+ReadTimeout)<em>(MaxAutoRetries+1)</em>(MaxAutoRetriesNextServer+1)</li>
-<li>所以默认情况下，Ribbon超时总时长=(1000+1000)<em>(0+1)</em>(1+1)=4000ms</li>
-</ol>
-</li>
-<li>Zuul的高可用性<ol>
-<li>Zuul也是一个服务，那么就可以启用多个Zuul服务，自动注册到Eureka，形成集群；</li>
-<li>如果是服务内部访问，访问Zuul，自动负载均衡，没有问题；但是，Zuul更多是外部访问，如PC、移动端，它们并不知道有这么多网关地址，无法通过Eureka进行负载均衡；</li>
-<li>此时就会使用其他的服务网关，来对Zuul进行代理，比如Nginx<br>用户请求 –&gt; Nginx –&gt; Zuul-1、Zuul-2 … –&gt; Service-1、Service-2 …</li>
-</ol>
-</li>
-<li>Eureka、Ribbon、Hystrix、Feign、Zuul 这些只是SpringCloud的一小部分，还有更多组件</li>
-<li>spring-cloud-config：统一配置中心，让微服务自动从Git上拉取最新的配置，并缓存，不再手动更改配置文件；<br> 使用Git的Webhook钩子，还可以实现主动通知配置中心，告知配置发生了变化，那么配置中心会通过消息总线、通知所有的微服务、去更新配置；</li>
-<li>spring-cloud-bus：消息总线，底层是消息队列，RabbitMQ或kafuka</li>
-<li>spring-cloud-stream：消息通信</li>
-<li>spring-cloud-hystrix-dashboard：容错统计，形成图形化界面</li>
-<li>spring-cloud-sleuth：链路追踪，结合Zipkin，便于追踪服务的错误</li>
-</ol>
-<hr>
+        <h2 id="网关之Zuul"><a href="#网关之Zuul" class="headerlink" title="网关之Zuul"></a>网关之Zuul</h2><pre><code>1. 网关的核心功能：过滤和路由
+2. Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用;
+3. Zuul的核心是一系列的过滤器，这些过滤器的功能：
+    1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求;
+    2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图;
+    3. 动态路由：动态地将请求路由到不同的后端集群;
+    4. 压力测试：逐渐增加指向集群的流量，以了解性能;
+    5. 负载分配：为每一种负载类型分配对应容量，并弃用超过限定值的请求;
+    6. 静态响应处理：在边缘位置直接建立部分响应，从而避免转发到内部集群;
+    7. 多区域弹性：跨越AWS Region 进行数据路由，旨在实现ELB使用的多样化，以及让系统的边缘更贴近系统的使用者;
+4. SpringCloud对Zuul做了整合与增强，目前Zuul默认使用HTTP客户端Apache HttpClient，也可以使用RestClient，
+    okhttp3.OkHttpClient
+    1. 启用RestClient时，配置 ribbon.restclient.enabled=true
+    2. 启用okhttp3.OkHttpClient，则配置 ribbon.okhttp.enabled=true
+5. 网关是整个系统的入口，如果没有网关控制，外界可以访问系统中的任何服务，甚至可以把自己的服务注册为系统服务;
+6. Zuul加入后的架构
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg" alt="Zuul"></p>
+<pre><code>1. 不管是来自客户端的请求，还是服务内部的调用，一切对服务的请求都会经过Zuul，由网关来实现鉴权、动态路由等操作;
+2. Zuul就是服务的统一入口;
+</code></pre><h3 id="搭建网关"><a href="#搭建网关" class="headerlink" title="搭建网关"></a>搭建网关</h3><pre><code>1. 在父工程下创建一个子工程gateway
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. Zuul依赖中已经引入了 web、hystrix、ribbon 等依赖;
+3. @EnableZuulProxy：注解在启动类上，而不是注解 @EnableZuulServer，因为它的功能不完善，太单一;
+    @EnableZuulProxy
+    @SpringBootApplication
+    public class GatewayApplication {
+        ...
+    }
+4. application.yml
+    server:
+        port: 8090
+    spring:
+        application:
+            name: gateway
+    zuul:
+        routes:    # 配置路由规则
+            hehe:  # 自定义路由ID，值是key-value，作为一条路由规则
+                path: /user-service/**    # 匹配的路径，以/user-service开头的所有路径
+                url: http://127.0.0.1:8081   # 转发的服务地址，即转发给服务提供者
+    1. 自定义一条路由规则hehe，转发的服务地址为http://127.0.0.1:8081，匹配的资源路径为/user-service/**
+    2. /user-service 只作为匹配路径的前缀，** 才会被转发
+    http://127.0.0.1:8090/user-service/user/9  --&gt; http://127.0.0.1:8081/user/9
+5. 使用Eureka的客户端依赖，注册服务，拉取服务列表
+    1. 引入Eureka客户端的依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    2. 加入Eureka的配置，简化路由规则
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    zuul:
+        routes:
+            hehe:
+                path: /user-service/**
+                serviceId: user-service   # 指定要转发的服务ID
+    3. Zuul底层根据配置的服务ID，使用 EurekaClient 获取服务列表，通过Ribbon的负载均衡算法，获取一个服务实例;
+    http://127.0.0.1:8090/user-service/user/9  --&gt; http://user-service/user/9
+6. 既然路由ID可以自由命名，那么就简化配置方案
+    zuul:
+        routes:
+            user-service: /user-service/**  # key是转发的服务ID，value是匹配的路径
+    1. 事实上，Zuul默认就是这么配置的，它会拉取所有的服务列表，并把服务都默认配置成  服务ID: /服务ID/**
+    2. consumer-service服务没有配置，但依然可以访问：http://127.0.0.1:8090/consumer-service/consumer/9
+    3. 如果不需要更改映射路径，zuul.routes 可以不用配置；但即使手动更改了映射路径，/服务ID/** 的方式依然有效;
+    zuul:
+        routes:
+            user-service: /user/**   # 更改映射匹配的路径为 /user
+    4. http://127.0.0.1:8090/user/user/9  &lt;-等效-&gt;  http://127.0.0.1:8090/user-service/user/9
+7. 当然，有些服务不想让 Zuul 自动配置，则让Zuul忽略
+    zuul:
+        ignored-services:   # 忽略注册的服务ID列表
+            - consumer-service
+    http://127.0.0.1:8090/consumer-service/consumer/9 --&gt; 不可以再访问
+</code></pre><h3 id="前缀"><a href="#前缀" class="headerlink" title="前缀"></a>前缀</h3><pre><code>1. 匹配路径的前缀默认是不转发给微服务的，strip-prefix 属性可以控制是否转发，默认值是true
+    zuul:
+        routes:
+            user-service:
+                path: /user/**
+                serviceId: user-service
+                strip-prefix: false   # 转发前缀
+        ignored-services:
+            - consumer-service
+    1. 访问：http://127.0.0.1:8090/user/9  --&gt; http://127.0.0.1:8081/user/9
+    2. 测试发现，带有服务ID的前缀依然可以访问： http://127.0.0.1:8090/user-service/user/9
+2. 转发前缀的全局配置：zuul.strip-prefix
+    zuul:
+        routes:
+            user-service:
+                path: /user/**
+                serviceId: user-service
+        strip-prefix: false
+    1. 然而，测试发现这种方式是无效的！访问时仍然要加上前缀：http://127.0.0.1:8090/user/user/9
+    2. 如果路由规则是简化配置，zuul.strip-prefix属性是无效的;
+        zuul:
+            routes:
+                user-service: /user/**
+            strip-prefix: false  # 无效，不会转发前缀
+3. 全局添加前缀：所有请求的前面都必须加上的前缀，但不会被转发
+    zuul:
+        prefix: /api  #全局前缀
+        routes:
+            user-service: /user/**  # /user 是局部前缀
+    1. 访问：http://127.0.0.1:8090/api/user/user/9  --&gt; http://127.0.0.1:8081/user/9
+    2. 局部 strip-prefix=false 只对局部前缀有效，不会转发全局前缀;
+    zuul:
+        prefix: /api
+        routes:
+            user-service:
+                path: /user/**
+                serviceId: user-service
+                strip-prefix: false
+    http://127.0.0.1:8090/api/user/9  --&gt; http://127.0.0.1:8081/user/9
+</code></pre><h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><pre><code>1. Zuul作为网关的一个重要功能，就是实现请求的鉴权(权限控制)，通过Zuul提供的过滤器实现;
+2. ZuulFilter 是过滤器的顶级父类，最重要的方法有4个
+    public abstract ZuulFilter implements IZuulFilter {
+        abstract public String filterType();
+        abstract public int filterOrder(); 
+        boolean shouldFilter();  //来自IZuulFilter
+        Object run() throws ZuulException;  //来自IZuulFilter
+        ......
+    }
+3. filterType()：过滤器的类型，4种类型;
+        1. pre：请求在被路由之前执行，前置过滤器;
+        2. routing：在路由请求时执行;
+        3. post：在routing和error过滤器之后调用，后置过滤器;
+        4. error：处理请求时发生错误调用，异常处理器;
+4. filterOrder()：过滤器的执行顺序，数值越小，优先级越高;
+5. shouldFilter()：是否过滤;
+6. run()：过滤器执行的逻辑;
+</code></pre><h4 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h4><p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/过滤器.jpg" alt="Zuul"></p>
+<pre><code>1. 正常流程：请求到达 --&gt; pre Filter --&gt; routing Filter --&gt; 进行路由 --&gt; 请求到达真正的服务提供者 --&gt;
+    返回处理结果 --&gt; post Filter --&gt; 响应数据
+2. 异常流程：pre/routing Filter出现异常 --&gt; error Filter处理完毕后，将请求交给 post Filter --&gt; 响应数据
+    1. 如果 error Filter 出现异常，最终也会进入post Filter，然后响应数据;
+    2. 如果 post Filter 出现异常，会进入error Filter，但与 pre/routing Filter不同，请求不会再交给post Filter;
+3. 前置过滤器的应用：权限控制，限流(限制流量，限制某个用户在一段时间内只能访问一次，限制最多只能有1000个人访问等等)
+4. 后置处理器和异常处理器通常结合使用，做一些通用的异常处理;
+5. 服务调用时长统计：pre 和 post Filter 结合使用;
+</code></pre><h4 id="自定义过滤器"><a href="#自定义过滤器" class="headerlink" title="自定义过滤器"></a>自定义过滤器</h4><pre><code>1. Zuul内置了很多过滤器，也允许自定义过滤器，比如模拟登录的校验，如果请求中有 access-token 参数，则放行;
+2. 在网关模块gateway中，自定义过滤器
+    @Component  --&gt;加入Spring IoC容器
+    public class LoginFilter extends ZuulFilter {
+        public String filterType() {
+            return FilterConstants.PRE_TYPE;  // 前置过滤器
+        }
+        public int filterOrder() {
+            return FilterConstants.PRE_DECORATION_FILTER_ORDER -  1;  //等待请求参数处理完，再做拦截
+        }
+        public boolean shouldFilter() {
+            return true;
+        }
+        public Object run() throws ZuulException {
+            //1. 在内置的过滤器中，查看如何获取Request对象
+            //1-1. 获取请求上下文，生命周期：一次请求，即从请求到达Zuul，到最终响应数据；只限Zuul中使用，不会带到微服务中
+            RequestContext ctx = RequestContext.getCurrentContext();
+            //1-2. 获取当前的请求对象
+            HttpServletRequest request = ctx.getRequest();
+            //2. 获取请求参数
+            String token = request.getParameter(&quot;access-token&quot;);
+            //3. 判断是否存在 access-token 
+            if(StringUtils.isBlank(token)) {  ---&gt;引入Apache的工具类依赖：commons-lang3
+                //trim() 内部会多次截取字符串，效率非常差，所以StringUtils.isBlank()内部没用trim()
+                //不存在，则认为没有登录，拦截请求
+                ctx.setSendZuulResponse(false); //拦截
+                ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());  //设置响应状态码403
+            }
+            return null;
+        }
+    }
+3. 测试
+    http://127.0.0.1:8090/user/9  --&gt; 请求被拒绝，403
+    http://127.0.0.1:8090/user/9?access-token=123 --&gt; http://127.0.0.1:8081/user/9
+</code></pre><h3 id="负载均衡和服务熔断"><a href="#负载均衡和服务熔断" class="headerlink" title="负载均衡和服务熔断"></a>负载均衡和服务熔断</h3><pre><code>1. Zuul默认集成了Ribbon负载均衡和Hystrix熔断机制，但所有的超时策略都是默认值，比如熔断超时时间为1s，很容易触发;
+    hystrix:
+        command:
+            default:
+                execution:
+                    isolation:
+                        thread:
+                            timeoutInMilliseconds: 6000  #配置 6s 超时
+    ribbon:
+        ConnectTimeout: 500  # 默认1000
+        ReadTimeout: 2000  # 默认1000
+        MaxAutoRetriesNextServer: 1
+        MaxAutoRetries: 0
+    1. MaxAutoRetriesNextServer：不同服务实例的重试次数，一个服务多个实例，在不同服务实例之间重试，默认为1
+    2. MaxAutoRetries：对当前服务实例的重试次数，默认为0，不重试
+2. 内部在计算时，Ribbon的超时总时间 不能大于 hystrix熔断的超时时间，否则Ribbon还没有超时，服务就已经熔断了！
+3. Ribbon超时总时间的计算规则：(ConnectTimeout+ReadTimeout)*(MaxAutoRetries+1)*(MaxAutoRetriesNextServer+1)
+4. 所以默认情况下，Ribbon超时总时间=(1000+1000)*(0+1)*(1+1)=4000ms
+</code></pre><h3 id="高可用性"><a href="#高可用性" class="headerlink" title="高可用性"></a>高可用性</h3><pre><code>1. Zuul也是一个服务，那么就可以启动多个Zuul服务，自动注册到Eureka，形成网关集群;
+2. 如果是服务内部访问，Zuul会自动负载均衡;
+3. 但是，网关更多地是外部访问，如PC、移动端，它们并不知道有这么多的网关地址，也就无法通过Eureka进行负载均衡;
+4. 那么就需要使用其他的服务网关，来对Zuul进行代理，比如Nginx
+    用户请求 --&gt; Nginx --&gt; Zuul-1、Zuul-2 ... --&gt; Service-1、Service-2 ...
+</code></pre><h2 id="更多组件"><a href="#更多组件" class="headerlink" title="更多组件"></a>更多组件</h2><pre><code>1. Eureka、Ribbon、Hystrix、Feign、Zuul 这些只是SpringCloud的一小部分，还有更多组件;
+2. spring-cloud-config：统一配置中心，让微服务自动从Git上拉取最新的配置，并缓存，不再手动更改配置文件;
+    1. 使用Git的Webhook钩子，还可以实现主动通知配置中心，告知配置发生了变化;
+    2. 收到通知后，配置中心会通过消息总线，去通知所有的微服务更新配置;
+3. spring-cloud-bus：消息总线，底层是消息队列，RabbitMQ或kafuka
+4. spring-cloud-stream：消息通信;
+5. spring-cloud-hystrix-dashboard：容错统计，形成图形化界面;
+6. spring-cloud-sleuth：链路追踪，结合Zipkin，便于追踪服务的错误;
+</code></pre><hr>
 
       
     </div>
@@ -698,7 +709,7 @@ MaxAutoRetries: 0  # 对当前服务实例的重试次数，默认为0，不重�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网关之Zuul"><span class="nav-number">1.</span> <span class="nav-text">网关之Zuul</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤器"><span class="nav-number">2.</span> <span class="nav-text">过滤器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网关之Zuul"><span class="nav-number">1.</span> <span class="nav-text">网关之Zuul</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建网关"><span class="nav-number">1.1.</span> <span class="nav-text">搭建网关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前缀"><span class="nav-number">1.2.</span> <span class="nav-text">前缀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过滤器"><span class="nav-number">1.3.</span> <span class="nav-text">过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生命周期"><span class="nav-number">1.3.1.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自定义过滤器"><span class="nav-number">1.3.2.</span> <span class="nav-text">自定义过滤器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#负载均衡和服务熔断"><span class="nav-number">1.4.</span> <span class="nav-text">负载均衡和服务熔断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高可用性"><span class="nav-number">1.5.</span> <span class="nav-text">高可用性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多组件"><span class="nav-number">2.</span> <span class="nav-text">更多组件</span></a></li></ol></div>
             
 
           </div>
