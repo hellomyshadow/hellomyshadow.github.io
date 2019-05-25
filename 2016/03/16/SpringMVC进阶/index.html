@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-16T11:58:39.955Z">
+<meta property="og:updated_time" content="2019-05-25T13:20:08.002Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringMVC进阶">
 <meta name="twitter:description" content="控制器方法的返回值1. resources/springmvc.xml：配置的视图解析器     &amp;lt;bean id=&amp;quot;internalResourceViewResolver&amp;quot;          class=&amp;quot;org.springframework.web.servlet.view.InternalResourceViewResolver&amp;quot;&amp;gt;">
@@ -375,14 +375,13 @@
             return &quot;forward:/pages/test.jsp&quot;;  //转发到test.jsp
             return &quot;redirect:/index.jsp&quot;;  //重定向到index.jsp
         }
-</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 控制器方法的返回值默认会解析为跳转路径，@ResponseBody修饰之后，返回值不会再交给视图解析器，
-   而是被直接写入响应体中;
+</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 控制器方法的返回值默认会解析为跳转路径，注解@ResponseBody的返回值不会再交给视图解析器，而是被直接写入响应体中;
     @RequestMapping(&quot;/test&quot;)
     @ResponseBody
     public String test() {
         return &quot;Hello SpringBoot&quot;;  //返回的字符串直接响应给客户端
     }
-2. 控制器方法返回对象时，通过 HttpMessageConverter 接口转为指定格式的数据，如JSON、XML;
+2. 控制器方法返回对象时，通过 HttpMessageConverter(消息转换器) 接口转为指定格式的数据，如JSON、XML;
 3. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
 4. 引入转换格式的依赖包jackson
     jackson-databind、jackson-core、jackson-annotations
@@ -408,7 +407,7 @@
         return u;
     }
     1. @RequestBody：获取请求体的内容，SpringMVC会把JSON格式的请求体封装到User对象中;
-    2. @ResponseBody：将返回的对象作为响应体，并转为JSON数据，响应给客户端.
+    2. @ResponseBody：将返回的对象交给消息转换器，直接写入响应体中，响应给客户端.
 </code></pre><h2 id="静态资源的处理"><a href="#静态资源的处理" class="headerlink" title="静态资源的处理"></a>静态资源的处理</h2><pre><code>1. 访问静态资源时，不需要经过前端控制器和过滤器，直接响应即可;
 2. 使用Servlet来处理静态资源：web.xml 中配置名称为 default 的&lt;servlet&gt;标签;
     1. 处理 webapp/css 目录中的静态资源：以 /css/ 开头的URL;
@@ -774,7 +773,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

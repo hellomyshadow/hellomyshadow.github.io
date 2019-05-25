@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-19T04:13:41.643Z">
+<meta property="og:updated_time" content="2019-05-24T12:08:16.426Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis高级">
 <meta name="twitter:description" content="Redis1. Redis是一种基于C语言开发的NoSQL数据库，代码量只有3万多行，内存级别的读写，而且提供了持久化功能； 2. Redis与Memcache     1. 它们都是非常流行的两种NoSQL数据库，都能用于服务器端的数据缓存；     2. 实现方式：Redis是单线程，Memcache是多线程；     3. 存储方式：Redis支持数据持久化和主从备份，数据更安全；Memca">
@@ -621,59 +621,46 @@
         yum install rubygems
         gem install redis
     2. src目录下命令 redis-trib.rb
-        1. 注释 bind
-        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
-        2. bind 192.168.13.22
+        1. 注释redis.conf中的 bind 节点，或者绑定为本机IP
+            bind 192.168.13.22
+        2. 创建集群时要使用本机IP，不能使用回环地址，否则外界无法访问;
         redis-trib.rb create --replicas 1 192.168.13.22:7001 ... 192.168.13.22:7006
     3. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
 2. 创建集群：Redis5.0+
     1. 从 Redis5.0 开始，创建集群不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 命令;
-        redis-cli --cluster create 127.0.0.1:7001 ... 127.0.0.1:7006 --cluster-replicas 1
+        redis-cli --cluster create 192.168.13.22:7001 ... 192.168.13.22:7006 --cluster-replicas 1
 
         ===&gt; Can I set the above configuration?   yes
         [OK] All 16384 slots covered.  ===&gt; 集群创建成功
     2. 默认情况下，前三个会被创建为Master节点，后三个会被创建为Slave节点，且1-4，2-5，3-6的主从配置;
     3. 在分配 Slot 时，只分配给Master，因为 Slave 不支持写命令，只负责读数据;
 3. 常见报错
-    Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
+    Node 192.168.13.22:7001 is not empty. Either the node already knows other nodes
     1. 逐个连接Redis服务，清空数据库：flushall
+    2. 同时删除生成的相关文件;
 5. 关闭集群时，需要逐个关闭集群中的节点;
     redis-cli -c -h IP -p PORT shutdown
-6. 重启集群时，不再需要执行创建集群的命令，开启所有Redis服务即可.
 </code></pre><h4 id="访问集群"><a href="#访问集群" class="headerlink" title="访问集群"></a>访问集群</h4><pre><code>    redis-cli -c -h IP -p PORT -a Password  # -c表示连接redis集群
 1. 登录Redis集群中的任意一个节点
-    redis-cli -c -h 127.0.0.1 -p 7001  ==&gt; 没有设置密码，不需要使用 -a
+    redis-cli -c -h 192.168.13.22 -p 7001  ==&gt; 没有设置密码，不需要使用 -a
 2. 登录之后的命令
     1. info：查看当前Redis服务的详细信息;
     2. info replication：只查看replication，当前节点的身份、状态等信息;
     3. cluster nodes：查看当前集群中的所有节点，及其主从关系;
-        7ffc63c7283a05b799d553002bf1d14ef413a655 127.0.0.1:7004@17004 slave 9e191422······
-        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 127.0.0.1:7002@17002 master - 0 155······
+        7ffc63c7283a05b799d553002bf1d14ef413a655 192.168.13.22:7004@17004 slave 9e191422······
+        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 192.168.13.22:7002@17002 master - 0 155······
         ······
     4. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
     5. 每个节点都会记录其他节点的ID，因为IP或端口号可能发生变化，而ID在整个生命周期内是不会变的;
 3. Redis Cluster采用去中心化、去中间件的设计，即集群中的每个节点都是平等的，都保存各自的数据和整个集群的状态;
     1. 每个节点都和其他节点连接，而且这些连接保持活跃，保证了只需要连接集群中的任意节点，就可以获取到其他节点的数据;
     2. 在某个主节点中写入数据时，并不是一定会把数据存储该节点中，它会考虑整个集群环境，有时会重定向到其他主节点;
-        登录7001 --&gt; set name Java --&gt; Redirected to slot [xxxx] located at 127.0.0.1:7002
+        登录7001 --&gt; set name Java --&gt; Redirected to slot [xxxx] located at 192.168.13.22:7002
         登录7002 或者 其从节点7005 --&gt; keys * --&gt; name
     3. 在读数据时，Redis Cluster 会在整个集群中查找，数据被存储在哪个 Slot 中，则重定向到该Slot所属的节点;
         登录7001，keys * --&gt; 空的，但执行 get name --&gt; 重定向到7002 --&gt; Java
-4. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
-5. Java使用 Jedis 访问Redis集群
-    //在nodes中指定每个节点的地址
-    Set&lt;HostAndPort&gt; nodes = new HashSet&lt;&gt;();
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7001));
-    ......
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7006));
-    //创建一个JedisCluster对象，在系统中是单例的
-    JedisCluster cluster = new JedisCluster(nodes);
-    cluster.set(&quot;name&quot;, &quot;Hello World&quot;);
-    cluster.set(&quot;value&quot;, &quot;100&quot;);
-    String name = cluster.get(&quot;name&quot;);
-    String value = cluster.get(&quot;value&quot;);
-    //系统关闭时关闭JedisCluster
-    cluster.close();
+4. 与主从复制不同，虽然Slave节点也不允许写数据，但在集群中不会报错，而是重定向到Master节点下执行写命令;
+5. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
 </code></pre><hr>
 
       
@@ -794,7 +781,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

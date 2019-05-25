@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud项目">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg">
+<meta property="og:updated_time" content="2019-05-25T16:53:16.395Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud项目">
+<meta name="twitter:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
+<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/">
+
+
+
+
+
+  <title>SpringCloud项目 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringCloud项目</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-10T00:00:00+08:00">
+                2016-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="项目架构"><a href="#项目架构" class="headerlink" title="项目架构"></a>项目架构</h2><p><img src="//hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg" alt="项目架构"></p>
+<pre><code>1. 微服务的拆分
+    1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;
+    2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
+    3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;
+    4. 父工程打包方式为pom
+2. 工具类工程：一个SpringBoot工程，专门提供工具类方法，其他服务引用它的坐标即可;
+    1. 如果用到了Servlet相关的API时，如HttpServletRequest
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+        &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    2. 日志相关的启动器
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    3. JSON相关的工具类--Jackson：实体类序列化为JSON字符串、反序列化、List、Map
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+        &lt;version&gt;2.9.9&lt;/version&gt;
+    &lt;/dependency&gt;
+3. REST风格的响应
+    1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
+    2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
+    @PostMapping
+    public ResponseEntity&lt;User&gt; saveUser() {
+        User u = ...;
+        ······
+        //设置状态码和响应体
+        return ResponseEntity.status(HttpStatus.CREATED).body(u);
+    }
+</code></pre><h3 id="通用异常处理"><a href="#通用异常处理" class="headerlink" title="通用异常处理"></a>通用异常处理</h3><pre><code>1. 在工具类中处理异常，引入SpringMVC的依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. @ControllerAdvice、@ExceptionHandler：针对不同的异常，做不同的处理;
+    @ControllerAdvice
+    public class CommonExtHandler {
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
+        }
+        ......
+    }
+3. 为了对异常统一管理，自定义异常，动态设置状态码、状态信息，并使用枚举类封装状态信息;
+    1. 枚举类
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public enum ExceptionEnum {
+            PRICE_CANNOT_BE_NULL(400, &quot;价格不能为空！&quot;),
+            ;
+            private int code;
+            private String msg;
+        }
+    2. 自定义异常
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class CommonException extends RuntimeException {
+            private ExceptionEnum enum;
+        }
+    3. 异常结果的封装
+        @Data
+        public class ExceptionResult {
+            private int status;
+            private String message;
+            private long timestamp;
+            public ExceptionResult(ExceptionEnum em) {
+                this.status = em.getCode();
+                this.message = em.getMsg());
+                this.timestamp = System.currentTimeMillis();
+            }
+        }
+    4. 异常捕获
+        @ExceptionHandler(CommonException.class)
+        public ResponseEntity&lt;ExceptionResult&gt; handleCommonExt(CommonException ext) {
+            ExceptionEnum em = ext.getExceptionEnum();
+            return ResponseEntity.status(em.getCode()).body(new ExceptionResult(em));
+        }
+    5. 在Controller方法中抛出异常
+        @PostMapping
+        public ResponseEntity&lt;User&gt; saveUser() {
+            if(...) {
+                throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
+            }
+            ......
+        }
+</code></pre><h2 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h2><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
+2. 域名解析首先从本地域名开始，也就是系统盘中的 host 文件，在 host 文件中查找域名映射的IP地址;
+    1. windows系统：C:\Windows\System32\drivers\etc\hosts
+    2. Linux系统：/etc/hosts
+3. 如果 host 文件中没有配置域名和IP的映射关系，则转向域名服务器解析;
+    127.0.0.1   localhost
+4. 域名服务器：记录了所有注册备案的域名和IP的映射关系;
+5. 在不购买域名的情况下，在本地 host 文件中配置域名与回环地址的映射;
+    127.0.0.1   www.icloud.com
+    127.0.0.1   manage.icloud.com
+    127.0.0.1   api.icloud.com   ------&gt;子域名
+6. 测试：ping api.icloud.com
+</code></pre><h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><pre><code>1. Nginx是一个高性能的Web和反向代理服务器，基于 Epoll 和 Kqueue 模型;
+    1. 作为Web服务器：比Apache占用更少的资源，效率更高，单机支持高达50000个并发连接的响应;
+    2. 作为负载均衡服务器：既可以在内部直接支持Rails和PHP，也可以作为HTTP代理服务对外提供服务;
+    3. 作为邮件代理服务器：最早开发Nginx的目的之一也是作为邮件代理服务器;
+2. Web服务器：Apache服务器、Nginx、IIS...
+3. Web应用服务器：Tomcat、Resin、Jetty...
+    1. Web服务器不能解析JSP等页面，只能处理HTML、CSS、JS、图片等静态资源;
+    2. Web服务器的并发能力远高于Web应用服务器;
+4. Nginx作为Web服务器时，通常把它作为网关，因为它具备网关必备的功能：反向代理、负载均衡、动态路由、请求过滤
+</code></pre><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><pre><code>1. Nginx作为反向代理服务器，配置好反向代理的规则，不同的请求交给不同的真实服务器进行处理;
+2. 当请求到达Nginx时，它会根据定义好的规则进行请求转发，从而实现路由的功能;
+3. nginx.conf
+    http {
+        ......
+
+        server {
+            listen       80;  -----------------&gt; 配置监听的端口号
+            server_name  manage.icloud.com;  --&gt; 监听的域名/IP
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:9000;  #反向代理，转发的真实服务器地址
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+        server {
+            listen       80;
+            server_name  api.icloud.com;
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:10010;  #反向代理
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+        ......
+    }
+4. 通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
+5. 访问(http协议的默认端口号80)
+    http://manage.icloud.com/...
+    http://api.icloud.com/...
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
+2. 主域名和子域名之间也是跨域，cookie也无法访问;
+3. 同源策略限制的行为：
+    1. Cookie、LocalStorage 和 IndexDB 无法读取;
+    2. DOM 和 JS对象无法获得;
+    3. AJAX 请求不能发送.
+4. 注意：
+    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
+    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+5. 解决跨域问题的方案有很多：
+    1. jsonp：利用 &lt;script&gt; 标签可以跨域的原理实现，需要服务端支持，且只能发起GET请求;
+    2. document.domain + iframe跨域
+    3. location.hash + iframe
+    4. window.name + iframe跨域
+    5. postMessage跨域
+    6. 跨域资源共享(CORS)
+    7. Nginx反向代理
+    8. nodejs中间件代理跨域
+    9. WebSocket协议跨域
+6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
+    2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
+    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
+</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享，规范化的跨域请求解决方案，安全可靠，需要浏览器和服务器同时支持;
+2. 所有浏览器都支持该功能，IE浏览器不能低于IE10，整个CORS通信过程都是浏览器自动完成，不需要用户参与;
+3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
+4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，但用户不会有感觉;
+5. 实现CORS通信的关键是服务器，由服务端控制是否允许跨域，只要实现了CORS接口，就可以跨源通信，可自定义规则.
+</code></pre><h3 id="CORS原理"><a href="#CORS原理" class="headerlink" title="CORS原理"></a>CORS原理</h3><pre><code>1. 浏览器会将AJAX请求分为两类：简单请求、特殊请求
+2. 简单请求需要满足两大条件
+    1. 请求方法：HEAD、GET、POST
+    2. HTTP的头信息：Accept、Accept-Language、Content-Language、Last-Event-ID、Content-Type
+    3. 其中，Content-Type值只限于：application/x-www-form-urlencoded、multipart/form-data、text/plain
+3. 当浏览器发现AJAX请求是简单请求时，会在请求头中携带字段Origin，指定当前请求属于哪个域(协议+域名+端口号)
+    Origin: http://manage.icloud.com
+    1. 服务端根据 Origin 的值决定是否允许其跨域，如果允许跨域，则需要在响应头中携带两个字段：
+        Access-Control-Allow-Origin: http://manage.icloud.com  ----&gt; 必需
+        Access-Control-Allow-Credentials: true   -------------&gt; 可选
+    2. Access-Control-Allow-Origin：可接受的域，可以是一个具体的域，也可以是 *，表示任意一个域;
+    3. Access-Control-Allow-Credentials：是否允许携带Cookie，默认情况下不会携带Cookie;
+4. 需要注意的是，如果跨域请求要操作Cookie，需要满足3个条件：
+    1. 服务端的响应头中必须设置 Access-Control-Allow-Credentials 为 true;
+    2. 浏览器发起AJAX请求时，必须设置 withCredentials 为 true;
+    3. 响应头中的 Access-Control-Allow-Origin 必须指定域，不能使用通配符*;
+5. 特殊请求：不符合简单请求的条件时，都会被浏览器判定为特殊请求，如请求方式PUT;
+    1. 预检请求：特殊请求会在正式通信之前，增加一次HTTP查询请求;
+        1. 浏览器先询问服务端，当前请求的域是不是在服务端许可的白名单中，以及可以使用哪些HTTP动词、头信息字段;
+        2. 只有得到了肯定的答复，浏览器才会正式发起请求，否则就报错;
+    2. 预检请求中，除了 Origin 字段之外，还增加了2个头信息
+        Access-Control-Request-Method: PUT   ---&gt; 接下来会用到的请求方式
+        Access-Control-Request-Headers: X-Custom-Header  --&gt; 会额外用到的头信息
+    3. 预检请求的响应：如果服务端许可跨域，也会响应中增加一些字段
+        Access-Control-Allow-Origin: http://manage.icloud.com
+        Access-Control-Allow-Credentials: true
+        Access-Control-Allow-Method: GET, POST, PUT   ---&gt; 允许访问的方式
+        Access-Control-Allow-Headers: X-Custom-Header ---&gt; 允许携带的头
+        Access-Control-Max-Age: 1728000 ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
+    4. 浏览器收到响应的信息，则判定可以跨域;
+6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
+</code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
+2. 在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
+    @Configuration
+    public class GlobalCorsConfig {
+        @Bean
+        public CorsFilter corsFilter() {
+            //CORS配置信息
+            CorsConfiguration conf = new CorsConfiguration();
+            //1. 添加允许的域，可以同时添加多个
+            conf.addAllowedOrigin(&quot;http://manage.icloud.com&quot;);
+            //2. 是否发送Cookie
+            conf.setAllowCredentials(true);
+            //3. 允许的请求方式
+            conf.addAllowedMethod(&quot;OPTIONS&quot;);
+            conf.addAllowedMethod(&quot;HEAD&quot;);
+            conf.addAllowedMethod(&quot;GET&quot;);
+            conf.addAllowedMethod(&quot;PUT&quot;);
+            conf.addAllowedMethod(&quot;POST&quot;);
+            conf.addAllowedMethod(&quot;DELETE&quot;);
+            conf.addAllowedMethod(&quot;PATCH&quot;);
+            //4. 允许的头信息
+            conf.addAllowedHeader(&quot;*&quot;);
+            //5. 过期时间
+            conf.setMaxAge(3600L);
+
+            //添加映射路径，拦截一切请求
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration(&quot;/**&quot;, conf);
+
+            //返回新的CorsFilter
+            return new CorsFilter(source);
+        }
+    }
+3. @CrossOrigin：SpringMVC4.2开始支持;
+    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
+    2. 相关属性：value、origins，maxAge、allowedHeaders、exposedHeaders、methods、allowCredentials
+    3. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
+4. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
+    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
+5. 关于SpringMVC的XML配置文件中，全局配置CORS
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/api/**&quot;
+            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
+            allowed-methods=&quot;GET, PUT&quot;
+            allowed-headers=&quot;header1, header2, header3&quot;
+            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
+            max-age=&quot;3600&quot; /&gt;
+        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
+    &lt;/mvc:cors&gt;
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/04/SpringCloud组件3/" rel="next" title="SpringCloud组件3">
+                <i class="fa fa-chevron-left"></i> SpringCloud组件3
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目架构"><span class="nav-number">1.</span> <span class="nav-text">项目架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通用异常处理"><span class="nav-number">1.1.</span> <span class="nav-text">通用异常处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名解析"><span class="nav-number">2.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">3.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#反向代理"><span class="nav-number">3.1.</span> <span class="nav-text">反向代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">4.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">4.1.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS原理"><span class="nav-number">4.2.</span> <span class="nav-text">CORS原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的CORS"><span class="nav-number">4.3.</span> <span class="nav-text">SpringMVC的CORS</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

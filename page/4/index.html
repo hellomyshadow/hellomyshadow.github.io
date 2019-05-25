@@ -232,6 +232,403 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/02/SpringCloud组件1/" itemprop="url">SpringCloud组件1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-02T00:00:00+08:00">
+                2016-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Eureka"><a href="#Eureka" class="headerlink" title="Eureka"></a>Eureka</h2><pre><code>1. Eureka注册中心：服务的管理
+    1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，
+    由Eureka把查找符合的服务提供者;
+    2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;
+    3. 这样就是实现了服务的自动注册、发现、状态监控;
+2. Eureka的基本架构
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg" alt="Eureka"></p>
+<pre><code>    1. Eureka既是服务注册中心，也是一个独立的服务，还可以是一个集群，对外暴露自己的地址;
+    2. 服务提供者：启动后向Eureka注册自己的信息，包括地址、提供什么服务;
+    3. 服务消费者：向Eureka订阅服务，Eureka会将对应服务的地址列表发送给消费者，并定期更新;
+    4. 心跳：服务提供者定期通过HTTP向Eureka刷新自己的状态;
+3. Eureka架构的三个核心角色
+    1. 服务注册中心：Eureka的服务端应用，提供服务注册和发现功能;
+    2. 服务提供者：提供服务的应用，可以是SpringBoot应用，也可以是其他任意技术实现，对外提供Rest风格的服务;
+    3. 服务消费者：消费应用从注册中心获取服务列表，从而得知每个服务提供者的信息，知道去哪儿调用服务;
+4. 创建子工程eurekaserver，作为Eureka服务注册中心
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    1. application.yml
+        server:
+            port: 8761  #官方默认的Eureka端口号
+    2. 创建启动器，并注解 @EnableEurekaServer 启用Eureka
+        @EnableEurekaServer
+        @SpringBootApplication
+        public class EurekaServer {
+            public static void main(String[] args) {
+                SpringApplication.run(EurekaServer.class, args);
+            }
+        }
+5. SpringCloud的Eureka依赖中，已经实现了服务的发现、注册、状态监控等功能;
+6. 启动服务，访问注册中心的管理平台：http://localhost:8761/
+</code></pre><h3 id="报错问题"><a href="#报错问题" class="headerlink" title="报错问题"></a>报错问题</h3><pre><code>1. 导致无法启动的版本问题：java.lang.NoSuchMethodError: com.google.gson.GsonBuilder.setLenient()
+2. 启动时可能不停地报 eureka-client的相关错误，但能访问注册中心
+    1. Eureka是一个注册中心，一定不能宕掉，所以会搭建Eureka服务集群，而集群中的Eureka之间也需要注册和通信;
+    2. 所以Eureka既是服务端，又是客户端，Eureka服务启动时会尝试注册其他Eueka服务，但又没有其他Eureka服务可以注册，
+    所以才会报错;
+    3. 解决方式：让当前Eureka服务注册自己，在 application.yml 中配置注册地址;
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    4. 重新启动服务，会报错一次，因为自己还没有启动完成，所以会注册失败一次;
+3. Eureka服务注册中心作为客户端尝试注册自己时，也可能报错：
+    java.net.ConnectException: Connection refused: connect
+    TransportException: Cannot execute request on any known server
+    1. 解决方式：禁用它的客户端注册行为，不让Eureka注册自己;
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka
+                register-with-eureka: false
+                fetch-registry: false
+    2. 禁用了Eureka的注册行为之后，Eureka注册中心的服务列表上就不会再列出当前Eureka服务了.
+4. 在服务启动时，可能使用的是当前主机的拨号IP地址，而不是回环地址，则在配置文件中明确指定使用IP地址;
+    eureka:
+        instance:
+            prefer-ip-address: true
+            ip-address: 127.0.0.1
+5. 在注册中心的服务列表上显示UNKNOWN，是因为没有配置服务名称，通常情况下会把服务名称作为服务的ID;
+    spring:
+        application:
+            name: eureka-server  # 配置Eureka服务名称
+</code></pre><h3 id="服务的注册"><a href="#服务的注册" class="headerlink" title="服务的注册"></a>服务的注册</h3><pre><code>1. 服务提供者
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    1. application.yml
+        spring:
+            application:
+                name: user-service  # 指定服务名称
+            datasource:
+                ......
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka  # 配置注册中心的地址
+    2. @EnableDiscoveryClient：注解在启动器上，启动自动注册服务，不要使用 @EnableEurekaClient;
+    3. SpringCloud集成的注册中心不仅仅只有Eureka，还有consul、Zookeeper... @EnableDiscoveryClient都能兼容;
+        @EnableDiscoveryClient
+        @SpringBootApplication
+        @MapperScan(&quot;cn.cloud.mapper&quot;)
+        public class UserApplication {
+            ...
+        }
+    4. SpringBoot版本和SpringCloud版本不兼容时，启动时可能报错：
+        The bean &apos;dataSource&apos;, defined in BeanDefinition defined ... and overriding is disabled.
+2. 服务消费者
+    1. 引入Eureka客户端的依赖、添加注解@EnableDiscoveryClient、修改配置文件;
+        spring:
+            application:
+                name: consumer-service
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8761/eureka
+    2. web层：根据服务ID获取服务实例，调用服务功能
+        @RestController
+        @RequestMapping(&quot;consumer&quot;)
+        public class ConsumerController {
+            @Autowired
+            private RestTemplate rest;
+
+            @Autowired
+            private DiscoveryClient client;
+
+            @GetMapping(&quot;{id}&quot;)
+            public User findById(@PathVariable(&quot;id&quot;) Long id) {
+                //获取服务的实例并不是一个，是因为在集群环境中，一个服务可以启动多次
+                List&lt;ServiceInstance&gt; instances =  client.getInstances(&quot;user-service&quot;); 
+                ServiceInstance inst = instances.get(0);
+                String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
+                User user = rest.getForObject(url, User.class);
+                return user;
+            }
+        }
+3. 先启动Eureka服务，再启动其他两个服务;
+    1. 查看注册中心的服务列表，有三个服务：EUREKA-SERVER、USER-SERVICE、CONSUMER-SERVICE
+    2. 测试服务的消费方：http://localhost:8080/consumer/9
+</code></pre><h3 id="Eureka集群"><a href="#Eureka集群" class="headerlink" title="Eureka集群"></a>Eureka集群</h3><pre><code>1. 多个Eureka服务注册中心相互注册为服务，形成一个高可用的Eureka注册中心集群;
+2. 服务同步：当服务注册到Eureka集群中的某个节点时，它会把服务的信息同步给集群中的每个节点，从而实现数据同步;
+    1. 注册中心之间相互注册，比如A、B、C三个注册中间，A注册B、C，B注册A、C，C注册A、B
+        Eureka-1 &lt;===&gt; Eureka-2
+        Client ==&gt; Eureka-1， Client ==&gt; Eureka-2
+    2. 一个服务注册到任意一个注册中心上，都可以获取到完整的服务列表.
+3. 搭建注册中心的集群：采用一个Eureka服务、多个实例的方式;
+    1. 修改工程eureka-server，注册另一个端口号为8762的Eureka服务
+        server:
+            port: 8761
+        spring:
+            application:
+                name: eureka-server
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:8762/eureka
+    2. 启动服务，读取配置文件，此时因为找不到端口号8762的Eureka服务，控制台会不停报错;
+    3. IDEA不允许同一个应用启动两次，但可以复制启动器：
+    Edit Configurations... --&gt; 选中 EurekaServer(eureka-server工程) --&gt; 复制 --&gt; 
+        Name: EurekaServer2，(Configuration，VM options: -Dserver.port=8762，固定使用端口号8762)
+    4. 修改工程eureka-server的配置文件：端口号8762，注册到端口号8761的Eureka服务上
+    server:
+        port: 8762 
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    5. 启动 EurekaServer2 服务(8762)，它就会注册到已经启动的 EurekaServer 服务(8761)上;
+    6. 同时，EurekaServer(8761)也会发现并注册到 EurekaServer2(8762)上，停止报错;
+4. EurekaServer(8761) 和 EurekaServer2(8762) 的 spring.application.name 是相同的，这就是一个服务多个实例;
+    1. 它们之间会共享服务列表信息，从而实现Eureka服务注册中心的集群;
+    2. 访问8761和8762的注册中心，它们的服务列表是相同的，且 eureka-server 服务显示有两个实例;
+5. 启动的问题：eureka-server 服务并没有两个实例，8761注册不了8762，而且8762上的服务实例不稳定，会变成1个;
+    1. 让Eureka在注册其他Eureka时，同时注册自己;
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
+    2. 但是，测试发现这种方式并不完全有效，需要继续探索...
+6. 客户端(服务提供者和消费者)的注册：
+    1. 服务要注册到Eureka集群上，必须要注册到每一个Eureka节点上;
+    2. 多个Eureka注册中心的地址以 , 隔开
+    spring:
+        application:
+            name: consumer-service
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
+</code></pre><h3 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h3><pre><code>1. 客户端启动时会检测配置文件中的 eureka.client.register-with-eureka 参数，默认值为true;
+2. 如果为true，则会向EurekaServer发起一个Rest请求，并携带自己的元数据信息，EurekaServer会把这些信息保存到
+    一个双层Map结构中： Map&lt;String, Map&lt;String, ServiceInstance&gt;&gt;
+    1. 第一层Map的key就是服务的ID，一般就是配置的 spring.application.name
+    2. 第二次Map的key是服务的实例ID，一般为host+serviceId+port，如 localhost:user-service:8081
+    3. 值是服务的实例对象，也就是说，一个服务可以同时启动多个实例，从而形成集群;
+3. 如果配置为false，那么它就不会申请注册服务；同理，如果EurekaServer配置了这个参数为false，它也不会注册自己了;
+</code></pre><h3 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h3><pre><code>1. 服务续约(renew)：在注册服务完成后，客户端会维持一个心跳，定时向Eureka服务发起Rest请求，说明自己处于活跃状态;
+2. 有两个重要参数可以修改服务续约的行为：
+    eureka:
+        instance:
+            lease-renewal-interval-in-seconds: 30  # 服务续约的间隔，默认30s
+            lease-expiration-duration-in-seconds: 90  # 服务失效时间，默认90s
+    1. 服务每隔 30s 向注册中心发送一次心跳，证明自己处于活跃状态;
+    2. 如果超过 90s 还没有发送心跳，EurekaService就认为该服务宕机了;
+3. 服务还会从EurekaService中自动拉取当前的服务列表，并缓存在本地，默认每隔 30s 重新拉取并更新数据;
+    eureka:
+        client:
+            fetch-registry: true  # 是否从注册中心拉取数据，默认为true
+            registry-fetch-interval-seconds: 30  # 每次拉取数据的间隔时间，默认30s
+4. 默认每隔30s拉取一次服务列表，所以刚刚启动的服务消费者无法访问服务提供者;
+</code></pre><h3 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h3><pre><code>1. 服务正常关闭时，它会触发一个 服务下线 的REST请求给Eureka服务，注册中心接收到之后，会把该服务置为下线状态;
+2. 失效剔除
+    1. 有时候可能由于内存溢出或网络故障等原因，导致服务不能正常工作，而服务注册中心并未受到&quot;服务下线&quot;的请求;
+    2. 相对于renew，注册中心在启动时会创建一个定时任务，默认每隔60s将当前列表中超过失效时间(默认90s)的服务剔除;
+3. 在注册中心的配置文件中，修改定时任务的轮询时间;
+    eureka:
+        server:
+            eviction-interval-timer-in-ms: 60000  #默认60s
+</code></pre><h3 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h3><pre><code>1. 关闭一个服务时，就会在注册中心的管理平台上出现一条警告：EMERGENCY... BE SAFE. 这就触发了Eureka的自我保护机制;
+2. 当服务未按时进行服务续约时，Eureka会统计服务实例最近15min心跳续约的比例是否低于85%;
+3. 在生产环境下，因为网络延迟等原因，服务续约超时的比例很可能超标，但此时就把服务从列表中剔除并不妥当，
+   因为服务可能没有宕机，Eureka在这段时间内不会剔除任何服务，直到网络恢复正常;
+4. 从而保证在生产环境下，大多数服务依然可用，不过也有可能获取到失败的服务实例，因此服务消费者必须做服务的失败容错;
+5. 在注册中心关闭自我保护，默认是打开的
+    eureka:
+        server:
+            enable-self-preservation: false  # 默认为true
+</code></pre><h2 id="负载均衡之Ribbon"><a href="#负载均衡之Ribbon" class="headerlink" title="负载均衡之Ribbon"></a>负载均衡之Ribbon</h2><pre><code>1. 在集群环境下，服务提供方会有很多个实例，服务消费者在获取服务列表后，就需要通过负载均衡算法选择一个服务实例;
+2. Eureka中集成了Netflix发布的负载均衡组件：Ribbon
+3. Ribbon默认提供了很多负载均衡算法，如轮询、随机、Hash... 还可以自定义负载均衡算法;
+4. 复制一份服务提供者user-service --&gt; Name: UserApplication2，VM options: -Dserver.port=8082
+5. 在服务消费者中
+    1. 引入Ribbon依赖
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    2. 方式一：获取服务实例(不常用)
+        @Autowired
+        private RestTemplate rest;
+
+        @Autowired
+        private RibbonLoadBalancerClient client;  //另外还要注册Bean对象
+
+        @GetMapping(&quot;{id}&quot;)
+        public User findById(@PathVariable(&quot;id&quot;) Long id) {
+            //默认负载均衡算法是轮询
+            ServiceInstance instance = client.choose(&quot;user-service&quot;); 
+            String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
+            User user = rest.getForObject(url, User.class);
+            return user;
+        }
+    3. 方式二：在注册 RestTemplate 的方法上注解 @LoadBalanced
+        @Bean
+        @LoadBalanced
+        public RestTemplate getRestTemplate() {
+            return new RestTemplate();
+        }
+        1. @LoadBalanced 内置拦截器会拦截 RestTemplate 的请求，通过负载均衡算法选择一个服务实例;
+        2. 发起请求的URL：http://服务ID/资源路径
+        @GetMapping(&quot;{id}&quot;)
+        public User findById(@PathVariable(&quot;id&quot;) Long id) {
+            String url = &quot;http://user-service/user/&quot; + id;
+            User user = rest.getForObject(url, User.class);
+            return user;
+        }
+6. 负载均衡策略
+    1. Ribbon默认采用的负载均衡策略是轮询，对应的规则对象RoundRobinRule
+    2. 修改方式：服务ID.ribbon.NFLoadBalancerRuleClassName，值就是IRule的实现类
+    3. 在服务消费者中配置
+    user-service:  # 查找的服务实例
+        ribbon:
+            NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #采用随机规则的负载均衡策略
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/01/SpringCloud/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1023,59 +1420,46 @@
         yum install rubygems
         gem install redis
     2. src目录下命令 redis-trib.rb
-        1. 注释 bind
-        redis-trib.rb create --replicas 1 127.0.0.1:7001 ... 127.0.0.1:7006
-        2. bind 192.168.13.22
+        1. 注释redis.conf中的 bind 节点，或者绑定为本机IP
+            bind 192.168.13.22
+        2. 创建集群时要使用本机IP，不能使用回环地址，否则外界无法访问;
         redis-trib.rb create --replicas 1 192.168.13.22:7001 ... 192.168.13.22:7006
     3. --replicas  1  表示自动为每一个master节点分配一个slave节点，按照一定规则生成 3个master 3个slave
 2. 创建集群：Redis5.0+
     1. 从 Redis5.0 开始，创建集群不再使用 redis-trib.rb，而是使用C语言实现的 redis-cli 命令;
-        redis-cli --cluster create 127.0.0.1:7001 ... 127.0.0.1:7006 --cluster-replicas 1
+        redis-cli --cluster create 192.168.13.22:7001 ... 192.168.13.22:7006 --cluster-replicas 1
 
         ===&gt; Can I set the above configuration?   yes
         [OK] All 16384 slots covered.  ===&gt; 集群创建成功
     2. 默认情况下，前三个会被创建为Master节点，后三个会被创建为Slave节点，且1-4，2-5，3-6的主从配置;
     3. 在分配 Slot 时，只分配给Master，因为 Slave 不支持写命令，只负责读数据;
 3. 常见报错
-    Node 127.0.0.1:7001 is not empty. Either the node already knows other nodes
+    Node 192.168.13.22:7001 is not empty. Either the node already knows other nodes
     1. 逐个连接Redis服务，清空数据库：flushall
+    2. 同时删除生成的相关文件;
 5. 关闭集群时，需要逐个关闭集群中的节点;
     redis-cli -c -h IP -p PORT shutdown
-6. 重启集群时，不再需要执行创建集群的命令，开启所有Redis服务即可.
 </code></pre><h4 id="访问集群"><a href="#访问集群" class="headerlink" title="访问集群"></a>访问集群</h4><pre><code>    redis-cli -c -h IP -p PORT -a Password  # -c表示连接redis集群
 1. 登录Redis集群中的任意一个节点
-    redis-cli -c -h 127.0.0.1 -p 7001  ==&gt; 没有设置密码，不需要使用 -a
+    redis-cli -c -h 192.168.13.22 -p 7001  ==&gt; 没有设置密码，不需要使用 -a
 2. 登录之后的命令
     1. info：查看当前Redis服务的详细信息;
     2. info replication：只查看replication，当前节点的身份、状态等信息;
     3. cluster nodes：查看当前集群中的所有节点，及其主从关系;
-        7ffc63c7283a05b799d553002bf1d14ef413a655 127.0.0.1:7004@17004 slave 9e191422······
-        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 127.0.0.1:7002@17002 master - 0 155······
+        7ffc63c7283a05b799d553002bf1d14ef413a655 192.168.13.22:7004@17004 slave 9e191422······
+        9e1914220a6300e63fe1532ebdfe50c0d7f28e0b 192.168.13.22:7002@17002 master - 0 155······
         ······
     4. 第一列表示Redis节点的ID值，且此ID将被Redis实例永久使用，以便于在集群中唯一标识一个Redis节点;
     5. 每个节点都会记录其他节点的ID，因为IP或端口号可能发生变化，而ID在整个生命周期内是不会变的;
 3. Redis Cluster采用去中心化、去中间件的设计，即集群中的每个节点都是平等的，都保存各自的数据和整个集群的状态;
     1. 每个节点都和其他节点连接，而且这些连接保持活跃，保证了只需要连接集群中的任意节点，就可以获取到其他节点的数据;
     2. 在某个主节点中写入数据时，并不是一定会把数据存储该节点中，它会考虑整个集群环境，有时会重定向到其他主节点;
-        登录7001 --&gt; set name Java --&gt; Redirected to slot [xxxx] located at 127.0.0.1:7002
+        登录7001 --&gt; set name Java --&gt; Redirected to slot [xxxx] located at 192.168.13.22:7002
         登录7002 或者 其从节点7005 --&gt; keys * --&gt; name
     3. 在读数据时，Redis Cluster 会在整个集群中查找，数据被存储在哪个 Slot 中，则重定向到该Slot所属的节点;
         登录7001，keys * --&gt; 空的，但执行 get name --&gt; 重定向到7002 --&gt; Java
-4. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
-5. Java使用 Jedis 访问Redis集群
-    //在nodes中指定每个节点的地址
-    Set&lt;HostAndPort&gt; nodes = new HashSet&lt;&gt;();
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7001));
-    ......
-    nodes.add(new HostAndPort(&quot;127.0.0.1&quot;, 7006));
-    //创建一个JedisCluster对象，在系统中是单例的
-    JedisCluster cluster = new JedisCluster(nodes);
-    cluster.set(&quot;name&quot;, &quot;Hello World&quot;);
-    cluster.set(&quot;value&quot;, &quot;100&quot;);
-    String name = cluster.get(&quot;name&quot;);
-    String value = cluster.get(&quot;value&quot;);
-    //系统关闭时关闭JedisCluster
-    cluster.close();
+4. 与主从复制不同，虽然Slave节点也不允许写数据，但在集群中不会报错，而是重定向到Master节点下执行写命令;
+5. 如果是外部访问，需要开放 7001-7006 端口，并重启防火墙;
 </code></pre><hr>
 
           
@@ -1844,70 +2228,6 @@
     /actuator/env  --&gt; 显示来自Spring的ConfigurableEnvironment的属性
 5. SpringBoot Admin：可视化的监控管理;
 6. 还可以自己开发脚本进行监控;
-</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
-2. 主域名和子域名之间也是跨域，cookie也无法访问;
-3. 同源策略限制的行为：
-    1. Cookie、LocalStorage 和 IndexDB 无法读取;
-    2. DOM 和 JS对象无法获得;
-    3. AJAX 请求不能发送.
-4. 注意：
-    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
-    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
-5. 解决跨域问题的方案有很多：
-    1. 通过jsonp跨域
-    2. document.domain + iframe跨域
-    3. location.hash + iframe
-    4. window.name + iframe跨域
-    5. postMessage跨域
-    6. 跨域资源共享(CORS)
-    7. 前端通过Nginx解决跨域问题
-    8. nodejs中间件代理跨域
-    9. WebSocket协议跨域
-6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
-7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
-    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
-    2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
-    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
-</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享;
-2. CORS需要浏览器和服务器同时支持;
-    1. 所有浏览器都支持该功能，IE浏览器不能低于IE10;
-    2. 整个CORS通信过程都是浏览器自动完成，不需要用户参与;
-    3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
-    4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，但用户不会有感觉;
-    5. 实现CORS通信的关键是服务器，只要服务器实现了CORS接口，就可以跨源通信.
-3. CORS与JSONP相比：
-    1. JSONP只能实现GET请求，而CORS支持所有类型的HTTP请求;
-    2. 使用CORS，开发者仍可以使用普通的AJAX发起请求和获得数据，比起JSONP有更好的错误处理;
-    3. JSONP主要被老浏览器支持，它们往往不支持CORS，而绝大多数现代浏览器都已经支持了CORS.
-4. SpringMVC4.2开始，支持使用 @CrossOrigin 解决跨域问题;
-    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
-    2. value、origins属性：允许可访问的域列表;
-    3. maxAge属性：准备响应前的缓存持续的最大时间(s);
-    4. allowedHeaders、exposedHeaders、methods、allowCredentials
-5. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
-    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
-    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
-    3. withCredentials:true 表示对附带身份凭证的请求，服务器不得设置 Access-Control-Allow-Origin=&quot;&quot;,
-    因为请求头中携带了Cookie，如果Access-Control-Allow-Origin=&quot;&quot;，请求将会失败;
-    而设置 Access-Control-Allow-Origin=&quot;http://foo.example&quot;，则会请求成功;
-    其次服务器需要设置 Access-Control-Allow-Credentials:true，否则响应内容不会返回给客户端;
-6. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
-7. 对于不支持 @CrossOrigin 的版本，可以在Filter中拦截此请求，手动添加允许跨域的请求头;
-    setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);
-8. SpringMVC的XML配置文件中，全局配置CORS
-    &lt;mvc:cors&gt;
-        &lt;mvc:mapping path=&quot;/**&quot; /&gt;
-    &lt;/mvc:cors&gt;
-    1. 更加细粒度的配置：
-    &lt;mvc:cors&gt;
-        &lt;mvc:mapping path=&quot;/api/**&quot;
-            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
-            allowed-methods=&quot;GET, PUT&quot;
-            allowed-headers=&quot;header1, header2, header3&quot;
-            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
-            max-age=&quot;3600&quot; /&gt;
-        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
-    &lt;/mvc:cors&gt;
 </code></pre><hr>
 
           
@@ -2253,25 +2573,28 @@
 4. SpringDataRedis属于Spring Data的一部分，也为Redis提供了一个Template对象：RedisTemplate
 </code></pre><h3 id="整合Redis"><a href="#整合Redis" class="headerlink" title="整合Redis"></a>整合Redis</h3><pre><code>1. Redis的启动器：spring-boot-starter-data-redis
 2. 在 application.yml 中，配置Redis的连接信息
+    1. 连接单台Redis服务
     spring:
         redis:
             host: 192.168.103.30
             port: 6379  # 默认6379
             database: 0  # 配置Redis的数据库编号，默认就是0
             timeout: 3000  # 连接超时时间3s
-            pool:  #连接池
-                max-idle=200 #最大空闲连接，默认值8
-                min-idle=200 #最小空闲连接，默认值0
-                max-active=2000 #最大连接实例，设置为-1，表示不做限制
-                max-wait=1000 #等待可用连接的超时时间，默认值-1，表示永不超时
+            jedis 或 lettuce:
+                pool:  #连接池
+                    max-idle=200  #最大空闲连接，默认值8
+                    min-idle=200  #最小空闲连接，默认值0
+                    max-active=2000  #最大连接实例，设置为-1，表示不做限制
+                    max-wait=2000  #等待可用连接的超时时间，默认值-1，表示永不超时
+    2. jedis和lettuce都是Redis提供的客户端，默认是jedis，但lettuce是基于netty的，并发性更好;
+    3. 连接集群，指定集群的每个节点地址
+    spring.redis.cluster.nodes=192.168.103.128:7001, ... ,192.168.103.128:7006
 3. 在测试类中，注入 RedisTemplate 对象，操作Redis数据库
     @Autowired
     private RedisTemplate redis;
 
     @Test
-    public void contest() {
-
-    }
+    public void contest() { ... }
 4. redis.opsForValue()、opsForList()、opsForSet()、opsForZSet()、opsForHash() 对应Redis中的5种数据结构，
    封装到不同的 Operations 对象中;
     1. 字符串操作对象：ValueOperations ops = redis.opsForValue();
@@ -2553,8 +2876,11 @@
         &lt;scope&gt;provided&lt;/scope&gt;
     &lt;/dependency&gt;
 1. @Data：注解在Java类上，在编译期自动生成getter、setter... 源码中没有变化，只存在于编译生成的class文件中;
-2. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
-3. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
+2. @Setter、@Getter：分别生成 setter、getter 方法;
+3. @AllArgsConstructor：添加一个构造函数，该构造函数含有所有已声明的属性参数;
+4. @NoArgsConstructor：添加一个无参构造函数;
+5. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
+6. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
 </code></pre><h2 id="Jackson"><a href="#Jackson" class="headerlink" title="Jackson"></a>Jackson</h2><pre><code>1. 常用的JSON框架序列化JSON的性能：Jackson &gt; fastJson &gt; Gson &gt; Json-lib，各有所长，时间换空间、空间换时间;
 2. web启动器默认集成了Jackson
     1. @JsonIgnore：指定忽略的字段，不返回给前端;
@@ -4155,480 +4481,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/16/SpringMVC进阶/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/16/SpringMVC进阶/" itemprop="url">SpringMVC进阶</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-16T00:00:00+08:00">
-                2016-03-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="控制器方法的返回值"><a href="#控制器方法的返回值" class="headerlink" title="控制器方法的返回值"></a>控制器方法的返回值</h2><pre><code>1. resources/springmvc.xml：配置的视图解析器
-    &lt;bean id=&quot;internalResourceViewResolver&quot; 
-        class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
-        &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;
-        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
-    &lt;/bean&gt;
-2. String
-    @RequestMapping(&quot;/test&quot;)
-    public String testStr(Model model) {
-        User user = new User();  user.setName(&quot;JavaEE&quot;);  user.setAge(20);
-        model.addAttribute(&quot;user&quot;, user);
-        return &quot;test&quot;;
-    }
-    1. 返回的字符串默认作为逻辑视图名，通过视图解析器解析为物理视图的真实地址;
-    2. 物理视图的真实地址：webapp/pages/test.jsp，渲染页面并响应给客户端;
-    3. Model默认把数据存入Request域中，在 test.jsp 中获取这些数据;
-        &lt;div&gt;${user.name}&lt;/div&gt; &lt;div&gt;${user.age}&lt;/div&gt;
-3. void
-    1. 控制器方法没有返回值时，默认以URL的最后一级作为视图名去查找JSP文件;
-    2. 使用Servlet API手动转发/重定向时，SpringMVC的视图解析器不会再介入，所以要声明完整的路径名;
-    @RequestMapping(path=&quot;/hello&quot;)
-    public void test(HttpServletRequest req, HttpServletResponse res) {
-        //手动转发到test.jsp
-        req.getRequestDispatcher(&quot;/pages/test.jsp&quot;).forward(req, res);
-        //手动重定向到index.jsp
-        req.sendRedirect(req.getContextPath() + &quot;/index.jsp&quot;);
-    }
-4. 响应流数据
-    @RequestMapping(path=&quot;/hello&quot;)
-    public void test(HttpServletRequest req, HttpServletResponse res) {
-        res.setCharacterEncoding(&quot;UTF-8&quot;);
-        res.setContentType(&quot;text/html;charset=UTF-8&quot;);
-        res.getWriter().print(&quot;你好，Java&quot;);
-    }
-5. ModelAndView
-    1. SpringMVC提供的对象，用于封装Model和视图名;
-        @RequestMapping(path=&quot;/hello&quot;)
-        public ModelAndView test() {
-            ModelAndView mv = new ModelAndView();
-            User user = new User();  user.setName(&quot;JavaEE&quot;);  user.setAge(20);
-            mv.addObject(&quot;user&quot;, user);  //存入数据
-            mv.setViewName(&quot;test&quot;);  //指定视图名
-            return mv;
-        }
-    2. 控制器方法返回字符串时，底层其实也是用 ModelAndView 进行封装.
-6. 请求转发和重定向的关键字
-    1. 控制器方法在返回字符串时，默认使用的就是请求转发;
-    2. 转发的关键字：forward;  重定向的关键字：redirect;
-        @RequestMapping(path=&quot;/hello&quot;)
-        public String test() {
-            return &quot;forward:/pages/test.jsp&quot;;  //转发到test.jsp
-            return &quot;redirect:/index.jsp&quot;;  //重定向到index.jsp
-        }
-</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 控制器方法的返回值默认会解析为跳转路径，@ResponseBody修饰之后，返回值不会再交给视图解析器，
-   而是被直接写入响应体中;
-    @RequestMapping(&quot;/test&quot;)
-    @ResponseBody
-    public String test() {
-        return &quot;Hello SpringBoot&quot;;  //返回的字符串直接响应给客户端
-    }
-2. 控制器方法返回对象时，通过 HttpMessageConverter 接口转为指定格式的数据，如JSON、XML;
-3. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
-4. 引入转换格式的依赖包jackson
-    jackson-databind、jackson-core、jackson-annotations
-5. 在JSP页面发送一个AJAX请求，参数为JSON格式
-    public class User {
-        private String username;  private String password;
-        ......//setter、getter
-    }
-    $.ajax({
-        url: &quot;user/getList&quot;,
-        type: &quot;post&quot;,
-        dataType: &quot;json&quot;,
-        data: &apos;{&quot;username&quot;: &quot;Jack&quot;, &quot;password&quot;: &quot;123&quot;}&apos;,
-        success: data=&gt;{ ... }
-    });
-    @RequestMapping(path=&quot;/getList&quot;)
-    public @ResponseBody User test(@RequestBody User user) {
-        String username = user.getUsername();
-        String password = user.getPassword();
-        ... //操作数据库
-        User u = new User();
-        ......  //封装一个新的User对象并返回
-        return u;
-    }
-    1. @RequestBody：获取请求体的内容，SpringMVC会把JSON格式的请求体封装到User对象中;
-    2. @ResponseBody：将返回的对象作为响应体，并转为JSON数据，响应给客户端.
-</code></pre><h2 id="静态资源的处理"><a href="#静态资源的处理" class="headerlink" title="静态资源的处理"></a>静态资源的处理</h2><pre><code>1. 访问静态资源时，不需要经过前端控制器和过滤器，直接响应即可;
-2. 使用Servlet来处理静态资源：web.xml 中配置名称为 default 的&lt;servlet&gt;标签;
-    1. 处理 webapp/css 目录中的静态资源：以 /css/ 开头的URL;
-        &lt;servlet-mapping&gt;
-            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
-            &lt;url-pattern&gt;/css/*&lt;/url-pattern&gt;
-        &lt;/servlet-mapping&gt;
-    2. 处理后缀名为 .css、.js 的静态资源;
-        &lt;servlet-mapping&gt;
-            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
-            &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
-        &lt;/servlet-mapping&gt;
-        &lt;servlet-mapping&gt;
-            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
-            &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
-        &lt;/servlet-mapping&gt;
-3. 在SpringMVC的配置文件springmvc.xml 中，使用 &lt;mvc:resources&gt; 标签配置静态资源的访问;
-    &lt;mvc:annotation-driven /&gt;
-    &lt;mvc:resources location=&quot;/css/&quot; mapping=&quot;/css/**&quot; /&gt;
-    &lt;mvc:resources location=&quot;/images/&quot; mapping=&quot;/images/**&quot; /&gt;
-    &lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot; /&gt;
-    1. location属性：指定目录文件的路径，如 /css/ 表示 webapp/css 目录;
-    2. mapping属性：匹配的请求路径，如 /css/** 表示匹配以 /css 开头的所有URL;
-4. 更简便的配置方式
-    &lt;mvc:default-servlet-handler /&gt;
-    1. 它会在SpringMVC上下文中定义一个DefaultServletHttpRequestHandler，筛选URL;
-    2. 如果发现静态资源，则交给名称为 default 的Servlet;
-</code></pre><h3 id="SpringMVC的路径匹配模式"><a href="#SpringMVC的路径匹配模式" class="headerlink" title="SpringMVC的路径匹配模式"></a>SpringMVC的路径匹配模式</h3><pre><code>1. Spring MVC中的路径匹配模式，使用的是Apache Ant的样式路径，有三种通配符：?、*、**
-    1. /*：拦截所有目录，不包含子目录;
-    2. /**：拦截所有目录及其子目录.
-2. ?：匹配任何单字符;
-    1. /user/a?bc：能够匹配/user/axbc、/user/aXbc，但不包括/user/abc;
-3. *：匹配 n&gt;=0 个字符，只能匹配一级目录，不能匹配子目录;
-    1. /user/*：匹配 /user/、 /user/abc，但不能匹配 /user/abc/123;
-    2. /app/*.jsp：匹配app目录下的所有 .jsp 文件.
-4. **：匹配 n&gt;=0 个目录;
-    1. /user/**：匹配以 /user 开头的所有URL;
-    2. /**/example：匹配 /example、 /app/example、 /app/foo/example...
-    3. /app/**/dir/file.：匹配 /app/dir/file.jsp、 /app/foo/dir/file.html ...
-5. /**/*.jsp：匹配任何目录下的所有 .jsp 文件;
-6. 所以，以 mvc 为命名空间的标签，在设置路径时，都遵循此路径匹配模式.
-</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 必要前提
-    1. form表单的 enctype(表单请求正文的类型) 属性值为 multipart/form-data;
-    2. method 必须是 POST;
-    3. 提供一个文件选择域：&lt;input type=&quot;file&quot; /&gt;
-2. 文件上传的依赖包：commons-fileupload、commons-io
-    &lt;form action=&quot;user/fileupload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
-        &lt;input type=&quot;file&quot; name=&quot;upload&quot; /&gt;
-        &lt;input type=&quot;submit&quot; value=&quot;上传&quot; /&gt;
-    &lt;/form&gt;
-3. 传统上传方式
-    @RequestMapping(path=&quot;/fileupload&quot;)
-    public String uploadFile(HttpServletRequest req) {
-        //获取上传目录的绝对路径
-        String path = req.getSession().getServletContext().getRealPath(&quot;/uploads/&quot;);
-        File file = new File(path);
-        if(!file.exists()) {
-            file.mkdirs();  //目录不存在则创建
-        }
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        List&lt;FileItem&gt; items = upload.parseRequest(req);  //解析request
-        for(FileItem item: items) {
-            if(item.isFormField()) {
-                //item只是一个普通的表单项
-            } else {
-                //item是一个上传文件项
-                String filename = item.getName();  //获取文件名
-                String uuid = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);
-                filename = uuid + &quot;_&quot; + filename;  //不重复的文件名
-                item.write(new File(path, filename));  //完成文件上传
-                item.delete();  //删除生成的临时文件
-            }
-        }
-        return &quot;success&quot;;
-    }
-</code></pre><h3 id="SpringMVC处理文件上传"><a href="#SpringMVC处理文件上传" class="headerlink" title="SpringMVC处理文件上传"></a>SpringMVC处理文件上传</h3><pre><code>1. 前端控制器接收到文件上传的请求时，会调用文件解析器，由文件解析器处理此请求;
-2. 文件解析器会将处理结果封装到MultipartFile对象中，并将返回给前端控制器;
-3. 前端控制器将上传文件对象MultipartFile，再传给对应的控制器方法;
-4. 在配置文件 springmvc.xml 中配置文件解析器，其id值是固定的：multipartResolver
-    &lt;bean id=&quot;multipartResolver&quot; 
-        class=&quot;org.springframework.web.multipart.commons.CommonsMultipartResolver&quot;&gt;
-        &lt;property name=&quot;maxUploadSize&quot; value=&quot;10485760&quot; /&gt;  ==&gt;最大上传文件
-    &lt;/bean&gt;
-5. 上传标签的name属性值为upload，方法参数MultipartFile的变量名也必须为upload;
-    @RequestMapping(path=&quot;/fileupload&quot;)
-    public String uploadFile(HttpServletRequest req, MultipartFile upload) {
-        //获取其他参数
-        String xxx = req.getParameter(&quot;xxx&quot;);
-
-        //获取上传目录的绝对路径
-        String path = req.getSession().getServletContext().getRealPath(&quot;/uploads/&quot;);
-        File file = new File(path);
-        if(!file.exists()) {
-            file.mkdirs();  //目录不存在则创建
-        }
-        String filename = upload.getOriginalFilename();  //获取文件名
-        String uuid = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);
-        filename = uuid + &quot;_&quot; + filename;  //不重复的文件名
-        upload.transferTo(new File(path, filename));  //完成文件上传
-        return &quot;success&quot;;
-    }
-</code></pre><h3 id="跨服务器的文件上传"><a href="#跨服务器的文件上传" class="headerlink" title="跨服务器的文件上传"></a>跨服务器的文件上传</h3><pre><code>1. 实际开发中，可能会有很多负责不同功能的服务器
-    1. 应用服务器：负责部署处理业务的应用;
-    2. 数据库服务器：数据持久化;
-    3. 缓存和消息服务器：负责处理高并发访问的缓存和消息;
-    4. 文件服务器：负责存储用户上传的文件;
-2. 注意：这并不是服务器集群;
-3. 实现跨服务器的依赖：jersey-core、jersey-client
-    @RequestMapping(path=&quot;/fileupload&quot;)
-    public String uploadFile(MultipartFile upload) {
-        String filename = upload.getOriginalFilename();  //获取文件名
-        String uuid = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);
-        filename = uuid + &quot;_&quot; + filename;  //不重复的文件名
-        //文件服务器的上传URL，一定有uploads目录
-        String fileServer = &quot;http://localhost:9090/uploads/&quot;;
-        //创建客户端对象
-        Client client = Client.create();
-        //与文件服务器建立连接
-        WebResource web = client.resource(fileServer + filename);
-        //上传文件
-        web.put(upload.getBytes());
-        return &quot;success&quot;;
-    }
-</code></pre><h2 id="异常处理器"><a href="#异常处理器" class="headerlink" title="异常处理器"></a>异常处理器</h2><pre><code>1. 控制器方法在处理业务发生异常时，会向上抛出，最终由前端控制器查找异常处理器，如果没有则抛给浏览器;
-2. 使用异常处理器的目的是，当发生异常时，由异常处理器响应给用户一个友好页面；
-3. 自定义异常类
-    public class SysException extends Exception {
-        private String message;  //存储提示信息
-        //getter、setter
-        public SysException(String message) {
-            this.message = message;
-        }
-    }
-4. 抛出异常
-    @RequestMapping(path=&quot;/except&quot;)
-    public String test() throws SysException {
-        try {
-            int i = 10/0;  //发生异常
-        } catch(Exception e) {
-            throw new SysException(&quot;保存用户失败！&quot;);
-        }
-        return &quot;success&quot;;
-    }
-5. 异常处理器：实现接口HandlerExceptionResolver
-    public class SysExceptionResolver implements HandlerExceptionResolver {
-        public ModelAndView resolveException(HttpServletRequest req, 
-                HttpServletResponse res, Object handler, Exception ex) {
-            SysException e = null;
-            if(ex instanceof SysException) {
-                e = (SysException) ex;
-            } else {
-                e = new SysException(&quot;不好意思，系统维护中~&quot;);
-            }
-            ModelAndView mv = new ModelAndView();
-            mv.addObject(&quot;errorMsg&quot;, e.getMessage());  //向Request域存入提示信息
-            mv.setViewName(&quot;error&quot;);  //跳转到自定义的错误页error.jsp
-            return mv;
-        }
-    }
-6. 在配置文件 springmvc.xml 中，配置异常处理器
-    &lt;bean id=&quot;sysExceptionResolver&quot; class=&quot;cn.test.exception.SysExceptionResolver&quot;&gt;&lt;/bean&gt;
-</code></pre><h2 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h2><pre><code>1. SpringMVC的处理器拦截器类似于Servlet中的过滤器，用于对处理器进行预处理和后处理;
-    1. 预处理和后处理类似于Koa的洋葱图；
-    2. 请求到达 --&gt; 执行拦截器放行前的代码(预处理) --&gt; 放行到控制器方法 --&gt; 
-    执行拦截器放行后的代码 --&gt; 响应结果
-2. 拦截器链：将拦截器按照一定的顺序连接成一条链，在访问被拦截的方法/属性时，拦截器就会按顺序被调用;
-3. 过滤器与拦截器
-    1. 过滤器是Servlet规范中的一部分，拦截器是SpringMVC框架提供的；
-    2. 过滤器在 url-pattern 中配置了 /* 之后，可以拦截所有要访问的资源；
-    3. 拦截器只会拦截访问的控制器方法，如果是JSP、HTML、CSS、image、JS资源，是不会被拦截的。
-4. 拦截器也是AOP思想的具体应用，自定义拦截器必须实现接口HandlerInterceptor
-5. JDK1.8对接口做了增强，方法可以不是抽象的，所以在实现HandlerInterceptor时，并不强制实现此接口方法;
-    public class MyInterceptor implements HandlerInterceptor {
-        // preHandle()、postHandle()、afterCompletion()
-    }
-6. 在配置文件 springmvc.xml 中，配置拦截器：&lt;mvc:interceptors&gt;
-    &lt;mvc:interceptors&gt;
-        &lt;mvc:interceptor&gt;
-            &lt;mvc:mapping path=&quot;/user/*&quot; /&gt;
-            &lt;!-- &lt;mvc:exclude-mapping path=&quot;&quot;&gt; --&gt;
-            &lt;bean class=&quot;cn.test.interceptor.MyInterceptor&quot; /&gt;
-        &lt;/mvc:interceptor&gt;
-    &lt;/mvc:interceptors&gt;
-    1. 每一组 &lt;mvc:interceptor&gt; 标签，表示一个拦截器，标签的顺序决定了拦截器的调用顺序;
-    2. &lt;mvc:mapping&gt;：配置拦截的控制器方法;
-    3. &lt;mvc:exclude-mapping&gt;：配置不拦截的控制器方法;
-    4. path 属性：指定URL，也就是控制器方法.
-</code></pre><h3 id="拦截器方法"><a href="#拦截器方法" class="headerlink" title="拦截器方法"></a>拦截器方法</h3><pre><code>1. preHandle()：预处理方法
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, 
-        Object handler) {
-        return true;
-    }
-    1. 在控制器方法执行之前执行，返回true表示放行，执行下一个拦截器，如果没有了，则执行控制器方法;
-    2. 返回false表示不放行，可以使用req对象和res对象自行处理请求与响应.
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, 
-        Object handler) {
-        req.getRequestDispatcher(&quot;/pages/error.jsp&quot;).forward(req, res); //转发到error.jsp
-        return false;  //不放行
-    }
-2. postHandle()：后处理方法
-    @RequestMapping(path=&quot;/test&quot;)
-    public String test() {
-        ....
-        return &quot;success&quot;;
-    }
-    public void postHandle(HttpServletRequest req, HttpServletResponse res, 
-        Object handler， ModelAndView mv) {
-    }
-    1. 在控制器方法执行完之后，执行success.jsp之前，执行postHandle();
-    public void postHandle(HttpServletRequest req, HttpServletResponse res, 
-        Object handler, ModelAndView mv) {
-        req.getRequestDispatcher(&quot;/pages/error.jsp&quot;).forward(req, res);
-    }
-    2. 虽然postHandle()自行请求转发给error.jsp，但控制器方法的 success.jsp 仍会执行，
-    响应给浏览器也是 error.jsp.
-3. afterCompletion()：控制器方法的 success.jsp 执行完之后，才会执行;
-    public void afterCompletion(HttpServletRequest req, HttpServletResponse res, 
-        Object handler， Exception ex) {
-    }
-4. 当配置了多组拦截器时(都放行)
-    @Controller
-    @RequestMapping(path = &quot;/user&quot;)
-    public class HelloController {
-        @RequestMapping(path=&quot;/test&quot;)
-        public String test() {
-            ....
-            return &quot;success&quot;;
-        }
-    }
-    &lt;mvc:interceptors&gt;
-        &lt;mvc:interceptor&gt;
-            &lt;mvc:mapping path=&quot;/user/*&quot; /&gt;
-            &lt;bean class=&quot;cn.test.interceptor.MyInterceptor&quot; /&gt;
-        &lt;/mvc:interceptor&gt;
-        &lt;mvc:interceptor&gt;
-            &lt;mvc:mapping path=&quot;/**&quot; /&gt;
-            &lt;bean class=&quot;cn.test.interceptor.TestInterceptor&quot; /&gt;
-        &lt;/mvc:interceptor&gt;
-    &lt;/mvc:interceptors&gt;
-    &lt;a href=&quot;user/test&quot;&gt;to test&lt;/a&gt;
-1. 执行顺序：
-    MyInterceptor.preHandle() --&gt; TestInterceptor.preHandle() --&gt; HelloController.test()
-    --&gt; TestInterceptor.postHandle() --&gt; MyInterceptor.postHandle() --&gt; success.jsp --&gt; 
-    TestInterceptor.afterCompletion() --&gt; MyInterceptor.afterCompletion()
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4679,7 +4531,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

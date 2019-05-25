@@ -88,7 +88,7 @@
 <meta property="og:description" content="响应式编程1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor 2. 响应式依赖于事件驱动，异步非阻塞，观察者模式; 3. 响应式编程与传统编程的技术对比  4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器; Spring WebFlux1. Spring WebFlux 是Spring5.0">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/响应式.png">
-<meta property="og:updated_time" content="2019-05-19T04:10:04.994Z">
+<meta property="og:updated_time" content="2019-05-25T15:36:45.333Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot响应式">
 <meta name="twitter:description" content="响应式编程1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor 2. 响应式依赖于事件驱动，异步非阻塞，观察者模式; 3. 响应式编程与传统编程的技术对比  4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器; Spring WebFlux1. Spring WebFlux 是Spring5.0">
@@ -506,70 +506,6 @@
     /actuator/env  --&gt; 显示来自Spring的ConfigurableEnvironment的属性
 5. SpringBoot Admin：可视化的监控管理;
 6. 还可以自己开发脚本进行监控;
-</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
-2. 主域名和子域名之间也是跨域，cookie也无法访问;
-3. 同源策略限制的行为：
-    1. Cookie、LocalStorage 和 IndexDB 无法读取;
-    2. DOM 和 JS对象无法获得;
-    3. AJAX 请求不能发送.
-4. 注意：
-    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
-    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
-5. 解决跨域问题的方案有很多：
-    1. 通过jsonp跨域
-    2. document.domain + iframe跨域
-    3. location.hash + iframe
-    4. window.name + iframe跨域
-    5. postMessage跨域
-    6. 跨域资源共享(CORS)
-    7. 前端通过Nginx解决跨域问题
-    8. nodejs中间件代理跨域
-    9. WebSocket协议跨域
-6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
-7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
-    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
-    2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
-    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
-</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享;
-2. CORS需要浏览器和服务器同时支持;
-    1. 所有浏览器都支持该功能，IE浏览器不能低于IE10;
-    2. 整个CORS通信过程都是浏览器自动完成，不需要用户参与;
-    3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
-    4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，但用户不会有感觉;
-    5. 实现CORS通信的关键是服务器，只要服务器实现了CORS接口，就可以跨源通信.
-3. CORS与JSONP相比：
-    1. JSONP只能实现GET请求，而CORS支持所有类型的HTTP请求;
-    2. 使用CORS，开发者仍可以使用普通的AJAX发起请求和获得数据，比起JSONP有更好的错误处理;
-    3. JSONP主要被老浏览器支持，它们往往不支持CORS，而绝大多数现代浏览器都已经支持了CORS.
-4. SpringMVC4.2开始，支持使用 @CrossOrigin 解决跨域问题;
-    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
-    2. value、origins属性：允许可访问的域列表;
-    3. maxAge属性：准备响应前的缓存持续的最大时间(s);
-    4. allowedHeaders、exposedHeaders、methods、allowCredentials
-5. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
-    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
-    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
-    3. withCredentials:true 表示对附带身份凭证的请求，服务器不得设置 Access-Control-Allow-Origin=&quot;&quot;,
-    因为请求头中携带了Cookie，如果Access-Control-Allow-Origin=&quot;&quot;，请求将会失败;
-    而设置 Access-Control-Allow-Origin=&quot;http://foo.example&quot;，则会请求成功;
-    其次服务器需要设置 Access-Control-Allow-Credentials:true，否则响应内容不会返回给客户端;
-6. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
-7. 对于不支持 @CrossOrigin 的版本，可以在Filter中拦截此请求，手动添加允许跨域的请求头;
-    setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);
-8. SpringMVC的XML配置文件中，全局配置CORS
-    &lt;mvc:cors&gt;
-        &lt;mvc:mapping path=&quot;/**&quot; /&gt;
-    &lt;/mvc:cors&gt;
-    1. 更加细粒度的配置：
-    &lt;mvc:cors&gt;
-        &lt;mvc:mapping path=&quot;/api/**&quot;
-            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
-            allowed-methods=&quot;GET, PUT&quot;
-            allowed-headers=&quot;header1, header2, header3&quot;
-            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
-            max-age=&quot;3600&quot; /&gt;
-        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
-    &lt;/mvc:cors&gt;
 </code></pre><hr>
 
       
@@ -690,7 +626,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -745,7 +681,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#响应式编程"><span class="nav-number">1.</span> <span class="nav-text">响应式编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-WebFlux"><span class="nav-number">2.</span> <span class="nav-text">Spring WebFlux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">2.1.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应式客户端"><span class="nav-number">2.2.</span> <span class="nav-text">响应式客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端推送技术"><span class="nav-number">3.</span> <span class="nav-text">服务端推送技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSE"><span class="nav-number">3.1.</span> <span class="nav-text">SSE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Actuator"><span class="nav-number">4.</span> <span class="nav-text">Actuator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">5.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">5.1.</span> <span class="nav-text">CORS</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#响应式编程"><span class="nav-number">1.</span> <span class="nav-text">响应式编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-WebFlux"><span class="nav-number">2.</span> <span class="nav-text">Spring WebFlux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">2.1.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应式客户端"><span class="nav-number">2.2.</span> <span class="nav-text">响应式客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端推送技术"><span class="nav-number">3.</span> <span class="nav-text">服务端推送技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSE"><span class="nav-number">3.1.</span> <span class="nav-text">SSE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Actuator"><span class="nav-number">4.</span> <span class="nav-text">Actuator</span></a></li></ol></div>
             
 
           </div>

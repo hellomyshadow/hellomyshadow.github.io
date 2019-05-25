@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-19T03:23:36.832Z">
+<meta property="og:updated_time" content="2019-05-25T13:46:17.753Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot进阶">
 <meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
@@ -350,8 +350,11 @@
         &lt;scope&gt;provided&lt;/scope&gt;
     &lt;/dependency&gt;
 1. @Data：注解在Java类上，在编译期自动生成getter、setter... 源码中没有变化，只存在于编译生成的class文件中;
-2. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
-3. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
+2. @Setter、@Getter：分别生成 setter、getter 方法;
+3. @AllArgsConstructor：添加一个构造函数，该构造函数含有所有已声明的属性参数;
+4. @NoArgsConstructor：添加一个无参构造函数;
+5. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
+6. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
 </code></pre><h2 id="Jackson"><a href="#Jackson" class="headerlink" title="Jackson"></a>Jackson</h2><pre><code>1. 常用的JSON框架序列化JSON的性能：Jackson &gt; fastJson &gt; Gson &gt; Json-lib，各有所长，时间换空间、空间换时间;
 2. web启动器默认集成了Jackson
     1. @JsonIgnore：指定忽略的字段，不返回给前端;
@@ -763,7 +766,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

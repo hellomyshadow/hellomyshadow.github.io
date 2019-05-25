@@ -2429,6 +2429,410 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/10/SpringCloud项目/" itemprop="url">SpringCloud项目</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-10T00:00:00+08:00">
+                2016-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="项目架构"><a href="#项目架构" class="headerlink" title="项目架构"></a>项目架构</h2><p><img src="//hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg" alt="项目架构"></p>
+<pre><code>1. 微服务的拆分
+    1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;
+    2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
+    3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;
+    4. 父工程打包方式为pom
+2. 工具类工程：一个SpringBoot工程，专门提供工具类方法，其他服务引用它的坐标即可;
+    1. 如果用到了Servlet相关的API时，如HttpServletRequest
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+        &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    2. 日志相关的启动器
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    3. JSON相关的工具类--Jackson：实体类序列化为JSON字符串、反序列化、List、Map
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+        &lt;version&gt;2.9.9&lt;/version&gt;
+    &lt;/dependency&gt;
+3. REST风格的响应
+    1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
+    2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
+    @PostMapping
+    public ResponseEntity&lt;User&gt; saveUser() {
+        User u = ...;
+        ······
+        //设置状态码和响应体
+        return ResponseEntity.status(HttpStatus.CREATED).body(u);
+    }
+</code></pre><h3 id="通用异常处理"><a href="#通用异常处理" class="headerlink" title="通用异常处理"></a>通用异常处理</h3><pre><code>1. 在工具类中处理异常，引入SpringMVC的依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. @ControllerAdvice、@ExceptionHandler：针对不同的异常，做不同的处理;
+    @ControllerAdvice
+    public class CommonExtHandler {
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
+        }
+        ......
+    }
+3. 为了对异常统一管理，自定义异常，动态设置状态码、状态信息，并使用枚举类封装状态信息;
+    1. 枚举类
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public enum ExceptionEnum {
+            PRICE_CANNOT_BE_NULL(400, &quot;价格不能为空！&quot;),
+            ;
+            private int code;
+            private String msg;
+        }
+    2. 自定义异常
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class CommonException extends RuntimeException {
+            private ExceptionEnum enum;
+        }
+    3. 异常结果的封装
+        @Data
+        public class ExceptionResult {
+            private int status;
+            private String message;
+            private long timestamp;
+            public ExceptionResult(ExceptionEnum em) {
+                this.status = em.getCode();
+                this.message = em.getMsg());
+                this.timestamp = System.currentTimeMillis();
+            }
+        }
+    4. 异常捕获
+        @ExceptionHandler(CommonException.class)
+        public ResponseEntity&lt;ExceptionResult&gt; handleCommonExt(CommonException ext) {
+            ExceptionEnum em = ext.getExceptionEnum();
+            return ResponseEntity.status(em.getCode()).body(new ExceptionResult(em));
+        }
+    5. 在Controller方法中抛出异常
+        @PostMapping
+        public ResponseEntity&lt;User&gt; saveUser() {
+            if(...) {
+                throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
+            }
+            ......
+        }
+</code></pre><h2 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h2><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
+2. 域名解析首先从本地域名开始，也就是系统盘中的 host 文件，在 host 文件中查找域名映射的IP地址;
+    1. windows系统：C:\Windows\System32\drivers\etc\hosts
+    2. Linux系统：/etc/hosts
+3. 如果 host 文件中没有配置域名和IP的映射关系，则转向域名服务器解析;
+    127.0.0.1   localhost
+4. 域名服务器：记录了所有注册备案的域名和IP的映射关系;
+5. 在不购买域名的情况下，在本地 host 文件中配置域名与回环地址的映射;
+    127.0.0.1   www.icloud.com
+    127.0.0.1   manage.icloud.com
+    127.0.0.1   api.icloud.com   ------&gt;子域名
+6. 测试：ping api.icloud.com
+</code></pre><h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><pre><code>1. Nginx是一个高性能的Web和反向代理服务器，基于 Epoll 和 Kqueue 模型;
+    1. 作为Web服务器：比Apache占用更少的资源，效率更高，单机支持高达50000个并发连接的响应;
+    2. 作为负载均衡服务器：既可以在内部直接支持Rails和PHP，也可以作为HTTP代理服务对外提供服务;
+    3. 作为邮件代理服务器：最早开发Nginx的目的之一也是作为邮件代理服务器;
+2. Web服务器：Apache服务器、Nginx、IIS...
+3. Web应用服务器：Tomcat、Resin、Jetty...
+    1. Web服务器不能解析JSP等页面，只能处理HTML、CSS、JS、图片等静态资源;
+    2. Web服务器的并发能力远高于Web应用服务器;
+4. Nginx作为Web服务器时，通常把它作为网关，因为它具备网关必备的功能：反向代理、负载均衡、动态路由、请求过滤
+</code></pre><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><pre><code>1. Nginx作为反向代理服务器，配置好反向代理的规则，不同的请求交给不同的真实服务器进行处理;
+2. 当请求到达Nginx时，它会根据定义好的规则进行请求转发，从而实现路由的功能;
+3. nginx.conf
+    http {
+        ......
+
+        server {
+            listen       80;  -----------------&gt; 配置监听的端口号
+            server_name  manage.icloud.com;  --&gt; 监听的域名/IP
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:9000;  #反向代理，转发的真实服务器地址
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+        server {
+            listen       80;
+            server_name  api.icloud.com;
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:10010;  #反向代理
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+        ......
+    }
+4. 通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
+5. 访问(http协议的默认端口号80)
+    http://manage.icloud.com/...
+    http://api.icloud.com/...
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
+2. 主域名和子域名之间也是跨域，cookie也无法访问;
+3. 同源策略限制的行为：
+    1. Cookie、LocalStorage 和 IndexDB 无法读取;
+    2. DOM 和 JS对象无法获得;
+    3. AJAX 请求不能发送.
+4. 注意：
+    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
+    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+5. 解决跨域问题的方案有很多：
+    1. jsonp：利用 &lt;script&gt; 标签可以跨域的原理实现，需要服务端支持，且只能发起GET请求;
+    2. document.domain + iframe跨域
+    3. location.hash + iframe
+    4. window.name + iframe跨域
+    5. postMessage跨域
+    6. 跨域资源共享(CORS)
+    7. Nginx反向代理
+    8. nodejs中间件代理跨域
+    9. WebSocket协议跨域
+6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
+    2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
+    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
+</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享，规范化的跨域请求解决方案，安全可靠，需要浏览器和服务器同时支持;
+2. 所有浏览器都支持该功能，IE浏览器不能低于IE10，整个CORS通信过程都是浏览器自动完成，不需要用户参与;
+3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
+4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，但用户不会有感觉;
+5. 实现CORS通信的关键是服务器，由服务端控制是否允许跨域，只要实现了CORS接口，就可以跨源通信，可自定义规则.
+</code></pre><h3 id="CORS原理"><a href="#CORS原理" class="headerlink" title="CORS原理"></a>CORS原理</h3><pre><code>1. 浏览器会将AJAX请求分为两类：简单请求、特殊请求
+2. 简单请求需要满足两大条件
+    1. 请求方法：HEAD、GET、POST
+    2. HTTP的头信息：Accept、Accept-Language、Content-Language、Last-Event-ID、Content-Type
+    3. 其中，Content-Type值只限于：application/x-www-form-urlencoded、multipart/form-data、text/plain
+3. 当浏览器发现AJAX请求是简单请求时，会在请求头中携带字段Origin，指定当前请求属于哪个域(协议+域名+端口号)
+    Origin: http://manage.icloud.com
+    1. 服务端根据 Origin 的值决定是否允许其跨域，如果允许跨域，则需要在响应头中携带两个字段：
+        Access-Control-Allow-Origin: http://manage.icloud.com  ----&gt; 必需
+        Access-Control-Allow-Credentials: true   -------------&gt; 可选
+    2. Access-Control-Allow-Origin：可接受的域，可以是一个具体的域，也可以是 *，表示任意一个域;
+    3. Access-Control-Allow-Credentials：是否允许携带Cookie，默认情况下不会携带Cookie;
+4. 需要注意的是，如果跨域请求要操作Cookie，需要满足3个条件：
+    1. 服务端的响应头中必须设置 Access-Control-Allow-Credentials 为 true;
+    2. 浏览器发起AJAX请求时，必须设置 withCredentials 为 true;
+    3. 响应头中的 Access-Control-Allow-Origin 必须指定域，不能使用通配符*;
+5. 特殊请求：不符合简单请求的条件时，都会被浏览器判定为特殊请求，如请求方式PUT;
+    1. 预检请求：特殊请求会在正式通信之前，增加一次HTTP查询请求;
+        1. 浏览器先询问服务端，当前请求的域是不是在服务端许可的白名单中，以及可以使用哪些HTTP动词、头信息字段;
+        2. 只有得到了肯定的答复，浏览器才会正式发起请求，否则就报错;
+    2. 预检请求中，除了 Origin 字段之外，还增加了2个头信息
+        Access-Control-Request-Method: PUT   ---&gt; 接下来会用到的请求方式
+        Access-Control-Request-Headers: X-Custom-Header  --&gt; 会额外用到的头信息
+    3. 预检请求的响应：如果服务端许可跨域，也会响应中增加一些字段
+        Access-Control-Allow-Origin: http://manage.icloud.com
+        Access-Control-Allow-Credentials: true
+        Access-Control-Allow-Method: GET, POST, PUT   ---&gt; 允许访问的方式
+        Access-Control-Allow-Headers: X-Custom-Header ---&gt; 允许携带的头
+        Access-Control-Max-Age: 1728000 ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
+    4. 浏览器收到响应的信息，则判定可以跨域;
+6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
+</code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
+2. 在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
+    @Configuration
+    public class GlobalCorsConfig {
+        @Bean
+        public CorsFilter corsFilter() {
+            //CORS配置信息
+            CorsConfiguration conf = new CorsConfiguration();
+            //1. 添加允许的域，可以同时添加多个
+            conf.addAllowedOrigin(&quot;http://manage.icloud.com&quot;);
+            //2. 是否发送Cookie
+            conf.setAllowCredentials(true);
+            //3. 允许的请求方式
+            conf.addAllowedMethod(&quot;OPTIONS&quot;);
+            conf.addAllowedMethod(&quot;HEAD&quot;);
+            conf.addAllowedMethod(&quot;GET&quot;);
+            conf.addAllowedMethod(&quot;PUT&quot;);
+            conf.addAllowedMethod(&quot;POST&quot;);
+            conf.addAllowedMethod(&quot;DELETE&quot;);
+            conf.addAllowedMethod(&quot;PATCH&quot;);
+            //4. 允许的头信息
+            conf.addAllowedHeader(&quot;*&quot;);
+            //5. 过期时间
+            conf.setMaxAge(3600L);
+
+            //添加映射路径，拦截一切请求
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration(&quot;/**&quot;, conf);
+
+            //返回新的CorsFilter
+            return new CorsFilter(source);
+        }
+    }
+3. @CrossOrigin：SpringMVC4.2开始支持;
+    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
+    2. 相关属性：value、origins，maxAge、allowedHeaders、exposedHeaders、methods、allowCredentials
+    3. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
+4. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
+    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
+5. 关于SpringMVC的XML配置文件中，全局配置CORS
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/api/**&quot;
+            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
+            allowed-methods=&quot;GET, PUT&quot;
+            allowed-headers=&quot;header1, header2, header3&quot;
+            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
+            max-age=&quot;3600&quot; /&gt;
+        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
+    &lt;/mvc:cors&gt;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2681,9 +3085,7 @@ Esc：退出编辑模式或末行模式；
         }
         public Object run() throws ZuulException {
             //1. 在内置的过滤器中，查看如何获取Request对象
-            //1-1. 获取请求上下文，生命周期：一次请求，即从请求到达Zuul，到最终响应数据；只限Zuul中使用，不会带到微服务中
             RequestContext ctx = RequestContext.getCurrentContext();
-            //1-2. 获取当前的请求对象
             HttpServletRequest request = ctx.getRequest();
             //2. 获取请求参数
             String token = request.getParameter(&quot;access-token&quot;);
@@ -2697,6 +3099,8 @@ Esc：退出编辑模式或末行模式；
             return null;
         }
     }
+    1. RequestContext.getCurrentContext()：获取当前请求的上下文对象，只限Zuul中使用，不会带到微服务中;
+    2. 生命周期：一次请求，即从请求到达Zuul，到最终响应数据;
 3. 测试
     http://127.0.0.1:8090/user/9  --&gt; 请求被拒绝，403
     http://127.0.0.1:8090/user/9?access-token=123 --&gt; http://127.0.0.1:8081/user/9
@@ -2709,8 +3113,8 @@ Esc：退出编辑模式或末行模式；
                         thread:
                             timeoutInMilliseconds: 6000  #配置 6s 超时
     ribbon:
-        ConnectTimeout: 500  # 默认1000
-        ReadTimeout: 2000  # 默认1000
+        ConnectTimeout: 1000  # Ribbon连接服务的超时时间，默认1000
+        ReadTimeout: 3000  # Ribbon读取数据的超时时间，默认1000
         MaxAutoRetriesNextServer: 1
         MaxAutoRetries: 0
     1. MaxAutoRetriesNextServer：不同服务实例的重试次数，一个服务多个实例，在不同服务实例之间重试，默认为1
@@ -3074,8 +3478,10 @@ Esc：退出编辑模式或末行模式；
     }
 5. Feign内部集成了Ribbon依赖和自动配置，在配置文件中配置Ribbon的超时时间
     ribbon:
-        ConnectTimeout: 500  # 连接超时时间为500ms，超过500ms没有连接上服务，则抛出异常
-        ReadTimeout: 2000  # 读取数据的超时时间2s，超过2s还没有获取到响应，则抛出异常
+        ConnectTimeout: 1000  # 连接超时时间
+        ReadTimeout: 3000  # 读取数据的超时时间
+    1. ConnectTimeout：Ribbon连接服务的超时时间，默认1000ms，超过1000ms没有连接上服务，则抛出异常;
+    2. ReadTimeout：Ribbon读取数据的超时时间，默认1000ms，超过1000ms还没有获取到响应，则抛出异常;
 </code></pre><h3 id="Feign集成Hystrix"><a href="#Feign集成Hystrix" class="headerlink" title="Feign集成Hystrix"></a>Feign集成Hystrix</h3><pre><code>1. 默认是关闭的，在配置文件中开启
     feign:
         hystrix:
@@ -3166,403 +3572,6 @@ Esc：退出编辑模式或末行模式；
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/05/02/SpringCloud组件1/" itemprop="url">SpringCloud组件1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-02T00:00:00+08:00">
-                2016-05-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Eureka"><a href="#Eureka" class="headerlink" title="Eureka"></a>Eureka</h2><pre><code>1. Eureka注册中心：服务的管理
-    1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，
-    由Eureka把查找符合的服务提供者;
-    2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;
-    3. 这样就是实现了服务的自动注册、发现、状态监控;
-2. Eureka的基本架构
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg" alt="Eureka"></p>
-<pre><code>    1. Eureka既是服务注册中心，也是一个独立的服务，还可以是一个集群，对外暴露自己的地址;
-    2. 服务提供者：启动后向Eureka注册自己的信息，包括地址、提供什么服务;
-    3. 服务消费者：向Eureka订阅服务，Eureka会将对应服务的地址列表发送给消费者，并定期更新;
-    4. 心跳：服务提供者定期通过HTTP向Eureka刷新自己的状态;
-3. Eureka架构的三个核心角色
-    1. 服务注册中心：Eureka的服务端应用，提供服务注册和发现功能;
-    2. 服务提供者：提供服务的应用，可以是SpringBoot应用，也可以是其他任意技术实现，对外提供Rest风格的服务;
-    3. 服务消费者：消费应用从注册中心获取服务列表，从而得知每个服务提供者的信息，知道去哪儿调用服务;
-4. 创建子工程eurekaserver，作为Eureka服务注册中心
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    1. application.yml
-        server:
-            port: 8761  #官方默认的Eureka端口号
-    2. 创建启动器，并注解 @EnableEurekaServer 启用Eureka
-        @EnableEurekaServer
-        @SpringBootApplication
-        public class EurekaServer {
-            public static void main(String[] args) {
-                SpringApplication.run(EurekaServer.class, args);
-            }
-        }
-5. SpringCloud的Eureka依赖中，已经实现了服务的发现、注册、状态监控等功能;
-6. 启动服务，访问注册中心的管理平台：http://localhost:8761/
-</code></pre><h3 id="报错问题"><a href="#报错问题" class="headerlink" title="报错问题"></a>报错问题</h3><pre><code>1. 导致无法启动的版本问题：java.lang.NoSuchMethodError: com.google.gson.GsonBuilder.setLenient()
-2. 启动时可能不停地报 eureka-client的相关错误，但能访问注册中心
-    1. Eureka是一个注册中心，一定不能宕掉，所以会搭建Eureka服务集群，而集群中的Eureka之间也需要注册和通信;
-    2. 所以Eureka既是服务端，又是客户端，Eureka服务启动时会尝试注册其他Eueka服务，但又没有其他Eureka服务可以注册，
-    所以才会报错;
-    3. 解决方式：让当前Eureka服务注册自己，在 application.yml 中配置注册地址;
-    eureka:
-        client:
-            service-url:
-                defaultZone: http://127.0.0.1:8761/eureka
-    4. 重新启动服务，会报错一次，因为自己还没有启动完成，所以会注册失败一次;
-3. Eureka服务注册中心作为客户端尝试注册自己时，也可能报错：
-    java.net.ConnectException: Connection refused: connect
-    TransportException: Cannot execute request on any known server
-    1. 解决方式：禁用它的客户端注册行为
-        eureka:
-            client:
-                service-url:
-                    defaultZone: http://127.0.0.1:8761/eureka
-                    register-with-eureka: false
-                    fetch-registry: false
-    2. 但是，禁用了注册行为之后，Eureka注册中心的服务列表上是空的，不会再列出当前Eureka服务了.
-4. 在服务启动时，可能使用的是当前主机的拨号IP地址，而不是回环地址，则在配置文件中明确指定使用IP地址;
-    eureka:
-        instance:
-            prefer-ip-address: true
-            ip-address: 127.0.0.1
-5. 在注册中心的服务列表上显示UNKNOWN，是因为没有配置服务名称，通常情况下会把服务名称作为服务的ID;
-    spring:
-        application:
-            name: eureka-server  # 配置Eureka服务名称
-</code></pre><h3 id="服务的注册"><a href="#服务的注册" class="headerlink" title="服务的注册"></a>服务的注册</h3><pre><code>1. 服务提供者
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    1. application.yml
-        spring:
-            application:
-                name: user-service  # 指定服务名称
-            datasource:
-                ......
-        eureka:
-            client:
-                service-url:
-                    defaultZone: http://127.0.0.1:8761/eureka  # 配置注册中心的地址
-    2. @EnableDiscoveryClient：注解在启动器上，启动自动注册服务，不要使用 @EnableEurekaClient;
-    3. SpringCloud集成的注册中心不仅仅只有Eureka，还有consul、Zookeeper... @EnableDiscoveryClient都能兼容;
-        @EnableDiscoveryClient
-        @SpringBootApplication
-        @MapperScan(&quot;cn.cloud.mapper&quot;)
-        public class UserApplication {
-            ...
-        }
-    4. SpringBoot版本和SpringCloud版本不兼容时，启动时可能报错：
-        The bean &apos;dataSource&apos;, defined in BeanDefinition defined ... and overriding is disabled.
-2. 服务消费者
-    1. 引入Eureka客户端的依赖、添加注解@EnableDiscoveryClient、修改配置文件;
-        spring:
-            application:
-                name: consumer-service
-        eureka:
-            client:
-                service-url:
-                    defaultZone: http://127.0.0.1:8761/eureka
-    2. web层：根据服务ID获取服务实例，调用服务功能
-        @RestController
-        @RequestMapping(&quot;consumer&quot;)
-        public class ConsumerController {
-            @Autowired
-            private RestTemplate rest;
-
-            @Autowired
-            private DiscoveryClient client;
-
-            @GetMapping(&quot;{id}&quot;)
-            public User findById(@PathVariable(&quot;id&quot;) Long id) {
-                //获取服务的实例并不是一个，是因为在集群环境中，一个服务可以启动多次
-                List&lt;ServiceInstance&gt; instances =  client.getInstances(&quot;user-service&quot;); 
-                ServiceInstance inst = instances.get(0);
-                String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
-                User user = rest.getForObject(url, User.class);
-                return user;
-            }
-        }
-3. 先启动Eureka服务，再启动其他两个服务;
-    1. 查看注册中心的服务列表，有三个服务：EUREKA-SERVER、USER-SERVICE、CONSUMER-SERVICE
-    2. 测试服务的消费方：http://localhost:8080/consumer/9
-</code></pre><h3 id="Eureka集群"><a href="#Eureka集群" class="headerlink" title="Eureka集群"></a>Eureka集群</h3><pre><code>1. 多个Eureka服务注册中心相互注册为服务，形成一个高可用的Eureka注册中心集群;
-2. 服务同步：当服务注册到Eureka集群中的某个节点时，它会把服务的信息同步给集群中的每个节点，从而实现数据同步;
-    1. 注册中心之间相互注册，比如A、B、C三个注册中间，A注册B、C，B注册A、C，C注册A、B
-        Eureka-1 &lt;===&gt; Eureka-2
-        Client ==&gt; Eureka-1， Client ==&gt; Eureka-2
-    2. 一个服务注册到任意一个注册中心上，都可以获取到完整的服务列表.
-3. 搭建注册中心的集群：采用一个Eureka服务、多个实例的方式;
-    1. 修改工程eureka-server，注册另一个端口号为8762的Eureka服务
-        server:
-            port: 8761
-        spring:
-            application:
-                name: eureka-server
-        eureka:
-            client:
-                service-url:
-                    defaultZone: http://127.0.0.1:8762/eureka
-    2. 启动服务，读取配置文件，此时因为找不到端口号8762的Eureka服务，控制台会不停报错;
-    3. IDEA不允许同一个应用启动两次，但可以复制启动器：
-    Edit Configurations... --&gt; 选中 EurekaServer(eureka-server工程) --&gt; 复制 --&gt; 
-        Name: EurekaServer2，(Configuration，VM options: -Dserver.port=8762，固定使用端口号8762)
-    4. 修改工程eureka-server的配置文件：端口号8762，注册到端口号8761的Eureka服务上
-    server:
-        port: 8762 
-    eureka:
-        client:
-            service-url:
-                defaultZone: http://127.0.0.1:8761/eureka
-    5. 启动 EurekaServer2 服务(8762)，它就会注册到已经启动的 EurekaServer 服务(8761)上;
-    6. 同时，EurekaServer(8761)也会发现并注册到 EurekaServer2(8762)上，停止报错;
-4. EurekaServer(8761) 和 EurekaServer2(8762) 的 spring.application.name 是相同的，这就是一个服务多个实例;
-    1. 它们之间会共享服务列表信息，从而实现Eureka服务注册中心的集群;
-    2. 访问8761和8762的注册中心，它们的服务列表是相同的，且 eureka-server 服务显示有两个实例;
-5. 启动的问题：eureka-server 服务并没有两个实例，8761注册不了8762，而且8762上的服务实例不稳定，会变成1个;
-    1. 让Eureka在注册其他Eureka时，同时注册自己;
-    eureka:
-        client:
-            service-url:
-                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
-    2. 但是，测试发现这种方式并不完全有效，需要继续探索...
-6. 客户端(服务提供者和消费者)的注册：
-    1. 服务要注册到Eureka集群上，必须要注册到每一个Eureka节点上;
-    2. 多个Eureka注册中心的地址以 , 隔开
-    spring:
-        application:
-            name: consumer-service
-    eureka:
-        client:
-            service-url:
-                defaultZone: http://127.0.0.1:8761/eureka, http://127.0.0.1:8762/eureka
-</code></pre><h3 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h3><pre><code>1. 客户端启动时会检测配置文件中的 eureka.client.register-with-eureka 参数，默认值为true;
-2. 如果为true，则会向EurekaServer发起一个Rest请求，并携带自己的元数据信息，EurekaServer会把这些信息保存到
-    一个双层Map结构中： Map&lt;String, Map&lt;String, ServiceInstance&gt;&gt;
-    1. 第一层Map的key就是服务的ID，一般就是配置的 spring.application.name
-    2. 第二次Map的key是服务的实例ID，一般为host+serviceId+port，如 localhost:user-service:8081
-    3. 值是服务的实例对象，也就是说，一个服务可以同时启动多个实例，从而形成集群;
-3. 如果配置为false，那么它就不会申请注册服务；同理，如果EurekaServer配置了这个参数为false，它也不会注册自己了;
-</code></pre><h3 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h3><pre><code>1. 服务续约(renew)：在注册服务完成后，客户端会维持一个心跳，定时向Eureka服务发起Rest请求，说明自己处于活跃状态;
-2. 有两个重要参数可以修改服务续约的行为：
-    eureka:
-        instance:
-            lease-renewal-interval-in-seconds: 30  # 服务续约的间隔，默认30s
-            lease-expiration-duration-in-seconds: 90  # 服务失效时间，默认90s
-    1. 服务每隔 30s 向注册中心发送一次心跳，证明自己处于活跃状态;
-    2. 如果超过 90s 还没有发送心跳，EurekaService就认为该服务宕机了;
-3. 服务还会从EurekaService中自动拉取当前的服务列表，并缓存在本地，默认每隔 30s 重新拉取并更新数据;
-    eureka:
-        client:
-            fetch-registry: true  # 是否从注册中心拉取数据，默认为true
-            registry-fetch-interval-seconds: 30  # 每次拉取数据的间隔时间，默认30s
-4. 默认每隔30s拉取一次服务列表，所以刚刚启动的服务消费者无法访问服务提供者;
-</code></pre><h3 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h3><pre><code>1. 服务正常关闭时，它会触发一个 服务下线 的REST请求给Eureka服务，注册中心接收到之后，会把该服务置为下线状态;
-2. 失效剔除
-    1. 有时候可能由于内存溢出或网络故障等原因，导致服务不能正常工作，而服务注册中心并未受到&quot;服务下线&quot;的请求;
-    2. 相对于renew，注册中心在启动时会创建一个定时任务，默认每隔60s将当前列表中超过失效时间(默认90s)的服务剔除;
-3. 在注册中心的配置文件中，修改定时任务的轮询时间;
-    eureka:
-        server:
-            eviction-interval-timer-in-ms: 60000  #默认60s
-</code></pre><h3 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h3><pre><code>1. 关闭一个服务时，就会在注册中心的管理平台上出现一条警告：EMERGENCY... BE SAFE. 这就触发了Eureka的自我保护机制;
-2. 当服务未按时进行服务续约时，Eureka会统计服务实例最近15min心跳续约的比例是否低于85%;
-3. 在生产环境下，因为网络延迟等原因，服务续约超时的比例很可能超标，但此时就把服务从列表中剔除并不妥当，
-   因为服务可能没有宕机，Eureka在这段时间内不会剔除任何服务，直到网络恢复正常;
-4. 从而保证在生产环境下，大多数服务依然可用，不过也有可能获取到失败的服务实例，因此服务消费者必须做服务的失败容错;
-5. 在注册中心关闭自我保护，默认是打开的
-    eureka:
-        server:
-            enable-self-preservation: false  # 默认为true
-</code></pre><h2 id="负载均衡之Ribbon"><a href="#负载均衡之Ribbon" class="headerlink" title="负载均衡之Ribbon"></a>负载均衡之Ribbon</h2><pre><code>1. 在集群环境下，服务提供方会有很多个实例，服务消费者在获取服务列表后，就需要通过负载均衡算法选择一个服务实例;
-2. Eureka中集成了Netflix发布的负载均衡组件：Ribbon
-3. Ribbon默认提供了很多负载均衡算法，如轮询、随机、Hash... 还可以自定义负载均衡算法;
-4. 复制一份服务提供者user-service --&gt; Name: UserApplication2，VM options: -Dserver.port=8082
-5. 在服务消费者中
-    1. 引入Ribbon依赖
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-    2. 方式一：获取服务实例(不常用)
-        @Autowired
-        private RestTemplate rest;
-
-        @Autowired
-        private RibbonLoadBalancerClient client;  //另外还要注册Bean对象
-
-        @GetMapping(&quot;{id}&quot;)
-        public User findById(@PathVariable(&quot;id&quot;) Long id) {
-            //默认负载均衡算法是轮询
-            ServiceInstance instance = client.choose(&quot;user-service&quot;); 
-            String url = &quot;http://&quot; + inst.getHost() + &quot;:&quot; + inst.getPort() + &quot;/user/&quot; + id;
-            User user = rest.getForObject(url, User.class);
-            return user;
-        }
-    3. 方式二：在注册 RestTemplate 的方法上注解 @LoadBalanced
-        @Bean
-        @LoadBalanced
-        public RestTemplate getRestTemplate() {
-            return new RestTemplate();
-        }
-        1. @LoadBalanced 内置拦截器会拦截 RestTemplate 的请求，通过负载均衡算法选择一个服务实例;
-        2. 发起请求的URL：http://服务ID/资源路径
-        @GetMapping(&quot;{id}&quot;)
-        public User findById(@PathVariable(&quot;id&quot;) Long id) {
-            String url = &quot;http://user-service/user/&quot; + id;
-            User user = rest.getForObject(url, User.class);
-            return user;
-        }
-6. 负载均衡策略
-    1. Ribbon默认采用的负载均衡策略是轮询，对应的规则对象RoundRobinRule
-    2. 修改方式：服务ID.ribbon.NFLoadBalancerRuleClassName，值就是IRule的实现类
-    3. 在服务消费者中配置
-    user-service:  # 查找的服务实例
-        ribbon:
-            NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #采用随机规则的负载均衡策略
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3613,7 +3622,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

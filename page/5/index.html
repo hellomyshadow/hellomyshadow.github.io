@@ -232,6 +232,479 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/16/SpringMVC进阶/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/16/SpringMVC进阶/" itemprop="url">SpringMVC进阶</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-16T00:00:00+08:00">
+                2016-03-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="控制器方法的返回值"><a href="#控制器方法的返回值" class="headerlink" title="控制器方法的返回值"></a>控制器方法的返回值</h2><pre><code>1. resources/springmvc.xml：配置的视图解析器
+    &lt;bean id=&quot;internalResourceViewResolver&quot; 
+        class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+        &lt;property name=&quot;prefix&quot; value=&quot;/pages/&quot; /&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+    &lt;/bean&gt;
+2. String
+    @RequestMapping(&quot;/test&quot;)
+    public String testStr(Model model) {
+        User user = new User();  user.setName(&quot;JavaEE&quot;);  user.setAge(20);
+        model.addAttribute(&quot;user&quot;, user);
+        return &quot;test&quot;;
+    }
+    1. 返回的字符串默认作为逻辑视图名，通过视图解析器解析为物理视图的真实地址;
+    2. 物理视图的真实地址：webapp/pages/test.jsp，渲染页面并响应给客户端;
+    3. Model默认把数据存入Request域中，在 test.jsp 中获取这些数据;
+        &lt;div&gt;${user.name}&lt;/div&gt; &lt;div&gt;${user.age}&lt;/div&gt;
+3. void
+    1. 控制器方法没有返回值时，默认以URL的最后一级作为视图名去查找JSP文件;
+    2. 使用Servlet API手动转发/重定向时，SpringMVC的视图解析器不会再介入，所以要声明完整的路径名;
+    @RequestMapping(path=&quot;/hello&quot;)
+    public void test(HttpServletRequest req, HttpServletResponse res) {
+        //手动转发到test.jsp
+        req.getRequestDispatcher(&quot;/pages/test.jsp&quot;).forward(req, res);
+        //手动重定向到index.jsp
+        req.sendRedirect(req.getContextPath() + &quot;/index.jsp&quot;);
+    }
+4. 响应流数据
+    @RequestMapping(path=&quot;/hello&quot;)
+    public void test(HttpServletRequest req, HttpServletResponse res) {
+        res.setCharacterEncoding(&quot;UTF-8&quot;);
+        res.setContentType(&quot;text/html;charset=UTF-8&quot;);
+        res.getWriter().print(&quot;你好，Java&quot;);
+    }
+5. ModelAndView
+    1. SpringMVC提供的对象，用于封装Model和视图名;
+        @RequestMapping(path=&quot;/hello&quot;)
+        public ModelAndView test() {
+            ModelAndView mv = new ModelAndView();
+            User user = new User();  user.setName(&quot;JavaEE&quot;);  user.setAge(20);
+            mv.addObject(&quot;user&quot;, user);  //存入数据
+            mv.setViewName(&quot;test&quot;);  //指定视图名
+            return mv;
+        }
+    2. 控制器方法返回字符串时，底层其实也是用 ModelAndView 进行封装.
+6. 请求转发和重定向的关键字
+    1. 控制器方法在返回字符串时，默认使用的就是请求转发;
+    2. 转发的关键字：forward;  重定向的关键字：redirect;
+        @RequestMapping(path=&quot;/hello&quot;)
+        public String test() {
+            return &quot;forward:/pages/test.jsp&quot;;  //转发到test.jsp
+            return &quot;redirect:/index.jsp&quot;;  //重定向到index.jsp
+        }
+</code></pre><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><pre><code>1. 控制器方法的返回值默认会解析为跳转路径，注解@ResponseBody的返回值不会再交给视图解析器，而是被直接写入响应体中;
+    @RequestMapping(&quot;/test&quot;)
+    @ResponseBody
+    public String test() {
+        return &quot;Hello SpringBoot&quot;;  //返回的字符串直接响应给客户端
+    }
+2. 控制器方法返回对象时，通过 HttpMessageConverter(消息转换器) 接口转为指定格式的数据，如JSON、XML;
+3. SpringMVC默认使用MappingJacksonHttpMessageConverter对JSON数据进行转换;
+4. 引入转换格式的依赖包jackson
+    jackson-databind、jackson-core、jackson-annotations
+5. 在JSP页面发送一个AJAX请求，参数为JSON格式
+    public class User {
+        private String username;  private String password;
+        ......//setter、getter
+    }
+    $.ajax({
+        url: &quot;user/getList&quot;,
+        type: &quot;post&quot;,
+        dataType: &quot;json&quot;,
+        data: &apos;{&quot;username&quot;: &quot;Jack&quot;, &quot;password&quot;: &quot;123&quot;}&apos;,
+        success: data=&gt;{ ... }
+    });
+    @RequestMapping(path=&quot;/getList&quot;)
+    public @ResponseBody User test(@RequestBody User user) {
+        String username = user.getUsername();
+        String password = user.getPassword();
+        ... //操作数据库
+        User u = new User();
+        ......  //封装一个新的User对象并返回
+        return u;
+    }
+    1. @RequestBody：获取请求体的内容，SpringMVC会把JSON格式的请求体封装到User对象中;
+    2. @ResponseBody：将返回的对象交给消息转换器，直接写入响应体中，响应给客户端.
+</code></pre><h2 id="静态资源的处理"><a href="#静态资源的处理" class="headerlink" title="静态资源的处理"></a>静态资源的处理</h2><pre><code>1. 访问静态资源时，不需要经过前端控制器和过滤器，直接响应即可;
+2. 使用Servlet来处理静态资源：web.xml 中配置名称为 default 的&lt;servlet&gt;标签;
+    1. 处理 webapp/css 目录中的静态资源：以 /css/ 开头的URL;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;/css/*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+    2. 处理后缀名为 .css、.js 的静态资源;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;default&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+3. 在SpringMVC的配置文件springmvc.xml 中，使用 &lt;mvc:resources&gt; 标签配置静态资源的访问;
+    &lt;mvc:annotation-driven /&gt;
+    &lt;mvc:resources location=&quot;/css/&quot; mapping=&quot;/css/**&quot; /&gt;
+    &lt;mvc:resources location=&quot;/images/&quot; mapping=&quot;/images/**&quot; /&gt;
+    &lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot; /&gt;
+    1. location属性：指定目录文件的路径，如 /css/ 表示 webapp/css 目录;
+    2. mapping属性：匹配的请求路径，如 /css/** 表示匹配以 /css 开头的所有URL;
+4. 更简便的配置方式
+    &lt;mvc:default-servlet-handler /&gt;
+    1. 它会在SpringMVC上下文中定义一个DefaultServletHttpRequestHandler，筛选URL;
+    2. 如果发现静态资源，则交给名称为 default 的Servlet;
+</code></pre><h3 id="SpringMVC的路径匹配模式"><a href="#SpringMVC的路径匹配模式" class="headerlink" title="SpringMVC的路径匹配模式"></a>SpringMVC的路径匹配模式</h3><pre><code>1. Spring MVC中的路径匹配模式，使用的是Apache Ant的样式路径，有三种通配符：?、*、**
+    1. /*：拦截所有目录，不包含子目录;
+    2. /**：拦截所有目录及其子目录.
+2. ?：匹配任何单字符;
+    1. /user/a?bc：能够匹配/user/axbc、/user/aXbc，但不包括/user/abc;
+3. *：匹配 n&gt;=0 个字符，只能匹配一级目录，不能匹配子目录;
+    1. /user/*：匹配 /user/、 /user/abc，但不能匹配 /user/abc/123;
+    2. /app/*.jsp：匹配app目录下的所有 .jsp 文件.
+4. **：匹配 n&gt;=0 个目录;
+    1. /user/**：匹配以 /user 开头的所有URL;
+    2. /**/example：匹配 /example、 /app/example、 /app/foo/example...
+    3. /app/**/dir/file.：匹配 /app/dir/file.jsp、 /app/foo/dir/file.html ...
+5. /**/*.jsp：匹配任何目录下的所有 .jsp 文件;
+6. 所以，以 mvc 为命名空间的标签，在设置路径时，都遵循此路径匹配模式.
+</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 必要前提
+    1. form表单的 enctype(表单请求正文的类型) 属性值为 multipart/form-data;
+    2. method 必须是 POST;
+    3. 提供一个文件选择域：&lt;input type=&quot;file&quot; /&gt;
+2. 文件上传的依赖包：commons-fileupload、commons-io
+    &lt;form action=&quot;user/fileupload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+        &lt;input type=&quot;file&quot; name=&quot;upload&quot; /&gt;
+        &lt;input type=&quot;submit&quot; value=&quot;上传&quot; /&gt;
+    &lt;/form&gt;
+3. 传统上传方式
+    @RequestMapping(path=&quot;/fileupload&quot;)
+    public String uploadFile(HttpServletRequest req) {
+        //获取上传目录的绝对路径
+        String path = req.getSession().getServletContext().getRealPath(&quot;/uploads/&quot;);
+        File file = new File(path);
+        if(!file.exists()) {
+            file.mkdirs();  //目录不存在则创建
+        }
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        List&lt;FileItem&gt; items = upload.parseRequest(req);  //解析request
+        for(FileItem item: items) {
+            if(item.isFormField()) {
+                //item只是一个普通的表单项
+            } else {
+                //item是一个上传文件项
+                String filename = item.getName();  //获取文件名
+                String uuid = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);
+                filename = uuid + &quot;_&quot; + filename;  //不重复的文件名
+                item.write(new File(path, filename));  //完成文件上传
+                item.delete();  //删除生成的临时文件
+            }
+        }
+        return &quot;success&quot;;
+    }
+</code></pre><h3 id="SpringMVC处理文件上传"><a href="#SpringMVC处理文件上传" class="headerlink" title="SpringMVC处理文件上传"></a>SpringMVC处理文件上传</h3><pre><code>1. 前端控制器接收到文件上传的请求时，会调用文件解析器，由文件解析器处理此请求;
+2. 文件解析器会将处理结果封装到MultipartFile对象中，并将返回给前端控制器;
+3. 前端控制器将上传文件对象MultipartFile，再传给对应的控制器方法;
+4. 在配置文件 springmvc.xml 中配置文件解析器，其id值是固定的：multipartResolver
+    &lt;bean id=&quot;multipartResolver&quot; 
+        class=&quot;org.springframework.web.multipart.commons.CommonsMultipartResolver&quot;&gt;
+        &lt;property name=&quot;maxUploadSize&quot; value=&quot;10485760&quot; /&gt;  ==&gt;最大上传文件
+    &lt;/bean&gt;
+5. 上传标签的name属性值为upload，方法参数MultipartFile的变量名也必须为upload;
+    @RequestMapping(path=&quot;/fileupload&quot;)
+    public String uploadFile(HttpServletRequest req, MultipartFile upload) {
+        //获取其他参数
+        String xxx = req.getParameter(&quot;xxx&quot;);
+
+        //获取上传目录的绝对路径
+        String path = req.getSession().getServletContext().getRealPath(&quot;/uploads/&quot;);
+        File file = new File(path);
+        if(!file.exists()) {
+            file.mkdirs();  //目录不存在则创建
+        }
+        String filename = upload.getOriginalFilename();  //获取文件名
+        String uuid = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);
+        filename = uuid + &quot;_&quot; + filename;  //不重复的文件名
+        upload.transferTo(new File(path, filename));  //完成文件上传
+        return &quot;success&quot;;
+    }
+</code></pre><h3 id="跨服务器的文件上传"><a href="#跨服务器的文件上传" class="headerlink" title="跨服务器的文件上传"></a>跨服务器的文件上传</h3><pre><code>1. 实际开发中，可能会有很多负责不同功能的服务器
+    1. 应用服务器：负责部署处理业务的应用;
+    2. 数据库服务器：数据持久化;
+    3. 缓存和消息服务器：负责处理高并发访问的缓存和消息;
+    4. 文件服务器：负责存储用户上传的文件;
+2. 注意：这并不是服务器集群;
+3. 实现跨服务器的依赖：jersey-core、jersey-client
+    @RequestMapping(path=&quot;/fileupload&quot;)
+    public String uploadFile(MultipartFile upload) {
+        String filename = upload.getOriginalFilename();  //获取文件名
+        String uuid = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;);
+        filename = uuid + &quot;_&quot; + filename;  //不重复的文件名
+        //文件服务器的上传URL，一定有uploads目录
+        String fileServer = &quot;http://localhost:9090/uploads/&quot;;
+        //创建客户端对象
+        Client client = Client.create();
+        //与文件服务器建立连接
+        WebResource web = client.resource(fileServer + filename);
+        //上传文件
+        web.put(upload.getBytes());
+        return &quot;success&quot;;
+    }
+</code></pre><h2 id="异常处理器"><a href="#异常处理器" class="headerlink" title="异常处理器"></a>异常处理器</h2><pre><code>1. 控制器方法在处理业务发生异常时，会向上抛出，最终由前端控制器查找异常处理器，如果没有则抛给浏览器;
+2. 使用异常处理器的目的是，当发生异常时，由异常处理器响应给用户一个友好页面；
+3. 自定义异常类
+    public class SysException extends Exception {
+        private String message;  //存储提示信息
+        //getter、setter
+        public SysException(String message) {
+            this.message = message;
+        }
+    }
+4. 抛出异常
+    @RequestMapping(path=&quot;/except&quot;)
+    public String test() throws SysException {
+        try {
+            int i = 10/0;  //发生异常
+        } catch(Exception e) {
+            throw new SysException(&quot;保存用户失败！&quot;);
+        }
+        return &quot;success&quot;;
+    }
+5. 异常处理器：实现接口HandlerExceptionResolver
+    public class SysExceptionResolver implements HandlerExceptionResolver {
+        public ModelAndView resolveException(HttpServletRequest req, 
+                HttpServletResponse res, Object handler, Exception ex) {
+            SysException e = null;
+            if(ex instanceof SysException) {
+                e = (SysException) ex;
+            } else {
+                e = new SysException(&quot;不好意思，系统维护中~&quot;);
+            }
+            ModelAndView mv = new ModelAndView();
+            mv.addObject(&quot;errorMsg&quot;, e.getMessage());  //向Request域存入提示信息
+            mv.setViewName(&quot;error&quot;);  //跳转到自定义的错误页error.jsp
+            return mv;
+        }
+    }
+6. 在配置文件 springmvc.xml 中，配置异常处理器
+    &lt;bean id=&quot;sysExceptionResolver&quot; class=&quot;cn.test.exception.SysExceptionResolver&quot;&gt;&lt;/bean&gt;
+</code></pre><h2 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h2><pre><code>1. SpringMVC的处理器拦截器类似于Servlet中的过滤器，用于对处理器进行预处理和后处理;
+    1. 预处理和后处理类似于Koa的洋葱图；
+    2. 请求到达 --&gt; 执行拦截器放行前的代码(预处理) --&gt; 放行到控制器方法 --&gt; 
+    执行拦截器放行后的代码 --&gt; 响应结果
+2. 拦截器链：将拦截器按照一定的顺序连接成一条链，在访问被拦截的方法/属性时，拦截器就会按顺序被调用;
+3. 过滤器与拦截器
+    1. 过滤器是Servlet规范中的一部分，拦截器是SpringMVC框架提供的；
+    2. 过滤器在 url-pattern 中配置了 /* 之后，可以拦截所有要访问的资源；
+    3. 拦截器只会拦截访问的控制器方法，如果是JSP、HTML、CSS、image、JS资源，是不会被拦截的。
+4. 拦截器也是AOP思想的具体应用，自定义拦截器必须实现接口HandlerInterceptor
+5. JDK1.8对接口做了增强，方法可以不是抽象的，所以在实现HandlerInterceptor时，并不强制实现此接口方法;
+    public class MyInterceptor implements HandlerInterceptor {
+        // preHandle()、postHandle()、afterCompletion()
+    }
+6. 在配置文件 springmvc.xml 中，配置拦截器：&lt;mvc:interceptors&gt;
+    &lt;mvc:interceptors&gt;
+        &lt;mvc:interceptor&gt;
+            &lt;mvc:mapping path=&quot;/user/*&quot; /&gt;
+            &lt;!-- &lt;mvc:exclude-mapping path=&quot;&quot;&gt; --&gt;
+            &lt;bean class=&quot;cn.test.interceptor.MyInterceptor&quot; /&gt;
+        &lt;/mvc:interceptor&gt;
+    &lt;/mvc:interceptors&gt;
+    1. 每一组 &lt;mvc:interceptor&gt; 标签，表示一个拦截器，标签的顺序决定了拦截器的调用顺序;
+    2. &lt;mvc:mapping&gt;：配置拦截的控制器方法;
+    3. &lt;mvc:exclude-mapping&gt;：配置不拦截的控制器方法;
+    4. path 属性：指定URL，也就是控制器方法.
+</code></pre><h3 id="拦截器方法"><a href="#拦截器方法" class="headerlink" title="拦截器方法"></a>拦截器方法</h3><pre><code>1. preHandle()：预处理方法
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, 
+        Object handler) {
+        return true;
+    }
+    1. 在控制器方法执行之前执行，返回true表示放行，执行下一个拦截器，如果没有了，则执行控制器方法;
+    2. 返回false表示不放行，可以使用req对象和res对象自行处理请求与响应.
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, 
+        Object handler) {
+        req.getRequestDispatcher(&quot;/pages/error.jsp&quot;).forward(req, res); //转发到error.jsp
+        return false;  //不放行
+    }
+2. postHandle()：后处理方法
+    @RequestMapping(path=&quot;/test&quot;)
+    public String test() {
+        ....
+        return &quot;success&quot;;
+    }
+    public void postHandle(HttpServletRequest req, HttpServletResponse res, 
+        Object handler， ModelAndView mv) {
+    }
+    1. 在控制器方法执行完之后，执行success.jsp之前，执行postHandle();
+    public void postHandle(HttpServletRequest req, HttpServletResponse res, 
+        Object handler, ModelAndView mv) {
+        req.getRequestDispatcher(&quot;/pages/error.jsp&quot;).forward(req, res);
+    }
+    2. 虽然postHandle()自行请求转发给error.jsp，但控制器方法的 success.jsp 仍会执行，
+    响应给浏览器也是 error.jsp.
+3. afterCompletion()：控制器方法的 success.jsp 执行完之后，才会执行;
+    public void afterCompletion(HttpServletRequest req, HttpServletResponse res, 
+        Object handler， Exception ex) {
+    }
+4. 当配置了多组拦截器时(都放行)
+    @Controller
+    @RequestMapping(path = &quot;/user&quot;)
+    public class HelloController {
+        @RequestMapping(path=&quot;/test&quot;)
+        public String test() {
+            ....
+            return &quot;success&quot;;
+        }
+    }
+    &lt;mvc:interceptors&gt;
+        &lt;mvc:interceptor&gt;
+            &lt;mvc:mapping path=&quot;/user/*&quot; /&gt;
+            &lt;bean class=&quot;cn.test.interceptor.MyInterceptor&quot; /&gt;
+        &lt;/mvc:interceptor&gt;
+        &lt;mvc:interceptor&gt;
+            &lt;mvc:mapping path=&quot;/**&quot; /&gt;
+            &lt;bean class=&quot;cn.test.interceptor.TestInterceptor&quot; /&gt;
+        &lt;/mvc:interceptor&gt;
+    &lt;/mvc:interceptors&gt;
+    &lt;a href=&quot;user/test&quot;&gt;to test&lt;/a&gt;
+1. 执行顺序：
+    MyInterceptor.preHandle() --&gt; TestInterceptor.preHandle() --&gt; HelloController.test()
+    --&gt; TestInterceptor.postHandle() --&gt; MyInterceptor.postHandle() --&gt; success.jsp --&gt; 
+    TestInterceptor.afterCompletion() --&gt; MyInterceptor.afterCompletion()
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/15/SpringMVC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4262,230 +4735,6 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/02/05/JavaEE之过滤监听/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/02/05/JavaEE之过滤监听/" itemprop="url">JavaEE之过滤监听</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-05T00:00:00+08:00">
-                2016-02-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2><pre><code>1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;
-    1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...
-    2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。
-2. 使用Filter
-    1. 实现Filter接口，覆写 init()、doFilter()、destroy()
-    2. 在 web.xml 中配置过滤器
-    &lt;filter&gt;
-        &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;it.test.cn.TestFilter&lt;/filter-name&gt;
-    &lt;/filter&gt;
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
-        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
-    3. 注解的方式配置
-    @WebFilter(&quot;/*&quot;)
-    public class TestFilter implements Filter { ... }
-    4. /*：拦截访问此项目的所有请求;
-    5. *.do：拦截以 .do 结尾的请求，一般用于模块拦截处理;
-    6. /to.do：拦截 /to.do 的请求，针对某个具体的Servlet请求进行拦截，保护Servlet;
-    7. 如果同时配置了三个过滤器，那么在执行Filter的过程，匹配范围越大，优先级越高.
-    /* --&gt; *.do --&gt; /to.do
-3. 过滤器会拦截请求，不会到达Servlet，需要手动给予放行，才能达到Servlet
-    public void doFilter(ServletRequest request, ServletResponse response, 
-        FilterChain chain) {
-        chain.doFilter(request, response);  ---&gt; 放行
-    }
-    1. chain.doFilter() 表示放行当前的请求，交给Servlet进行处理；
-    2. Servlet发送响应数据之后，会先达到Filter，执行 chain.doFilter() 之后的代码逻辑，
-    然后才会响应给浏览器.
-4. 生命周期：从服务器启动(Filter init())，到服务器关闭(Filter destroy())
-</code></pre><h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><pre><code>1. 统一编码格式设置
-    public void doFilter(request, response, chain) {
-        request.setCharacterEncoding(&quot;utf-8&quot;);
-        response.setContentType(&quot;text/html;charset=utf-8&quot;);
-        chain.doFilter(request, response);
-    }
-2. session管理
-    public void doFilter(request, response, chain) {
-        HttpSession hs = ((HttpServletRequest)request).getSession();
-        //判断Session是否过期
-        if(hs.getAttribute(&quot;user&quot;) == null) {
-            //过期则重定向到登录页
-            ((HttpServletResponse)response).sendRedirect(&quot;/login.jsp&quot;);
-        } else {
-            chain.doFilter(request, response);
-        }
-    }
-3. 权限管理，资源管理(统一水印、和谐词汇...) ...
-</code></pre><h2 id="监听器"><a href="#监听器" class="headerlink" title="监听器"></a>监听器</h2><pre><code>1. Servlet监听器：监听数据流转的过程，比如作用域对象的创建与销毁，数据的存取、变化、删除；
-2. 监听的作用域对象包括request、session、application
-3. 比如session销毁时，在线人数-1
-4. 在 web.xml 中配置监听器
-    &lt;listener&gt;
-        &lt;listener-class&gt;it.test.cn.TestListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
-</code></pre><h3 id="request-Listener"><a href="#request-Listener" class="headerlink" title="request Listener"></a>request Listener</h3><pre><code>1. ServletRequestListener：实现此接口，监听request的创建销毁;
-    1. 接收到一个请求，则创建request对象；响应结束，销毁request对象;
-    2. 创建时触发requestInitialized(sre)，销毁时触发requestDestroyed(sre);
-    3. 获取当前正在监听的的Servlet Request对象：sre.getServletRequest();
-2. ServletRequestAttributeListener：实现此接口，监听request对象中的Attribute数据;
-    1. req.setAttribute(&quot;key&quot;, value); 第一次添加数据时，触发 attributeAdded(srea);
-    2. req.setAttribute(&quot;key&quot;, value); 重复添加同键的数据，则触发attributeReplaced(srea);
-    3. req.removeAttribute(&quot;key&quot;); 移除数据，则触发：attributeRemoved(srea);
-    4. 获取当前正在变化的Attribute数据：srea.getName(); srea.getValue();
-</code></pre><h3 id="session-Listener"><a href="#session-Listener" class="headerlink" title="session Listener"></a>session Listener</h3><pre><code>1. HttpSessionListener：实现此接口，监听session的创建与销毁;
-    1. req.getSession(); 第一次获取Session表示创建，则触发sessionCreated(se);
-    2. Session被销毁时，触发sessionDestroyed(se);
-    3. 获取当前正在监听的Session对象：se.getSession();
-2. HttpSessionAttributeListener：实现此接口，监听session中的attribute数据;
-    1. session.setAttribute(&quot;key&quot;, value);  获取/重置Session Attribute数据;
-    2. session.removeAttribute(&quot;key&quot;);  移除Session Attribute数据;
-    3. 覆写方法：attributeAdded(hsbe)、attributeReplaced(hsbe)、attributeRemoved(hsbe);
-    4. hsbe.getName();  hsbe.getValue();  分别获取正在变化的Attribute数据的键、值.
-</code></pre><h3 id="application-Listener"><a href="#application-Listener" class="headerlink" title="application Listener"></a>application Listener</h3><pre><code>1. ServletContextListener：实现此接口，监听ServletContext的创建与销毁;
-    1. 服务器启动/关闭时，分别触发 contextInitialized(sce); contextDestroyed(sce);
-    2. 获取当前正在监听的ServletContext对象：sce.getServletContext();
-2. ServletContextAttributeListener：监听application中的attribute数据;
-    1. attributeAdded(scae)、attributeReplaced(scae)、attributeRemoved(scae);
-    2. scae.getName();  scae.getValue();
-</code></pre><h3 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h3><pre><code>1. 统计当前在线人数
-2. 统计网页浏览次数
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4536,7 +4785,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

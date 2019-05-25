@@ -88,7 +88,7 @@
 <meta property="og:description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/02/SpringCloud组件1/Eureka.jpg">
-<meta property="og:updated_time" content="2019-05-20T12:29:11.311Z">
+<meta property="og:updated_time" content="2019-05-25T12:14:20.735Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud组件1">
 <meta name="twitter:description" content="Eureka1. Eureka注册中心：服务的管理     1. Eureka负责管理、记录服务提供者的信息，服务调用者无需自己去查找服务，而是把自己的需求告诉Eureka，     由Eureka把查找符合的服务提供者;     2. 服务提供者与Eureka之间通过 心跳机制 进行监控，当某个服务提供者出现问题，Eureka会把它从服务列表中剔除;     3. 这样就是实现了服务的自动注册、">
@@ -371,14 +371,14 @@
 3. Eureka服务注册中心作为客户端尝试注册自己时，也可能报错：
     java.net.ConnectException: Connection refused: connect
     TransportException: Cannot execute request on any known server
-    1. 解决方式：禁用它的客户端注册行为
+    1. 解决方式：禁用它的客户端注册行为，不让Eureka注册自己;
         eureka:
             client:
                 service-url:
                     defaultZone: http://127.0.0.1:8761/eureka
-                    register-with-eureka: false
-                    fetch-registry: false
-    2. 但是，禁用了注册行为之后，Eureka注册中心的服务列表上是空的，不会再列出当前Eureka服务了.
+                register-with-eureka: false
+                fetch-registry: false
+    2. 禁用了Eureka的注册行为之后，Eureka注册中心的服务列表上就不会再列出当前Eureka服务了.
 4. 在服务启动时，可能使用的是当前主机的拨号IP地址，而不是回环地址，则在配置文件中明确指定使用IP地址;
     eureka:
         instance:
@@ -699,7 +699,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

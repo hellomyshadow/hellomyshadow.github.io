@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="整合MyBatis1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;org.mybatis.spring.boot&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;gt;mybatis-spring-boot-starter&amp;lt;/artif">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-19T03:24:48.809Z">
+<meta property="og:updated_time" content="2019-05-24T12:29:51.864Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot整合">
 <meta name="twitter:description" content="整合MyBatis1. mybatis的启动器，第三方框架的启动器通常不是以 spring- 开头;     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;org.mybatis.spring.boot&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;gt;mybatis-spring-boot-starter&amp;lt;/artif">
@@ -525,25 +525,28 @@
 4. SpringDataRedis属于Spring Data的一部分，也为Redis提供了一个Template对象：RedisTemplate
 </code></pre><h3 id="整合Redis"><a href="#整合Redis" class="headerlink" title="整合Redis"></a>整合Redis</h3><pre><code>1. Redis的启动器：spring-boot-starter-data-redis
 2. 在 application.yml 中，配置Redis的连接信息
+    1. 连接单台Redis服务
     spring:
         redis:
             host: 192.168.103.30
             port: 6379  # 默认6379
             database: 0  # 配置Redis的数据库编号，默认就是0
             timeout: 3000  # 连接超时时间3s
-            pool:  #连接池
-                max-idle=200 #最大空闲连接，默认值8
-                min-idle=200 #最小空闲连接，默认值0
-                max-active=2000 #最大连接实例，设置为-1，表示不做限制
-                max-wait=1000 #等待可用连接的超时时间，默认值-1，表示永不超时
+            jedis 或 lettuce:
+                pool:  #连接池
+                    max-idle=200  #最大空闲连接，默认值8
+                    min-idle=200  #最小空闲连接，默认值0
+                    max-active=2000  #最大连接实例，设置为-1，表示不做限制
+                    max-wait=2000  #等待可用连接的超时时间，默认值-1，表示永不超时
+    2. jedis和lettuce都是Redis提供的客户端，默认是jedis，但lettuce是基于netty的，并发性更好;
+    3. 连接集群，指定集群的每个节点地址
+    spring.redis.cluster.nodes=192.168.103.128:7001, ... ,192.168.103.128:7006
 3. 在测试类中，注入 RedisTemplate 对象，操作Redis数据库
     @Autowired
     private RedisTemplate redis;
 
     @Test
-    public void contest() {
-
-    }
+    public void contest() { ... }
 4. redis.opsForValue()、opsForList()、opsForSet()、opsForZSet()、opsForHash() 对应Redis中的5种数据结构，
    封装到不同的 Operations 对象中;
     1. 字符串操作对象：ValueOperations ops = redis.opsForValue();
@@ -775,7 +778,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

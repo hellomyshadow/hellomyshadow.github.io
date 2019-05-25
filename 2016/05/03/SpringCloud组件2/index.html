@@ -88,7 +88,7 @@
 <meta property="og:description" content="Hystrix1. Hystrix：Netflix公司的一款组件，是一种保护机制; 2. Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败; 3. 雪崩问题     1. 微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路;     2. 一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/熔断器模型.jpg">
-<meta property="og:updated_time" content="2019-05-21T13:18:23.289Z">
+<meta property="og:updated_time" content="2019-05-25T12:07:09.537Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud组件2">
 <meta name="twitter:description" content="Hystrix1. Hystrix：Netflix公司的一款组件，是一种保护机制; 2. Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败; 3. 雪崩问题     1. 微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路;     2. 一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应">
@@ -525,8 +525,10 @@
     }
 5. Feign内部集成了Ribbon依赖和自动配置，在配置文件中配置Ribbon的超时时间
     ribbon:
-        ConnectTimeout: 500  # 连接超时时间为500ms，超过500ms没有连接上服务，则抛出异常
-        ReadTimeout: 2000  # 读取数据的超时时间2s，超过2s还没有获取到响应，则抛出异常
+        ConnectTimeout: 1000  # 连接超时时间
+        ReadTimeout: 3000  # 读取数据的超时时间
+    1. ConnectTimeout：Ribbon连接服务的超时时间，默认1000ms，超过1000ms没有连接上服务，则抛出异常;
+    2. ReadTimeout：Ribbon读取数据的超时时间，默认1000ms，超过1000ms还没有获取到响应，则抛出异常;
 </code></pre><h3 id="Feign集成Hystrix"><a href="#Feign集成Hystrix" class="headerlink" title="Feign集成Hystrix"></a>Feign集成Hystrix</h3><pre><code>1. 默认是关闭的，在配置文件中开启
     feign:
         hystrix:
@@ -701,7 +703,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
