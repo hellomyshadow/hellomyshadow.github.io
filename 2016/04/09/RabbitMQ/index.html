@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="消息队列1. 消息队列是典型的 生产者、消费者 模型，简称MQ; 2. MQ是消息通信的模型，并发的具体实现，目前实现MQ的两种主流方式是：AMQP、JMS 3. AMQP：高级消息队列协议，一个进程间传递异步消息的应用层协议，为面向消息的中间件设计； 4. JMS：由Sun公司早期提出的消息标准，为Java应用提供统一的消息操作，与JDBC担任类似的角色； 5. AMQP与JMS     1.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-19T04:13:30.366Z">
+<meta property="og:updated_time" content="2019-05-26T09:30:10.909Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RabbitMQ">
 <meta name="twitter:description" content="消息队列1. 消息队列是典型的 生产者、消费者 模型，简称MQ; 2. MQ是消息通信的模型，并发的具体实现，目前实现MQ的两种主流方式是：AMQP、JMS 3. AMQP：高级消息队列协议，一个进程间传递异步消息的应用层协议，为面向消息的中间件设计； 4. JMS：由Sun公司早期提出的消息标准，为Java应用提供统一的消息操作，与JDBC担任类似的角色； 5. AMQP与JMS     1.">
@@ -570,17 +570,13 @@
             virtual-host: /techsel
 4. Spring也为AMQP提供了Template：AmqpTemplate
     1. 向交换器发送消息
-        @RunWith(SpringRunner.class)
-        @SpringBootTest
-        public class StartApplicationTests {
-            @Autowired
-            private AmqpTemplate amqp;
+        @Autowired
+        private AmqpTemplate amqp;
 
-            @Test
-            public void contextLoads() {
-                String msg = &quot;Hello SpringBoot&quot;;
-                amqp.convertAndSend(&quot;boot_exchange&quot;, &quot;item.insert&quot;, msg);
-            }
+        @Test
+        public void contextLoads() {
+            String msg = &quot;Hello SpringBoot&quot;;
+            amqp.convertAndSend(&quot;boot_exchange&quot;, &quot;item.insert&quot;, msg);
         }
     2. 向MQ中直接发送消息
         amqp.convertAndSend(&quot;boot_queue&quot;, msg);
@@ -744,7 +740,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

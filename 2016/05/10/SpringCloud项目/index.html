@@ -88,7 +88,7 @@
 <meta property="og:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg">
-<meta property="og:updated_time" content="2019-05-25T16:53:16.395Z">
+<meta property="og:updated_time" content="2019-05-26T09:53:14.692Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目">
 <meta name="twitter:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
@@ -347,6 +347,7 @@
         &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
         &lt;version&gt;2.9.9&lt;/version&gt;
     &lt;/dependency&gt;
+    4. 通用Mapper：mapper-core、mapper-base、mapper-extra
 3. REST风格的响应
     1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
     2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
@@ -377,7 +378,8 @@
         @NoArgsConstructor
         @AllArgsConstructor
         public enum ExceptionEnum {
-            PRICE_CANNOT_BE_NULL(400, &quot;价格不能为空！&quot;),
+            CATEGORY_NOT_FOUND(404, &quot;商品分类没查到！&quot;),
+            UPLOAD_FILE_ERROR(500, &quot;图片上传失败！&quot;),
             ;
             private int code;
             private String msg;
@@ -465,7 +467,7 @@
             proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 
             location / {
-                proxy_pass  http://192.168.58.11:10010;  #反向代理
+                proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
                 proxy_connect_timeout  600;
                 proxy_read_timeout  600;
             }
@@ -533,7 +535,7 @@
         Access-Control-Allow-Credentials: true
         Access-Control-Allow-Method: GET, POST, PUT   ---&gt; 允许访问的方式
         Access-Control-Allow-Headers: X-Custom-Header ---&gt; 允许携带的头
-        Access-Control-Max-Age: 1728000 ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
+        Access-Control-Max-Age: 1728000  ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
     4. 浏览器收到响应的信息，则判定可以跨域;
 6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
 </code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
@@ -586,6 +588,18 @@
             max-age=&quot;3600&quot; /&gt;
         &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
     &lt;/mvc:cors&gt;
+</code></pre><h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><pre><code>1. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
+2. 引入PageHelper的启动器：pagehelper-spring-boot-starter
+3. 在调用查询语句之前，使用PageHelper实现分页查询
+    public List&lt;User&gt; findByPage(Integer, page, Integer rows) {
+        //分页：使用拦截器，在SQL语句后面拼接limit
+        PageHelper.startPage(page, rows);
+        //查询
+        List&lt;User&gt; users = mapper.selectAll();
+        //解析查询结果
+        PageInfo&lt;User&gt; info = new PageInfo&lt;&gt;(users);
+        return users;
+    }
 </code></pre><hr>
 
       
@@ -627,8 +641,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/11/SpringCloud项目2/" rel="prev" title="SpringCloud项目2">
+                SpringCloud项目2 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -706,7 +720,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -761,7 +775,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目架构"><span class="nav-number">1.</span> <span class="nav-text">项目架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通用异常处理"><span class="nav-number">1.1.</span> <span class="nav-text">通用异常处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名解析"><span class="nav-number">2.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">3.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#反向代理"><span class="nav-number">3.1.</span> <span class="nav-text">反向代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">4.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">4.1.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS原理"><span class="nav-number">4.2.</span> <span class="nav-text">CORS原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的CORS"><span class="nav-number">4.3.</span> <span class="nav-text">SpringMVC的CORS</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目架构"><span class="nav-number">1.</span> <span class="nav-text">项目架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通用异常处理"><span class="nav-number">1.1.</span> <span class="nav-text">通用异常处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名解析"><span class="nav-number">2.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">3.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#反向代理"><span class="nav-number">3.1.</span> <span class="nav-text">反向代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">4.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">4.1.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS原理"><span class="nav-number">4.2.</span> <span class="nav-text">CORS原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的CORS"><span class="nav-number">4.3.</span> <span class="nav-text">SpringMVC的CORS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页"><span class="nav-number">5.</span> <span class="nav-text">分页</span></a></li></ol></div>
             
 
           </div>

@@ -2429,6 +2429,352 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/11/SpringCloud项目2/" itemprop="url">SpringCloud项目2</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-11T00:00:00+08:00">
+                2016-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 搭建一个图片上传的微服务upload-service
+2. 依赖：spring-cloud-starter-netflix-eureka-client、spring-boot-starter-web
+3. application.yml
+    server:
+        port: 8082
+    spring:
+        application:
+            name: upload-service
+        servlet
+            multipart:
+                max-file-size: 5MB  #限制上传单个文件的大小
+                max-request-size: 10MB  #限制一次请求的大小，可能包含多个文件
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:10086/eureka  #Eureka注册中心
+4. Controller层
+    @RestController
+    @RequestMapping(&quot;upload&quot;)
+    public class UploadController {
+        //简单的文件类型
+        private final List&lt;String&gt; ALLOW_TYPES = Arrays.asList(&quot;image/jpeg&quot;, &quot;image/png&quot;, &quot;image/bmp&quot;);
+
+        @PostMapping(&quot;image&quot;)
+        public ResponseEntity&lt;String&gt; uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
+            try {
+                //校验文件类型
+                String type = file.getContentType();
+                if(!ALLOW_TYPES.contains(type)) {
+                    throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
+                }
+                //校验文件内容
+                BufferedImage image = ImageIO.read(file.getInputStream());
+                if(null == image) {
+                    throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
+                }
+
+                //目标路径
+                File dest = new File(&quot;/upload/&quot;, file.getOriginalFilename());
+                //保存到本地
+                file.transferTo(dest);
+                ......
+                return &quot;图片路径&quot;
+            } catch(IOException e) {
+                throw new CommonException(ExceptionEnum.UPLOAD_FILE_ERROR);
+            }
+        }
+    }
+5. Zuul网关中配置路由映射规则
+    zuul:
+        prefix: /api
+        routes:
+            upload-service:
+                path: /upload/**
+                serviceId: upload-service
+                strip-prefix: false
+</code></pre><h3 id="绕过网关缓存"><a href="#绕过网关缓存" class="headerlink" title="绕过网关缓存"></a>绕过网关缓存</h3><pre><code>1. 默认情况下，所有请求经过Zuul网关的代理，都会通过SpringMVC预先对请求进行处理、缓存;
+    1. 这种情况对普通请求没有什么影响，但对文件上传会造成不必要的网络负担;
+    2. 在高并发时，可能造成网络阻塞，Zuul网关不可用，从而造成整个系统瘫痪;
+    3. 所以，文件上传的请求应该绕过请求缓存，直接通过路由到达目标微服务;
+2. Spring官方的解决方案：在请求地址中加上前缀 /zuul，就可以绕过Zuul网关的请求缓存;
+    http://api.icloud.com/api/upload/image --&gt; http://api.icloud.com/zuul/api/upload/image
+3. 通常情况下，请求路径是项目需求设计的，不允许手动更改，但请求最先到达nginx，再由nginx反向代理到Zuul网关;
+4. Nginx提供了 rewrite 指令，用于对地址进行重写;
+    1. 重写规则
+        rewrite &quot;匹配路径的正则表达式&quot; 重写后的路径 [指令];
+    2. nginx.conf
+    server {
+        listen       80;
+        server_name  api.icloud.com;
+        ......
+
+        location /api/upload {            # 精确匹配的路径
+            rewrite &quot;^/(.*)$&quot; /zuul/$1;   # api/upload/image --&gt; zuul/api/upload/image
+        }
+
+        location / {
+            proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
+            proxy_connect_timeout  600;
+            proxy_read_timeout  600;
+        }
+    }
+    2. http://api.icloud.com/api/upload/image 转发到服务端时，路径变成了 zuul/api/upload/image
+</code></pre><h3 id="分布式文件系统"><a href="#分布式文件系统" class="headerlink" title="分布式文件系统"></a>分布式文件系统</h3><pre><code>1. 把上传的文件保存到服务器上时，会存在一系列问题：
+    1. 单机存储的能力有限;
+    2. 无法进行水平扩展，因为多台机器的文件无法共享;
+    3. 数据没有备份，有单点故障的问题;
+    4. 并发能力差;
+2. 分布式文件系统：文件系统管理的物理存储资源不一定直接连接在本地节点上，而是通过计算机网络与节点相连;
+    1. 传统的文件系统管理的文件通常存储在本机上;
+    2. 分布式文件系统管理的文件则存储在很多机器上，这些机器之间通过网络连接，并统一管理;
+    3. 分布式文件系统有一个管理中心，无论是上传还是访问文件，都需要经过管理中心;
+3. 分布式文件系统：GFS(谷歌)、HDFS(Hadoop)、TFS(淘宝)、FastDFS...
+</code></pre><h3 id="FastDFS"><a href="#FastDFS" class="headerlink" title="FastDFS"></a>FastDFS</h3><pre><code>1. FastDFS：阿里巴巴淘宝，一个轻量级、高性能的开源分布式系统，纯C语言开发，功能丰富;
+2. 支持文件存储、文件同步、文件访问(上传、下载)、存储负载均衡、在线扩容;
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/fastDFS.jpg" alt="fastDFS"></p>
+<pre><code>3. Tracker Server：跟踪服务器
+    1. 主要负责调度storage节点与client通信，在访问上起负载均衡的作用;
+    2. 还会记录storage节点的运行状态，是连接client与storage节点的枢纽;
+4. Storage Server：存储服务器，保存文件和文件的元数据(Meta data)
+    1. 每个Storage Server会启动一个单独的线程，主动向Tracker Cluster中的每个Tracker Server报告其状态信息;
+    2. 包括磁盘使用情况，文件同步情况，文件上传/下载次数统计...
+5. Gruop：文件组，多台Storage Server的集群;
+    1. 上传一个文件到同组内的一台机器上，FastDFS会同步到同组内的其他所有机器上，起到备份作用;
+    2. 不同组的服务器，保存的数据不同，而且相互独立，不进行通信;
+6. Tracker Cluster：跟踪服务器的集群，由一组Tracker Server组成;
+7. Storage Cluster：存储集群，由多个Gruop组成;
+8. 上传
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/上传.jpg" alt="上传"></p>
+<pre><code>    1. Client通过Tracker Server查找可用的Storage Server;
+    2. Tracker Server向Client返回一台可用的Storage Server的IP和端口号;
+    3. Client直接通过IP和端口号与Storage Server建立连接，并进行文件上传;
+    4. 上传完成之后，Storage Server返回Client一个文件ID，表示文件上传结束;
+9. 下载
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/下载.jpg" alt="下载"></p>
+<pre><code>1. Client通过Tracker Server查找要下载文件所在的Storage Server;
+2. Tracker Server向Client返回包含指定文件的某个Storage Server的IP和端口号;
+3. Client直接通过IP和端口号与Storage Server建立连接，并指定要下载的文件;
+4. 下载文件成功;
+</code></pre><h4 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h4><pre><code>1. 安装FastDFS，配置参数，启动服务
+2. 安装FastDFS的nginx模块
+3. 安装nginx，加入FastDFS的nginx模块
+</code></pre><h4 id="使用FastDFS"><a href="#使用FastDFS" class="headerlink" title="使用FastDFS"></a>使用FastDFS</h4><pre><code>1. fastdfs-client：GitHub上开源的FastDFS客户端，支持SpringBoot2.x
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.tobato&lt;/groupId&gt;
+        &lt;artifactId&gt;fastdfs-client&lt;/artifactId&gt;
+        &lt;version&gt;1.26.5&lt;/version&gt;
+    &lt;/dependency&gt;
+2. 加入配置类
+    @Configuration
+    @Import(FdfsClientConfig.class)
+    @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)  --&gt;解决jmx重复注册bean的问题
+    public class FastClientImporter { }
+3. application.yml
+    fdfs:
+        so_timeout: 2500      # 请求的超时时间
+        connect-timeout: 600  # 连接的超时时间
+        thumb-image:          # 缩略图
+            width: 60
+            height: 60
+        tracker-list:         # tracker的地址
+            - 192.168.58.16:22122
+4. 测试
+    @Autowired
+    private FastFileStorageClient client;
+    @Autowired
+    private ThumbImageConfig conf;
+    @Test
+    public void testUpload() {
+        //待上传的文件
+        File file = new File(&quot;D:\\test\\a.png&quot;);
+        //上传
+        StorePath store = client.uploadFile(new FileInputStream(file), file.length(), &quot;png&quot;, null);
+        //带分组的路径
+        String groupPath = store.getFullPath();
+        //不带分组的路径
+        String path = store.getPath();
+    }
+    1. FastDFS服务器地址 + groupPath = 就是访问图片的路径;
+    2. 上传图片并生成缩略图
+    StorePath store = 
+        client.uploadImageAndCrtThumbImage(new FileInputStream(file), file.length(), &quot;png&quot;, null);
+    3. 获取缩略图的路径
+    String path = conf.getThumbImagePath(store.getPath());  //store.getFullPath()
+5. 改造图片上传的Controller方法
+    @PostMapping(&quot;image&quot;)
+    public ResponseEntity&lt;String&gt; uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
+        try {
+            //校验文件类型
+            String type = file.getContentType();
+            if(!ALLOW_TYPES.contains(type)) {
+                throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
+            }
+            //校验文件内容
+            BufferedImage image = ImageIO.read(file.getInputStream());
+            if(null == image) {
+                throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
+            }
+            //上传到FastDFS
+            //1. 获取文件的后缀名，StringUtils是Apache commons-lang3工具类
+            String ext = StringUtils.substringAfterLast(file.getOriginalFilename(), &quot;.&quot;);
+            //2. 上传
+            StorePath store = client.uploadFile(new FileInputStream(file), file.length(), ext, null);
+            //3. 返回图片的访问地址
+            return &quot;http://image.icloud.com/&quot; + store.getFullPath();
+        } catch(IOException e) {
+            throw new CommonException(ExceptionEnum.UPLOAD_FILE_ERROR);
+        }
+    }
+6. 把图片地址和类型定义到 application.yml 中，通过属性映射到Java类中
+    icloud:
+        upload: http://image.icloud.com/
+        allowTypes:
+            - image/jpeg
+            - image/png
+            - image/bmp
+7. Nginx本身也对文件大小做了限制，如果上传的文件过大，Nginx会报错;
+    1. 在 nginx.conf 中，可以通过 client_max_body_size 属性配置上传文件的大小;
+    http {
+        ······
+        client_max_body_size: 10m;
+        ......
+    }
+    2. 配置在 http 节点下，所有 server 节点共享，还可以在 server 节点下独立配置上传的文件大小;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2545,6 +2891,7 @@ Esc：退出编辑模式或末行模式；
         &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
         &lt;version&gt;2.9.9&lt;/version&gt;
     &lt;/dependency&gt;
+    4. 通用Mapper：mapper-core、mapper-base、mapper-extra
 3. REST风格的响应
     1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
     2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
@@ -2575,7 +2922,8 @@ Esc：退出编辑模式或末行模式；
         @NoArgsConstructor
         @AllArgsConstructor
         public enum ExceptionEnum {
-            PRICE_CANNOT_BE_NULL(400, &quot;价格不能为空！&quot;),
+            CATEGORY_NOT_FOUND(404, &quot;商品分类没查到！&quot;),
+            UPLOAD_FILE_ERROR(500, &quot;图片上传失败！&quot;),
             ;
             private int code;
             private String msg;
@@ -2663,7 +3011,7 @@ Esc：退出编辑模式或末行模式；
             proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 
             location / {
-                proxy_pass  http://192.168.58.11:10010;  #反向代理
+                proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
                 proxy_connect_timeout  600;
                 proxy_read_timeout  600;
             }
@@ -2731,7 +3079,7 @@ Esc：退出编辑模式或末行模式；
         Access-Control-Allow-Credentials: true
         Access-Control-Allow-Method: GET, POST, PUT   ---&gt; 允许访问的方式
         Access-Control-Allow-Headers: X-Custom-Header ---&gt; 允许携带的头
-        Access-Control-Max-Age: 1728000 ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
+        Access-Control-Max-Age: 1728000  ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
     4. 浏览器收到响应的信息，则判定可以跨域;
 6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
 </code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
@@ -2784,6 +3132,18 @@ Esc：退出编辑模式或末行模式；
             max-age=&quot;3600&quot; /&gt;
         &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
     &lt;/mvc:cors&gt;
+</code></pre><h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><pre><code>1. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
+2. 引入PageHelper的启动器：pagehelper-spring-boot-starter
+3. 在调用查询语句之前，使用PageHelper实现分页查询
+    public List&lt;User&gt; findByPage(Integer, page, Integer rows) {
+        //分页：使用拦截器，在SQL语句后面拼接limit
+        PageHelper.startPage(page, rows);
+        //查询
+        List&lt;User&gt; users = mapper.selectAll();
+        //解析查询结果
+        PageInfo&lt;User&gt; info = new PageInfo&lt;&gt;(users);
+        return users;
+    }
 </code></pre><hr>
 
           
@@ -3171,407 +3531,6 @@ Esc：退出编辑模式或末行模式；
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/05/03/SpringCloud组件2/" itemprop="url">SpringCloud组件2</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-03T00:00:00+08:00">
-                2016-05-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Hystrix"><a href="#Hystrix" class="headerlink" title="Hystrix"></a>Hystrix</h2><pre><code>1. Hystrix：Netflix公司的一款组件，是一种保护机制;
-2. Hystrix是Netflix开源的一个延迟和容错库，用于隔离访问远程服务、第三方库，防止出现级联失败;
-3. 雪崩问题
-    1. 微服务中，服务间的关系错综复杂，一个请求可能需要调用多个微服务接口才能实现，形成非常复杂的调用链路;
-    2. 一旦被调用的服务提供者发生异常，请求阻塞，用户不会得到响应，那么Tomcat的这个线程也不会被释放;
-    3. 随着越来越多的用户请求到来，越来越多的线程也会随之阻塞，而服务器支持的线程和并发数量是有限的，
-    最后会导致服务器资源耗尽，从而会导致其他服务都不可用，这就是雪崩效应;
-    4. 比如一个汽车生产线，如果某个零件因为种种原因无法供应，那么整台车就无法装配，陷入等待零件状态；
-    5. 如果很多车型都需要这个零件，那么整个车间都会陷入等待状态，导致所有生产都陷入瘫痪；
-4. Hystrix解决雪崩问题的手段主要有两种方式：线程隔离、服务熔断
-</code></pre><h3 id="线程隔离，服务降级"><a href="#线程隔离，服务降级" class="headerlink" title="线程隔离，服务降级"></a>线程隔离，服务降级</h3><pre><code>1. 线程隔离
-    1. Hystrix为每个依赖服务调用分配一个小线程池，如果线程池已满，调用会被立即拒绝，默认不采用排队，加速失败的判定时间;
-    2. 用户的请求不再直接访问服务，而是通过线程池中的空闲线程来访问，如果线程池已满或者请求超时，则会进行降级处理;
-2. 服务降级：优先保证核心服务，而非核心服务不可用或弱可用;
-    1. 用户的请求故障时，不会被阻塞，更不会无限等待或者返回系统崩溃，至少可以看到一个执行结果，比如等待超过5s，
-    则返回&quot;服务器繁忙&quot;的友好提示信息;
-    2. 服务降级虽然导致请求失败，但不会导致阻塞，而且最多影响这个依赖服务对应的线程池中的资源，对其他服务没有影响;
-3. 触发 Hystrix 服务降级的两种情况：线程池已满、请求超时;
-</code></pre><h3 id="降级处理"><a href="#降级处理" class="headerlink" title="降级处理"></a>降级处理</h3><pre><code>1. 降级处理发生在服务的调用方(消费者)
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    1. 在启动类上注解 @EnableCircuitBreaker，启用Hystrix，注解 @EnableHystrix 也可以，但无法启用服务熔断;
-        @EnableCircuitBreaker
-        @EnableDiscoveryClient
-        @SpringBootApplication
-        public class ConsumerApplication {
-            @Bean
-            @LoadBalanced
-            public RestTemplate getRestTemplate() {
-                return new RestTemplate();
-            }
-            public static void main(String[] args) {
-                SpringApplication.run(ConsumerApplication.class, args);
-            }
-        }
-    2. @SpringCloudApplication = @EnableCircuitBreaker+@EnableDiscoveryClient+@SpringBootApplication
-        @SpringCloudApplication
-        public class ConsumerApplication {
-            ...
-        }
-    3. 在Controller方法上注解 @HystrixCommand 开启降级处理，fallbackMethod属性指定错误处理的方法名;
-        @GetMapping(&quot;{id}&quot;)
-        @HystrixCommand(fallbackMethod = &quot;findByIdFallback&quot;)
-        public String findById(@PathVariable(&quot;id&quot;) Long id) {
-            String url = &quot;http://user-service/user/&quot; + id;
-            String user = rest.getForObject(url, String.class);  //返回一个字符串，不再转为POJO对象
-            return user;
-        }
-
-        public String findByIdFallback(Long id) {
-            return &quot;服务器繁忙！&quot;
-        }
-    4. 熔断的降级处理方法与正常请求的方法：参数列表和返回值必须保证一致！
-2. 在服务提供方加延迟，模拟降级处理
-    @Service
-    public class UserService {
-        @Autowired
-        private UserMapper mapper;
-        public User findById(Long id) {
-            Thread.sleep(2000L);
-            return mapper.selectByPrimaryKey(id);
-        }
-    }
-3. 启用降级处理后，默认超过 1s 获取不到响应结果，就会触发服务降级;
-    http://localhost:8080/consumer/9  --&gt; 服务器繁忙！
-4. @DefaultProperties：注解在Controller类上，配置默认Fallback
-    @RestController
-    @RequestMapping(&quot;consumer&quot;)
-    @DefaultProperties(defaultFallback = &quot;defFallback&quot;)
-    public class ConsumerController {
-        @Autowired
-        private RestTemplate rest;
-
-        @GetMapping(&quot;{id}&quot;)
-        @HystrixCommand  -------&gt; 启用降级
-        public String findById(@PathVariable(&quot;id&quot;) Long id) {
-            String url = &quot;http://user-service/user/&quot; + id;
-            String user = rest.getForObject(url, String.class);
-            return user;
-        }
-
-        public String defFallback() {
-            return &quot;服务器繁忙！&quot;
-        }
-    }
-    1. 默认Fallback指向的方法不能有参数列表;
-    2. 访问：http://localhost:8080/consumer/9  --&gt; 服务器繁忙！
-5. @HystrixCommand 的属性 commandProperties 可以配置方法的超时时间，不同的业务配置不同的超时时间;
-    @GetMapping(&quot;{id}&quot;)
-    @HystrixCommand(commandProperties = {
-        @HystrixPropery(name=&quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value=&quot;2000&quot;) #2s超时
-    })
-    public String findById(@PathVariable(&quot;id&quot;) Long id) {
-        ...
-    }
-6. 在消费者的配置文件中，全局配置默认超时时间，同时 @HystrixCommand 中不要再配置超时属性commandProperties;
-    hystrix:
-        command:
-            default:
-                execution:
-                    isolation:
-                        thread:
-                            timeoutInMilliseconds: 3000  #3s超时
-7. 另外，还可以只针对某个调用的服务，甚至某个Controller方法去配置超时时间;
-    hystrix:
-        command:
-            default:
-                execution:
-                    isolation:
-                        thread:
-                            timeoutInMilliseconds: 3000  # 默认超时时间
-            user-service:  #调用该服务时，启用降级处理的超时时间
-                execution:
-                    isolation:
-                        thread:
-                            timeoutInMilliseconds: 3000
-            findById:  #调用该方法时，启用降级处理的超时时间
-                execution:
-                    isolation:
-                        thread:
-                            timeoutInMilliseconds: 3000
-</code></pre><h3 id="服务熔断"><a href="#服务熔断" class="headerlink" title="服务熔断"></a>服务熔断</h3><pre><code>1. 熔断器又叫断路器，Circult Breaker，类似电路熔断器(保险丝)，如果发生短路，立刻熔断电路，避免发生灾难;
-2. 在分布式系统中，服务调用方可以自己判断某些服务反应慢或者存在大量超时的情况时，能够主动熔断，防止整个系统被拖垮;
-3. 不同于保险丝不会重连，Hystrix可以实现弹性容错，当情况好转后，可以自动重连;
-4. @EnableCircuitBreaker：注解在启动器上，同时会启用Hystrix熔断器;
-5. Hystrix的熔断机模型
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/03/SpringCloud组件2/熔断器模型.jpg" alt="Zuul"></p>
-<pre><code>    1. 三种状态：Closed、Open、Half Open
-    2. Closed：熔断器关闭状态，所有请求都能正常访问;
-    3. Open：熔断器打开，所有请求被降级处理;
-    4. 默认情况下，如果请求次数超过20，且失败比例达到50%(阈值)，则打开熔断器;
-    5. Half Open：熔断器处于半开状态;
-6. Open状态不是永久的，它会进入休眠状态(默认5s)，称为休眠时间窗，随后熔断器会自动进入半开状态，放进来一部分请求，
-   测试该服务是否正常，如果请求仍然失败，则重新进入Open状态，直到放进的请求完全成功，才会进入Closed状态;
-    1. 默认请求次数：circuitBreaker.requestVolumeThreshold = 20
-    2. 默认失败比率：circuitBreaker.errorThresholdPercentage = 50
-    3. 默认默认休眠时间(ms)：circuitBreaker.sleepWindowInMilliseconds = 5000
-7. 在服务消费者中，通过抛出异常的方式，手动控制熔断器断开，并配置熔断器的参数;
-    1. 对同一个服务发起10次请求，超过6次都是失败的，则开启熔断器; 休眠10s后，进入半开状态，放进一部分请求;
-    @GetMapping(&quot;{id}&quot;)
-    @HystrixCommand(commandProperties = {
-        @HystrixProperty(name=&quot;circuitBreaker.requestVolumeThreshold&quot;, value=&quot;10&quot;),   #10次请求
-        @HystrixProperty(name=&quot;circuitBreaker.errorThresholdPercentage&quot;, value=&quot;60&quot;), #失败比率60%
-        @HystrixProperty(name=&quot;circuitBreaker.sleepWindowInMilliseconds&quot;, value=&quot;10000&quot;), #休眠时间10s
-    })
-    public String findById(@PathVariable(&quot;id&quot;) Long id) {
-        if(id%2 == 0) {
-            throw new RuntimeException(&quot;&quot;); //抛出异常会直接触发熔断
-        }
-        String url = &quot;http://user-service/user/&quot; + id;
-        String user = rest.getForObject(url, String.class);
-        return user;
-    }
-    2. 测试：
-        http://localhost:8080/consumer/1  --&gt; 正常返回
-        http://localhost:8080/consumer/2 --&gt; 抛出异常，服务降级处理，返回&quot;服务器繁忙！&quot;
-    3. 快速访问 http://localhost:8080/consumer/2 超过10次 -&gt;再立即访问 http://localhost:8080/consumer/1
-    请求也会被降级处理，返回 &quot;服务器繁忙！&quot;，10s后又可以正常获取数据;
-</code></pre><h2 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h2><pre><code>1. Feign：简化服务调用，可以把Rest的请求进行隐藏，伪装成类似SpringMVC的Controller，无需再拼接URL、参数等等;
-    String url = &quot;http://user-service/user/&quot; + id;
-    String user = rest.getForObject(url, String.class);
-2. 在服务消费者中
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    1. Feign内部已经依赖了Ribbon和Hystrix，所以在 pom.xml 不用手动引入Ribbon依赖，但Hystrix依赖最好还要引入;
-    2. @EnableFeignClients：注解在在启动器类，启用Feign，并去除RestTemplate的注册;
-    @EnableFeignClients
-    @SpringCloudApplication
-    public class ConsumerApplication {
-        public static void main(String[] args) {
-            SpringApplication.run(ConsumerApplication.class, args);
-        }
-    }
-3. Feign客户端接口
-    @FeignClient(&quot;user-service&quot;)  --&gt; 服务ID
-    public interface UserClient {
-        @GetMapping(&quot;user/{id}&quot;)  --&gt; 请求资源路径，SpringMVC的注解
-        User findById(@PathVariable(&quot;id&quot;) Long id);
-    }
-    1. @FeignClient：声明Feign客户端，指定服务ID，再交给Ribbon实现负载均衡;
-    2. 客户端中的方法上完全使用 SpringMVC 的注解，Feign会根据注解生成URL;
-    3. Feign会通过动态代理，为Feign客户端接口生成实现类，类似Mybatis的mapper;
-4. Web层，使用Feign客户端发起请求
-    @RestController
-    @RequestMapping(&quot;consumer&quot;)
-    public class ConsumerController {
-        @Autowired
-        private UserClient client;
-
-        @GetMapping(&quot;{id}&quot;)
-        public User findById(@PathVariable(&quot;id&quot;) Long id) {
-            User user = client.findById(id);
-            return user;
-        }
-    }
-5. Feign内部集成了Ribbon依赖和自动配置，在配置文件中配置Ribbon的超时时间
-    ribbon:
-        ConnectTimeout: 1000  # 连接超时时间
-        ReadTimeout: 3000  # 读取数据的超时时间
-    1. ConnectTimeout：Ribbon连接服务的超时时间，默认1000ms，超过1000ms没有连接上服务，则抛出异常;
-    2. ReadTimeout：Ribbon读取数据的超时时间，默认1000ms，超过1000ms还没有获取到响应，则抛出异常;
-</code></pre><h3 id="Feign集成Hystrix"><a href="#Feign集成Hystrix" class="headerlink" title="Feign集成Hystrix"></a>Feign集成Hystrix</h3><pre><code>1. 默认是关闭的，在配置文件中开启
-    feign:
-        hystrix:
-            enabled: true  # 开启Feign的熔断功能
-2. 在 @FeignClient 中配置属性 fallback，属性值是一个类.class，且这个类要实现注解的接口，用于处理服务降级;
-    @FeignClient(value = &quot;user-service&quot;, fallback = UserClientFallback.class)
-    public interface UserClient {
-        @GetMapping(&quot;user/{id}&quot;)
-        User findById(@PathVariable(&quot;id&quot;) Long id);
-    }
-    @Component
-    public class UserClientFallback implements UserClient {
-        public User findById(Long id) {  // 服务降级的处理
-            User u = new User();
-            u.setId(id);
-            u.setName(&quot;未知用户！&quot;);
-            return u;  //响应数据
-        }
-    }
-3. 关闭 user-service 服务，访问服务消费者：http://localhost:8080/consumer/1
-</code></pre><h3 id="请求压缩"><a href="#请求压缩" class="headerlink" title="请求压缩"></a>请求压缩</h3><pre><code>1. Feign支持对请求和响应进行GZIP压缩，以减少通信过程中的性能损耗;
-2. 开启压缩
-    feign:
-        compression:
-            request:
-                enabled: true  #开启请求压缩
-                mime-types: text/html,application/xml,application/json  #设置压缩的数据类型
-                min-request-size: 2048  # 触发压缩的大小下限
-            response:
-                enabled: true  #开启响应压缩
-</code></pre><h3 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h3><pre><code>1. 通过 logging.level.xx=debug 来设置日志级别，但是它对Feign客户端没有效果，因为 @FeignClient 注解的客户端
-   在动态代理时，都会生成一个新的 Feign.Logger 实例，需要额外指定它的日志级别;
-2. 设置 cn.cloud 包下的日志级别都是 debug
-    logging:
-        level:
-            cn.cloud: debug
-3. 使用配置类定义日志级别
-    @Configuration
-    public class FeignConf {
-        @Bean
-        Logger.Level feignLoggerLevel() {
-            return Logger.Level.FULL;  //设置日志级别为FULL，另外还有 NONE、BASIC、HEADERS...
-        }
-    }
-    1. NONE：不记录任何日志信息，默认值；
-    2. BASIC：仅记录请求的方法、URL以及响应状态码和执行时间；
-    3. HEADERS：在BASIC的基础上，额外记录了请求和响应的头信息；
-4. 在Feign客户端的注解上，指定配置类
-    @FeignClient(value = &quot;user-service&quot;, 
-        fallback = UserClientFallback.class, configuration = FeignConf.class)
-    public interface UserClient {
-        @GetMapping(&quot;user/{id}&quot;)
-        User findById(@PathVariable(&quot;id&quot;) Long id);
-    }
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3622,7 +3581,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
