@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-25T13:46:17.753Z">
+<meta property="og:updated_time" content="2019-06-04T12:49:15.388Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot进阶">
 <meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
@@ -366,14 +366,25 @@
         @JsonInclude(Include.NON_NULL)
         private Integer id;
 
-        @JsonIgnore
+        @JsonProperty(&quot;abcd&quot;)
         private String name;
 
-        @JsonProperty(&quot;abcd&quot;)
+        @JsonIgnore   ------&gt;完全忽略，客户端提交的age参数也会被忽略
+        private Integer age;
+
         private String password;
 
         @JsonFormat(pattern=&quot;yyyy-MM-dd hh:mm:ss&quot;, locale=&quot;zh&quot;, timezone=&quot;GMT+8&quot;)
         private Date birthday;
+
+        @JsonIgnore  ---&gt; 重写了getter，传递给客户端时忽略
+        public String getPassword() {
+            return password;
+        }
+        @JsonProperty  ---&gt; 重写了setter，接收时仍赋值
+        public void setPassword(String password) {
+            this.password = password;
+        }
     }
 3. Controller方法
     @RestController
