@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/06/01/Docker/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hellomyshadow.github.io/2016/06/01/Docker/比较.jpg">
+<meta property="og:updated_time" content="2019-06-10T14:21:05.080Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker">
+<meta name="twitter:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
+<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/06/01/Docker/比较.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/06/01/Docker/">
+
+
+
+
+
+  <title>Docker | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/06/01/Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-01T00:00:00+08:00">
+                2016-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="虚拟化"><a href="#虚拟化" class="headerlink" title="虚拟化"></a>虚拟化</h2><pre><code>1. 虚拟化：计算机中的一种资源管理技术;
+    1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;
+    2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;
+    3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制.
+2. 一般所说的虚拟化资源包括计算能力和资料存储;
+3. 在实际生产环境中，虚拟化技术主要用来解决高性能的物理硬件产能过剩和老旧的硬件产能过低的重组重用，
+   透明化底层物理硬件，从而最大化地利用物理硬件，充分利用资源;
+4. 虚拟化技术的种类有很多：软件虚拟化、硬件虚拟化、内存虚拟化、网络虚拟化、桌面虚拟化、服务虚拟化、虚拟机...
+</code></pre><h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><pre><code>1. Docker是一个诞生于2013年初的开源项目，最初是dotCloud公司内部的一个业余项目，基于谷歌的Go语言实现;
+2. Docker项目后来加入了Linux基金会，遵从Apache2.0协议，在Github上维护;
+3. Docker项目的目标是实现轻量级的操作系统虚拟化解决方案，Docker的基础是Linux容器(LXC)等技术;
+4. Docker在LXC的基础上做了进一步封装，让用户操作Docker容器时就像操作一个快速轻量级的虚拟机一样简便;
+5. Docker的优点
+    1. 上手快：Docker依赖于写时复制模型，使修改应用程序非常迅速，Docker容器启动快，性能高，占用资源少，
+    同一台宿主机中可以运行更多的容器，尽可能的利用系统资源;
+    2. 职责的逻辑分类：开发者只需要关心容器中的应用程序，运维人员只需要关心如何管理容器，Docker的设计目的
+    就是加强开发环境和生产环境的一致性;
+    3. 快速高效的开发生命周期：缩短开发-测试-部署-上线的周期，让应用程序具备可移植性，易于构建、协作;
+    4. 鼓励使用面向服务的架构：Docker鼓励使用面向服务的体系结构和微服务架构，推荐单个容器只运行一个应用程序
+    或进程，从而形成一个分布式的应用程序模型，扩展和调试都变得简单，同时也提高了程序的内省性;
+7. 与传统的虚拟机相比，Docker启动速度更快，占用体积更小;
+</code></pre><p><img src="//hellomyshadow.github.io/2016/06/01/Docker/比较.jpg" alt="比较"></p>
+<h3 id="服务器与客户端"><a href="#服务器与客户端" class="headerlink" title="服务器与客户端"></a>服务器与客户端</h3><pre><code>1. Docker是C/S架构，Docker客户端只需要向服务端(守护进程)发送请求，由服务端完成所有工作并返回结果;
+2. Docker提供了一个命令行工具，以及一整套RESTful API;
+3. 可以在同一台宿主机上运行Docker守护进程和客户端，也可以从本地的Docker客户端连接到远程Docker守护进程;
+    Docker客户端 --&gt; Docker守护进程(Docker服务端) --&gt; Docker容器
+</code></pre><h3 id="Docker镜像与容器"><a href="#Docker镜像与容器" class="headerlink" title="Docker镜像与容器"></a>Docker镜像与容器</h3><pre><code>1. 镜像是构建Docker的基石，用户基于镜像来运行自己的容器，镜像也是Docker生命周期中的 构建 部分;
+2. 镜像是基于联合文件系统的一种层式结构，由一系列指令一步步构建处理;
+    1. 比如：添加一个文件 --&gt; 执行一个命令 --&gt; 打开一个窗口;
+    2. 也可以把镜像当作容器的源代码，它的体积很小，易于分享、存储和更新;
+3. Docker可以帮助构建和部署容器，用户只需把自己的应用程序/服务打包、放进容器即可;
+    1. 容器是基于镜像启动的，容器中可以运行一个或多个进程;
+    2. 简言之，镜像是Docker生命周期中的构建/打包阶段，容器是启动/执行阶段;
+    3. 容器基于镜像启动，一旦容器启动完成后，就可以登录到容器中安装自己需要的软件/服务;
+4. Docker容器：一个镜像格式，一系列标准操作，一个执行环境;
+    1. Docker容器借鉴了标准集装箱的概念，不同的是，集装箱运输货物，Docker运输软件;
+    2. 和集装箱一样，Docker不关心容器中装了什么，不管是Web服务器，还是数据库，亦或者是应用程序服务器;
+    3. 所有的容器都按照相同的方式将内容装载进去;
+    4. Docker也不关心容器要运往何方，可以在本地构建容器，上传到Registry，然后下载到一个物理/虚拟的服务器来测试;
+5. 像标准集装箱一样，Docker容器便于替换，可以叠加，易于分发，且尽量通用;
+</code></pre><h3 id="Registry"><a href="#Registry" class="headerlink" title="Registry"></a>Registry</h3><pre><code>1. Registry：注册中心，Docker用来保存用户构建的镜像;
+2. Registry分为公共和私有，Docker公司运营公共的Registry称为Docker Hub;
+3. 用户可以在Docker Hub上注册账号，分享并保存自己的镜像;
+4. Docker Hub在国外服务器上，下载镜像巨慢，可以构建自己的私有Registry;
+</code></pre><h2 id="Docker安装-CentOS"><a href="#Docker安装-CentOS" class="headerlink" title="Docker安装(CentOS)"></a>Docker安装(CentOS)</h2><pre><code>1. Docker是基于Ubuntu发布的，最先更新或打补丁的也是在Ubuntu系统中，所以官方建议安装在Ubuntu系统中;
+2. 在CentOS系统中安装时，CentOS版本要求为7.x
+    1. yum包更新到最新版：sudo yum update
+    2. 安装需要的软件包：yum-utils提供yum-config-manager功能，另外两个是devicemapper驱动依赖;
+    sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+    3. 设置yum源为阿里云
+    sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    4. 安装docker
+    sudo yum install docker-ce  ===&gt; -ce表示社区版，免费的
+    5. 查看docker版本
+    docker -v
+3. 设置ustc的镜像
+    1. ustc是老牌的Linux镜像服务提供者，ustc的docker镜像加速器非常快;
+    2. 而且，ustc docker mirror无需注册，是真正的公共服务;
+    3. 编辑 /etc/docker/daemon.json，加入国内镜像
+    {
+      &quot;registry-mirrors&quot;: [&quot;https://docker.mirrors.ustc.edu.cn&quot;]
+    }
+4. systemctl：系统服务管理器指令
+    1. 启动docker
+        systemctl start docker
+    2. 停止docker
+        systemctl stop docker
+    3. 重启docker
+        systemctl restart docker
+    4. 查看docker状态
+        systemctl status docker
+    5. 开机自启动
+        systemctl enable docker
+    6. 查看docker的概要信息
+        docker info
+    7. docker命令的帮助文档
+        docker --help
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/11/SpringCloud项目2/" rel="next" title="SpringCloud项目2">
+                <i class="fa fa-chevron-left"></i> SpringCloud项目2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化"><span class="nav-number">1.</span> <span class="nav-text">虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">2.</span> <span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器与客户端"><span class="nav-number">2.1.</span> <span class="nav-text">服务器与客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker镜像与容器"><span class="nav-number">2.2.</span> <span class="nav-text">Docker镜像与容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Registry"><span class="nav-number">2.3.</span> <span class="nav-text">Registry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装-CentOS"><span class="nav-number">3.</span> <span class="nav-text">Docker安装(CentOS)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

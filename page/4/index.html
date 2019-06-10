@@ -232,6 +232,357 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/04/SpringCloud组件3/" itemprop="url">SpringCloud组件3</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-04T00:00:00+08:00">
+                2016-05-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="网关之Zuul"><a href="#网关之Zuul" class="headerlink" title="网关之Zuul"></a>网关之Zuul</h2><pre><code>1. 网关的核心功能：过滤和路由
+2. Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用;
+3. Zuul的核心是一系列的过滤器，这些过滤器的功能：
+    1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求;
+    2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图;
+    3. 动态路由：动态地将请求路由到不同的后端集群;
+    4. 压力测试：逐渐增加指向集群的流量，以了解性能;
+    5. 负载分配：为每一种负载类型分配对应容量，并弃用超过限定值的请求;
+    6. 静态响应处理：在边缘位置直接建立部分响应，从而避免转发到内部集群;
+    7. 多区域弹性：跨越AWS Region 进行数据路由，旨在实现ELB使用的多样化，以及让系统的边缘更贴近系统的使用者;
+4. SpringCloud对Zuul做了整合与增强，目前Zuul默认使用HTTP客户端Apache HttpClient，也可以使用RestClient，
+    okhttp3.OkHttpClient
+    1. 启用RestClient时，配置 ribbon.restclient.enabled=true
+    2. 启用okhttp3.OkHttpClient，则配置 ribbon.okhttp.enabled=true
+5. 网关是整个系统的入口，如果没有网关控制，外界可以访问系统中的任何服务，甚至可以把自己的服务注册为系统服务;
+6. Zuul加入后的架构
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg" alt="Zuul"></p>
+<pre><code>1. 不管是来自客户端的请求，还是服务内部的调用，一切对服务的请求都会经过Zuul，由网关来实现鉴权、动态路由等操作;
+2. Zuul就是服务的统一入口;
+</code></pre><h3 id="搭建网关"><a href="#搭建网关" class="headerlink" title="搭建网关"></a>搭建网关</h3><pre><code>1. 在父工程下创建一个子工程gateway
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. Zuul依赖中已经引入了 web、hystrix、ribbon 等依赖;
+3. @EnableZuulProxy：注解在启动类上，而不是注解 @EnableZuulServer，因为它的功能不完善，太单一;
+    @EnableZuulProxy
+    @SpringBootApplication
+    public class GatewayApplication {
+        ...
+    }
+4. application.yml
+    server:
+        port: 8090
+    spring:
+        application:
+            name: gateway
+    zuul:
+        routes:    # 配置路由规则
+            hehe:  # 自定义路由ID，值是key-value，作为一条路由规则
+                path: /user-service/**    # 匹配的路径，以/user-service开头的所有路径
+                url: http://127.0.0.1:8081   # 转发的服务地址，即转发给服务提供者
+    1. 自定义一条路由规则hehe，转发的服务地址为http://127.0.0.1:8081，匹配的资源路径为/user-service/**
+    2. /user-service 只作为匹配路径的前缀，** 才会被转发
+    http://127.0.0.1:8090/user-service/user/9  --&gt; http://127.0.0.1:8081/user/9
+5. 使用Eureka的客户端依赖，注册服务，拉取服务列表
+    1. 引入Eureka客户端的依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    2. 加入Eureka的配置，简化路由规则
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:8761/eureka
+    zuul:
+        routes:
+            hehe:
+                path: /user-service/**
+                serviceId: user-service   # 指定要转发的服务ID
+    3. Zuul底层根据配置的服务ID，使用 EurekaClient 获取服务列表，通过Ribbon的负载均衡算法，获取一个服务实例;
+    http://127.0.0.1:8090/user-service/user/9  --&gt; http://user-service/user/9
+6. 既然路由ID可以自由命名，那么就简化配置方案
+    zuul:
+        routes:
+            user-service: /user-service/**  # key是转发的服务ID，value是匹配的路径
+    1. 事实上，Zuul默认就是这么配置的，它会拉取所有的服务列表，并把服务都默认配置成  服务ID: /服务ID/**
+    2. consumer-service服务没有配置，但依然可以访问：http://127.0.0.1:8090/consumer-service/consumer/9
+    3. 如果不需要更改映射路径，zuul.routes 可以不用配置；但即使手动更改了映射路径，/服务ID/** 的方式依然有效;
+    zuul:
+        routes:
+            user-service: /user/**   # 更改映射匹配的路径为 /user
+    4. http://127.0.0.1:8090/user/user/9  &lt;-等效-&gt;  http://127.0.0.1:8090/user-service/user/9
+7. 当然，有些服务不想让 Zuul 自动配置，则让Zuul忽略
+    zuul:
+        ignored-services:   # 忽略注册的服务ID列表
+            - consumer-service
+    http://127.0.0.1:8090/consumer-service/consumer/9 --&gt; 不可以再访问
+</code></pre><h3 id="前缀"><a href="#前缀" class="headerlink" title="前缀"></a>前缀</h3><pre><code>1. 匹配路径的前缀默认是不转发给微服务的，strip-prefix 属性可以控制是否转发，默认值是true
+    zuul:
+        routes:
+            user-service:
+                path: /user/**
+                serviceId: user-service
+                strip-prefix: false   # 转发前缀
+        ignored-services:
+            - consumer-service
+    1. 访问：http://127.0.0.1:8090/user/9  --&gt; http://127.0.0.1:8081/user/9
+    2. 测试发现，带有服务ID的前缀依然可以访问： http://127.0.0.1:8090/user-service/user/9
+2. 转发前缀的全局配置：zuul.strip-prefix
+    zuul:
+        routes:
+            user-service:
+                path: /user/**
+                serviceId: user-service
+        strip-prefix: false
+    1. 然而，测试发现这种方式是无效的！访问时仍然要加上前缀：http://127.0.0.1:8090/user/user/9
+    2. 如果路由规则是简化配置，zuul.strip-prefix属性是无效的;
+        zuul:
+            routes:
+                user-service: /user/**
+            strip-prefix: false  # 无效，不会转发前缀
+3. 全局添加前缀：所有请求的前面都必须加上的前缀，但不会被转发
+    zuul:
+        prefix: /api  #全局前缀
+        routes:
+            user-service: /user/**  # /user 是局部前缀
+    1. 访问：http://127.0.0.1:8090/api/user/user/9  --&gt; http://127.0.0.1:8081/user/9
+    2. 局部 strip-prefix=false 只对局部前缀有效，不会转发全局前缀;
+    zuul:
+        prefix: /api
+        routes:
+            user-service:
+                path: /user/**
+                serviceId: user-service
+                strip-prefix: false
+    http://127.0.0.1:8090/api/user/9  --&gt; http://127.0.0.1:8081/user/9
+</code></pre><h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><pre><code>1. Zuul作为网关的一个重要功能，就是实现请求的鉴权(权限控制)，通过Zuul提供的过滤器实现;
+2. ZuulFilter 是过滤器的顶级父类，最重要的方法有4个
+    public abstract ZuulFilter implements IZuulFilter {
+        abstract public String filterType();
+        abstract public int filterOrder(); 
+        boolean shouldFilter();  //来自IZuulFilter
+        Object run() throws ZuulException;  //来自IZuulFilter
+        ......
+    }
+3. filterType()：过滤器的类型，4种类型;
+        1. pre：请求在被路由之前执行，前置过滤器;
+        2. routing：在路由请求时执行;
+        3. post：在routing和error过滤器之后调用，后置过滤器;
+        4. error：处理请求时发生错误调用，异常处理器;
+4. filterOrder()：过滤器的执行顺序，数值越小，优先级越高;
+5. shouldFilter()：是否过滤;
+6. run()：过滤器执行的逻辑;
+</code></pre><h4 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h4><p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/过滤器.jpg" alt="Zuul"></p>
+<pre><code>1. 正常流程：请求到达 --&gt; pre Filter --&gt; routing Filter --&gt; 进行路由 --&gt; 请求到达真正的服务提供者 --&gt;
+    返回处理结果 --&gt; post Filter --&gt; 响应数据
+2. 异常流程：pre/routing Filter出现异常 --&gt; error Filter处理完毕后，将请求交给 post Filter --&gt; 响应数据
+    1. 如果 error Filter 出现异常，最终也会进入post Filter，然后响应数据;
+    2. 如果 post Filter 出现异常，会进入error Filter，但与 pre/routing Filter不同，请求不会再交给post Filter;
+3. 前置过滤器的应用：权限控制，限流(限制流量，限制某个用户在一段时间内只能访问一次，限制最多只能有1000个人访问等等)
+4. 后置处理器和异常处理器通常结合使用，做一些通用的异常处理;
+5. 服务调用时长统计：pre 和 post Filter 结合使用;
+</code></pre><h4 id="自定义过滤器"><a href="#自定义过滤器" class="headerlink" title="自定义过滤器"></a>自定义过滤器</h4><pre><code>1. Zuul内置了很多过滤器，也允许自定义过滤器，比如模拟登录的校验，如果请求中有 access-token 参数，则放行;
+2. 在网关模块gateway中，自定义过滤器
+    @Component  --&gt;加入Spring IoC容器
+    public class LoginFilter extends ZuulFilter {
+        public String filterType() {
+            return FilterConstants.PRE_TYPE;  // 前置过滤器
+        }
+        public int filterOrder() {
+            return FilterConstants.PRE_DECORATION_FILTER_ORDER -  1;  //等待请求参数处理完，再做拦截
+        }
+        public boolean shouldFilter() {
+            return true;
+        }
+        public Object run() throws ZuulException {
+            //1. 在内置的过滤器中，查看如何获取Request对象
+            RequestContext ctx = RequestContext.getCurrentContext();
+            HttpServletRequest request = ctx.getRequest();
+            //2. 获取请求参数
+            String token = request.getParameter(&quot;access-token&quot;);
+            //3. 判断是否存在 access-token 
+            if(StringUtils.isBlank(token)) {  ---&gt;引入Apache的工具类依赖：commons-lang3
+                //trim() 内部会多次截取字符串，效率非常差，所以StringUtils.isBlank()内部没用trim()
+                //不存在，则认为没有登录，拦截请求
+                ctx.setSendZuulResponse(false); //拦截
+                ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());  //设置响应状态码403
+            }
+            return null;
+        }
+    }
+    1. RequestContext.getCurrentContext()：获取当前请求的上下文对象，只限Zuul中使用，不会带到微服务中;
+    2. 生命周期：一次请求，即从请求到达Zuul，到最终响应数据;
+3. 测试
+    http://127.0.0.1:8090/user/9  --&gt; 请求被拒绝，403
+    http://127.0.0.1:8090/user/9?access-token=123 --&gt; http://127.0.0.1:8081/user/9
+</code></pre><h3 id="负载均衡和服务熔断"><a href="#负载均衡和服务熔断" class="headerlink" title="负载均衡和服务熔断"></a>负载均衡和服务熔断</h3><pre><code>1. Zuul默认集成了Ribbon负载均衡和Hystrix熔断机制，但所有的超时策略都是默认值，比如熔断超时时间为1s，很容易触发;
+    hystrix:
+        command:
+            default:
+                execution:
+                    isolation:
+                        thread:
+                            timeoutInMilliseconds: 6000  #配置 6s 超时
+    ribbon:
+        ConnectTimeout: 1000  # Ribbon连接服务的超时时间，默认1000
+        ReadTimeout: 3000  # Ribbon读取数据的超时时间，默认1000
+        MaxAutoRetriesNextServer: 1
+        MaxAutoRetries: 0
+    1. MaxAutoRetriesNextServer：不同服务实例的重试次数，一个服务多个实例，在不同服务实例之间重试，默认为1
+    2. MaxAutoRetries：对当前服务实例的重试次数，默认为0，不重试
+2. 内部在计算时，Ribbon的超时总时间 不能大于 hystrix熔断的超时时间，否则Ribbon还没有超时，服务就已经熔断了！
+3. Ribbon超时总时间的计算规则：(ConnectTimeout+ReadTimeout)*(MaxAutoRetries+1)*(MaxAutoRetriesNextServer+1)
+4. 所以默认情况下，Ribbon超时总时间=(1000+1000)*(0+1)*(1+1)=4000ms
+</code></pre><h3 id="高可用性"><a href="#高可用性" class="headerlink" title="高可用性"></a>高可用性</h3><pre><code>1. Zuul也是一个服务，那么就可以启动多个Zuul服务，自动注册到Eureka，形成网关集群;
+2. 如果是服务内部访问，Zuul会自动负载均衡;
+3. 但是，网关更多地是外部访问，如PC、移动端，它们并不知道有这么多的网关地址，也就无法通过Eureka进行负载均衡;
+4. 那么就需要使用其他的服务网关，来对Zuul进行代理，比如Nginx
+    用户请求 --&gt; Nginx --&gt; Zuul-1、Zuul-2 ... --&gt; Service-1、Service-2 ...
+</code></pre><h2 id="更多组件"><a href="#更多组件" class="headerlink" title="更多组件"></a>更多组件</h2><pre><code>1. Eureka、Ribbon、Hystrix、Feign、Zuul 这些只是SpringCloud的一小部分，还有更多组件;
+2. spring-cloud-config：统一配置中心，让微服务自动从Git上拉取最新的配置，并缓存，不再手动更改配置文件;
+    1. 使用Git的Webhook钩子，还可以实现主动通知配置中心，告知配置发生了变化;
+    2. 收到通知后，配置中心会通过消息总线，去通知所有的微服务更新配置;
+3. spring-cloud-bus：消息总线，底层是消息队列，RabbitMQ或kafuka
+4. spring-cloud-stream：消息通信;
+5. spring-cloud-hystrix-dashboard：容错统计，形成图形化界面;
+6. spring-cloud-sleuth：链路追踪，结合Zipkin，便于追踪服务的错误;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/03/SpringCloud组件2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4115,373 +4466,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/26/模块化与私服/" itemprop="url">模块化与私服</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-26T00:00:00+08:00">
-                2016-03-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块;
-2. 模块之间的关系：
-    1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
-    2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
-    3. 如果想引用另一个Maven工程，则需要把工程打包发布到本地仓库中，再其坐标即可建立依赖关系;
-3. 父工程：New Project --&gt; 不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
-    1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
-    2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
-    3. 打包方式：pom
-        &lt;packaging&gt;pom&lt;/packaging&gt;
-    4. &lt;dependencyManagement&gt; 管理的依赖和插件不会传递给子工程，但能够统一管理它们的版本号
-        &lt;properties&gt;
-            &lt;mysql.version&gt;8.0.16&lt;/mysql.version&gt;
-        &lt;/properties&gt;
-        &lt;dependencyManagement&gt;
-            &lt;dependencies&gt;
-                &lt;dependency&gt;
-                    &lt;groupId&gt;mysql&lt;/groupId&gt;
-                    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-                    &lt;version&gt;${mysql.version}&lt;/version&gt;
-                &lt;/dependency&gt;
-            &lt;/dependencies&gt;
-        &lt;/dependencyManagement&gt;
-        &lt;dependencies&gt;
-            &lt;!-- 这些依赖会直接传递给子工程 --&gt;
-        &lt;/dependencies&gt;
-    5. 在子工程中引入依赖 mysql-connector-java 时，无需再指定版本节点&lt;version&gt;
-4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
-    1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
-    2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
-    3. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt;，列出拥有的子模块;
-    4. 依赖包的作用域(scope)默认是compile，父工程的依赖包传递给子工程的过程中，scope为test的依赖可能丢失;
-    5. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
-5. Dao模块：resources/spring/applicationContext-dao.xml，只配置Dao层相关
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xsi:schemaLocation=&quot;
-            http://www.springframework.org/schema/beans
-            https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
-
-        &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
-            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-            &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
-        &lt;/bean&gt;
-
-        &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
-            &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
-        &lt;/bean&gt;
-
-        &lt;context:property-placeholder location=&quot;classpath:db.properties&quot; /&gt;
-        &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
-            &lt;property name=&quot;driverClass&quot; value=&quot;${jdbc.driver}&quot; /&gt;
-            &lt;property name=&quot;jdbcUrl&quot; value=&quot;${jdbc.url}&quot; /&gt;
-            &lt;property name=&quot;user&quot; value=&quot;${jdbc.username}&quot; /&gt;
-            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
-        &lt;/bean&gt;
-    &lt;/beans&gt;
-6. Service模块
-    1. resources/spring/applicationContext-service.xml，只配置Service层相关
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
-        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xsi:schemaLocation=&quot;
-            http://www.springframework.org/schema/beans
-            https://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/context
-            https://www.springframework.org/schema/context/spring-context.xsd
-            http://www.springframework.org/schema/tx
-            https://www.springframework.org/schema/tx/spring-tx.xsd
-            http://www.springframework.org/schema/aop
-            https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
-
-        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
-        &lt;bean id=&quot;manager&quot; 
-                class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
-            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
-        &lt;/bean&gt;
-        &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
-            &lt;tx:attributes&gt;
-                &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
-                &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
-            &lt;/tx:attributes&gt;
-        &lt;/tx:advice&gt;
-        &lt;aop:config&gt;
-            &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
-        &lt;/aop:config&gt;
-    &lt;/beans&gt;
-    2. pom.xml：引入Dao模块的坐标
-        &lt;dependencies&gt;
-            &lt;dependency&gt;
-                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
-                &lt;artifactId&gt;ssmdao&lt;/artifactId&gt;
-                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-            &lt;/dependency&gt;
-        &lt;/dependencies&gt;
-7. Web模块
-    1. springmvc.xml、web.xml 都和未拆分前相同;
-    2. Spring的配置文件：resources/applicationContext.xml，把Dao和Service的部分合并到一起;
-        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-        &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-            xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
-            &lt;!-- 导入Dao部分和Service部分的Spring配置文件 --&gt;
-            &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot;/&gt;
-            &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot;/&gt;
-        &lt;/beans&gt;
-    3. pom.xml：引入Service模块的坐标
-        &lt;dependencies&gt;
-            &lt;dependency&gt;
-                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
-                &lt;artifactId&gt;ssmservice&lt;/artifactId&gt;
-                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-            &lt;/dependency&gt;
-        &lt;/dependencies&gt;
-    4. 删除 pom.xml 中默认生成的JDK版本相关的&lt;properties&gt;，使用父工程中配置的JDK版本;
-    5. 默认也生成了的&lt;build&gt;，也可以删除，父工程中已经配置了Tomcat7插件;
-</code></pre><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><pre><code>1. log4j.properties 放在 Web模块/resources 目录中，启动项目;
-2. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
-3. 配置本地的Tomcat，启动服务器，运行项目;
-4. 方式三：选择 Web 工程的 tomcat7:run
-    1. Maven项目在运行时会扫描 pom.xml，如果本地仓库没有引入的依赖，则从中央仓库下载，再找不到就报错;
-    2. Web工程中引入了Service工程的坐标，但Service工程是本地项目，并没有发布到本地仓库，所以运行失败;
-    3. 因此要把Service工程发布到本地仓库，但Service工程又引入了Dao工程的坐标，所以只能去发布父工程;
-    4. 在右侧的Maven面板上，双击父工程的Lifecycle -&gt; install，等待安装成功;
-    5. 启动Web工程的 tomcat7:run，运行项目;
-</code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
-2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
-3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
-    1. 安装、卸载、运行：nexus.bat install，nexus.bat uninstall，nexus.bat start
-    2. 查看启动后的服务：右击计算机 -&gt; 管理 -&gt; 服务和应用程序 -&gt; 服务，在列表中查找 nexus;
-4. nuxus的全局配置文件：conf/nexus.properties，默认使用的端口号是8081;
-5. 启动图形化界面时，确保8081端口未被占用：http://localhost:8081/nexus
-    1. 默认用户名和密码：admin，admin123
-    2. 左侧导航栏：点击Repositories --&gt; 浏览仓库，查看仓库信息、地址;
-    3. Add添加仓库，选择仓库类型：Hosted、Proxy、Virtual，还可以创建仓库组;
-6. 创建不同的仓库，管理不同的依赖包
-    1. 存放测试包的仓库Snapshots(hosted)，发布包的仓库Releases(hosted);
-    2. 第三方包的仓库3rd party(hosted)，中央仓库的代理仓库Central(proxy);
-    3. 创建仓库组，把已有的仓库按顺序添加到组中，在本地仓库在私服中查找依赖包时，就能按照仓库的顺序查找，
-    最后由代理仓库转到中央仓库中去查找;
-</code></pre><h3 id="发布私服"><a href="#发布私服" class="headerlink" title="发布私服"></a>发布私服</h3><pre><code>1. Maven的 settings.xml，配置私服仓库的信息
-    &lt;servers&gt;
-        &lt;server&gt;
-            &lt;id&gt;releases&lt;/id&gt;  ===&gt;指定私服仓库的ID
-            &lt;username&gt;admin&lt;/username&gt;  ===&gt;私服的用户名密码
-            &lt;password&gt;admin123&lt;/password&gt;
-        &lt;/server&gt;
-        &lt;server&gt;
-            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;指定私服仓库的ID
-            &lt;username&gt;admin&lt;/username&gt;
-            &lt;password&gt;admin123&lt;/password&gt;
-        &lt;/server&gt;
-    &lt;/servers&gt;
-2. 要发布哪个项目/模块，就配置它的 pom.xml
-    &lt;distributionManagement&gt;
-        &lt;!-- 配置发布的仓库ID和地址 --&gt;
-        &lt;repository&gt;  ===&gt;正式版的配置，明确发布到存放正式包的仓库
-            &lt;id&gt;releases&lt;/id&gt;  ===&gt;此ID必须在 settings.xml 中已经配置过了
-            &lt;url&gt;http://localhost:8081/nexus/content/repositories/releases/&lt;/url&gt;
-        &lt;/repository&gt;
-        &lt;snapshotRepository&gt;
-            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;测试版的配置，明确发布到存放测试包的仓库
-            &lt;url&gt;http://localhost:8081/nexus/content/repositories/snapshots/&lt;/url&gt;
-        &lt;/snapshotRepository&gt;
-    &lt;/distributionManagement&gt;
-    1. 执行Lifecycle --&gt; deploy
-    2. 执行前面的生命周期时，其后面的生命周期也会执行，所以 install 命令的执行，会把项目/模块安装到本地仓库;
-</code></pre><h3 id="从私服下载jar"><a href="#从私服下载jar" class="headerlink" title="从私服下载jar"></a>从私服下载jar</h3><pre><code>Maven的 settings.xml
-    &lt;profiles&gt;
-        &lt;profile&gt; 
-            &lt;id&gt;dev&lt;/id&gt;  ===&gt;profile的id
-            &lt;repositories&gt;
-                &lt;repository&gt;  ==&gt;仓库id，repositories可以配置多个仓库，保证id不重复
-                    &lt;id&gt;nexus&lt;/id&gt;  ==&gt;仓库地址，即nexus仓库组的地址
-                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;
-                    &lt;releases&gt;
-                        &lt;enabled&gt;true&lt;/enabled&gt; ==&gt;是否下载releases构件
-                    &lt;/releases&gt;
-                    &lt;snapshots&gt;
-                        &lt;enabled&gt;true&lt;/enabled&gt;  ==&gt;是否下载snapshots构件
-                    &lt;/snapshots&gt;
-                &lt;/repository&gt;
-            &lt;/repositories&gt;
-            &lt;pluginRepositories&gt;  ==&gt;插件仓库，Maven的运行依赖插件，也需要从私服下载插件
-                &lt;pluginRepository&gt; ==&gt;插件仓库的id不允许重复，否则后者会覆盖前者
-                    &lt;id&gt;public&lt;/id&gt;  ==&gt;配置为仓库组，仓库组的id
-                    &lt;name&gt;Public Repositories&lt;/name&gt;  ==&gt;仓库组的名字
-                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;  ==&gt;仓库组的地址
-                &lt;/pluginRepository&gt;
-            &lt;/pluginRepositories&gt;
-        &lt;/profile&gt;
-    &lt;/profiles&gt;
-    &lt;activeProfiles&gt;
-        &lt;activeProfile&gt;dev&lt;/activeProfile&gt;  ==&gt;激活id=dev的profile
-    &lt;/activeProfiles&gt;
-</code></pre><h3 id="按照第三方jar包"><a href="#按照第三方jar包" class="headerlink" title="按照第三方jar包"></a>按照第三方jar包</h3><pre><code>1. 把第三方jar包安装到本地仓库，如fastjson.jar
-    1. 查看fastjson.jar的坐标：groupId、artifactId、version;
-    2. 进入fastjson.jar所在的目录，执行命令:
-    mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
-    -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
-    3. 如果不在fastjson.jar的目录，则需要指定绝对路径： -Dfile=D:\download\fastjson-1.1.37.jar
-2. 把第三方jar包安装到私服
-    1. 在Maven的 settings.xml 中，添加存放第三方jar包的仓库信息
-        &lt;server&gt;
-            &lt;id&gt;thirdparty&lt;/id&gt;
-            &lt;username&gt;admin&lt;/username&gt;
-            &lt;password&gt;admin123&lt;/password&gt;
-        &lt;/server&gt;
-    2. 进入jar所在目录
-        mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
-        -Dfile=fastjson-1.1.37.jar -Dpackaging=jar  -DrepositoryId=thirdparty 
-        -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/
-        1. -Durl：私服的仓库地址;
-        2. -DrepositoryId：私服的仓库ID;
-    3. 如果不在jar包所在目录，-Dfile=jar包的绝对路径;
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -4527,7 +4516,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

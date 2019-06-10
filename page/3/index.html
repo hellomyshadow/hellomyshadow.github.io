@@ -2429,6 +2429,225 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/06/01/Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/06/01/Docker/" itemprop="url">Docker</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-01T00:00:00+08:00">
+                2016-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="虚拟化"><a href="#虚拟化" class="headerlink" title="虚拟化"></a>虚拟化</h2><pre><code>1. 虚拟化：计算机中的一种资源管理技术;
+    1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;
+    2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;
+    3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制.
+2. 一般所说的虚拟化资源包括计算能力和资料存储;
+3. 在实际生产环境中，虚拟化技术主要用来解决高性能的物理硬件产能过剩和老旧的硬件产能过低的重组重用，
+   透明化底层物理硬件，从而最大化地利用物理硬件，充分利用资源;
+4. 虚拟化技术的种类有很多：软件虚拟化、硬件虚拟化、内存虚拟化、网络虚拟化、桌面虚拟化、服务虚拟化、虚拟机...
+</code></pre><h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><pre><code>1. Docker是一个诞生于2013年初的开源项目，最初是dotCloud公司内部的一个业余项目，基于谷歌的Go语言实现;
+2. Docker项目后来加入了Linux基金会，遵从Apache2.0协议，在Github上维护;
+3. Docker项目的目标是实现轻量级的操作系统虚拟化解决方案，Docker的基础是Linux容器(LXC)等技术;
+4. Docker在LXC的基础上做了进一步封装，让用户操作Docker容器时就像操作一个快速轻量级的虚拟机一样简便;
+5. Docker的优点
+    1. 上手快：Docker依赖于写时复制模型，使修改应用程序非常迅速，Docker容器启动快，性能高，占用资源少，
+    同一台宿主机中可以运行更多的容器，尽可能的利用系统资源;
+    2. 职责的逻辑分类：开发者只需要关心容器中的应用程序，运维人员只需要关心如何管理容器，Docker的设计目的
+    就是加强开发环境和生产环境的一致性;
+    3. 快速高效的开发生命周期：缩短开发-测试-部署-上线的周期，让应用程序具备可移植性，易于构建、协作;
+    4. 鼓励使用面向服务的架构：Docker鼓励使用面向服务的体系结构和微服务架构，推荐单个容器只运行一个应用程序
+    或进程，从而形成一个分布式的应用程序模型，扩展和调试都变得简单，同时也提高了程序的内省性;
+7. 与传统的虚拟机相比，Docker启动速度更快，占用体积更小;
+</code></pre><p><img src="//hellomyshadow.github.io/2016/06/01/Docker/比较.jpg" alt="比较"></p>
+<h3 id="服务器与客户端"><a href="#服务器与客户端" class="headerlink" title="服务器与客户端"></a>服务器与客户端</h3><pre><code>1. Docker是C/S架构，Docker客户端只需要向服务端(守护进程)发送请求，由服务端完成所有工作并返回结果;
+2. Docker提供了一个命令行工具，以及一整套RESTful API;
+3. 可以在同一台宿主机上运行Docker守护进程和客户端，也可以从本地的Docker客户端连接到远程Docker守护进程;
+    Docker客户端 --&gt; Docker守护进程(Docker服务端) --&gt; Docker容器
+</code></pre><h3 id="Docker镜像与容器"><a href="#Docker镜像与容器" class="headerlink" title="Docker镜像与容器"></a>Docker镜像与容器</h3><pre><code>1. 镜像是构建Docker的基石，用户基于镜像来运行自己的容器，镜像也是Docker生命周期中的 构建 部分;
+2. 镜像是基于联合文件系统的一种层式结构，由一系列指令一步步构建处理;
+    1. 比如：添加一个文件 --&gt; 执行一个命令 --&gt; 打开一个窗口;
+    2. 也可以把镜像当作容器的源代码，它的体积很小，易于分享、存储和更新;
+3. Docker可以帮助构建和部署容器，用户只需把自己的应用程序/服务打包、放进容器即可;
+    1. 容器是基于镜像启动的，容器中可以运行一个或多个进程;
+    2. 简言之，镜像是Docker生命周期中的构建/打包阶段，容器是启动/执行阶段;
+    3. 容器基于镜像启动，一旦容器启动完成后，就可以登录到容器中安装自己需要的软件/服务;
+4. Docker容器：一个镜像格式，一系列标准操作，一个执行环境;
+    1. Docker容器借鉴了标准集装箱的概念，不同的是，集装箱运输货物，Docker运输软件;
+    2. 和集装箱一样，Docker不关心容器中装了什么，不管是Web服务器，还是数据库，亦或者是应用程序服务器;
+    3. 所有的容器都按照相同的方式将内容装载进去;
+    4. Docker也不关心容器要运往何方，可以在本地构建容器，上传到Registry，然后下载到一个物理/虚拟的服务器来测试;
+5. 像标准集装箱一样，Docker容器便于替换，可以叠加，易于分发，且尽量通用;
+</code></pre><h3 id="Registry"><a href="#Registry" class="headerlink" title="Registry"></a>Registry</h3><pre><code>1. Registry：注册中心，Docker用来保存用户构建的镜像;
+2. Registry分为公共和私有，Docker公司运营公共的Registry称为Docker Hub;
+3. 用户可以在Docker Hub上注册账号，分享并保存自己的镜像;
+4. Docker Hub在国外服务器上，下载镜像巨慢，可以构建自己的私有Registry;
+</code></pre><h2 id="Docker安装-CentOS"><a href="#Docker安装-CentOS" class="headerlink" title="Docker安装(CentOS)"></a>Docker安装(CentOS)</h2><pre><code>1. Docker是基于Ubuntu发布的，最先更新或打补丁的也是在Ubuntu系统中，所以官方建议安装在Ubuntu系统中;
+2. 在CentOS系统中安装时，CentOS版本要求为7.x
+    1. yum包更新到最新版：sudo yum update
+    2. 安装需要的软件包：yum-utils提供yum-config-manager功能，另外两个是devicemapper驱动依赖;
+    sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+    3. 设置yum源为阿里云
+    sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    4. 安装docker
+    sudo yum install docker-ce  ===&gt; -ce表示社区版，免费的
+    5. 查看docker版本
+    docker -v
+3. 设置ustc的镜像
+    1. ustc是老牌的Linux镜像服务提供者，ustc的docker镜像加速器非常快;
+    2. 而且，ustc docker mirror无需注册，是真正的公共服务;
+    3. 编辑 /etc/docker/daemon.json，加入国内镜像
+    {
+      &quot;registry-mirrors&quot;: [&quot;https://docker.mirrors.ustc.edu.cn&quot;]
+    }
+4. systemctl：系统服务管理器指令
+    1. 启动docker
+        systemctl start docker
+    2. 停止docker
+        systemctl stop docker
+    3. 重启docker
+        systemctl restart docker
+    4. 查看docker状态
+        systemctl status docker
+    5. 开机自启动
+        systemctl enable docker
+    6. 查看docker的概要信息
+        docker info
+    7. docker命令的帮助文档
+        docker --help
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3180,362 +3399,11 @@ Esc：退出编辑模式或末行模式；
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/05/04/SpringCloud组件3/" itemprop="url">SpringCloud组件3</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-04T00:00:00+08:00">
-                2016-05-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="网关之Zuul"><a href="#网关之Zuul" class="headerlink" title="网关之Zuul"></a>网关之Zuul</h2><pre><code>1. 网关的核心功能：过滤和路由
-2. Zuul：Netflix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用;
-3. Zuul的核心是一系列的过滤器，这些过滤器的功能：
-    1. 身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符的请求;
-    2. 审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图;
-    3. 动态路由：动态地将请求路由到不同的后端集群;
-    4. 压力测试：逐渐增加指向集群的流量，以了解性能;
-    5. 负载分配：为每一种负载类型分配对应容量，并弃用超过限定值的请求;
-    6. 静态响应处理：在边缘位置直接建立部分响应，从而避免转发到内部集群;
-    7. 多区域弹性：跨越AWS Region 进行数据路由，旨在实现ELB使用的多样化，以及让系统的边缘更贴近系统的使用者;
-4. SpringCloud对Zuul做了整合与增强，目前Zuul默认使用HTTP客户端Apache HttpClient，也可以使用RestClient，
-    okhttp3.OkHttpClient
-    1. 启用RestClient时，配置 ribbon.restclient.enabled=true
-    2. 启用okhttp3.OkHttpClient，则配置 ribbon.okhttp.enabled=true
-5. 网关是整个系统的入口，如果没有网关控制，外界可以访问系统中的任何服务，甚至可以把自己的服务注册为系统服务;
-6. Zuul加入后的架构
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/Zuul.jpg" alt="Zuul"></p>
-<pre><code>1. 不管是来自客户端的请求，还是服务内部的调用，一切对服务的请求都会经过Zuul，由网关来实现鉴权、动态路由等操作;
-2. Zuul就是服务的统一入口;
-</code></pre><h3 id="搭建网关"><a href="#搭建网关" class="headerlink" title="搭建网关"></a>搭建网关</h3><pre><code>1. 在父工程下创建一个子工程gateway
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. Zuul依赖中已经引入了 web、hystrix、ribbon 等依赖;
-3. @EnableZuulProxy：注解在启动类上，而不是注解 @EnableZuulServer，因为它的功能不完善，太单一;
-    @EnableZuulProxy
-    @SpringBootApplication
-    public class GatewayApplication {
-        ...
-    }
-4. application.yml
-    server:
-        port: 8090
-    spring:
-        application:
-            name: gateway
-    zuul:
-        routes:    # 配置路由规则
-            hehe:  # 自定义路由ID，值是key-value，作为一条路由规则
-                path: /user-service/**    # 匹配的路径，以/user-service开头的所有路径
-                url: http://127.0.0.1:8081   # 转发的服务地址，即转发给服务提供者
-    1. 自定义一条路由规则hehe，转发的服务地址为http://127.0.0.1:8081，匹配的资源路径为/user-service/**
-    2. /user-service 只作为匹配路径的前缀，** 才会被转发
-    http://127.0.0.1:8090/user-service/user/9  --&gt; http://127.0.0.1:8081/user/9
-5. 使用Eureka的客户端依赖，注册服务，拉取服务列表
-    1. 引入Eureka客户端的依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    2. 加入Eureka的配置，简化路由规则
-    eureka:
-        client:
-            service-url:
-                defaultZone: http://127.0.0.1:8761/eureka
-    zuul:
-        routes:
-            hehe:
-                path: /user-service/**
-                serviceId: user-service   # 指定要转发的服务ID
-    3. Zuul底层根据配置的服务ID，使用 EurekaClient 获取服务列表，通过Ribbon的负载均衡算法，获取一个服务实例;
-    http://127.0.0.1:8090/user-service/user/9  --&gt; http://user-service/user/9
-6. 既然路由ID可以自由命名，那么就简化配置方案
-    zuul:
-        routes:
-            user-service: /user-service/**  # key是转发的服务ID，value是匹配的路径
-    1. 事实上，Zuul默认就是这么配置的，它会拉取所有的服务列表，并把服务都默认配置成  服务ID: /服务ID/**
-    2. consumer-service服务没有配置，但依然可以访问：http://127.0.0.1:8090/consumer-service/consumer/9
-    3. 如果不需要更改映射路径，zuul.routes 可以不用配置；但即使手动更改了映射路径，/服务ID/** 的方式依然有效;
-    zuul:
-        routes:
-            user-service: /user/**   # 更改映射匹配的路径为 /user
-    4. http://127.0.0.1:8090/user/user/9  &lt;-等效-&gt;  http://127.0.0.1:8090/user-service/user/9
-7. 当然，有些服务不想让 Zuul 自动配置，则让Zuul忽略
-    zuul:
-        ignored-services:   # 忽略注册的服务ID列表
-            - consumer-service
-    http://127.0.0.1:8090/consumer-service/consumer/9 --&gt; 不可以再访问
-</code></pre><h3 id="前缀"><a href="#前缀" class="headerlink" title="前缀"></a>前缀</h3><pre><code>1. 匹配路径的前缀默认是不转发给微服务的，strip-prefix 属性可以控制是否转发，默认值是true
-    zuul:
-        routes:
-            user-service:
-                path: /user/**
-                serviceId: user-service
-                strip-prefix: false   # 转发前缀
-        ignored-services:
-            - consumer-service
-    1. 访问：http://127.0.0.1:8090/user/9  --&gt; http://127.0.0.1:8081/user/9
-    2. 测试发现，带有服务ID的前缀依然可以访问： http://127.0.0.1:8090/user-service/user/9
-2. 转发前缀的全局配置：zuul.strip-prefix
-    zuul:
-        routes:
-            user-service:
-                path: /user/**
-                serviceId: user-service
-        strip-prefix: false
-    1. 然而，测试发现这种方式是无效的！访问时仍然要加上前缀：http://127.0.0.1:8090/user/user/9
-    2. 如果路由规则是简化配置，zuul.strip-prefix属性是无效的;
-        zuul:
-            routes:
-                user-service: /user/**
-            strip-prefix: false  # 无效，不会转发前缀
-3. 全局添加前缀：所有请求的前面都必须加上的前缀，但不会被转发
-    zuul:
-        prefix: /api  #全局前缀
-        routes:
-            user-service: /user/**  # /user 是局部前缀
-    1. 访问：http://127.0.0.1:8090/api/user/user/9  --&gt; http://127.0.0.1:8081/user/9
-    2. 局部 strip-prefix=false 只对局部前缀有效，不会转发全局前缀;
-    zuul:
-        prefix: /api
-        routes:
-            user-service:
-                path: /user/**
-                serviceId: user-service
-                strip-prefix: false
-    http://127.0.0.1:8090/api/user/9  --&gt; http://127.0.0.1:8081/user/9
-</code></pre><h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><pre><code>1. Zuul作为网关的一个重要功能，就是实现请求的鉴权(权限控制)，通过Zuul提供的过滤器实现;
-2. ZuulFilter 是过滤器的顶级父类，最重要的方法有4个
-    public abstract ZuulFilter implements IZuulFilter {
-        abstract public String filterType();
-        abstract public int filterOrder(); 
-        boolean shouldFilter();  //来自IZuulFilter
-        Object run() throws ZuulException;  //来自IZuulFilter
-        ......
-    }
-3. filterType()：过滤器的类型，4种类型;
-        1. pre：请求在被路由之前执行，前置过滤器;
-        2. routing：在路由请求时执行;
-        3. post：在routing和error过滤器之后调用，后置过滤器;
-        4. error：处理请求时发生错误调用，异常处理器;
-4. filterOrder()：过滤器的执行顺序，数值越小，优先级越高;
-5. shouldFilter()：是否过滤;
-6. run()：过滤器执行的逻辑;
-</code></pre><h4 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h4><p><img src="//hellomyshadow.github.io/2016/05/04/SpringCloud组件3/过滤器.jpg" alt="Zuul"></p>
-<pre><code>1. 正常流程：请求到达 --&gt; pre Filter --&gt; routing Filter --&gt; 进行路由 --&gt; 请求到达真正的服务提供者 --&gt;
-    返回处理结果 --&gt; post Filter --&gt; 响应数据
-2. 异常流程：pre/routing Filter出现异常 --&gt; error Filter处理完毕后，将请求交给 post Filter --&gt; 响应数据
-    1. 如果 error Filter 出现异常，最终也会进入post Filter，然后响应数据;
-    2. 如果 post Filter 出现异常，会进入error Filter，但与 pre/routing Filter不同，请求不会再交给post Filter;
-3. 前置过滤器的应用：权限控制，限流(限制流量，限制某个用户在一段时间内只能访问一次，限制最多只能有1000个人访问等等)
-4. 后置处理器和异常处理器通常结合使用，做一些通用的异常处理;
-5. 服务调用时长统计：pre 和 post Filter 结合使用;
-</code></pre><h4 id="自定义过滤器"><a href="#自定义过滤器" class="headerlink" title="自定义过滤器"></a>自定义过滤器</h4><pre><code>1. Zuul内置了很多过滤器，也允许自定义过滤器，比如模拟登录的校验，如果请求中有 access-token 参数，则放行;
-2. 在网关模块gateway中，自定义过滤器
-    @Component  --&gt;加入Spring IoC容器
-    public class LoginFilter extends ZuulFilter {
-        public String filterType() {
-            return FilterConstants.PRE_TYPE;  // 前置过滤器
-        }
-        public int filterOrder() {
-            return FilterConstants.PRE_DECORATION_FILTER_ORDER -  1;  //等待请求参数处理完，再做拦截
-        }
-        public boolean shouldFilter() {
-            return true;
-        }
-        public Object run() throws ZuulException {
-            //1. 在内置的过滤器中，查看如何获取Request对象
-            RequestContext ctx = RequestContext.getCurrentContext();
-            HttpServletRequest request = ctx.getRequest();
-            //2. 获取请求参数
-            String token = request.getParameter(&quot;access-token&quot;);
-            //3. 判断是否存在 access-token 
-            if(StringUtils.isBlank(token)) {  ---&gt;引入Apache的工具类依赖：commons-lang3
-                //trim() 内部会多次截取字符串，效率非常差，所以StringUtils.isBlank()内部没用trim()
-                //不存在，则认为没有登录，拦截请求
-                ctx.setSendZuulResponse(false); //拦截
-                ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());  //设置响应状态码403
-            }
-            return null;
-        }
-    }
-    1. RequestContext.getCurrentContext()：获取当前请求的上下文对象，只限Zuul中使用，不会带到微服务中;
-    2. 生命周期：一次请求，即从请求到达Zuul，到最终响应数据;
-3. 测试
-    http://127.0.0.1:8090/user/9  --&gt; 请求被拒绝，403
-    http://127.0.0.1:8090/user/9?access-token=123 --&gt; http://127.0.0.1:8081/user/9
-</code></pre><h3 id="负载均衡和服务熔断"><a href="#负载均衡和服务熔断" class="headerlink" title="负载均衡和服务熔断"></a>负载均衡和服务熔断</h3><pre><code>1. Zuul默认集成了Ribbon负载均衡和Hystrix熔断机制，但所有的超时策略都是默认值，比如熔断超时时间为1s，很容易触发;
-    hystrix:
-        command:
-            default:
-                execution:
-                    isolation:
-                        thread:
-                            timeoutInMilliseconds: 6000  #配置 6s 超时
-    ribbon:
-        ConnectTimeout: 1000  # Ribbon连接服务的超时时间，默认1000
-        ReadTimeout: 3000  # Ribbon读取数据的超时时间，默认1000
-        MaxAutoRetriesNextServer: 1
-        MaxAutoRetries: 0
-    1. MaxAutoRetriesNextServer：不同服务实例的重试次数，一个服务多个实例，在不同服务实例之间重试，默认为1
-    2. MaxAutoRetries：对当前服务实例的重试次数，默认为0，不重试
-2. 内部在计算时，Ribbon的超时总时间 不能大于 hystrix熔断的超时时间，否则Ribbon还没有超时，服务就已经熔断了！
-3. Ribbon超时总时间的计算规则：(ConnectTimeout+ReadTimeout)*(MaxAutoRetries+1)*(MaxAutoRetriesNextServer+1)
-4. 所以默认情况下，Ribbon超时总时间=(1000+1000)*(0+1)*(1+1)=4000ms
-</code></pre><h3 id="高可用性"><a href="#高可用性" class="headerlink" title="高可用性"></a>高可用性</h3><pre><code>1. Zuul也是一个服务，那么就可以启动多个Zuul服务，自动注册到Eureka，形成网关集群;
-2. 如果是服务内部访问，Zuul会自动负载均衡;
-3. 但是，网关更多地是外部访问，如PC、移动端，它们并不知道有这么多的网关地址，也就无法通过Eureka进行负载均衡;
-4. 那么就需要使用其他的服务网关，来对Zuul进行代理，比如Nginx
-    用户请求 --&gt; Nginx --&gt; Zuul-1、Zuul-2 ... --&gt; Service-1、Service-2 ...
-</code></pre><h2 id="更多组件"><a href="#更多组件" class="headerlink" title="更多组件"></a>更多组件</h2><pre><code>1. Eureka、Ribbon、Hystrix、Feign、Zuul 这些只是SpringCloud的一小部分，还有更多组件;
-2. spring-cloud-config：统一配置中心，让微服务自动从Git上拉取最新的配置，并缓存，不再手动更改配置文件;
-    1. 使用Git的Webhook钩子，还可以实现主动通知配置中心，告知配置发生了变化;
-    2. 收到通知后，配置中心会通过消息总线，去通知所有的微服务更新配置;
-3. spring-cloud-bus：消息总线，底层是消息队列，RabbitMQ或kafuka
-4. spring-cloud-stream：消息通信;
-5. spring-cloud-hystrix-dashboard：容错统计，形成图形化界面;
-6. spring-cloud-sleuth：链路追踪，结合Zipkin，便于追踪服务的错误;
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -3581,7 +3449,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

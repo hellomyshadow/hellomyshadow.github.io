@@ -232,6 +232,368 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/26/模块化与私服/" itemprop="url">模块化与私服</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-26T00:00:00+08:00">
+                2016-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="拆分与聚合"><a href="#拆分与聚合" class="headerlink" title="拆分与聚合"></a>拆分与聚合</h2><pre><code>1. 拆分：把一个完整的Maven工程拆成独立的模块，如Dao模块、Service模块、Controller(Web)模块、Utils模块;
+2. 模块之间的关系：
+    1. 模块之间是平级的，需要建立依赖关系，才能引用对方的功能;
+    2. Service模块引用Dao模块的坐标，Controller模块引用Service模块的坐标;
+    3. 如果想引用另一个Maven工程，则需要把工程打包发布到本地仓库中，再其坐标即可建立依赖关系;
+3. 父工程：New Project --&gt; 不使用Maven骨架，只需保留一个pom.xml，其他的文件和目录都可以删除掉;
+    1. 把公共的jar包依赖放在父工程中，供所有的子工程使用;
+    2. 在 pom.xml 中配置JDK的编译版本，Tomcat7插件;
+    3. 打包方式：pom
+        &lt;packaging&gt;pom&lt;/packaging&gt;
+    4. &lt;dependencyManagement&gt; 管理的依赖和插件不会传递给子工程，但能够统一管理它们的版本号
+        &lt;properties&gt;
+            &lt;mysql.version&gt;8.0.16&lt;/mysql.version&gt;
+        &lt;/properties&gt;
+        &lt;dependencyManagement&gt;
+            &lt;dependencies&gt;
+                &lt;dependency&gt;
+                    &lt;groupId&gt;mysql&lt;/groupId&gt;
+                    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+                    &lt;version&gt;${mysql.version}&lt;/version&gt;
+                &lt;/dependency&gt;
+            &lt;/dependencies&gt;
+        &lt;/dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;!-- 这些依赖会直接传递给子工程 --&gt;
+        &lt;/dependencies&gt;
+    5. 在子工程中引入依赖 mysql-connector-java 时，无需再指定版本节点&lt;version&gt;
+4. 子工程：右击父工程 --&gt; New Module --&gt; 创建Maven项目
+    1. Dao模块和Service模块都不使用骨架，Web模块使用web骨架;
+    2. 子工程的 pom.xml 中，会有一个 &lt;parent&gt;，表示继承的父工程;
+    3. 父工程的 pom.xml 中，会多出一个 &lt;modules&gt;，列出拥有的子模块;
+    4. 依赖包的作用域(scope)默认是compile，父工程的依赖包传递给子工程的过程中，scope为test的依赖可能丢失;
+    5. 比如父工程引入了junit(test)，子工程可能无法使用，这种情况下，通常会在子工程中再加入junit依赖即可;
+5. Dao模块：resources/spring/applicationContext-dao.xml，只配置Dao层相关
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+        &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+            &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;cn.ssm.domain&quot; /&gt;
+        &lt;/bean&gt;
+
+        &lt;bean id=&quot;mapperScanner&quot; class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
+            &lt;property name=&quot;basePackage&quot; value=&quot;cn.ssm.dao&quot; /&gt;
+        &lt;/bean&gt;
+
+        &lt;context:property-placeholder location=&quot;classpath:db.properties&quot; /&gt;
+        &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+            &lt;property name=&quot;driverClass&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+            &lt;property name=&quot;jdbcUrl&quot; value=&quot;${jdbc.url}&quot; /&gt;
+            &lt;property name=&quot;user&quot; value=&quot;${jdbc.username}&quot; /&gt;
+            &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+        &lt;/bean&gt;
+    &lt;/beans&gt;
+6. Service模块
+    1. resources/spring/applicationContext-service.xml，只配置Service层相关
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans
+            https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            https://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx
+            https://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop
+            https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+
+        &lt;context:component-scan base-package=&quot;cn.ssm.service&quot; /&gt;
+        &lt;bean id=&quot;manager&quot; 
+                class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+            &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+        &lt;/bean&gt;
+        &lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;manager&quot;&gt;
+            &lt;tx:attributes&gt;
+                &lt;tx:method name=&quot;find*&quot; read-only=&quot;true&quot;/&gt;
+                &lt;tx:method name=&quot;*&quot; isolation=&quot;DEFAULT&quot; /&gt;
+            &lt;/tx:attributes&gt;
+        &lt;/tx:advice&gt;
+        &lt;aop:config&gt;
+            &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* cn.ssm.service.impl.*.*(..))&quot; /&gt;
+        &lt;/aop:config&gt;
+    &lt;/beans&gt;
+    2. pom.xml：引入Dao模块的坐标
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
+                &lt;artifactId&gt;ssmdao&lt;/artifactId&gt;
+                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+7. Web模块
+    1. springmvc.xml、web.xml 都和未拆分前相同;
+    2. Spring的配置文件：resources/applicationContext.xml，把Dao和Service的部分合并到一起;
+        &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+            xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+            &lt;!-- 导入Dao部分和Service部分的Spring配置文件 --&gt;
+            &lt;import resource=&quot;classpath:spring/applicationContext-dao.xml&quot;/&gt;
+            &lt;import resource=&quot;classpath:spring/applicationContext-service.xml&quot;/&gt;
+        &lt;/beans&gt;
+    3. pom.xml：引入Service模块的坐标
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;cn.ssm&lt;/groupId&gt;
+                &lt;artifactId&gt;ssmservice&lt;/artifactId&gt;
+                &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    4. 删除 pom.xml 中默认生成的JDK版本相关的&lt;properties&gt;，使用父工程中配置的JDK版本;
+    5. 默认也生成了的&lt;build&gt;，也可以删除，父工程中已经配置了Tomcat7插件;
+</code></pre><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><pre><code>1. log4j.properties 放在 Web模块/resources 目录中，启动项目;
+2. 方式一：打开右侧的Maven面板 --&gt; 展开父工程的Plugins --&gt; 双击 tomcat7:run 启动;
+3. 配置本地的Tomcat，启动服务器，运行项目;
+4. 方式三：选择 Web 工程的 tomcat7:run
+    1. Maven项目在运行时会扫描 pom.xml，如果本地仓库没有引入的依赖，则从中央仓库下载，再找不到就报错;
+    2. Web工程中引入了Service工程的坐标，但Service工程是本地项目，并没有发布到本地仓库，所以运行失败;
+    3. 因此要把Service工程发布到本地仓库，但Service工程又引入了Dao工程的坐标，所以只能去发布父工程;
+    4. 在右侧的Maven面板上，双击父工程的Lifecycle -&gt; install，等待安装成功;
+    5. 启动Web工程的 tomcat7:run，运行项目;
+</code></pre><h2 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h2><h3 id="搭建私服-windows"><a href="#搭建私服-windows" class="headerlink" title="搭建私服(windows)"></a>搭建私服(windows)</h3><pre><code>1. 使用专门的Maven仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus
+2. 选择Sonatype Nexus，下载开源版的Nexus压缩包，解压后有两个目录：应用程序目录，私服仓库目录(sonatype-work);
+3. 以管理员模式启动cmd窗口，进入应用程序目录，执行bin目录下的 nexus.bat 命令;
+    1. 安装、卸载、运行：nexus.bat install，nexus.bat uninstall，nexus.bat start
+    2. 查看启动后的服务：右击计算机 -&gt; 管理 -&gt; 服务和应用程序 -&gt; 服务，在列表中查找 nexus;
+4. nuxus的全局配置文件：conf/nexus.properties，默认使用的端口号是8081;
+5. 启动图形化界面时，确保8081端口未被占用：http://localhost:8081/nexus
+    1. 默认用户名和密码：admin，admin123
+    2. 左侧导航栏：点击Repositories --&gt; 浏览仓库，查看仓库信息、地址;
+    3. Add添加仓库，选择仓库类型：Hosted、Proxy、Virtual，还可以创建仓库组;
+6. 创建不同的仓库，管理不同的依赖包
+    1. 存放测试包的仓库Snapshots(hosted)，发布包的仓库Releases(hosted);
+    2. 第三方包的仓库3rd party(hosted)，中央仓库的代理仓库Central(proxy);
+    3. 创建仓库组，把已有的仓库按顺序添加到组中，在本地仓库在私服中查找依赖包时，就能按照仓库的顺序查找，
+    最后由代理仓库转到中央仓库中去查找;
+</code></pre><h3 id="发布私服"><a href="#发布私服" class="headerlink" title="发布私服"></a>发布私服</h3><pre><code>1. Maven的 settings.xml，配置私服仓库的信息
+    &lt;servers&gt;
+        &lt;server&gt;
+            &lt;id&gt;releases&lt;/id&gt;  ===&gt;指定私服仓库的ID
+            &lt;username&gt;admin&lt;/username&gt;  ===&gt;私服的用户名密码
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+        &lt;server&gt;
+            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;指定私服仓库的ID
+            &lt;username&gt;admin&lt;/username&gt;
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+    &lt;/servers&gt;
+2. 要发布哪个项目/模块，就配置它的 pom.xml
+    &lt;distributionManagement&gt;
+        &lt;!-- 配置发布的仓库ID和地址 --&gt;
+        &lt;repository&gt;  ===&gt;正式版的配置，明确发布到存放正式包的仓库
+            &lt;id&gt;releases&lt;/id&gt;  ===&gt;此ID必须在 settings.xml 中已经配置过了
+            &lt;url&gt;http://localhost:8081/nexus/content/repositories/releases/&lt;/url&gt;
+        &lt;/repository&gt;
+        &lt;snapshotRepository&gt;
+            &lt;id&gt;snapshots&lt;/id&gt;  ===&gt;测试版的配置，明确发布到存放测试包的仓库
+            &lt;url&gt;http://localhost:8081/nexus/content/repositories/snapshots/&lt;/url&gt;
+        &lt;/snapshotRepository&gt;
+    &lt;/distributionManagement&gt;
+    1. 执行Lifecycle --&gt; deploy
+    2. 执行前面的生命周期时，其后面的生命周期也会执行，所以 install 命令的执行，会把项目/模块安装到本地仓库;
+</code></pre><h3 id="从私服下载jar"><a href="#从私服下载jar" class="headerlink" title="从私服下载jar"></a>从私服下载jar</h3><pre><code>Maven的 settings.xml
+    &lt;profiles&gt;
+        &lt;profile&gt; 
+            &lt;id&gt;dev&lt;/id&gt;  ===&gt;profile的id
+            &lt;repositories&gt;
+                &lt;repository&gt;  ==&gt;仓库id，repositories可以配置多个仓库，保证id不重复
+                    &lt;id&gt;nexus&lt;/id&gt;  ==&gt;仓库地址，即nexus仓库组的地址
+                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;
+                    &lt;releases&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt; ==&gt;是否下载releases构件
+                    &lt;/releases&gt;
+                    &lt;snapshots&gt;
+                        &lt;enabled&gt;true&lt;/enabled&gt;  ==&gt;是否下载snapshots构件
+                    &lt;/snapshots&gt;
+                &lt;/repository&gt;
+            &lt;/repositories&gt;
+            &lt;pluginRepositories&gt;  ==&gt;插件仓库，Maven的运行依赖插件，也需要从私服下载插件
+                &lt;pluginRepository&gt; ==&gt;插件仓库的id不允许重复，否则后者会覆盖前者
+                    &lt;id&gt;public&lt;/id&gt;  ==&gt;配置为仓库组，仓库组的id
+                    &lt;name&gt;Public Repositories&lt;/name&gt;  ==&gt;仓库组的名字
+                    &lt;url&gt;http://localhost:8081/nexus/content/groups/public/&lt;/url&gt;  ==&gt;仓库组的地址
+                &lt;/pluginRepository&gt;
+            &lt;/pluginRepositories&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+    &lt;activeProfiles&gt;
+        &lt;activeProfile&gt;dev&lt;/activeProfile&gt;  ==&gt;激活id=dev的profile
+    &lt;/activeProfiles&gt;
+</code></pre><h3 id="按照第三方jar包"><a href="#按照第三方jar包" class="headerlink" title="按照第三方jar包"></a>按照第三方jar包</h3><pre><code>1. 把第三方jar包安装到本地仓库，如fastjson.jar
+    1. 查看fastjson.jar的坐标：groupId、artifactId、version;
+    2. 进入fastjson.jar所在的目录，执行命令:
+    mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
+    -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
+    3. 如果不在fastjson.jar的目录，则需要指定绝对路径： -Dfile=D:\download\fastjson-1.1.37.jar
+2. 把第三方jar包安装到私服
+    1. 在Maven的 settings.xml 中，添加存放第三方jar包的仓库信息
+        &lt;server&gt;
+            &lt;id&gt;thirdparty&lt;/id&gt;
+            &lt;username&gt;admin&lt;/username&gt;
+            &lt;password&gt;admin123&lt;/password&gt;
+        &lt;/server&gt;
+    2. 进入jar所在目录
+        mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 
+        -Dfile=fastjson-1.1.37.jar -Dpackaging=jar  -DrepositoryId=thirdparty 
+        -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/
+        1. -Durl：私服的仓库地址;
+        2. -DrepositoryId：私服的仓库ID;
+    3. 如果不在jar包所在目录，-Dfile=jar包的绝对路径;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/25/SSM整合/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4096,536 +4458,11 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/02/Mybatis进阶/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/02/Mybatis进阶/" itemprop="url">Mybatis进阶</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-02T00:00:00+08:00">
-                2016-03-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="事物"><a href="#事物" class="headerlink" title="事物"></a>事物</h2><pre><code>事物的四大特性：ACID
-1. A：原子性，要么全部被执行，要么全部不执行；
-2. C：一致性，事务的执行使数据库从一种正确状态转换成另外一种正确状态；
-3. I：隔离性，在事务正确提交之前，它可能的结果不应该显示给其他事务；
-4. D：持久性，事务正确提交之后，即使有了其他故障，其结果也永远保存在数据库中。
-</code></pre><h3 id="并发下的事务"><a href="#并发下的事务" class="headerlink" title="并发下的事务"></a>并发下的事务</h3><pre><code>1. 事务A和事务B操纵的是同一个资源，它们都有若干个子事务，在高并发的情况下，会出现各种问题；
-2. 主要有五种问题：第一类丢失更新、第二类丢失更新、脏读、不可重复读、幻读；
-3. 脏读：事务A读到了事务B还没有提交的数据；
-    1. 账户余额1000元，事务A开启事务，此时切换到事务B，事务B开启事务--&gt;取走100元
-    2. 此时又切换回事务A，因为事务B并没有提交，事务A读取的仍是1000元，这就是脏读
-4. 不可重复读：在同一个事务里读取了两次某个数据，结果不一致；
-    1. 事务A开启事务--&gt;查出账户余额为1000元
-    2. 此时切换到事务B，事务B开启事务--&gt;取走100元--&gt;提交，账户余额变为900元
-    3. 此时又切换回事务A，事务A再查一次的账户余额为900元
-    4. 那么对于事务A，在同一个事务内两次读取的数据不一致，这就是不可重复读。
-5. 幻读：在同一个事务里的操作中发现了未被操作的数据；
-    1. 事务A开启事务--&gt;修改所有学生当天签到状况为false
-    2. 此时切换到事务B，事务B开启事务--&gt;插入了一条学生数据
-    3. 此时又切换回事务A，事务A提交时发现了一条自己没有修改过的数据，这就是幻读。
-    4. 幻读出现的前提：并发的事务中有事务发生了插入、删除操作。
-6. 事务隔离级别就是为了解决这几种问题。
-</code></pre><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><pre><code>1. 事务隔离级别越高，在并发下产生的问题就越少，同时消耗的性能也越大，因此很多时候必须在并发性和性能之间做一个权衡;
-2. 设立事务隔离级别的目的：为了让不同的项目可以根据自己的并发情况，选择合适的事务隔离级别；
-   对于在事务隔离级别之外会产生的并发问题，在代码中做补偿；
-3. 事务隔离级别有4种，但是像Spring会提供5种；
-1. DEFAULT：默认隔离级别
-    1. Spring配置事务时，将 isolation 设置为 DEFAULT，则使用数据库的默认事务隔离级别；
-    2. 每种数据库支持的事务隔离级别是不一样的。
-2. READ_UNCOMMITTED：读未提交
-    1. 能够读取到没有被提交的数据，所以无法解决脏读、不可重复读、幻读，很少使用；
-3. READ_COMMITED：读已提交
-    1. 能够读到那些已经提交的数据，所以能防止脏读，但是无法限制不可重复读和幻读；
-    2. 此级别下，写数据只会锁住相应的行。
-4. REPEATABLE_READ：重复读取
-    1. 在数据读出来之后加锁，类似 select * from XXX for update，明确数据读取出来就是为了更新用的，
-    所以要加一把锁，防止别人修改它;
-    2. 读取了一条数据，这个事务不结束，其他事务就不可以修改这条记录，解决了脏读、不可重复读的问题，但无法解决幻读;
-5. SERLALIZABLE：串行化，加锁读，最高的事务隔离级别
-    1. 不管多少事务，必须执行完一个事务的所有子事务之后，才可以执行下一个事务，这样就解决了脏读、不可重复读和幻读;
-    2. 此级别下，读写数据都会锁住整张表。
-1. 虽然隔离级别越高，越能保证数据的完整性和一致性，但对并发性能的影响也越大；
-2. 一般情况下会设置为READ_COMMITED，此时避免了脏读，并发性也还不错，之后再通过其他手段解决不可重复读和幻读的问题;
-3. MySQL的事务隔离级别
-    1. 对于MySql，其默认事务级别是REPEATABLE_READ，虽然定义上无法解决幻读的问题，但MySql使用了一种
-    Next key-lock 的算法来实现REPEATABLE_READ，这种算法能够解决幻读问题；
-    2. Next key-lock算法：在进行查询时，不仅会锁住当前操作的记录，也会将查询所涉及到的范围锁住，
-    其他事务如果在此范围内进行数据操作，就会被阻塞，因而MySql在此级别下就已经具备了Serializable级别的事务隔离性;
-    3. 查看事务隔离级别
-        select @@tx_isolation;  --&gt;旧版MySQL
-        select @@transaction_isolation;  --&gt;旧版MySQL
-        show variables like &apos;transaction_isolation&apos;;
-    4. 开启一个事务：start transaction;
-    5. 回滚当前事务：rollback;
-    6. 提交当前事务：commit;
-4. MySQL设置当前会话的事务隔离级别：SET session TRANSACTION ISOLATION LEVEL 隔离级别
-    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
-    2. 对于 Mybatis getSqlSession()，只针对本次拿到的Session有效；
-    3. 对于CMD命令行，只在本次窗口有效。
-5. MySQL设置全局事务隔离级别：SET global TRANSACTION ISOLATION LEVEL 隔离级别
-    1. 隔离级别：Read uncommitted、Read committed、Repeatable read、Serializable
-    2. 修改了全局的事务隔离级别，那么对此后所有的会话都有效，当前已经存在的会话则不受影响.
-</code></pre><h2 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h2><pre><code>1. 表与表之间的关系：一对一、一对多、多对多
-2. 新创建一张表account，外键字段uid 关联user表的主键id
-3. 创建表account的实体类
-    public class Account implements Serializable {
-        private int id;  //主键
-        private int uid;  //外键，关联user表的主键id
-        private double money;
-        // getter、setter
-    }
-4. 同理，新建Dao接口：com.test.dao.IAccountDao
-    public interface IAccountDao {
-        List&lt;Account&gt; findAll();
-    }
-5. 在主配置文件 SqlMapConfig.xml 配置 &lt;typeAliases&gt; 和 &lt;mappers&gt;
-    &lt;typeAliases&gt;
-        &lt;package name=&quot;com.test.domain&quot; /&gt;
-    &lt;/typeAliases&gt;
-    ......
-    &lt;mappers&gt;
-        &lt;package name=&quot;com.test.dao&quot; /&gt;
-    &lt;/mappers&gt;
-6. 创建 resources/com/test/dao/IAccountDao.xml
-    &lt;mapper namespace=&quot;com.test.dao.IAccountDao&quot;&gt;
-        &lt;select id=&quot;findAll&quot; resultType=&quot;com.test.domain.Account&quot;&gt;
-            select * from account
-        &lt;/select&gt;
-    &lt;/mapper&gt;
-</code></pre><h3 id="一对一查询"><a href="#一对一查询" class="headerlink" title="一对一查询"></a>一对一查询</h3><pre><code>1. account表--&gt;user表：一对一的关系
-2. 查询account的所有字段，只查询user表的username字段
-    1. 新增一个实体类AccountUser，继承自Account
-        public class AccountUser extends Account {
-            private String username;  //user表的字段
-            //getter、setter
-        }
-    2. 在 IAccountDao 接口中新增方法：List&lt;AccountUser&gt; findAccount();
-    3. 在 IAccountDao.xml 中配置SQL语句
-        &lt;select id=&quot;findAccount&quot; resultType=&quot;accountuser&quot;&gt;
-            select u.username, a.* from account a, user u where u.id=a.uid
-        &lt;/select&gt;
-3. 但是，这并不是常用的方式，而是将 从表(user) 的实体类封装到 主表(account) 的实体类中
-    public class Account implements Serializable {
-        private User user;  //从表user的实体类属性
-        ......
-    }
-4. 在 IAccountDao.xml 使用 &lt;resultMap&gt; 配置一对一的关系映射
-    &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
-        &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
-        &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
-        &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
-        &lt;!-- 一对一的映射关系，配置封装User的属性 --&gt;
-        &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot;&gt;
-            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
-            &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
-        &lt;/association&gt;
-    &lt;/resultMap&gt;
-    &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
-        &lt;!-- 查询出两张表的所有字段，并对account表的id属性重命名为aid--&gt;
-        select u.*, a.id as aid, a.uid, a.money from account a, user u 
-         where u.id=a.uid
-        同
-        select u.*, a.id as aid, a.uid, a.money from account a 
-         left join user u on u.id=a.uid
-    &lt;/select&gt;
-    1. &lt;resultMap&gt; 上的 type属性 使用的是实体类的别名；
-    2. 如果查询结果中包含两张表的同名字段，必须重命名其中一个字段，如account表的主键字段(id--&gt;aid)，否则结果错误;
-    3. SQL语句上重命名了account表的主键字段，所以对应&lt;id&gt;上的column属性也为aid.
-5. &lt;association&gt;标签用于配置一对一的映射关系
-    1. 属性column：主表account的外键字段;
-    2. 属性property：实体类Account 中封装从表实体类User的对象属性user;
-    3. 属性javaType：声明从表实体类User的全类名，也可以使用实体类的别名;
-    4. 标签内配置的是从表(user)字段与实体类(User)属性的映射关系.
-6. 连接查询与子查询
-    1. 表的连接查询都可以替换为子查询，但不是所有的子查询都可以替换为表连接查询；
-    2. 数据库对连接查询做了优化，而子查询是多次查询，效率较低，但胜在方便灵活。
-</code></pre><h3 id="一对多查询"><a href="#一对多查询" class="headerlink" title="一对多查询"></a>一对多查询</h3><pre><code>1. user表--&gt;account表：一对多的关系
-2. 在实体类User 中增加实体类Account 的集合
-    public class User implements Serializable {
-        private List&lt;Account&gt; accounts;  //从表user的实体类集合属性
-        ......
-    }
-3. 在 IUserDao.xml 中配置 &lt;resultMap&gt;
-    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
-        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
-        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
-        &lt;!-- 配置User对象中的实体类集合 --&gt;
-        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot;&gt;
-            &lt;id property=&quot;id&quot; column=&quot;aid&quot; /&gt;
-            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
-            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
-        &lt;/collection&gt;
-    &lt;/resultMap&gt;
-    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
-        select u.*, a.id as aid, a.uid, a.money from user u 
-         left join account a on u.id=a.uid
-    &lt;/select&gt;
-4. &lt;collection&gt;标签用于配置一对多的关系映射
-    1. 属性ofType：从表account的实体类，也可以使用别名；
-    2. 属性property：实体类User 中封装从表实体类Account的集合属性accounts;
-    3. 同理，涉及到两张表的同名字段，要在SQL语句上对字段重命名(id--&gt;aid)
-</code></pre><h3 id="多对多查询"><a href="#多对多查询" class="headerlink" title="多对多查询"></a>多对多查询</h3><pre><code>1. 对于存在多对多关系的两张表，需要引入中间表(也叫做连接表)
-    1. 中间表包含两个实体表的主键，作为外键，建立两张表的联系；
-    2. 中间表的主键，可以使用两个外键作为联合主键，不必新增一个专门的主键字段；
-    3. 中间表也可以有普通字段，此时为了逻辑清晰，则增加一个主键字段。
-2. 角色表role与用户表user具有多对多的关系，同时新建一张中间表user_role
-    create table user_role(
-        uid int,
-        rid int,
-        foreign key(uid) references user(id),
-        foreign key(rid) references role(id),
-        primary key(uid,rid));  -------------&gt;两个外键作为联合主键
-3. 用户表user和角色表role的实体类中，包含对方的对象集合
-    public class User implements Serializable {
-        private int id;
-        private String username;
-        private List&lt;Role&gt; roles;
-        //getter、setter
-    }
-
-    public class Role implements Serializable {
-        private int id;
-        private String rolename;
-        private List&lt;User&gt; users;
-        //getter、setter
-    }
-4. 查询角色表role时，关联对应的用户表user
-    1. 角色表的Dao接口：IRoleDao
-        public interface IRoleDao {
-            List&lt;Role&gt; findAll();
-        }
-    2. 角色表的映射配置文件 IRoleDao.xml
-        &lt;resultMap id=&quot;roleUserMap&quot; type=&quot;role&quot;&gt;
-            &lt;id property=&quot;id&quot; column=&quot;rid&quot; /&gt;  ---&gt;SQL语句上重命名了同名字段
-            &lt;result property=&quot;rolename&quot; column=&quot;role_name&quot; /&gt;
-            &lt;!-- 配置Role对象中的实体类集合 --&gt;
-            &lt;collection property=&quot;users&quot; ofType=&quot;user&quot;&gt;
-                &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
-                &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
-            &lt;/collection&gt;
-        &lt;/resultMap&gt;
-        &lt;select id=&quot;findAll&quot; resultMap=&quot;roleUserMap&quot;&gt;
-            select u.*, r.id as rid, r.role_name from role r 
-             left outer join user_role ur on r.id=ur.rid 
-             left outer join user u on u.id=ur.uid
-        &lt;/select&gt;
-5. 查询用户表时，关联对应的角色表数据，IuserDao接口、IUserDao.xml 中的配置同理.
-</code></pre><h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><pre><code>1. JNDI：Java Naming and Directory Interface，SUN公司提供的一套标准的命名系统接口；
-2. JNDI也属于JavaEE技术，目的是模仿Windows系统中的注册表，在服务器中注册数据源；
-3. 注册表其实是Map结构，key存放的是路径+名称
-4. Tomcat服务器启动时，也准备了一个这样的Map结构，Key是字符串(路径+名称)，Value是Object
-    1. 路径的directory是固定的，name是可以自定义的；
-    2. value中存放的内容通过配置文件的方式指定。
-</code></pre><h3 id="JavaWeb项目与JNDI"><a href="#JavaWeb项目与JNDI" class="headerlink" title="JavaWeb项目与JNDI"></a>JavaWeb项目与JNDI</h3><pre><code>1. 在JavaWeb项目中使用JNDI，必须在 webapp 目录下创建 META-INF 目录
-    1. 在 META-INF 目录下创建配置文件context.xml
-        &lt;Context&gt;
-            &lt;Resource
-                name=&quot;jdbc/test_ibatis&quot; type=&quot;javax.sql.DataSource&quot; 
-                auth=&quot;Container&quot; 
-                maxActive=&quot;20&quot;
-                maxWait=&quot;10000&quot;
-                maxIdle=&quot;5&quot;
-                username=&quot;root&quot;
-                password=&quot;123456&quot;
-                driverClassName=&quot;com.mysql.jdbc.Driver&quot;
-                url=&quot;jdbc:mysql://localhost:3306/db_mybatis&quot; /&gt;
-        &lt;/Context&gt;
-    2. name：Map结构中key路径的名称部分;
-    3. type：value中存储的对象;
-    4. auth：指定提供者，Container表示容器，此时指Tomcat;
-    5. maxActive：最大活动连接;
-    6. maxWait：最大等待时长;
-    7. maxIdle：最大空闲数;
-    8. 属性username、password、driverClassName、url：数据库的连接信息.
-2. 主配置文件 SqlMapConfig.xml
-    &lt;dataSource type=&quot;JNDI&quot;&gt;
-        &lt;property name=&quot;data_source&quot; value=&quot;java:comp/env/jdbc/test_ibatis&quot; /&gt;
-    &lt;/dataSource&gt;
-    1. java:comp/env/jdbc 就是key路径中固定的directory部分;
-    2. context.xml中已经包含了数据库的连接信息，不需要再额外配置。
-3. 使用Mybatis操作数据库时，必须经过Tomcat，所以只能在Servlet/JSP中使用，测试模块中不能使用.
-</code></pre><h2 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h2><pre><code>1. 延迟加载：在真正使用数据时才发起查询，不用的时候就不查询，这就是按需加载，亦或懒加载；
-    1. 一对多，多对多：通常采用延迟加载；
-    2. 多对一，一对一：通常采用默认的立即加载。
-2. 一对一的延迟加载：表account--&gt;表user
-    1. 在主配置文件 SqlMapConfig.xml 中开启延迟加载
-    &lt;configuration&gt;
-        &lt;settings&gt;
-            &lt;!-- 延迟加载的全局开关 --&gt;
-            &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;
-            &lt;!-- 大于Mybatis3.4.1的默认值为false，表示按需加载每个属性 --&gt;
-            &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
-            &lt;!-- 开启驼峰扫描 --&gt;
-            &lt;setting name=&quot;mapUnderscoreToCamelCase&quot; value=&quot;true&quot; /&gt;
-        &lt;/settings&gt;
-    &lt;/configuration&gt;
-    2. 开启驼峰扫描之后，可以自动将SQL语句中带下划线的字段，转换为驼峰标志，再去匹配实体类中的属性;
-        1. 比如字段user_type，在Java实体类中的属性通常为驼峰式：userType
-        2. 如果不开启驼峰扫描，在SQL语句中需要使用 AS 实现映射匹配;
-        select user_type as userType from user
-        3. 但开启了Mybatis的驼峰匹配之后，就可以自动匹配：select user_type from user
-    3. IUserDao接口 与 IUserDao.xml
-        User findById(int id);  //根据主键 id 查询user表
-        &lt;select id=&quot;findById&quot; parameterType=&quot;int&quot; resultType=&quot;user&quot;&gt;
-            select * from user where id=#{uid}
-        &lt;/select&gt;
-    4. IAccountDao.xml：配置 &lt;association&gt; 上的 select属性
-        &lt;resultMap id=&quot;accountUserMap&quot; type=&quot;account&quot;&gt;
-            &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
-            &lt;result property=&quot;uid&quot; column=&quot;uid&quot; /&gt;
-            &lt;result property=&quot;money&quot; column=&quot;money&quot; /&gt;
-            &lt;association property=&quot;user&quot; column=&quot;uid&quot; javaType=&quot;user&quot; 
-                    select=&quot;com.test.dao.IUserDao.findById&quot;&gt;&lt;/association&gt;
-        &lt;/resultMap&gt;
-        &lt;select id=&quot;findAll&quot; resultMap=&quot;accountUserMap&quot;&gt;
-            select * from account  ---&gt;不能再使用连接查询，否则延迟加载是无效的
-        &lt;/select&gt;
-    5. IUserDao.findById() 接收参数是&lt;association&gt;上的column属性，所以不能省略此属性。
-3. 一对多的延迟加载：表user--&gt;表account
-    1. IAccountDao接口 与 IAccountDao.xml
-        //根据外键 uid 去查询account表
-        List&lt;Account&gt; findByUid(int uid);
-        &lt;select id=&quot;findByUid&quot; parameterType=&quot;int&quot; resultType=&quot;account&quot;&gt;
-            select * from account where uid=#{uid}
-        &lt;/select&gt;
-    2. IUserDao.xml：配置 &lt;collection&gt; 上的select属性
-    &lt;resultMap id=&quot;userAccountMap&quot; type=&quot;user&quot;&gt;
-        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
-        &lt;result property=&quot;username&quot; column=&quot;username&quot; /&gt;
-        &lt;collection property=&quot;accounts&quot; ofType=&quot;account&quot; 
-            select=&quot;com.test.dao.IAccountDao.findByUid&quot; column=&quot;id&quot;&gt;&lt;/collection&gt;
-    &lt;/resultMap&gt;
-    &lt;select id=&quot;findAll&quot; resultMap=&quot;userAccountMap&quot;&gt;
-        select * from user  ---&gt;不能再使用连接查询
-    &lt;/select&gt;
-</code></pre><h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><pre><code>1. 缓存就是存在于内存中的数据，减少与数据库的交互次数，提高执行效率；
-2. 适用于缓存的数据：经常查询的，且不经常改变的，数据的正确与否对最终结果影响不大的；
-3. 一级缓存：SqlSession对象的缓存，无需特殊配置
-    1. 每个SqlSession对象会提供一块独有的Map结构的区域，缓存查询的结果；
-    User u1 = dao.findById(2);  User u2 = dao.findById(2); //连续两次查询同一条数据
-    u1==u2;  --&gt; true
-    2. 手动清空一级缓存：session.clearCache();
-    3. 为了保证数据的一致性，当发生数据的插入/更新/删除，或者调用SqlSession的commit()、close()等方法时，
-    会立即清空当前SqlSession的一级缓存，让后续的SQL重新查询数据库。
-4. 二级缓存：SqlSessionFactory对象的缓存
-    1. 由同一个SqlSessionFactory创建的所有SqlSession对象，共享二级缓存；
-    2. 在主配置文件 SqlMapConfig.xml 中开启全局缓存，默认就是开启的
-        &lt;settings&gt;
-            &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot; /&gt;
-        &lt;/settings&gt;
-    3. 在映射配置文件 IUserDao.xml 中开启user的二级缓存
-        &lt;cache /&gt;
-        &lt;select id=&quot;findById&quot; resultType=&quot;user&quot; useCache=&quot;true&quot;&gt;
-            select * from user where id=#{uid}
-        &lt;/select&gt;
-5. 二级缓存中存储的是散装数据，使用缓存数据时，这些数据会封装成一个新的User对象，所以比较两次查询结果时，返回false.
-</code></pre><h2 id="注解开发"><a href="#注解开发" class="headerlink" title="注解开发"></a>注解开发</h2><pre><code>1. Mybatis的注解开发：针对的是Dao的映射配置文件，目的是省略映射配置文件
-2. CRUD的对应注解：@Insert、@Select、@Update、@Delete，在Dao接口的方法上使用
-3. 使用注解时，如果resources目录下还存在映射配置文件，不管是否使用了此配置文件，都会报错；
-4. 单表的CRUD：IUserDao接口
-    1. 查询：@Select
-        @Select(&quot;select * from user&quot;)
-        @Results(id=&quot;accountMap&quot;, value={
-            @Result(column=&quot;create_time&quot;, property=&quot;createTime&quot;)  --&gt;数据库字段与POJO对象属性的映射关系
-        })
-        List&lt;User&gt; findAll();
-
-        @Select(&quot;select * from user where name like #{username}&quot;)  或
-        @Select(&quot;select * from user where name like &apos;%${value}%&apos;&quot;)
-        List&lt;User&gt; findByName(String username);
-
-        @Select(&quot;select count(id) from user&quot;)
-        int findTotal();
-    2. 插入：@Insert
-        @Insert(&quot;insert into user(name, age) values(#{username}, #{age})&quot;)
-        @Options(useGeneratedKeys=true, keyProperty=&quot;id&quot;, keyColumn=&quot;id&quot;)  --&gt;属性与字段的映射
-        void saveUser(User u);   ---&gt; useGeneratedKeys=true 表示自增长的主键
-    3. 更新：@Update
-        @Update(&quot;update user set name=#{username}, age=#{age} where id=#{id}&quot;)
-        void updateUser(User u);
-    4. 删除：@Delete
-        @Delete(&quot;delete from user where id=#{id}&quot;)
-        void deleteUser(int id);
-5. 实体类的属性名与表字段名不匹配：id--&gt;uId，name--&gt;username
-    @Select(&quot;select * from user&quot;)
-    @Results(id=&quot;userMap&quot;, value={
-        @Result(id=true, column=&quot;id&quot;, property=&quot;uId&quot;),
-        @Result(column=&quot;name&quot;, property=&quot;username&quot;)
-    })
-    List&lt;User&gt; findAll();
-
-    @Select(&quot;select * from user where id=#{id}&quot;)
-    @ResultMap(value={&quot;userMap&quot;})  --&gt;复用id命名的@Results，支持多个
-    User findById(int id);
-</code></pre><h3 id="多表的CRUD"><a href="#多表的CRUD" class="headerlink" title="多表的CRUD"></a>多表的CRUD</h3><pre><code>1. 一对一：表account--&gt;表user
-    1. IAccountDao接口
-    @Select(&quot;select * from account&quot;)
-    @Results(id=&quot;accountMap&quot;, value={
-        @Result(id=true, column=&quot;id&quot;, property=&quot;id&quot;),
-        @Result(column=&quot;uid&quot;, property=&quot;uid&quot;),
-        @Result(column=&quot;money&quot;, property=&quot;money&quot;),
-        @Result(column=&quot;uid&quot;, property=&quot;user&quot;, one=@One(
-            select=&quot;com.test.dao.IUserDao.findById&quot;, fetchType=FetchType.EAGER
-        ))
-    })
-    List&lt;Account&gt; findAll();
-    2. @One 用于一对一的关联查询，调用 IUserDao.findById()，接收参数为uid;
-    3. select属性用于指定要调用的全限定方法名，fetchType属性用于配置加载的时机;
-    4. FetchType有3个属性：LAZY(懒加载)、EAGER(立即加载)、DEFAULT.
-2. 一对多：表user--&gt;表account，
-    @Select(&quot;select * from user&quot;)
-    @Results(id=&quot;userMap&quot;, value={
-        @Result(id=true, column=&quot;id&quot;, property=&quot;uId&quot;),
-        @Result(column=&quot;name&quot;, property=&quot;username&quot;),
-        @Result(column=&quot;id&quot;, property=&quot;accounts&quot;, many=@Many(
-            select=&quot;com.test.dao.IAccountDao.findByUid&quot;, fetchType=FetchType.LAZY
-        ))
-    })
-    List&lt;User&gt; findAll();
-3. 配置二级缓存
-    1. 在主配置文件 SqlMapConfig.xml 中开启缓存;
-    2. 在Dao接口上使用注解@CacheNamespace
-    @CacheNamespace(blocking = true)
-    public interface IUserDao { ... }
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -4671,7 +4508,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
