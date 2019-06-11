@@ -88,7 +88,7 @@
 <meta property="og:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/06/01/Docker/比较.jpg">
-<meta property="og:updated_time" content="2019-06-10T14:21:05.080Z">
+<meta property="og:updated_time" content="2019-06-11T15:40:05.666Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker">
 <meta name="twitter:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
@@ -351,19 +351,20 @@
 3. 可以在同一台宿主机上运行Docker守护进程和客户端，也可以从本地的Docker客户端连接到远程Docker守护进程;
     Docker客户端 --&gt; Docker守护进程(Docker服务端) --&gt; Docker容器
 </code></pre><h3 id="Docker镜像与容器"><a href="#Docker镜像与容器" class="headerlink" title="Docker镜像与容器"></a>Docker镜像与容器</h3><pre><code>1. 镜像是构建Docker的基石，用户基于镜像来运行自己的容器，镜像也是Docker生命周期中的 构建 部分;
-2. 镜像是基于联合文件系统的一种层式结构，由一系列指令一步步构建处理;
+2. 镜像和容器的关系类似于类和对象，一个镜像可以创建多个容器;
+3. 镜像是基于联合文件系统的一种层式结构，由一系列指令一步步构建处理;
     1. 比如：添加一个文件 --&gt; 执行一个命令 --&gt; 打开一个窗口;
     2. 也可以把镜像当作容器的源代码，它的体积很小，易于分享、存储和更新;
-3. Docker可以帮助构建和部署容器，用户只需把自己的应用程序/服务打包、放进容器即可;
+4. Docker可以帮助构建和部署容器，用户只需把自己的应用程序/服务打包、放进容器即可;
     1. 容器是基于镜像启动的，容器中可以运行一个或多个进程;
     2. 简言之，镜像是Docker生命周期中的构建/打包阶段，容器是启动/执行阶段;
     3. 容器基于镜像启动，一旦容器启动完成后，就可以登录到容器中安装自己需要的软件/服务;
-4. Docker容器：一个镜像格式，一系列标准操作，一个执行环境;
+5. Docker容器：一个镜像格式，一系列标准操作，一个执行环境;
     1. Docker容器借鉴了标准集装箱的概念，不同的是，集装箱运输货物，Docker运输软件;
     2. 和集装箱一样，Docker不关心容器中装了什么，不管是Web服务器，还是数据库，亦或者是应用程序服务器;
     3. 所有的容器都按照相同的方式将内容装载进去;
     4. Docker也不关心容器要运往何方，可以在本地构建容器，上传到Registry，然后下载到一个物理/虚拟的服务器来测试;
-5. 像标准集装箱一样，Docker容器便于替换，可以叠加，易于分发，且尽量通用;
+6. 像标准集装箱一样，Docker容器便于替换，可以叠加，易于分发，且尽量通用;
 </code></pre><h3 id="Registry"><a href="#Registry" class="headerlink" title="Registry"></a>Registry</h3><pre><code>1. Registry：注册中心，Docker用来保存用户构建的镜像;
 2. Registry分为公共和私有，Docker公司运营公共的Registry称为Docker Hub;
 3. 用户可以在Docker Hub上注册账号，分享并保存自己的镜像;
@@ -401,6 +402,159 @@
         docker info
     7. docker命令的帮助文档
         docker --help
+</code></pre><h2 id="镜像相关命令"><a href="#镜像相关命令" class="headerlink" title="镜像相关命令"></a>镜像相关命令</h2><pre><code>1. 查看镜像：docker images，查看本地已经存在的镜像;
+    1. REPOSITORY(镜像名称)、TAG(镜像标签)、IMAGE ID(镜像id)、CREATED(镜像创建日期)、SIZE(镜像大小)
+    2. 镜像都是存储在Docker宿主机的 /var/lib/docker 目录下;
+2. 搜索镜像：docker search 镜像名称，从网络中查找需要的镜像;
+    1. NAME(镜像名称)、DESCRIPTION(镜像描述)、STARS(用户评价)、OFFICIAL(是否官方)
+    2. AUTOMATED(自动构建)，该镜像是否由Docker Hub自动构建流程创建的;
+3. 拉取镜像：docker pull 镜像名称，从中央仓库中下载镜像到本地;
+    1. 比如，下载CentOS7镜像：docker pull centos:7
+    2. centos:7 表示在拉取centOS镜像时,指定其TAG为7，也就是版本，如果不指定TAG，默认是最新的版本latest
+4. 删除镜像
+    1. 按照镜像ID删除：docker rmi 镜像ID
+    2. 删除所有镜像：docker rmi `docker images -q`
+</code></pre><h2 id="容器相关命令"><a href="#容器相关命令" class="headerlink" title="容器相关命令"></a>容器相关命令</h2><pre><code>1. 查看容器
+    1. 所有容器：docker ps -a
+    2. 正在运行的容器：docker ps
+    3. 最后一次运行的容器：docker ps -l
+    4. 停止的容器：docker ps -f status=exited
+2. 创建容器：docker run
+    1. -i：表示运行容器;
+    2. -t：表示容器启动后进入其命令行，-i 和 -t 同时使用时，容器创建就会登录进去，即分配一个伪终端;
+    3. --name：为创建的容器命名，容器名称必须是唯一的，命名时不能重复;
+    4. -v：表示目录映射关系，前者是宿主机目录，后者是映射到宿主机上的目录;
+    5. 可以使用多个 -v 映射不同目录/文件，最好只做目录映射，在宿主机上做修改，然后共享到容器上;
+    6. -d：创建一个运行在后台的守护式容器，这样创建容器后不会自动登录;
+    7. -p：表示端口映射，前者是宿主机端口，后者是容器内的映射端口，可以使用多个 -p 做不同的端口映射;
+3. 交互式创建容器
+    docker run -it --name=容器名称 镜像名称:标签 /bin/bash
+    1. 通过指定的镜像创建容器，镜像名称可能重复，所以要指定其标签;
+    2. /bin/bash 表示加载宿主机(CentOS)的命令行，容器创建后会自动登录进去;
+    3. exit：退出当前容器，重新回到宿主机;
+4. 守护式创建容器
+    docker run -di --name=容器名称 镜像名称:标签
+    1. 登录守护式容器
+        docker exec -it 容器名称或ID /bin/bash
+    2. 交互式与守护式的区别：登录进入容器之后，执行 exit 命令，交互式容器会自动停止，守护式不会;
+5. 文件拷贝
+    1. 将宿主机的目录/文件拷贝到容器中
+        docker cp 需要拷贝的文件/目录 容器名称:容器目录
+    2. 将容器中的目录/文件拷贝到宿主机中
+        docker cp 容器名称:容器目录/文件  宿主机目录
+6. 目录挂载
+    1. 在创建容器时，将宿主机的目录与容器内的目录进行映射，这样在修改其中一方的目录文件时，就会影响到另一方;
+    docker run -di -v /usr/local/myhtml:/usr/local/myhtml --name=mycentos centos:7
+    2. 如果共享的是多级目录，可能会出现权限不足的提示，这是因为CentOS7中的安全模块selinux把权限禁止了;
+    3. --privileged=true：用于解决挂载的目录没有权限的问题;
+7. 查看容器的IP
+    1. docker inspect 容器名称或ID：可以查看容器运行的各种数据;
+    2. 还可以只查看IP地址
+    docker inspect --format=&apos;{{.NetworkSettings.IPAddress}}&apos; 容器名称或ID
+8. 停止、启动、删除容器(运行中的容器无法删除)
+    docker stop/start/rm 容器名称或ID
+</code></pre><h2 id="应用部署"><a href="#应用部署" class="headerlink" title="应用部署"></a>应用部署</h2><h3 id="MySQL部署"><a href="#MySQL部署" class="headerlink" title="MySQL部署"></a>MySQL部署</h3><pre><code>1. 拉取MySQL镜像
+    docker pull centos/mysql-57-centos7
+2. 创建容器
+    docker run -di --name=test_mysql -p 33306:3306 -e MYSQL_ROOT_PASSWORD=123456 centos/mysql-57-centos7
+    1. -p：表示端口映射，宿主机映射端口:容器运行端口，通过宿主机端口33306访问容器端口3306;
+    2. -e：表示添加环境变量 MYSQL_ROOT_PASSWORD 是root用户的登录密码;
+3. 进入MySQL容器
+    docker exec -it test_mysql /bin/bash
+4. 登录MySQL
+    mysql -u root -p
+5. 远程登录MySQL
+    mysql -h宿主机的IP地址 -P33306 -uroot -p
+</code></pre><h3 id="Tomcat部署"><a href="#Tomcat部署" class="headerlink" title="Tomcat部署"></a>Tomcat部署</h3><pre><code>1. 拉取镜像
+    docker pull tomcat:7-jre7
+2. 创建容器
+    docker run -di --name=mytomcat -p 9000:8080 
+        -v /usr/local/webapps:/usr/local/tomcat/webapps tomcat:7-jre7
+3. 在宿主机 /usr/local/webapps 目录中部署一个web应用demo.war，远程访问：http://宿主机IP:9000/demo
+</code></pre><h3 id="Nginx部署"><a href="#Nginx部署" class="headerlink" title="Nginx部署"></a>Nginx部署</h3><pre><code>1. 拉取镜像、创建Nginx容器
+    docker pull nginx
+    docker run -di --name=mynginx -p 80:80 nginx
+2. 登录容器mynginx，自定义配置文件nginx.conf
+3. 远程访问：http://宿主机IP  ==&gt; 默认展示 Welcome to nginx!
+</code></pre><h3 id="Redis部署"><a href="#Redis部署" class="headerlink" title="Redis部署"></a>Redis部署</h3><pre><code>1. 拉取镜像、创建容器
+    docker pull redis
+    docker run -di --name=myredis -p 6379:6379 redis
+2. 远程登录：redis-cli -h 宿主机IP
+</code></pre><h2 id="迁移与备份"><a href="#迁移与备份" class="headerlink" title="迁移与备份"></a>迁移与备份</h2><pre><code>1. 容器保存为镜像
+    docker commit 容器名称(mynginx) 镜像名称(mynginx_i)
+    1. 查看本地存在的镜像：docker images
+    2. 利用保存的镜像创建容器
+    docker run -di --name=mynginx2 -p 82:80 mynginx_i
+2. 镜像备份(tar文件)
+    docker save -o 备份文件(mynginx.tar) 镜像名称(mynginx_i)
+3. 镜像恢复
+    1. 先删除掉原有镜像创建的容器，然后才能删除原有的镜像
+        docker rm mynginx2
+        docker rmi mynginx_i
+    2. 最后通过其备份恢复镜像;
+        docker load -i 备份文件(mynginx.tar)
+</code></pre><h2 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h2><pre><code>1. Dockerfile是由一系列命令和参数构建的脚本，这些命令应用于基础镜像，并最终创建一个新的镜像;
+    1. 对于开发人员：可以为开发团队提供一个完全一致的开发环境;
+    2. 对于测试人员：直接使用开发时所构建的镜像，或者通过Dockerfile构建一个新的镜像，就可以开始工作了;
+    3. 对于运维人员：在部署时，可以实现应用的无缝移植;
+2. 最基础的镜像：Ubuntu、CentOS
+3. 常用命令
+    1. FROM image_name:tag：定义了使用哪个基础镜像启动构建流程，如果该镜像不存在，则自动下载;
+    2. MAINTAINER user_name：声明镜像的创建者;
+    3. ENV key value：设置环境变量，可以有多条;
+    4. RUN command：Dockerfile的核心部分，可以有多条;
+    5. ADD source_dir/file dest_dir/file：将宿主机的文件复制到容器中，对于压缩文件，将会在复制后自动解压;
+    6. COPY source_dir/file dest_dir/file：与 ADD 类似，但不会对压缩文件进行解压;
+    7. WORKDIR path_dir：设置容器(当前构建的镜像所创建的容器)的工作目录;
+    8. 其他命令操作容器的相对目录/文件时，都会基于设置的工作目录，登录进容器后，所处的目录也是设置的工作目录;
+</code></pre><h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><pre><code>使用CentOS7作为基础镜像，构建JDK1.8镜像;
+1. 创建目录
+    mkdir -p /usr/local/dockerjdk8
+2. 准备linux版本的jdk8，放在 dockerjdk8 目录中：jdk-8uxxx-linux-x64.tar.gz
+3. 在 dockerjdk8 目录中编辑 Dockerfile
+    cd /usr/local/dockerjdk8
+    vi Dockerfile
+4. Dockerfile的内容
+    FROM centos:7
+    MAINTAINER testman
+    # 切换工作目录
+    WORKDIR /usr
+    RUN mkdir /usr/local/java
+    ADD jdk-8uxxx-linux-x64.tar.gz /usr/local/java/
+    # 设置java的环境变量
+    ENV JAVA_HOME /usr/local/java/jdk1.8.0_xxx
+    ENV JRE_HOME $JAVA_HOME/jre
+    ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
+    ENV PATH $JAVA_HOME/bin:$PATH
+5. 构建镜像：
+    docker build -t=&apos;jdk1.8&apos; .
+    1. -t 用于指定镜像名称;
+    2. . 表示当前目录，用于指定Dockerfile所在的目录;
+6. 查看镜像是否建立完成：docker images
+</code></pre><h2 id="Docker私有仓库"><a href="#Docker私有仓库" class="headerlink" title="Docker私有仓库"></a>Docker私有仓库</h2><pre><code>1. 搭建
+    1. 拉取私有仓库的镜像
+    docker pull registry
+    2. 创建私有仓库容器
+    docker run -di --name=registry -p 5000:5000 registry
+    3. 私服地址：宿主机IP:5000
+    4. 远程访问：http://宿主机IP:5000/v2/_catalog  ===&gt; {&quot;repositories&quot;:[]}，表示搭建成功
+2. 修改daemon.json，加入私服地址;
+    vi /etc/docker/daemon.json
+    1. 加入内容：{&quot;insecure-registries&quot;:[&quot;宿主机IP:5000&quot;]}
+    {
+      &quot;registry-mirrors&quot;: [&quot;https://docker.mirrors.ustc.edu.cn&quot;],
+      &quot;insecure-registries&quot;: [&quot;宿主机IP:5000&quot;]
+    }
+    2. 让docker信任私有仓库的地址，重启docker让配置生效;
+    systemctl restart docker
+    docker start registry  # 启动私服容器
+3. 上传镜像到私有仓库
+    1. 标记此镜像为私有仓库的镜像：docker tag 镜像名 私服地址/镜像名
+    docker tag jdk1.8 宿主机IP:5000/jdk1.8  ==&gt; docker images可以查看被标记的镜像
+    2. 上传标记的镜像：docker push 私服地址/镜像名
+    docker push 宿主机IP:5000/jdk1.8
+4. 查看私服上的镜像
+    http://宿主机IP:5000/v2/_catalog  ==&gt; {&quot;repositories&quot;:[&quot;jdk1.8&quot;]}
 </code></pre><hr>
 
       
@@ -576,7 +730,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化"><span class="nav-number">1.</span> <span class="nav-text">虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">2.</span> <span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器与客户端"><span class="nav-number">2.1.</span> <span class="nav-text">服务器与客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker镜像与容器"><span class="nav-number">2.2.</span> <span class="nav-text">Docker镜像与容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Registry"><span class="nav-number">2.3.</span> <span class="nav-text">Registry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装-CentOS"><span class="nav-number">3.</span> <span class="nav-text">Docker安装(CentOS)</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化"><span class="nav-number">1.</span> <span class="nav-text">虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">2.</span> <span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器与客户端"><span class="nav-number">2.1.</span> <span class="nav-text">服务器与客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker镜像与容器"><span class="nav-number">2.2.</span> <span class="nav-text">Docker镜像与容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Registry"><span class="nav-number">2.3.</span> <span class="nav-text">Registry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装-CentOS"><span class="nav-number">3.</span> <span class="nav-text">Docker安装(CentOS)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像相关命令"><span class="nav-number">4.</span> <span class="nav-text">镜像相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器相关命令"><span class="nav-number">5.</span> <span class="nav-text">容器相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用部署"><span class="nav-number">6.</span> <span class="nav-text">应用部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL部署"><span class="nav-number">6.1.</span> <span class="nav-text">MySQL部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomcat部署"><span class="nav-number">6.2.</span> <span class="nav-text">Tomcat部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx部署"><span class="nav-number">6.3.</span> <span class="nav-text">Nginx部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis部署"><span class="nav-number">6.4.</span> <span class="nav-text">Redis部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迁移与备份"><span class="nav-number">7.</span> <span class="nav-text">迁移与备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dockerfile"><span class="nav-number">8.</span> <span class="nav-text">Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#构建镜像"><span class="nav-number">8.1.</span> <span class="nav-text">构建镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker私有仓库"><span class="nav-number">9.</span> <span class="nav-text">Docker私有仓库</span></a></li></ol></div>
             
 
           </div>
