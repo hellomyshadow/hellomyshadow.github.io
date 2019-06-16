@@ -88,7 +88,7 @@
 <meta property="og:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/06/01/Docker/比较.jpg">
-<meta property="og:updated_time" content="2019-06-11T15:40:05.666Z">
+<meta property="og:updated_time" content="2019-06-16T03:57:17.370Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker">
 <meta name="twitter:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
@@ -507,7 +507,7 @@
     6. COPY source_dir/file dest_dir/file：与 ADD 类似，但不会对压缩文件进行解压;
     7. WORKDIR path_dir：设置容器(当前构建的镜像所创建的容器)的工作目录;
     8. 其他命令操作容器的相对目录/文件时，都会基于设置的工作目录，登录进容器后，所处的目录也是设置的工作目录;
-</code></pre><h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><pre><code>使用CentOS7作为基础镜像，构建JDK1.8镜像;
+</code></pre><h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><pre><code>使用CentOS7作为基础镜像，构建一个JDK1.8镜像;
 1. 创建目录
     mkdir -p /usr/local/dockerjdk8
 2. 准备linux版本的jdk8，放在 dockerjdk8 目录中：jdk-8uxxx-linux-x64.tar.gz
@@ -533,9 +533,9 @@
 6. 查看镜像是否建立完成：docker images
 </code></pre><h2 id="Docker私有仓库"><a href="#Docker私有仓库" class="headerlink" title="Docker私有仓库"></a>Docker私有仓库</h2><pre><code>1. 搭建
     1. 拉取私有仓库的镜像
-    docker pull registry
+        docker pull registry
     2. 创建私有仓库容器
-    docker run -di --name=registry -p 5000:5000 registry
+        docker run -di --name=registry -p 5000:5000 registry
     3. 私服地址：宿主机IP:5000
     4. 远程访问：http://宿主机IP:5000/v2/_catalog  ===&gt; {&quot;repositories&quot;:[]}，表示搭建成功
 2. 修改daemon.json，加入私服地址;
@@ -555,6 +555,65 @@
     docker push 宿主机IP:5000/jdk1.8
 4. 查看私服上的镜像
     http://宿主机IP:5000/v2/_catalog  ==&gt; {&quot;repositories&quot;:[&quot;jdk1.8&quot;]}
+</code></pre><h2 id="DockerMaven"><a href="#DockerMaven" class="headerlink" title="DockerMaven"></a>DockerMaven</h2><pre><code>1. 微服务的部署方式
+    1. 手动部署：把项目打包生成jar/war包，手动上传到宿主机上，再拷贝到docker容器中;
+    2. 自动部署：通过Maven插件实现自动部署;
+2. 自动部署的配置
+    1. docker默认不允许远程访问，需要修改配置
+        vi /lib/systemd/system/docker.service
+    2. 在 ExecStart= 后面添加 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
+        ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
+    3. 刷新配置，重启服务
+    systemctl daemon-reload
+    systemctl restart docker
+    docker start registry
+    4. 修改待部署项目的 pom.xml
+    &lt;build&gt;
+        &lt;finalName&gt;app&lt;/finalName&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+            &lt;!-- docker的maven插件 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+                &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;x.x.xx&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;imageName&gt;宿主机IP:5000/${project.artifactId}:${project.version}&lt;/imageName&gt;
+                    &lt;baseImage&gt;jdk1.8&lt;/baseImage&gt;
+                    &lt;entryPoint&gt;[&quot;java&quot;, &quot;-jar&quot;, &quot;/${project.build.finalName}.jar&quot;]&lt;/entryPoint&gt;
+                    &lt;resources&gt;
+                        &lt;resource&gt;
+                            &lt;targetPath&gt;/&lt;/targetPath&gt;
+                            &lt;directory&gt;${project.build.directory}&lt;/directory&gt;
+                            &lt;include&gt;${project.build.finalName}.jar&lt;/include&gt;
+                        &lt;/resource&gt;
+                    &lt;/resources&gt;
+                    &lt;dockerHost&gt;http://宿主机IP:2375&lt;/dockerHost&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+3. docker-maven的配置部分：&lt;configuration&gt;
+    1. &lt;imageName&gt;：最终生成的工程镜像;
+    2. &lt;baseImage&gt;：指定基础镜像，等效于Dockerfile中的 FROM jdk1.8，所以宿主机上必须要存在镜像jdk1.8
+    3. &lt;entryPoint&gt;：入口点，等效于Dockerfile中的 ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/app.jar&quot;]
+    4. &lt;resources&gt;：指定上传的源工程，等效于Dockerfile中的 ADD app.jar /
+4. docker-maven的作用就是代替Dockerfile，实现自动编译与上传;
+5. 命令行进入工程根目录，开始部署
+    mvn clean package  # 打包项目
+    mvn docker:build -DpushImage
+    1. -DpushImage 表示构建完成之后就上传;
+    2. 整合成一条命令：
+    mvn clean package docker:build -DpushImage
+6. 进入宿主机，查看镜像：docker images
+    宿主机IP:5000/工程名(REPOSITORY)  版本号(TAG)
+7. 查看私服上的镜像
+    http://宿主机IP:5000/v2/_catalog  ==&gt; {&quot;repositories&quot;:[&quot;jdk1.8&quot;,&quot;工程名&quot;]}
+8. 进入宿主机，使用上传的工程镜像创建容器
+    docker run -di --name=mytest -p 9001:工程监听的端口号 宿主机IP:5000/工程名:版本号
 </code></pre><hr>
 
       
@@ -596,8 +655,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
-                linux命令入门 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/06/02/持续集成/" rel="prev" title="持续集成">
+                持续集成 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -675,7 +734,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -730,7 +789,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化"><span class="nav-number">1.</span> <span class="nav-text">虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">2.</span> <span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器与客户端"><span class="nav-number">2.1.</span> <span class="nav-text">服务器与客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker镜像与容器"><span class="nav-number">2.2.</span> <span class="nav-text">Docker镜像与容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Registry"><span class="nav-number">2.3.</span> <span class="nav-text">Registry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装-CentOS"><span class="nav-number">3.</span> <span class="nav-text">Docker安装(CentOS)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像相关命令"><span class="nav-number">4.</span> <span class="nav-text">镜像相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器相关命令"><span class="nav-number">5.</span> <span class="nav-text">容器相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用部署"><span class="nav-number">6.</span> <span class="nav-text">应用部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL部署"><span class="nav-number">6.1.</span> <span class="nav-text">MySQL部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomcat部署"><span class="nav-number">6.2.</span> <span class="nav-text">Tomcat部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx部署"><span class="nav-number">6.3.</span> <span class="nav-text">Nginx部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis部署"><span class="nav-number">6.4.</span> <span class="nav-text">Redis部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迁移与备份"><span class="nav-number">7.</span> <span class="nav-text">迁移与备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dockerfile"><span class="nav-number">8.</span> <span class="nav-text">Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#构建镜像"><span class="nav-number">8.1.</span> <span class="nav-text">构建镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker私有仓库"><span class="nav-number">9.</span> <span class="nav-text">Docker私有仓库</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化"><span class="nav-number">1.</span> <span class="nav-text">虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">2.</span> <span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器与客户端"><span class="nav-number">2.1.</span> <span class="nav-text">服务器与客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker镜像与容器"><span class="nav-number">2.2.</span> <span class="nav-text">Docker镜像与容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Registry"><span class="nav-number">2.3.</span> <span class="nav-text">Registry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装-CentOS"><span class="nav-number">3.</span> <span class="nav-text">Docker安装(CentOS)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像相关命令"><span class="nav-number">4.</span> <span class="nav-text">镜像相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器相关命令"><span class="nav-number">5.</span> <span class="nav-text">容器相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用部署"><span class="nav-number">6.</span> <span class="nav-text">应用部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL部署"><span class="nav-number">6.1.</span> <span class="nav-text">MySQL部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tomcat部署"><span class="nav-number">6.2.</span> <span class="nav-text">Tomcat部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx部署"><span class="nav-number">6.3.</span> <span class="nav-text">Nginx部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis部署"><span class="nav-number">6.4.</span> <span class="nav-text">Redis部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迁移与备份"><span class="nav-number">7.</span> <span class="nav-text">迁移与备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dockerfile"><span class="nav-number">8.</span> <span class="nav-text">Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#构建镜像"><span class="nav-number">8.1.</span> <span class="nav-text">构建镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker私有仓库"><span class="nav-number">9.</span> <span class="nav-text">Docker私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DockerMaven"><span class="nav-number">10.</span> <span class="nav-text">DockerMaven</span></a></li></ol></div>
             
 
           </div>

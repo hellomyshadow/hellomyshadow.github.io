@@ -232,6 +232,505 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/01/SpringBoot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/04/01/SpringBoot/" itemprop="url">SpringBoot</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-01T00:00:00+08:00">
+                2016-04-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="SpringBoot与Spring"><a href="#SpringBoot与Spring" class="headerlink" title="SpringBoot与Spring"></a>SpringBoot与Spring</h2><pre><code>1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能;
+2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;
+    1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;
+    2. Spring3.0引入了基于Java的配置，这是一种类型安全的、可重构的配置方式，可以替代XML;
+    3. 除了配置会消耗大量的开发时间，项目的依赖管理也是很麻烦的，版本选择困难，容易冲突.
+3. Spring注解的发展
+    1. Spring1.0时代因为JDK1.5刚出来，注解开发尚未盛行，所以一切Spring配置皆是XML格式;
+    2. Spring2.0时代引入了注解开发，但并未完善，因此并未完全替代XML;
+    3. Spring3.0时代的注解已经非常完善了，因此Spring推荐使用注解(Java配置)代替XML.
+4. SpringBoot解决了Spring的缺点，基于约定优先于配置，开发者只需要关心逻辑业务的代码编写;
+    1. 开箱即用，没有代码生成，也无需XML配置，通过修改默认值来满足特定的需求;
+    2. 提供了一些大型项目中常见的非功能性的特性，如嵌入式服务器、安全、指标、健康检测、外部配置...
+    3. SpringBoot不是对Spring功能上的增强，而是提供一种基于Spring的快速开发方式.
+5. SpringBoot的核心功能
+    1. 起步依赖：本质上是一个Maven项目对象模型(POM)，定义了对其他库的传递依赖;
+    1. 简单来说，起步依赖就是将具备某种功能的坐标打包到一起，并提供一些默认功能.
+    2. 自动配置：SpringBoot的自动配置是一个运行时(应用程序启动时)的过程;
+    2. 考虑了众多因素，才决定Spring配置应该用哪个、不应该用哪个，此过程也是Spring自动完成的。
+6. 在SpringBoot中，默认采用Servlet3.0，它可以完全使用注解取代web.xml了，所以SpringBoot没有了web.xml;
+</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. SpringBoot2.x的依赖环境和版本
+    1. JDK8+，因为SpringBoot2.x底层是Spring Framework5
+    2. Maven3.2+，Gradle4+
+2. 创建一个普通Java项目的Maven工程，添加继承SpringBoot的起步依赖spring-boot-starter-parent
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.1.4.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+    1. spring-boot-starter-parent 中管理了很多其他依赖的版本，所以 &lt;dependencies&gt; 中引入这些的依赖时，
+    尽量不要配置它们的版本号，沿用 spring-boot-starter-parent 中的版本号;
+    2. Spring对版本的要求比较严格，很多问题都是因为版本不匹配所致.
+3. SpringBoot要集成SpringMVC、进行Web/Controller的开发时，只需要导入web的启动器即可;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;!-- 无需指定版本号(如果无法自动配置，则拷贝spring-boot-starter-parent中的版本号) --&gt;
+    &lt;/dependency&gt;
+4. 创建一个普通类，使用 @SpringBootApplication 声明为一个SpringBoot的引导类(引导应用程序的入口);
+    1. 在 main() 中运行引导类：SpringApplication.run(引导类.class, 可选参数);
+    @SpringBootApplication
+    public class StartSpringBoot {
+        public static void main(String[] args) {
+            SpringApplication.run(StartSpringBoot.class, args);
+        }
+    }
+5. SpringBoot中内置有Tomcat插件，直接运行 main()，在控制台提示Tomcat启动信息：
+    Tomcat started on port(s): 8080 (http) with context path &apos;&apos;
+    1. context path &apos;&apos;：表示web应用的名称(虚拟项目名)为空字符串，访问 http://localhost:8080/ ;
+    2. 当前没有编写任何页面，所以展示的是 Error Page，但表示已经启动成功了;
+6. 无需任何配置，就可以直接编写Controller层
+    @Controller
+    public class QuickController {
+        @RequestMapping(&quot;/test&quot;)
+        @ResponseBody
+        public String test() {
+            return &quot;Hello SpringBoot&quot;;
+        }
+    }    ---&gt;http://localhost:8080/test  ---&gt; Hello SpringBoot
+7. IDEA快速创建SpringBoot工程
+    New Project -&gt; Spring Initializr -&gt; Next -&gt; 设置项目信息 -&gt; Next -&gt; 手动选择依赖 -&gt; Finish
+</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><pre><code>1. 起步依赖
+    1. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent，它会对依赖的版本进行管理;
+    2. SpringBoot项目引入的依赖往往都是starter，它是一个工具集合，里面包含了很多常用的依赖，便于版本管理;
+    3. 比如spring-boot-starter-web，包含了诸如spring-webmvc、spring-web、Tomcat、jackson ...
+    4. 第三方框架要对接SpringBoot项目，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
+2. 自动配置
+    1. @SpringBootApplication是组合注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
+    2. @SpringBootConfiguration 其实就是 @Configuration，所以引导类也就是一个配置类;
+    3. @EnableAutoConfiguration 是自动配置的核心注解，@Import({AutoConfigurationImportSelector.class})
+    4. AutoConfigurationImportSelector 中就是自动配置的核心源码;
+    5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解.
+</code></pre><h2 id="SpringBoot的配置文件"><a href="#SpringBoot的配置文件" class="headerlink" title="SpringBoot的配置文件"></a>SpringBoot的配置文件</h2><pre><code>1. SpringBoot是基于约定的，所以很多配置都是默认值;
+2. 在需要自定义配置时，根据启动器提供的key名，在SpringBoot的配置文件中指定value值即可;
+3. spring-boot-starter-parent 会自动加载 resources 目录下的三类配置文件;
+    1. application*.yml、application*.yaml、application*.properties;
+    2. 加载顺序：yml --&gt; yaml --&gt; properties，当有相同的key名配置时，properties中的优先级最高.
+4. 创建 resources/application.properties，实现一些个性化配置;
+    server.port=9090    # 配置Tomcat启动的端口号，默认是8080
+    server.servlet.context-path=/demo    # 配置web应用虚拟目录名，默认是空字符串
+5. YML一种新型配置文件，也是一种标记语言，有两种扩展名：.yml、.yaml
+    1. YML文件格式是由YAML编写的，YAML是一种能够被电脑识别的数据序列化格式，且易读性强，以数据为核心，比XML更简洁;
+    2. YML文件与脚本语言的交互性强，可以被支持YAML库的编程语言程序导入，如C/C++、Python、Java、C#、PHP、Ruby...
+</code></pre><h3 id="yml配置文件"><a href="#yml配置文件" class="headerlink" title="yml配置文件"></a>yml配置文件</h3><pre><code>1. 普通数据
+    1. key: value
+    2. key和value之间必须有一个空格：name: Jack
+2. 对象数据/Map数据
+    1. 形式一：缩进形式
+        key:
+            key1: value1
+            key2: value2
+    2. key1、key2前面的空格个数不限定，相同缩进代表同一级别;
+        person:
+            name: Java
+            age: 20
+    3. 形式二：行内形式
+        key: {key1: value1,key2: value2}
+3. 数组、List、Set
+    1. 存放普通字符串
+        key:
+            - value1
+            - value2
+        key: [value1,value2]
+    2. 存放对象
+        key:
+            - key11: value11
+              key12: value12
+            - key22: value22
+              key23: value23
+        key: [{key11: value11,key12: value12}, {key22: value22,key23: value23}]
+4. resources/application.yaml
+    1. 自定义SpringMVC的默认配置
+        server:
+            port: 8888    # 配置服务器的端口号
+            servlet:
+                path: &quot;*.do&quot;    # 访问映射路径，默认是&quot;/&quot;，会影响所有的请求路径
+    2. Log4j相关
+        logging:    # 日志配置(log4j相关的依赖已经被集成)
+            level:    # 控制日志级别，是一个Map集合
+                cn.boot: debug    # cn.boot包下的日志级别为debug
+                org.springframework: debug
+</code></pre><h3 id="属性映射"><a href="#属性映射" class="headerlink" title="属性映射"></a>属性映射</h3><pre><code>1. 配置文件被加载后，其中的键-值将会被存放到Spring IoC容器中，那么就可以映射到Spring管理的Bean对象中;
+2. application.yml
+    jdbc:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
+        username: root
+        password： 123456
+3. @Value 的映射：指定配置文件的key名，映射到Spring IoC管理的对象属性上，适合数据量较小的情况;
+    @Component
+    public class JdbcConf {
+        @Value(&quot;${jdbc.driverClassName}&quot;)
+        private String driverClassName;
+
+        @Value(&quot;${jdbc.url}&quot;)
+        private String url;
+
+        @Value(&quot;${jdbc.username}&quot;)
+        private String username;
+
+        @Value(&quot;${jdbc.password}&quot;)
+        private String password;
+    }
+4. @ConfigurationProperties：把配置文件中的键值数据映射到当前Java类的属性上;
+    @ConfigurationProperties(prefix=&quot;jdbc&quot;)
+    public class JdbcConf {
+        private String driverClassName;
+        private String url;
+        private String username;
+        private String password;
+    }
+    1. prefix属性：声明配置文件中的字段前缀，自动映射到Java类的同名属性上;
+    2. 使用 @ConfigurationProperties 时，还需要引入其执行器;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
+            &lt;optional&gt;true&lt;/optional&gt;
+        &lt;/dependency&gt;
+    3. 先在Bean中定义需要的属性，然后在配置文件中配置时，执行器就会提示可配置的属性.
+5. @EnableConfigurationProperties：使用 @ConfigurationProperties 注解的Java类;
+    @Configuration
+    @EnableConfigurationProperties(JdbcConf.class)
+    public class TestConfigure {
+        @Autowired
+        private JdbcConf jdbc;  //1. @Autowired的方式注入JdbcConf对象
+
+        public TestConfigure(JdbcConf jdbc) { //2.构造方法的方式注入JdbcConf对象
+
+        }
+        @Bean
+        public DataSource getDataSource(JdbcConf prop) {  //3.方法参数的方式注入
+            //阿里的druid
+            DruidDataSource ds = new DruidDataSource();
+            ds.setDriverClassName(prop.getDriverClassName());
+            ds.setUrl(prop.getUrl());
+            ds.setUsername(prop.getUsername());
+            ds.setPassword(prop.getPassword());
+            return ds;
+        }
+    }
+6. 如果只有一个Bean对象使用JDBC的连接信息，还可以优雅地映射配置文件中的键-值
+    @Configuration
+    public class JdbcConfig {
+        @Bean
+        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
+        public DataSource getDataSource(JdbcProperties prop) {
+            return new DruidDataSource();
+        }
+    }
+    1. 这种方式不再需要映射配置类JdbcConf，直接在对应Bean对象上使用 @ConfigurationProperties;
+    2. DruidDataSource对象中有同名属性：driverClassName、url、username、password，从而实现映射;
+</code></pre><h3 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h3><pre><code>1. ResourceProperties中定义了静态资源的查找方向
+    classpath:/META-INF/resources/ --&gt;classpath:/resources/ --&gt;classpath:/static/ --&gt;classpath:/public/
+2. 注意：classpath 指的就是 src/main/resources 目录，这4个目录都在 src/main/resources 目录下;
+3. 这些静态资源目录不受Controller管控，可以直接被访问，用于放入图片、CSS、JS、HTML等静态资源;
+4. 创建 resources/static/index.html，访问：localhost:8080/index.html
+5. 在配置文件 application.yml 中，可以加入自定义的静态资源目录：
+    spring:
+        resources:
+            static-locations:
+                - classpath:/META-INF/resources/
+                - classpath:/resources/
+                - classpath:/static/
+                - classpath:/public/
+                - classpath:/abc/
+</code></pre><h2 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h2><pre><code>1. 添加起步依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. IDEA默认不支持热部署，需要设置
+    1. Settings --&gt; Compiler --&gt; 勾选 Build project automatically
+    2. Ctrl+Shift+Alt+/ --&gt; Registry --&gt; 勾选 compiler.automake.allow.when.app.running
+3. 每次修改了Controller层之后，等待服务器重启，刷新浏览器页面;
+4. 在配置文件 application.properties  中，配置不被热部署的文件
+    spring.devtools.restart.exclude=static/**, application.properties
+5. 通过触发器，手动控制热部署
+    1. 创建 resources/trigger.txt，添加内容 verion=1
+    2. 配置触发器
+        spring.devtools.restart.trigger-file=trigger.txt
+    3. 需要热部署时，修改触发器：version=2，保存文件即触发热加载部署;
+</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. SpringBoot项目中，使用 MultipartFile 对象接收上传的文件时，控制文件的大小;
+    1. 在启动类中注册 MultipartConfigElement，设置文件大小
+    @Bean
+    public MultipartConfigElement getMultipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigElement();
+        factory.setMaxFileSize(&quot;10240KB&quot;);  //单个文件最大10240KB
+        factory.setMaxRequestSize(&quot;102400KB&quot;);  //总上传数据最大102400KB
+        return factory.createMultipartConfig();
+    }
+2. 文件服务器：fastdfs，阿里云oss，nginx搭建一个简单的文件服务器;
+3. 上传过程操作的是磁盘的绝对路径，打成了jar包之后，无法直接访问磁盘目录，需要把目录加入静态资源目录列表中;
+    images-path=D:\report\
+    spring.resources.static-locations=classpath:/META-INF/resources/, ... , file:${images-path}
+</code></pre><h2 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h2><pre><code>1. 主流的JavaWeb模板引擎：JSP、Velocity、Freemarker、Thymeleaf
+    1. JSP：动态网页技术，JavaWeb官方推荐，支持EL、JSTL表达式，本质上也是一个Servlet，占用JVM内存;
+    2. Freemarker：文件一般保存为 xxx.ftl，严格依赖MVC模式，不依赖Servlet容器(不占用JVM内存)，内建函数;
+    3. Thymeleaf：SpringBoot主推，轻量级模板引擎，后缀名就是.html，浏览器可以直接访问;
+2. Thymeleaf不推荐在页面中做复杂的逻辑业务，因为解析DOM/XML会占用较大的内存;
+3. Thymeleaf的启动器：spring-boot-starter-thymeleaf
+    spring.thymeleaf.cache=false #是否缓存
+    spring.thymeleaf.mode=HTML5
+    spring.thymeleaf.encoding=UTF-8  #编码
+    spring.thymeleaf.content-type=text/html  #类型
+    spring.thymeleaf.suffix=.html  #文件后缀名
+    spring.thymeleaf.prefix=classpath:/templates/  #前缀：存放路径
+4. 创建 resources/templates/user/info.html
+        @GetMapping(&quot;info&quot;)
+        public String info() {
+            return &quot;user/info&quot;;  ---&gt;渲染resources/templates/user/info.html
+        }
+5. resources/templates 目录不是静态资源目录，需要放在静态资源列表中才能直接访问
+    spring.resources.static-locations = classpath:/META-INF/resources/, ... ,classpath:/templates/
+6. 页面静态化
+    1. Thymeleaf不仅可以把渲染结果写入Response，还可以写到本地文件中，从而实现页面静态化;
+    2. 页面静态化：把动态渲染的HTML页面变成静态内容保存，比如部署在Nginx中;
+    3. 以后的用户请求到来时，直接访问静态页面，不再经过服务的渲染，从而大大提高并发能力，减小Tomcat的压力.
+</code></pre><h2 id="多环境配置"><a href="#多环境配置" class="headerlink" title="多环境配置"></a>多环境配置</h2><pre><code>1. 多环境：开发环境、测试环境、预发布环境、生产环境...  不同环境使用不同的配置，如数据库配置;
+2. 多环境切换有很多方式，以 spring.profiles.active 为例
+    1. 创建 resources/config 目录，管理SpringBoot的配置文件，注意：config目录名是固定的;
+    2. 在 config 中创建 application.properties、application-dev.properties、application-test.properties
+    3. application-dev.properties
+        db.url=dev.com
+    4. application-test.properties
+        db.url=test.com
+    5. application.properties
+        db=local.com
+        # 指定使用哪个profile，如果不指定，默认使用当前文件中的配置
+        spring.profiles.active=test  # 使用 application-test 中的配置 db.url=test.com
+3. 映射到Spring IoC容器中的Java类属性上
+    @Value(&quot;${db.url}&quot;)
+    private String url;  //test.com
+</code></pre><h2 id="打包与容器"><a href="#打包与容器" class="headerlink" title="打包与容器"></a>打包与容器</h2><pre><code>1. SpringBoot项目打成jar包
+    1. pom.xml 配置Maven插件
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+    2. 打开右侧Maven面板 --&gt; Lifecycle --&gt; 双击执行 install --&gt; 在target目录下生成xxx.jar
+    3. 如果没有添加插件，执行 java -jar xxx.jar 命令运行jar包时，会报错：no main manifest attribute
+2. SpringBoot项目打成war包
+    1. 修改打包方式：&lt;packaging&gt;war&lt;/packaging&gt;
+    2. 配置打包的项目名称，也就是项目的虚拟目录名
+        &lt;build&gt;
+            &lt;finalName&gt;boottest&lt;/finalName&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/build&gt;
+    3. 修改启动类
+    @SpringBootApplication
+    public class BootTestApplication extends SpringBootServletInitializer {
+        protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+            return builder.sources(BootTestApplication.class);
+        }
+        public static void main(String[] args) {
+            SpringApplication.run(BootTestApplication.class, args);
+        }
+    }
+    4. 执行Lifecycle --&gt; clean，然后执行 install 命令，在target目录下生成 xxx.war
+    5. 把 xxx.war 放在 Tomcat/webapps 目录中，启动Tomcat服务器，xxx.war自动解压;
+    6. 访问：http://localhost:8080/boottest/xxx
+3. SpringBoot默认使用Tomcat容器启动，也可以配置成其他容器
+    1. 去除spring-boot-starter-web中集成的Tomcat
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                    &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+    2. 配置为jetty容器
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-jetty&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    3. 配置为undertow容器
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-undertow&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.undertow&lt;/groupId&gt;
+            &lt;artifactId&gt;undertow.core&lt;/artifactId&gt;
+            &lt;version&gt;1.3.24.Final&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.undertow&lt;/groupId&gt;
+            &lt;artifactId&gt;undertow.servlet&lt;/artifactId&gt;
+            &lt;version&gt;1.3.24.Final&lt;/version&gt;
+        &lt;/dependency&gt;
+4. 使用JMeter测试各个容器的性能;
+</code></pre><h3 id="部署到阿里云"><a href="#部署到阿里云" class="headerlink" title="部署到阿里云"></a>部署到阿里云</h3><pre><code>1. winscp、secureCRT、FileZilla：远程连接Linux的工具，可视化操作
+2. 在Linux上安装JDK
+    1. cd /usr/local/  --&gt; mkdir software --&gt; 下载JDK8压缩包、解压、重命名为jdk8
+    2. 配置环境变量：vim /etc/profile，在尾部插入以下内容
+    export JAVA_HOME=/usr/local/software/jdk8
+    export PATH=$PATH:$JAVA_HOME/bin
+    export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+    export JAVA_HOME PATH CLASSPATH
+    3. 让配置立刻生效：source /etc/profile
+    4. 测试：java -version
+3. 入门级：把SpringBoot项目部署到Linux云服务器上，要开放对应的端口号;
+    1. 去除对生产环境没用的依赖，如热部署spring-boot-starter-test，测试spring-boot-starter-test
+    2. 打成jar包，并上传到Linux服务器上 /usr/local/software/app/
+    3. 启动：java -jar xxx.jar
+4. 守护进程的方式启动：nohup java -jar xxx.jar &amp;   ---&gt; 生成启动日志文件nohup.out
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/26/模块化与私服/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3996,468 +4495,6 @@ public AccountServiceImpl implements IAccountService {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/05/Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/05/Spring/" itemprop="url">Spring</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-05T00:00:00+08:00">
-                2016-03-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><pre><code>1. Spring是分层的JavaSE/EE应用full-stack(全栈)轻量级开源框架;
-    1. 目的是解决企业级应用开发的复杂性，简化Java开发，适用于任何Java应用;
-    2. Spring的成功来源于理念，而不是技术本身，以IoC(控制反转)和AOP(面向切面编程)为核心;
-    3. 优势：.
-2. 发展历程
-    1. 1997年IBM提出了EJB的思想，1998年SUN制定并开发EJB1.0;
-    2. Spring之父Rod Johnson，2002年阐述了J2EE使用EJB开发设计的优点及解决方案;
-    3. 2004年Rod Johnson阐述了J2EE不使用EJB的解决方案，也就是Spring的雏形；
-    4. 2017年9月发布了Spring的最新版Spring5.0通用版(GA).
-3. 优势：低侵入/低耦合、声明式事务管理、无缝集成其他框架、降低Java开发难度
-    1. 解耦：IoC容器可以将对象间的依赖关系交由Spring控制，降低耦合，专注于上层应用；
-    2. AOP编程：Spring的AOP功能让许多传统OOP难以实现的功能，更加容易；
-    3. 声明式事务管理：使用配置文件取代单调烦闷的事物管理；
-    4. 方便程序的测试：可以用非容器依赖的编程方式，实现几乎所有的测试工作；
-    5. 方便集成各种优秀的框架，提供直接支持，降低框架的使用难度；
-    6. Spring对JavaEE API进行了一层简单的封装，但却大为降低了API的使用难度。
-4. Spring Framework Runtime 体系结构
-</code></pre><p><img src="//hellomyshadow.github.io/2016/03/05/Spring/framework.jpg" alt="Spring"></p>
-<pre><code>1. Core Container：核心容器，Spring的IoC容器，其他部分的运行必须依赖于核心容器；
-2. 核心容器的上面一层是AOP相关的部分；
-3. Data Access：持久层解决方案；
-4. Test：单元测试，也依赖于核心容器才能运行。
-</code></pre><h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><pre><code>1. 耦合：程序间的依赖关系，包括类之间的依赖、方法间的依赖；
-2. 解耦：降低程序间的依赖关系，应做到编译期不依赖，运行时才依赖；
-</code></pre><h3 id="类之间的依赖"><a href="#类之间的依赖" class="headerlink" title="类之间的依赖"></a>类之间的依赖</h3><pre><code>1. 以装载数据库的驱动为例
-    Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;);
-    DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-    1. 这两种方式都可以装载驱动，但第一种装载是通过字符串，第二种需要使用具体的类；
-    2. 如果当前没有MySQL的相关依赖包，那么第二种在运行时就会报错，这就是类之间的依赖；
-    3. 而且，如果切换成装载Oracle驱动，仍需要去修改全限定类名的字符串。
-2. 解耦的思路
-    1. 使用反射来创建对象，避免使用 new 关键字；
-    2. 通过读取配置文件来获取类的全限定类名。
-</code></pre><h3 id="工厂模式解耦"><a href="#工厂模式解耦" class="headerlink" title="工厂模式解耦"></a>工厂模式解耦</h3><pre><code>1. 非解耦的持久层Dao与业务层Service
-    1. Dao接口及其实现类
-        public interface IUserDao {
-            void save(User u);
-        }
-        public class UserDaoImpl implements IUserDao {
-            public void save(User u) {
-                //连接数据库，插入一条记录
-            }
-        }
-    2. Service接口及其实现类
-        public interface IUserService {
-            void save(User u);
-        }
-        public class UserServiceImpl implements IUserService {
-            private IUserDao dao = new UserDaoImpl();
-            public void save(User u) {
-                ......//before
-                dao.save(u);  //调用Dao的方法
-                ......//after
-            }
-        }
-    3. App调用Service
-        IUserService service = new UserServiceImpl();
-        service.save(new User());
-2. 工厂模式解耦
-    1. 在resource目录下创建配置文件，如bean.properties，配置Dao与Service的实现类；
-        userService = it.demo.cn.service.impl.UserServiceImpl
-        userDao = it.demo.cn.dao.impl.UserDaoImpl
-    2. Bean工厂：用于反射创建/生产Service和Dao的对象；
-        public class BeanFactory {
-            private static Properties prop;
-            static {
-                try {
-                    prop = new Properties();
-                    //使用类加载器获取resources目录下的文件
-                    InputStream is = BeanFactory.class.getClassLoader()
-                                    .getResourceAsStream(&quot;bean.properties&quot;);
-                    prop.load(is);
-                } catch (Exception e) {
-                    throw new ExceptionInInitializerError(&quot;初始化配置文件失败！&quot;);
-                }
-            }
-            public static Object getBean(String beanName) {
-                //根据Bean的名称获取Bean对象
-                String beanPath = prop.getProperty(beanName);
-                Object bean = Class.forName(beanPath).newInstance();
-                return bean;
-            }
-        }
-    3. 通过Bean工厂创建Dao对象和Service对象
-        public class UserServiceImpl implements IUserService {
-            private IUserDao dao = (IUserDao) BeanFactory.getBean(&quot;userDao&quot;);
-            public void save(User u) {
-                dao.save(u);
-            }
-        }
-    IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot;);
-    service.save(new User());
-3. 但是，这种方式并不能保证Dao和Service对象的单例，需要在Bean工厂中增加一个Map结构的容器，
-   存储Dao和Service的对象；
-    public class BeanFactory {
-        private static Properties prop;
-        private static Map&lt;String, Object&gt; beans;  //Map结构的容器
-        static {
-            try {
-                prop = new Properties();
-                InputStream is = BeanFactory.class.getClassLoader()
-                                .getResourceAsStream(&quot;bean.properties&quot;);
-                prop.load(is);
-                beans = new HashMap&lt;String, Object&gt;();  //实例化容器
-                Enumeration keys = prop.keys();  //取出配置文件中的所有key
-                while (keys.hasMoreElements()) {
-                    //事先创建好配置文件中的对象，存入容器，作为单例对象使用
-                    String k = keys.nextElement().toString();
-                    String beanPath = prop.getProperty(k);
-                    Object val = Class.forName(beanPath).newInstance();
-                    beans.put(k, val);
-                }
-            } catch (Exception e) {
-                throw new ExceptionInInitializerError(&quot;初始化配置文件失败！&quot;);
-            }
-        }
-        public static Object getBean(String beanName) {
-            //直接返回容器中的Bean对象
-            return beans.get(beanName);
-        }
-    }
-</code></pre><h2 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h2><pre><code>private IUserDao dao = new UserDaoImpl(); 与
-private IUserDao dao = (IUserDao) BeanFactory.getBean(&quot;userDao&quot;);
------------------------------------------------------------------
-IUserService service = new UserServiceImpl(); 与
-IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot;);
-1. 与new创建对象相比，通过Bean工厂创建对象，切断了App与资源(Dao/Service)的直接联系，
-   交由Bean工厂控制资源、提供资源，这就是IoC;
-2. 之所以称为IoC，而不叫降低解耦，是因为把对象控制的权力交给了工厂(框架)，控制反转不再是
-   面向对象编程的专业术语;
-3. IoC包括依赖注入(DI)和依赖查找(DL);
-4. IoC的作用：消减计算机程序的耦合，并不能完全消除.
-</code></pre><h3 id="Spring的IoC"><a href="#Spring的IoC" class="headerlink" title="Spring的IoC"></a>Spring的IoC</h3><pre><code>1. 添加Spring的IoC依赖
-    &lt;packaging&gt;jar&lt;/packaging&gt;  ---&gt;项目的打包方式为jar
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
-            &lt;version&gt;5.1.6.RELEASE&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-2. 在resources目录下创建配置文件，bean.xml
-    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
-        &lt;!--把对象的创建交给Spring来管理--&gt;
-        &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;&lt;/bean&gt;
-        &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
-    &lt;/beans&gt;
-3. 获取Spring的IoC核心容器，根据id获取对象
-    //1. 解析配置文件，获取核心容器对象
-    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
-    //2. 根据id获取Bean对象
-    IUserDao dao = (IUserDao) ac.getBean(&quot;userDao&quot;);
-    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
-4. ApplicationContext的三个常用实现类
-    1. ClassPathXmlApplicationContext：加载类路径下的配置文件，配置文件必须在类路径下;
-    2. FileSystemXmlApplicationContext：加载磁盘任意路径下的配置文件，必须有访问权限;
-        new ClassPathXmlApplicationContext(&quot;D:\\workplace\\test\\bean.xml&quot;);
-    3. AnnotationConfigApplicationContext：用于读取注解类创建的容器.
-        new AnnotationConfigApplicationContext(XXXConfig.class);
-5. Spring中，ApplicationContext与BeanFactory的区别
-    1. ApplicationContext：它在构建核心容器时，会立即创建Bean对象，即一旦读取完配置文件，
-    立即创建文件中配置的对象；
-    2. BeanFactory：它是顶层接口，采用延迟加载的方式创建Bean对象，即在根据id获取对象时，
-    才真正的创建Bean对象；
-        Resource res = new ClassPathResource(&quot;bean.xml&quot;);
-        BeanFactory factory = new XmlBeanFactory(res);
-        IUserDao dao = (IUserDao) factory.getBean(&quot;userDao&quot;);
-    3. ApplicationContext适用于单例对象，BeanFactory适用于多例对象。
-</code></pre><h3 id="Spring对Bean的管理"><a href="#Spring对Bean的管理" class="headerlink" title="Spring对Bean的管理"></a>Spring对Bean的管理</h3><pre><code>1. 创建Bean的三种方式
-    1. 使用默认构造函数创建，&lt;bean&gt;上只有id和class属性，此时类中必须要有默认构造函数，
-    否则无法创建Bean对象;
-    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;&lt;/bean&gt;
-    2. 使用普通工厂中的方法创建Bean对象，并存入Spring的IoC容器;
-        public class ServiceFactory {  //工厂类
-            public IUserService getUserService() {
-                return new UserServiceImpl();
-            }
-        }
-    &lt;bean id=&quot;servFac&quot; class=&quot;cn.test.factory.ServiceFactory&quot;&gt;&lt;/bean&gt;
-    &lt;bean id=&quot;userService&quot; factory-bean=&quot;servFac&quot; -----&gt;&gt;引用id为servFac的&lt;bean&gt;
-                            factory-method=&quot;getUserService&quot;&gt;&lt;/bean&gt;
-        //创建Bean对象
-        IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
-    3. 使用工厂中的静态方法创建对象
-        public class ServiceFactory {  //工厂类
-            public static IUserService getUserService() {
-                return new UserServiceImpl();
-            }
-        }
-    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.factory.ServiceFactory&quot; 
-                                    factory-method=&quot;getUserService&quot;&gt;&lt;/bean&gt;
-    //创建Bean对象
-    IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
-2. Bean的作用范围
-    1. Bean对象默认就是单例的;
-        IUserService us1 = (IUserService) ac.getBean(&quot;userService&quot;);
-        IUserService us2 = (IUserService) ac.getBean(&quot;userService&quot;);
-        us1==us2;  --&gt;true
-    2. &lt;bean&gt;的 scope 属性：用于指定bean的作用范围;
-        1. singleton：默认值，单例;
-        2. prototype：多例，每次 getBean() 时，Spring就会创建一个新的对象;
-        3. request：作用于web应用的请求范围;
-        4. session：作用于web应用的会话范围;
-        5. global-session：作用于集群环境的全局会话范围，如果不是集群，等效于session.
-3. Bean的生命周期
-    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot; 
-        init-method=&quot;init&quot; destroy-method=&quot;destroy&quot;&gt;&lt;/bean&gt;
-    1. init-method=&quot;init&quot;：指定Bean对象的初始化方法，UserServiceImpl.init();
-    2. destory-method=&quot;destroy&quot;：指定Bean对象的销毁方法，UserServiceImpl.destory();  
-    3. 单例对象：随着容器的创建而创建，随着容器的消亡而消亡;
-        //1. 获取核心容器对象：执行 UserServiceImpl.init()
-        ClassPathXmlApplicationContext ac = 
-                new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
-        //2. 根据id获取Bean对象
-        IUserService service = (IUserService) ac.getBean(&quot;userService&quot;);
-        //3. 手动销毁容器：执行 UserServiceImpl.destroy()
-        ac.close();
-    4. 多例对象：scope=&quot;prototype&quot;，每次使用对象时由Spring创建，但Spring无法控制销毁，
-    只能由Java垃圾回收器销毁.
-</code></pre><h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><pre><code>1. IoC降低了程序间的耦合(依赖关系)，一个类需要引用另一个类对象时，我们只需要在Spring的
-   配置文件中说明两个类的依赖关系，交由Spring去维护这种依赖关系，这就是依赖注入;
-2. 能注入的数据：基本类型、Bean对象(在配置文件中或者注解配置过的bean)、复杂/集合类型;
-3. 注入的三种方式：使用构造函数、setter、注解
-</code></pre><h4 id="构造函数注入"><a href="#构造函数注入" class="headerlink" title="构造函数注入"></a>构造函数注入</h4><pre><code>public class UserServiceImpl implements IUserService {
-    private String name;  //基本类型
-    private int age;
-    private Date birthday;  //对象
-    private IUserDao dao;
-    public UserServiceImpl(String name, int age, Date birthday, IUserDao dao){
-        this.name = name;  this.age = age;
-        this.birthday = birthday;  this.dao = dao;
-    }
-}
-1. 使用&lt;bean&gt;的子标签 &lt;constructor-arg&gt;，相关属性：
-    1. type：注入数据的类型，也就是构造函数上的某个参数类型;
-    2. index: 参数的索引位置，从 0 开始;
-    3. name：参数名称;
-    4. value：参数值，提供基本数据类型的数据;
-    5. ref：参数值，引用另一个&lt;bean&gt;对象的数据;
-    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
-        &lt;constructor-arg name=&quot;name&quot; value=&quot;Java&quot;&gt;&lt;constructor-arg&gt;
-        &lt;constructor-arg name=&quot;age&quot; value=&quot;18&quot;&gt;&lt;constructor-arg&gt;
-        &lt;constructor-arg name=&quot;birthday&quot; ref=&quot;now&quot;&gt;&lt;constructor-arg&gt;
-        &lt;constructor-arg name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;/constructor-arg&gt;
-    &lt;/bean&gt;
-    &lt;bean id=&quot;now&quot; class=&quot;java.util.Date&quot;&gt;&lt;/bean&gt;
-    &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
-2. 弊端：这种方式只能匹配一个固定的构造函数，改变了Bean对象的实例化方式，在创建对象时，
-   即使用不到这些数据，也必须提供，否则Spring无法创建对象.
-</code></pre><h4 id="setter注入"><a href="#setter注入" class="headerlink" title="setter注入"></a>setter注入</h4><pre><code>public class UserServiceImpl implements IUserService {
-    private String name;  //基本类型
-    private int age;
-    private Date birthday;  //对象
-    private IUserDao dao;
-    //setter是必须的，可以没有getter
-}
-1. 使用&lt;bean&gt;的子标签 &lt;property&gt;，相关属性：
-    1. name：setter的方法名，取set后的字母、并把首字母转为小写;
-        age--&gt;setUserAge()--&gt;userAge，
-    2. value、ref
-    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
-        &lt;property name=&quot;name&quot; value=&quot;Java&quot;&gt;&lt;property&gt;
-        &lt;property name=&quot;age&quot; value=&quot;20&quot;&gt;&lt;property&gt;
-        &lt;property name=&quot;birthday&quot; ref=&quot;now&quot;&gt;&lt;property&gt;
-        &lt;property name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;/property&gt;
-    &lt;/bean&gt;
-    &lt;bean id=&quot;now&quot; class=&quot;java.util.Date&quot;&gt;&lt;/bean&gt;
-    &lt;bean id=&quot;userDao&quot; class=&quot;cn.test.dao.impl.UserDaoImpl&quot;&gt;&lt;/bean&gt;
-2. 这种方式解决了构造函数注入的弊端，创建对象时没有明确的限制，直接使用默认构造函数;
-3. 弊端：如果某个成员必须有值(构造函数被重载，存在有参构造函数)，获取对象时可能没有配置
-   此成员的setter，导致此成员没有值.
-</code></pre><h4 id="复杂类型-集合对象的注入"><a href="#复杂类型-集合对象的注入" class="headerlink" title="复杂类型/集合对象的注入"></a>复杂类型/集合对象的注入</h4><pre><code>public class UserServiceImpl implements IUserService {
-    private String[] myArr;  //数组
-    private List&lt;String&gt; myList;  //List集合
-    private Set&lt;String&gt; mySet;  //Set集合
-    private Map&lt;String, String&gt; myMap;  //Map集合
-    private Properties myProp;  //Properties
-    //setter是必须的
-}
-1. 使用&lt;property&gt;的子标签
-    &lt;bean id=&quot;userService&quot; class=&quot;cn.test.service.impl.UserServiceImpl&quot;&gt;
-        &lt;property name=&quot;myArr&quot;&gt;
-            &lt;array&gt;
-                &lt;value&gt;AAA&lt;/value&gt;
-                &lt;value&gt;BBB&lt;/value&gt;
-            &lt;/array&gt;
-        &lt;property&gt;
-        &lt;property name=&quot;myList&quot;&gt;
-            &lt;list&gt;
-                &lt;value&gt;AAA&lt;/value&gt;
-                &lt;value&gt;BBB&lt;/value&gt;
-            &lt;/list&gt;
-        &lt;property&gt;
-        &lt;property name=&quot;mySet&quot;&gt;
-            &lt;set&gt;
-                &lt;value&gt;AAA&lt;/value&gt;
-                &lt;value&gt;BBB&lt;/value&gt;
-            &lt;/set&gt;
-        &lt;property&gt;
-        &lt;property name=&quot;myMap&quot;&gt;
-            &lt;map&gt;
-                &lt;!-- 两种配置key-value的方式 --&gt;
-                &lt;entry key=&quot;testA&quot; value=&quot;AAA&quot;&gt;&lt;/entry&gt;
-                &lt;entry key=&quot;testB&quot;&gt;
-                    &lt;value&gt;BBB&lt;/value&gt;
-                &lt;/entry&gt;
-            &lt;/map&gt;
-        &lt;property&gt;
-        &lt;property name=&quot;myProp&quot;&gt;
-            &lt;props&gt;
-                &lt;prop key=&quot;testA&quot;&gt;AAA&lt;/prop&gt;
-                &lt;prop key=&quot;testB&quot;&gt;BBB&lt;/prop&gt;
-            &lt;/props&gt;
-        &lt;property&gt;
-    &lt;/bean&gt;
-2. 结构相同，标签是可以互换的，list、array、set是一类，map、props是一类。
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4508,7 +4545,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

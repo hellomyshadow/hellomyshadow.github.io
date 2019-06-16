@@ -232,6 +232,424 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/10/SpringCloud项目/" itemprop="url">SpringCloud项目</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-10T00:00:00+08:00">
+                2016-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="项目架构"><a href="#项目架构" class="headerlink" title="项目架构"></a>项目架构</h2><p><img src="//hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg" alt="项目架构"></p>
+<pre><code>1. 微服务的拆分
+    1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;
+    2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
+    3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;
+    4. 父工程打包方式为pom
+2. 工具类工程：一个SpringBoot工程，专门提供工具类方法，其他服务引用它的坐标即可;
+    1. 如果用到了Servlet相关的API时，如HttpServletRequest
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+        &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    2. 日志相关的启动器
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    3. JSON相关的工具类--Jackson：实体类序列化为JSON字符串、反序列化、List、Map
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+        &lt;version&gt;2.9.9&lt;/version&gt;
+    &lt;/dependency&gt;
+    4. 通用Mapper：mapper-core、mapper-base、mapper-extra
+3. REST风格的响应
+    1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
+    2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
+    @PostMapping
+    public ResponseEntity&lt;User&gt; saveUser() {
+        User u = ...;
+        ······
+        //设置状态码和响应体
+        return ResponseEntity.status(HttpStatus.CREATED).body(u);
+    }
+</code></pre><h3 id="通用异常处理"><a href="#通用异常处理" class="headerlink" title="通用异常处理"></a>通用异常处理</h3><pre><code>1. 在工具类中处理异常，引入SpringMVC的依赖
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+2. @ControllerAdvice、@ExceptionHandler：针对不同的异常，做不同的处理;
+    @ControllerAdvice
+    public class CommonExtHandler {
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
+        }
+        ......
+    }
+3. 为了对异常统一管理，自定义异常，动态设置状态码、状态信息，并使用枚举类封装状态信息;
+    1. 枚举类
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public enum ExceptionEnum {
+            CATEGORY_NOT_FOUND(404, &quot;商品分类没查到！&quot;),
+            UPLOAD_FILE_ERROR(500, &quot;图片上传失败！&quot;),
+            ;
+            private int code;
+            private String msg;
+        }
+    2. 自定义异常
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class CommonException extends RuntimeException {
+            private ExceptionEnum enum;
+        }
+    3. 异常结果的封装
+        @Data
+        public class ExceptionResult {
+            private int status;
+            private String message;
+            private long timestamp;
+            public ExceptionResult(ExceptionEnum em) {
+                this.status = em.getCode();
+                this.message = em.getMsg());
+                this.timestamp = System.currentTimeMillis();
+            }
+        }
+    4. 异常捕获
+        @ExceptionHandler(CommonException.class)
+        public ResponseEntity&lt;ExceptionResult&gt; handleCommonExt(CommonException ext) {
+            ExceptionEnum em = ext.getExceptionEnum();
+            return ResponseEntity.status(em.getCode()).body(new ExceptionResult(em));
+        }
+    5. 在Controller方法中抛出异常
+        @PostMapping
+        public ResponseEntity&lt;User&gt; saveUser() {
+            if(...) {
+                throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
+            }
+            ......
+        }
+</code></pre><h2 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h2><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
+2. 域名解析首先从本地域名开始，也就是系统盘中的 host 文件，在 host 文件中查找域名映射的IP地址;
+    1. windows系统：C:\Windows\System32\drivers\etc\hosts
+    2. Linux系统：/etc/hosts
+3. 如果 host 文件中没有配置域名和IP的映射关系，则转向域名服务器解析;
+    127.0.0.1   localhost
+4. 域名服务器：记录了所有注册备案的域名和IP的映射关系;
+5. 在不购买域名的情况下，在本地 host 文件中配置域名与回环地址的映射;
+    127.0.0.1   www.icloud.com
+    127.0.0.1   manage.icloud.com
+    127.0.0.1   api.icloud.com   ------&gt;子域名
+6. 测试：ping api.icloud.com
+</code></pre><h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><pre><code>1. Nginx是一个高性能的Web和反向代理服务器，基于 Epoll 和 Kqueue 模型;
+    1. 作为Web服务器：比Apache占用更少的资源，效率更高，单机支持高达50000个并发连接的响应;
+    2. 作为负载均衡服务器：既可以在内部直接支持Rails和PHP，也可以作为HTTP代理服务对外提供服务;
+    3. 作为邮件代理服务器：最早开发Nginx的目的之一也是作为邮件代理服务器;
+2. Web服务器：Apache服务器、Nginx、IIS...
+3. Web应用服务器：Tomcat、Resin、Jetty...
+    1. Web服务器不能解析JSP等页面，只能处理HTML、CSS、JS、图片等静态资源;
+    2. Web服务器的并发能力远高于Web应用服务器;
+4. Nginx作为Web服务器时，通常把它作为网关，因为它具备网关必备的功能：反向代理、负载均衡、动态路由、请求过滤
+</code></pre><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><pre><code>1. Nginx作为反向代理服务器，配置好反向代理的规则，不同的请求交给不同的真实服务器进行处理;
+2. 当请求到达Nginx时，它会根据定义好的规则进行请求转发，从而实现路由的功能;
+3. nginx.conf
+    http {
+        ......
+
+        server {
+            listen       80;  -----------------&gt; 配置监听的端口号
+            server_name  manage.icloud.com;  --&gt; 监听的域名/IP
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:9000;  #反向代理，转发的真实服务器地址
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+        server {
+            listen       80;
+            server_name  api.icloud.com;
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+        ......
+    }
+4. 通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
+5. 访问(http协议的默认端口号80)
+    http://manage.icloud.com/...
+    http://api.icloud.com/...
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
+2. 主域名和子域名之间也是跨域，cookie也无法访问;
+3. 同源策略限制的行为：
+    1. Cookie、LocalStorage 和 IndexDB 无法读取;
+    2. DOM 和 JS对象无法获得;
+    3. AJAX 请求不能发送.
+4. 注意：
+    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
+    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+5. 解决跨域问题的方案有很多：
+    1. jsonp：利用 &lt;script&gt; 标签可以跨域的原理实现，需要服务端支持，且只能发起GET请求;
+    2. document.domain + iframe跨域
+    3. location.hash + iframe
+    4. window.name + iframe跨域
+    5. postMessage跨域
+    6. 跨域资源共享(CORS)
+    7. Nginx反向代理
+    8. nodejs中间件代理跨域
+    9. WebSocket协议跨域
+6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+    1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
+    2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
+    3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
+</code></pre><h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h3><pre><code>1. CORS是一个W3C标准，称为跨域资源共享，规范化的跨域请求解决方案，安全可靠，需要浏览器和服务器同时支持;
+2. 所有浏览器都支持该功能，IE浏览器不能低于IE10，整个CORS通信过程都是浏览器自动完成，不需要用户参与;
+3. 对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样;
+4. 浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时甚至还会多出一次附加的请求，但用户不会有感觉;
+5. 实现CORS通信的关键是服务器，由服务端控制是否允许跨域，只要实现了CORS接口，就可以跨源通信，可自定义规则.
+</code></pre><h3 id="CORS原理"><a href="#CORS原理" class="headerlink" title="CORS原理"></a>CORS原理</h3><pre><code>1. 浏览器会将AJAX请求分为两类：简单请求、特殊请求
+2. 简单请求需要满足两大条件
+    1. 请求方法：HEAD、GET、POST
+    2. HTTP的头信息：Accept、Accept-Language、Content-Language、Last-Event-ID、Content-Type
+    3. 其中，Content-Type值只限于：application/x-www-form-urlencoded、multipart/form-data、text/plain
+3. 当浏览器发现AJAX请求是简单请求时，会在请求头中携带字段Origin，指定当前请求属于哪个域(协议+域名+端口号)
+    Origin: http://manage.icloud.com
+    1. 服务端根据 Origin 的值决定是否允许其跨域，如果允许跨域，则需要在响应头中携带两个字段：
+        Access-Control-Allow-Origin: http://manage.icloud.com  ----&gt; 必需
+        Access-Control-Allow-Credentials: true   -------------&gt; 可选
+    2. Access-Control-Allow-Origin：可接受的域，可以是一个具体的域，也可以是 *，表示任意一个域;
+    3. Access-Control-Allow-Credentials：是否允许携带Cookie，默认情况下不会携带Cookie;
+4. 需要注意的是，如果跨域请求要操作Cookie，需要满足3个条件：
+    1. 服务端的响应头中必须设置 Access-Control-Allow-Credentials 为 true;
+    2. 浏览器发起AJAX请求时，必须设置 withCredentials 为 true;
+    3. 响应头中的 Access-Control-Allow-Origin 必须指定域，不能使用通配符*;
+5. 特殊请求：不符合简单请求的条件时，都会被浏览器判定为特殊请求，如请求方式PUT;
+    1. 预检请求：特殊请求会在正式通信之前，增加一次HTTP查询请求;
+        1. 浏览器先询问服务端，当前请求的域是不是在服务端许可的白名单中，以及可以使用哪些HTTP动词、头信息字段;
+        2. 只有得到了肯定的答复，浏览器才会正式发起请求，否则就报错;
+    2. 预检请求中，除了 Origin 字段之外，还增加了2个头信息
+        Access-Control-Request-Method: PUT   ---&gt; 接下来会用到的请求方式
+        Access-Control-Request-Headers: X-Custom-Header  --&gt; 会额外用到的头信息
+    3. 预检请求的响应：如果服务端许可跨域，也会响应中增加一些字段
+        Access-Control-Allow-Origin: http://manage.icloud.com
+        Access-Control-Allow-Credentials: true
+        Access-Control-Allow-Method: GET, POST, PUT   ---&gt; 允许访问的方式
+        Access-Control-Allow-Headers: X-Custom-Header ---&gt; 允许携带的头
+        Access-Control-Max-Age: 1728000  ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
+    4. 浏览器收到响应的信息，则判定可以跨域;
+6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
+</code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
+2. 在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
+    @Configuration
+    public class GlobalCorsConfig {
+        @Bean
+        public CorsFilter corsFilter() {
+            //CORS配置信息
+            CorsConfiguration conf = new CorsConfiguration();
+            //1. 添加允许的域，可以同时添加多个
+            conf.addAllowedOrigin(&quot;http://manage.icloud.com&quot;);
+            //2. 是否发送Cookie
+            conf.setAllowCredentials(true);
+            //3. 允许的请求方式
+            conf.addAllowedMethod(&quot;OPTIONS&quot;);
+            conf.addAllowedMethod(&quot;HEAD&quot;);
+            conf.addAllowedMethod(&quot;GET&quot;);
+            conf.addAllowedMethod(&quot;PUT&quot;);
+            conf.addAllowedMethod(&quot;POST&quot;);
+            conf.addAllowedMethod(&quot;DELETE&quot;);
+            conf.addAllowedMethod(&quot;PATCH&quot;);
+            //4. 允许的头信息
+            conf.addAllowedHeader(&quot;*&quot;);
+            //5. 过期时间
+            conf.setMaxAge(3600L);
+
+            //添加映射路径，拦截一切请求
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration(&quot;/**&quot;, conf);
+
+            //返回新的CorsFilter
+            return new CorsFilter(source);
+        }
+    }
+3. @CrossOrigin：SpringMVC4.2开始支持;
+    1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
+    2. 相关属性：value、origins，maxAge、allowedHeaders、exposedHeaders、methods、allowCredentials
+    3. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
+4. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+    1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
+    2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
+5. 关于SpringMVC的XML配置文件中，全局配置CORS
+    &lt;mvc:cors&gt;
+        &lt;mvc:mapping path=&quot;/api/**&quot;
+            allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
+            allowed-methods=&quot;GET, PUT&quot;
+            allowed-headers=&quot;header1, header2, header3&quot;
+            exposed-headers=&quot;header4, header5&quot; allow-credentials=&quot;false&quot;
+            max-age=&quot;3600&quot; /&gt;
+        &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
+    &lt;/mvc:cors&gt;
+</code></pre><h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><pre><code>1. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
+2. 引入PageHelper的启动器：pagehelper-spring-boot-starter
+3. 在调用查询语句之前，使用PageHelper实现分页查询
+    public List&lt;User&gt; findByPage(Integer, page, Integer rows) {
+        //分页：使用拦截器，在SQL语句后面拼接limit
+        PageHelper.startPage(page, rows);
+        //查询
+        List&lt;User&gt; users = mapper.selectAll();
+        //解析查询结果
+        PageInfo&lt;User&gt; info = new PageInfo&lt;&gt;(users);
+        return users;
+    }
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/04/SpringCloud组件3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3967,505 +4385,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/01/SpringBoot/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/04/01/SpringBoot/" itemprop="url">SpringBoot</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-01T00:00:00+08:00">
-                2016-04-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="SpringBoot与Spring"><a href="#SpringBoot与Spring" class="headerlink" title="SpringBoot与Spring"></a>SpringBoot与Spring</h2><pre><code>1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能;
-2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;
-    1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;
-    2. Spring3.0引入了基于Java的配置，这是一种类型安全的、可重构的配置方式，可以替代XML;
-    3. 除了配置会消耗大量的开发时间，项目的依赖管理也是很麻烦的，版本选择困难，容易冲突.
-3. Spring注解的发展
-    1. Spring1.0时代因为JDK1.5刚出来，注解开发尚未盛行，所以一切Spring配置皆是XML格式;
-    2. Spring2.0时代引入了注解开发，但并未完善，因此并未完全替代XML;
-    3. Spring3.0时代的注解已经非常完善了，因此Spring推荐使用注解(Java配置)代替XML.
-4. SpringBoot解决了Spring的缺点，基于约定优先于配置，开发者只需要关心逻辑业务的代码编写;
-    1. 开箱即用，没有代码生成，也无需XML配置，通过修改默认值来满足特定的需求;
-    2. 提供了一些大型项目中常见的非功能性的特性，如嵌入式服务器、安全、指标、健康检测、外部配置...
-    3. SpringBoot不是对Spring功能上的增强，而是提供一种基于Spring的快速开发方式.
-5. SpringBoot的核心功能
-    1. 起步依赖：本质上是一个Maven项目对象模型(POM)，定义了对其他库的传递依赖;
-    1. 简单来说，起步依赖就是将具备某种功能的坐标打包到一起，并提供一些默认功能.
-    2. 自动配置：SpringBoot的自动配置是一个运行时(应用程序启动时)的过程;
-    2. 考虑了众多因素，才决定Spring配置应该用哪个、不应该用哪个，此过程也是Spring自动完成的。
-6. 在SpringBoot中，默认采用Servlet3.0，它可以完全使用注解取代web.xml了，所以SpringBoot没有了web.xml;
-</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. SpringBoot2.x的依赖环境和版本
-    1. JDK8+，因为SpringBoot2.x底层是Spring Framework5
-    2. Maven3.2+，Gradle4+
-2. 创建一个普通Java项目的Maven工程，添加继承SpringBoot的起步依赖spring-boot-starter-parent
-    &lt;parent&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
-        &lt;version&gt;2.1.4.RELEASE&lt;/version&gt;
-    &lt;/parent&gt;
-    1. spring-boot-starter-parent 中管理了很多其他依赖的版本，所以 &lt;dependencies&gt; 中引入这些的依赖时，
-    尽量不要配置它们的版本号，沿用 spring-boot-starter-parent 中的版本号;
-    2. Spring对版本的要求比较严格，很多问题都是因为版本不匹配所致.
-3. SpringBoot要集成SpringMVC、进行Web/Controller的开发时，只需要导入web的启动器即可;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-        &lt;!-- 无需指定版本号(如果无法自动配置，则拷贝spring-boot-starter-parent中的版本号) --&gt;
-    &lt;/dependency&gt;
-4. 创建一个普通类，使用 @SpringBootApplication 声明为一个SpringBoot的引导类(引导应用程序的入口);
-    1. 在 main() 中运行引导类：SpringApplication.run(引导类.class, 可选参数);
-    @SpringBootApplication
-    public class StartSpringBoot {
-        public static void main(String[] args) {
-            SpringApplication.run(StartSpringBoot.class, args);
-        }
-    }
-5. SpringBoot中内置有Tomcat插件，直接运行 main()，在控制台提示Tomcat启动信息：
-    Tomcat started on port(s): 8080 (http) with context path &apos;&apos;
-    1. context path &apos;&apos;：表示web应用的名称(虚拟项目名)为空字符串，访问 http://localhost:8080/ ;
-    2. 当前没有编写任何页面，所以展示的是 Error Page，但表示已经启动成功了;
-6. 无需任何配置，就可以直接编写Controller层
-    @Controller
-    public class QuickController {
-        @RequestMapping(&quot;/test&quot;)
-        @ResponseBody
-        public String test() {
-            return &quot;Hello SpringBoot&quot;;
-        }
-    }    ---&gt;http://localhost:8080/test  ---&gt; Hello SpringBoot
-7. IDEA快速创建SpringBoot工程
-    New Project -&gt; Spring Initializr -&gt; Next -&gt; 设置项目信息 -&gt; Next -&gt; 手动选择依赖 -&gt; Finish
-</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><pre><code>1. 起步依赖
-    1. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent，它会对依赖的版本进行管理;
-    2. SpringBoot项目引入的依赖往往都是starter，它是一个工具集合，里面包含了很多常用的依赖，便于版本管理;
-    3. 比如spring-boot-starter-web，包含了诸如spring-webmvc、spring-web、Tomcat、jackson ...
-    4. 第三方框架要对接SpringBoot项目，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
-2. 自动配置
-    1. @SpringBootApplication是组合注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
-    2. @SpringBootConfiguration 其实就是 @Configuration，所以引导类也就是一个配置类;
-    3. @EnableAutoConfiguration 是自动配置的核心注解，@Import({AutoConfigurationImportSelector.class})
-    4. AutoConfigurationImportSelector 中就是自动配置的核心源码;
-    5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解.
-</code></pre><h2 id="SpringBoot的配置文件"><a href="#SpringBoot的配置文件" class="headerlink" title="SpringBoot的配置文件"></a>SpringBoot的配置文件</h2><pre><code>1. SpringBoot是基于约定的，所以很多配置都是默认值;
-2. 在需要自定义配置时，根据启动器提供的key名，在SpringBoot的配置文件中指定value值即可;
-3. spring-boot-starter-parent 会自动加载 resources 目录下的三类配置文件;
-    1. application*.yml、application*.yaml、application*.properties;
-    2. 加载顺序：yml --&gt; yaml --&gt; properties，当有相同的key名配置时，properties中的优先级最高.
-4. 创建 resources/application.properties，实现一些个性化配置;
-    server.port=9090    # 配置Tomcat启动的端口号，默认是8080
-    server.servlet.context-path=/demo    # 配置web应用虚拟目录名，默认是空字符串
-5. YML一种新型配置文件，也是一种标记语言，有两种扩展名：.yml、.yaml
-    1. YML文件格式是由YAML编写的，YAML是一种能够被电脑识别的数据序列化格式，且易读性强，以数据为核心，比XML更简洁;
-    2. YML文件与脚本语言的交互性强，可以被支持YAML库的编程语言程序导入，如C/C++、Python、Java、C#、PHP、Ruby...
-</code></pre><h3 id="yml配置文件"><a href="#yml配置文件" class="headerlink" title="yml配置文件"></a>yml配置文件</h3><pre><code>1. 普通数据
-    1. key: value
-    2. key和value之间必须有一个空格：name: Jack
-2. 对象数据/Map数据
-    1. 形式一：缩进形式
-        key:
-            key1: value1
-            key2: value2
-    2. key1、key2前面的空格个数不限定，相同缩进代表同一级别;
-        person:
-            name: Java
-            age: 20
-    3. 形式二：行内形式
-        key: {key1: value1,key2: value2}
-3. 数组、List、Set
-    1. 存放普通字符串
-        key:
-            - value1
-            - value2
-        key: [value1,value2]
-    2. 存放对象
-        key:
-            - key11: value11
-              key12: value12
-            - key22: value22
-              key23: value23
-        key: [{key11: value11,key12: value12}, {key22: value22,key23: value23}]
-4. resources/application.yaml
-    1. 自定义SpringMVC的默认配置
-        server:
-            port: 8888    # 配置服务器的端口号
-            servlet:
-                path: &quot;*.do&quot;    # 访问映射路径，默认是&quot;/&quot;，会影响所有的请求路径
-    2. Log4j相关
-        logging:    # 日志配置(log4j相关的依赖已经被集成)
-            level:    # 控制日志级别，是一个Map集合
-                cn.boot: debug    # cn.boot包下的日志级别为debug
-                org.springframework: debug
-</code></pre><h3 id="属性映射"><a href="#属性映射" class="headerlink" title="属性映射"></a>属性映射</h3><pre><code>1. 配置文件被加载后，其中的键-值将会被存放到Spring IoC容器中，那么就可以映射到Spring管理的Bean对象中;
-2. application.yml
-    jdbc:
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-        username: root
-        password： 123456
-3. @Value 的映射：指定配置文件的key名，映射到Spring IoC管理的对象属性上，适合数据量较小的情况;
-    @Component
-    public class JdbcConf {
-        @Value(&quot;${jdbc.driverClassName}&quot;)
-        private String driverClassName;
-
-        @Value(&quot;${jdbc.url}&quot;)
-        private String url;
-
-        @Value(&quot;${jdbc.username}&quot;)
-        private String username;
-
-        @Value(&quot;${jdbc.password}&quot;)
-        private String password;
-    }
-4. @ConfigurationProperties：把配置文件中的键值数据映射到当前Java类的属性上;
-    @ConfigurationProperties(prefix=&quot;jdbc&quot;)
-    public class JdbcConf {
-        private String driverClassName;
-        private String url;
-        private String username;
-        private String password;
-    }
-    1. prefix属性：声明配置文件中的字段前缀，自动映射到Java类的同名属性上;
-    2. 使用 @ConfigurationProperties 时，还需要引入其执行器;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
-            &lt;optional&gt;true&lt;/optional&gt;
-        &lt;/dependency&gt;
-    3. 先在Bean中定义需要的属性，然后在配置文件中配置时，执行器就会提示可配置的属性.
-5. @EnableConfigurationProperties：使用 @ConfigurationProperties 注解的Java类;
-    @Configuration
-    @EnableConfigurationProperties(JdbcConf.class)
-    public class TestConfigure {
-        @Autowired
-        private JdbcConf jdbc;  //1. @Autowired的方式注入JdbcConf对象
-
-        public TestConfigure(JdbcConf jdbc) { //2.构造方法的方式注入JdbcConf对象
-
-        }
-        @Bean
-        public DataSource getDataSource(JdbcConf prop) {  //3.方法参数的方式注入
-            //阿里的druid
-            DruidDataSource ds = new DruidDataSource();
-            ds.setDriverClassName(prop.getDriverClassName());
-            ds.setUrl(prop.getUrl());
-            ds.setUsername(prop.getUsername());
-            ds.setPassword(prop.getPassword());
-            return ds;
-        }
-    }
-6. 如果只有一个Bean对象使用JDBC的连接信息，还可以优雅地映射配置文件中的键-值
-    @Configuration
-    public class JdbcConfig {
-        @Bean
-        @ConfigurationProperties(prefix=&quot;jdbc&quot;)
-        public DataSource getDataSource(JdbcProperties prop) {
-            return new DruidDataSource();
-        }
-    }
-    1. 这种方式不再需要映射配置类JdbcConf，直接在对应Bean对象上使用 @ConfigurationProperties;
-    2. DruidDataSource对象中有同名属性：driverClassName、url、username、password，从而实现映射;
-</code></pre><h3 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h3><pre><code>1. ResourceProperties中定义了静态资源的查找方向
-    classpath:/META-INF/resources/ --&gt;classpath:/resources/ --&gt;classpath:/static/ --&gt;classpath:/public/
-2. 注意：classpath 指的就是 src/main/resources 目录，这4个目录都在 src/main/resources 目录下;
-3. 这些静态资源目录不受Controller管控，可以直接被访问，用于放入图片、CSS、JS、HTML等静态资源;
-4. 创建 resources/static/index.html，访问：localhost:8080/index.html
-5. 在配置文件 application.yml 中，可以加入自定义的静态资源目录：
-    spring:
-        resources:
-            static-locations:
-                - classpath:/META-INF/resources/
-                - classpath:/resources/
-                - classpath:/static/
-                - classpath:/public/
-                - classpath:/abc/
-</code></pre><h2 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h2><pre><code>1. 添加起步依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. IDEA默认不支持热部署，需要设置
-    1. Settings --&gt; Compiler --&gt; 勾选 Build project automatically
-    2. Ctrl+Shift+Alt+/ --&gt; Registry --&gt; 勾选 compiler.automake.allow.when.app.running
-3. 每次修改了Controller层之后，等待服务器重启，刷新浏览器页面;
-4. 在配置文件 application.properties  中，配置不被热部署的文件
-    spring.devtools.restart.exclude=static/**, application.properties
-5. 通过触发器，手动控制热部署
-    1. 创建 resources/trigger.txt，添加内容 verion=1
-    2. 配置触发器
-        spring.devtools.restart.trigger-file=trigger.txt
-    3. 需要热部署时，修改触发器：version=2，保存文件即触发热加载部署;
-</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. SpringBoot项目中，使用 MultipartFile 对象接收上传的文件时，控制文件的大小;
-    1. 在启动类中注册 MultipartConfigElement，设置文件大小
-    @Bean
-    public MultipartConfigElement getMultipartConfigElement() {
-        MultipartConfigFactory factory = new MultipartConfigElement();
-        factory.setMaxFileSize(&quot;10240KB&quot;);  //单个文件最大10240KB
-        factory.setMaxRequestSize(&quot;102400KB&quot;);  //总上传数据最大102400KB
-        return factory.createMultipartConfig();
-    }
-2. 文件服务器：fastdfs，阿里云oss，nginx搭建一个简单的文件服务器;
-3. 上传过程操作的是磁盘的绝对路径，打成了jar包之后，无法直接访问磁盘目录，需要把目录加入静态资源目录列表中;
-    images-path=D:\report\
-    spring.resources.static-locations=classpath:/META-INF/resources/, ... , file:${images-path}
-</code></pre><h2 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h2><pre><code>1. 主流的JavaWeb模板引擎：JSP、Velocity、Freemarker、Thymeleaf
-    1. JSP：动态网页技术，JavaWeb官方推荐，支持EL、JSTL表达式，本质上也是一个Servlet，占用JVM内存;
-    2. Freemarker：文件一般保存为 xxx.ftl，严格依赖MVC模式，不依赖Servlet容器(不占用JVM内存)，内建函数;
-    3. Thymeleaf：SpringBoot主推，轻量级模板引擎，后缀名就是.html，浏览器可以直接访问;
-2. Thymeleaf不推荐在页面中做复杂的逻辑业务，因为解析DOM/XML会占用较大的内存;
-3. Thymeleaf的启动器：spring-boot-starter-thymeleaf
-    spring.thymeleaf.cache=false #是否缓存
-    spring.thymeleaf.mode=HTML5
-    spring.thymeleaf.encoding=UTF-8  #编码
-    spring.thymeleaf.content-type=text/html  #类型
-    spring.thymeleaf.suffix=.html  #文件后缀名
-    spring.thymeleaf.prefix=classpath:/templates/  #前缀：存放路径
-4. 创建 resources/templates/user/info.html
-        @GetMapping(&quot;info&quot;)
-        public String info() {
-            return &quot;user/info&quot;;  ---&gt;渲染resources/templates/user/info.html
-        }
-5. resources/templates 目录不是静态资源目录，需要放在静态资源列表中才能直接访问
-    spring.resources.static-locations = classpath:/META-INF/resources/, ... ,classpath:/templates/
-6. 页面静态化
-    1. Thymeleaf不仅可以把渲染结果写入Response，还可以写到本地文件中，从而实现页面静态化;
-    2. 页面静态化：把动态渲染的HTML页面变成静态内容保存，比如部署在Nginx中;
-    3. 以后的用户请求到来时，直接访问静态页面，不再经过服务的渲染，从而大大提高并发能力，减小Tomcat的压力.
-</code></pre><h2 id="多环境配置"><a href="#多环境配置" class="headerlink" title="多环境配置"></a>多环境配置</h2><pre><code>1. 多环境：开发环境、测试环境、预发布环境、生产环境...  不同环境使用不同的配置，如数据库配置;
-2. 多环境切换有很多方式，以 spring.profiles.active 为例
-    1. 创建 resources/config 目录，管理SpringBoot的配置文件，注意：config目录名是固定的;
-    2. 在 config 中创建 application.properties、application-dev.properties、application-test.properties
-    3. application-dev.properties
-        db.url=dev.com
-    4. application-test.properties
-        db.url=test.com
-    5. application.properties
-        db=local.com
-        # 指定使用哪个profile，如果不指定，默认使用当前文件中的配置
-        spring.profiles.active=test  # 使用 application-test 中的配置 db.url=test.com
-3. 映射到Spring IoC容器中的Java类属性上
-    @Value(&quot;${db.url}&quot;)
-    private String url;  //test.com
-</code></pre><h2 id="打包与容器"><a href="#打包与容器" class="headerlink" title="打包与容器"></a>打包与容器</h2><pre><code>1. SpringBoot项目打成jar包
-    1. pom.xml 配置Maven插件
-    &lt;packaging&gt;jar&lt;/packaging&gt;
-    &lt;build&gt;
-        &lt;plugins&gt;
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-    &lt;/build&gt;
-    2. 打开右侧Maven面板 --&gt; Lifecycle --&gt; 双击执行 install --&gt; 在target目录下生成xxx.jar
-    3. 如果没有添加插件，执行 java -jar xxx.jar 命令运行jar包时，会报错：no main manifest attribute
-2. SpringBoot项目打成war包
-    1. 修改打包方式：&lt;packaging&gt;war&lt;/packaging&gt;
-    2. 配置打包的项目名称，也就是项目的虚拟目录名
-        &lt;build&gt;
-            &lt;finalName&gt;boottest&lt;/finalName&gt;
-            &lt;plugins&gt;
-                &lt;plugin&gt;
-                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-                    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-                &lt;/plugin&gt;
-            &lt;/plugins&gt;
-        &lt;/build&gt;
-    3. 修改启动类
-    @SpringBootApplication
-    public class BootTestApplication extends SpringBootServletInitializer {
-        protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-            return builder.sources(BootTestApplication.class);
-        }
-        public static void main(String[] args) {
-            SpringApplication.run(BootTestApplication.class, args);
-        }
-    }
-    4. 执行Lifecycle --&gt; clean，然后执行 install 命令，在target目录下生成 xxx.war
-    5. 把 xxx.war 放在 Tomcat/webapps 目录中，启动Tomcat服务器，xxx.war自动解压;
-    6. 访问：http://localhost:8080/boottest/xxx
-3. SpringBoot默认使用Tomcat容器启动，也可以配置成其他容器
-    1. 去除spring-boot-starter-web中集成的Tomcat
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-            &lt;exclusions&gt;
-                &lt;exclusion&gt;
-                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-                    &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
-                &lt;/exclusion&gt;
-            &lt;/exclusions&gt;
-        &lt;/dependency&gt;
-    2. 配置为jetty容器
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-jetty&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-    3. 配置为undertow容器
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-undertow&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;io.undertow&lt;/groupId&gt;
-            &lt;artifactId&gt;undertow.core&lt;/artifactId&gt;
-            &lt;version&gt;1.3.24.Final&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;io.undertow&lt;/groupId&gt;
-            &lt;artifactId&gt;undertow.servlet&lt;/artifactId&gt;
-            &lt;version&gt;1.3.24.Final&lt;/version&gt;
-        &lt;/dependency&gt;
-4. 使用JMeter测试各个容器的性能;
-</code></pre><h3 id="部署到阿里云"><a href="#部署到阿里云" class="headerlink" title="部署到阿里云"></a>部署到阿里云</h3><pre><code>1. winscp、secureCRT、FileZilla：远程连接Linux的工具，可视化操作
-2. 在Linux上安装JDK
-    1. cd /usr/local/  --&gt; mkdir software --&gt; 下载JDK8压缩包、解压、重命名为jdk8
-    2. 配置环境变量：vim /etc/profile，在尾部插入以下内容
-    export JAVA_HOME=/usr/local/software/jdk8
-    export PATH=$PATH:$JAVA_HOME/bin
-    export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
-    export JAVA_HOME PATH CLASSPATH
-    3. 让配置立刻生效：source /etc/profile
-    4. 测试：java -version
-3. 入门级：把SpringBoot项目部署到Linux云服务器上，要开放对应的端口号;
-    1. 去除对生产环境没用的依赖，如热部署spring-boot-starter-test，测试spring-boot-starter-test
-    2. 打成jar包，并上传到Linux服务器上 /usr/local/software/app/
-    3. 启动：java -jar xxx.jar
-4. 守护进程的方式启动：nohup java -jar xxx.jar &amp;   ---&gt; 生成启动日志文件nohup.out
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4516,7 +4435,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

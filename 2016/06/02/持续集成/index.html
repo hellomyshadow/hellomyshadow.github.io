@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Jenkins1. 持续集成：Continuous Integration，简称CI，     1. 它倡导团队中的开发人员必须经常集成他们的工作，确保软件开发的质量;     2. 每次集成都通过自动化的构建来验证，包括自动编译、发布和测试，从而尽快地发现集成错误; 2. 持续集成的特点与作用     1. 它是一个自动化的、周期性的集成测试过程，包括检出代码、编译构建、运行测试、结果记录、测试">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="持续集成">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/06/02/持续集成/index.html">
+<meta property="og:site_name" content="大麦田程序猿">
+<meta property="og:description" content="Jenkins1. 持续集成：Continuous Integration，简称CI，     1. 它倡导团队中的开发人员必须经常集成他们的工作，确保软件开发的质量;     2. 每次集成都通过自动化的构建来验证，包括自动编译、发布和测试，从而尽快地发现集成错误; 2. 持续集成的特点与作用     1. 它是一个自动化的、周期性的集成测试过程，包括检出代码、编译构建、运行测试、结果记录、测试">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-16T15:51:18.947Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="持续集成">
+<meta name="twitter:description" content="Jenkins1. 持续集成：Continuous Integration，简称CI，     1. 它倡导团队中的开发人员必须经常集成他们的工作，确保软件开发的质量;     2. 每次集成都通过自动化的构建来验证，包括自动编译、发布和测试，从而尽快地发现集成错误; 2. 持续集成的特点与作用     1. 它是一个自动化的、周期性的集成测试过程，包括检出代码、编译构建、运行测试、结果记录、测试">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/06/02/持续集成/">
+
+
+
+
+
+  <title>持续集成 | 大麦田程序猿</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大麦田程序猿</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/06/02/持续集成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">持续集成</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-02T00:00:00+08:00">
+                2016-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h2><pre><code>1. 持续集成：Continuous Integration，简称CI，
+    1. 它倡导团队中的开发人员必须经常集成他们的工作，确保软件开发的质量;
+    2. 每次集成都通过自动化的构建来验证，包括自动编译、发布和测试，从而尽快地发现集成错误;
+2. 持续集成的特点与作用
+    1. 它是一个自动化的、周期性的集成测试过程，包括检出代码、编译构建、运行测试、结果记录、测试统计...
+    2. 需要有专门的集成服务器来执行集成构建，有代码托管工具支持;
+    3. 保证团队开发人员提交代码的质量，减轻软件发布时的压力;
+    4. 自动化的持续集成，无需人工干预，减少重复过程，节省时间、费用和工作量.
+3. Jenkins：原名Hudson，一个开源的持续集成工具;
+    1. 实时监控集成中存在的错误，提供详细的日志文件和提醒功能，支持图表的形式展示项目构建的趋势和稳定性;
+    2. 易安装、易配置(GUI配置界面)、变更支持、支持永久链接、集成Email/RSS/IM、Junit/TestNG测试报告;
+    3. 支持分布式构建、文件指纹信息、支持第三方插件.
+</code></pre><h3 id="安装Jenkins"><a href="#安装Jenkins" class="headerlink" title="安装Jenkins"></a>安装Jenkins</h3><pre><code>1. 安装JDK
+    1. 在宿主机(CentOS系统)中下载rpm格式的JDK，或者上传rmp格式的JDK到宿主机上;
+    2. 使用RPM的方式安装JDK，其根目录为 /usr/java/jdk1.8.0_xxx
+        rpm -ivh jdk-8uxxx-linux-x64.rpm
+2. 安装Jenkins
+    weg https://pkg.jenkins.io/redhat/jenkins-2.180-1.1.noarch.rpm
+    rmp -ivh jenkins-2.180-1.1.noarch.rpm
+3. 配置用户和端口：vi /etc/sysconfig/jenkins
+    JENKINS_USER=&quot;root&quot;
+    JENKINS_PORT=&quot;8888&quot;
+4. 启动服务
+    systemctl start jenkins
+5. 访问Jenkins Web管理平台：http://宿主机IP:8888  ==&gt; 开始安装与配置
+    1. 提示获取初始密码的路径 /var/lib/jenkins/secrets/initialAdminPassword
+    2. 选择默认安装的插件：Install suggested plugins
+    3. 创建管理员用户：Create First Admin User
+    4. 安装完成，启动Jenkins
+6. 在Jenkins Web管理平台上安装插件
+    系统管理 ==&gt; 管理插件 ==&gt; 可选插件 ==&gt; 搜索Maven ==&gt; 勾选Maven Integration ==&gt; 直接安装
+</code></pre><h3 id="全局工具配置"><a href="#全局工具配置" class="headerlink" title="全局工具配置"></a>全局工具配置</h3><pre><code>1. Jenkins通过Maven插件调用Maven命令、实现持续集成，而Maven插件只是Maven的入口，所以要先安装Maven;
+    1. 在宿主机中下载Maven，或者上传 apache-maven-3.6.1-bin.tar.gz 到宿主机上;
+        tar zxvf apache-maven-3.6.1-bin.tar.gz
+        mv apache-maven-3.6.1 /usr/local/maven
+    2. 配置本地仓库：vi /usr/local/maven/conf/setting.xml
+        &lt;localRepository&gt;/usr/local/repository&lt;/localRepository&gt;
+    3. 将开发环境的本地仓库上传到宿主机上的 /usr/local/repository
+2. Jenkins Web管理平台 ==&gt; 系统管理 ==&gt; 全局工具配置 ==&gt; 配置JDK和Maven ==&gt; Save
+    1. 新增JDK -&gt; 取消自动安装 -&gt; 设置别名为jdk1.8，JAVA_HOME=/usr/java/jdk1.8.0_xxx
+    2. 新增Maven -&gt; 取消自动安装 -&gt; 设置Name为maven，MAVEN_HOME=/usr/local/maven
+</code></pre><h3 id="Gogs与Git"><a href="#Gogs与Git" class="headerlink" title="Gogs与Git"></a>Gogs与Git</h3><pre><code>1. Jenkins在持续集成时，需要从Git仓库上拉取代码，所以要为Jenkins配置Git服务器;
+2. Gogs是一款极易搭建的自助Git服务，由Go语言开发，能够通过独立的二进制分发，支持Go语言支持的所有平台;
+3. 在宿主机(CentOS系统)上搭建的Git没有图形界面，Gogs支持图形化操作;
+4. 容器化的方式搭建Gogs
+    1. 下载镜像：docker pull gogs/gogs
+    2. 创建容器
+    docker run -di --name=gogs -p 10022:22 -p 3000:3000 -v /var/gogsdata:/data gogs/gogs
+5. 访问Gogs Web管理界面：http://宿主机IP:3000  ==&gt; 开始安装与配置
+    1. 数据库设置：SQLites3
+    2. 应用基本设置 -&gt; 域名: 宿主机的IP地址，应用URL: http://宿主机IP:3000/
+    3. 管理员账号设置 -&gt; 设置用户名、密码、邮箱 -&gt; 立即安装;
+    4. 创建远程仓库：右上角的 + 号 -&gt; 输入仓库名称 -&gt; 创建仓库 -&gt; 生成仓库地址;
+6. 在本地Windows系统上安装Git，为IDEA配置Git，并为工程配置远程仓库地址;
+    1. File -&gt; Settings -&gt; Version Control -&gt; Git -&gt; 输入git.exe的路径;
+    2. 右击工程 -&gt; Git -&gt; Repository -&gt; Remotes -&gt; 加入远程仓库地址;
+7. 上传代码
+    1. 右击工程 -&gt; Git -&gt; Add -&gt; Commit...(提交到本地仓库) -&gt; Reposition -&gt; push(提交到远程仓库)
+    2. 输入Gogs的管理员账号和密码 -&gt; 上传完成;
+</code></pre><h3 id="创建任务"><a href="#创建任务" class="headerlink" title="创建任务"></a>创建任务</h3><pre><code>1. 登录Jenkins Web管理平台 -&gt; 创建一个新任务 -&gt; 输入名称，构建一个maven项目 -&gt; OK
+2. General：输入项目的描述内容;
+3. 源码管理：选择Git，并输入远程仓库地址;
+4. Build
+    1. Root POM: pom.xml表示工程的pom.xml，如果想构建其子工程，如base，则输入base/pom.xml
+    2. Goals and options: 输入构建时执行的Maven命令，mvn可以省略;
+        clean package docker:build -DpushImage
+5. 保存 -&gt; 返回面板(回到首页) -&gt; 生成任务列表
+    1. S：灰色状态表示此任务从未执行过，蓝色状态表示上次执行是成功的;
+    2. W：使用天气来表示任务执行的状态，黄色太阳表示健康，执行过程没有发生过错误;
+6. 执行任务：点击列表右侧的按钮;
+    1. 构建执行状态 -&gt; 展示当前任务执行的状态 -&gt; 点击进入控制台;
+    2. 网页控制台上的输出信息，与使用IDEA构建时的控制台信息一样;
+</code></pre><h2 id="Rancher"><a href="#Rancher" class="headerlink" title="Rancher"></a>Rancher</h2><pre><code>1. Rancher：一个开源的企业级全栈化的容器部署及管理平台;
+    1. Rancher为容器提供了一系列的基础架构服务：CNI兼容的网络服务、存储服务、主机管理、负载均衡、防火墙...
+    2. Rancher将这些服务跨域公有云、私有云、虚拟机、物理机运行环境，真正实现一键式应用部署和管理.
+2. 通俗来讲，Rancher就是Docker图形化管理工具，底层仍是Docker，它对内存的要求比较高，启动时间较慢;
+3. 安装
+    1. 下载Rancher镜像：docker pull rancher/server
+    2. 创建容器
+    docker run -di --name=rancher -p 9090:8080 rancher/server
+4. Rancher Web管理平台 http://宿主机IP:9090
+</code></pre><h3 id="初始化配置"><a href="#初始化配置" class="headerlink" title="初始化配置"></a>初始化配置</h3><pre><code>1. Default -&gt; 环境管理 -&gt; 添加环境
+    1. 输入名称和描述，比如dev、开发环境，test、测试环境，pro、生产环境
+    2. 三个环境相互隔离，互不影响.
+2. 基础架构 -&gt; 主机 - 添加主机
+    1. 保存 -&gt; 拷贝第 5 步生成的脚本，用于创建一个Rancher的代理容器;
+    2. 在宿主机上执行脚本 -&gt; 点击添加主机界面上的关闭 -&gt; 在界面上会生成主机列表.
+3. 创建应用：应用 -&gt; 用户 -&gt; 添加应用 -&gt; 输入名称和描述 -&gt; 创建;
+</code></pre><h3 id="服务部署"><a href="#服务部署" class="headerlink" title="服务部署"></a>服务部署</h3><pre><code>1. 为创建的应用添加服务：在创建的应用界面上 -&gt; 添加服务 -&gt; 以图形化的方式管理;
+2. 部署MySQL
+    1. 输入名称(mysql)和描述(mysql) -&gt; 选择镜像: mysql-57-centos7
+    2. 如果当前宿主机上已经下载过了镜像，则不要勾选 创建前总是拉取镜像，否则就要勾选;
+    3. 端口映射：33306 &gt; 3306
+    4. 环境变量：MYSQL_ROOT_PASSWORD = 123456
+    5. 创建 -&gt; 在应用列表上生成 Active mysql，表示创建成功;
+3. 部署RabbitMQ
+    1. 选择镜像：rabbitmq:management
+    2. 端口映射：5671 &gt; 5671，5672 &gt; 5672，4369 &gt; 4369，15671 &gt; 15671，15672 &gt; 15672，25672 &gt; 25672
+    3. 创建成功后，测试访问 http://宿主机IP:15672
+4. 部署Redis
+    1. 选择镜像：redis
+    2. 端口映射：6379 &gt; 6379
+5. 部署微服务
+    1. 启动私有仓库registry、配置docker允许远程访问，为微服务添加DockerMaven插件;
+    2. 刷新配置，重启容器
+        systemctl daemon-reload
+        systemctl restart docker
+        docker start registry
+        docker start rancher
+    3. 在本地打包上传微服务
+        mvn clean package docker:build -DpushImage
+    4. 添加服务 -&gt; 输入名称和描述 -&gt; 选择镜像: 上传的微服务镜像 -&gt; 映射端口: 微服务监听的端口 -&gt; 创建;
+    5. 测试访问 http://宿主机IP:映射端口
+</code></pre><h3 id="扩容与缩容"><a href="#扩容与缩容" class="headerlink" title="扩容与缩容"></a>扩容与缩容</h3><pre><code>1. 并发量较高时，则需要添加更多的容器构成微服务集群；反之则缩减容器，释放内存;
+2. 如果一个微服务需要扩容/缩容操作，在为应用添加微服务镜像时，不要设置映射端口，交给Rancher自动管理;
+3. API -&gt; Webhooks -&gt; 添加接收器
+    1. 类型: 扩缩容服务;
+    2. 操作: 扩容(或缩容);
+    3. 目标服务: 所添加的的微服务;
+    4. 步长: 每次触发时新增的微服务数量;
+4. 创建成功后，会展示在接收器列表上，并生成触发地址，也就是一个对外的接口;
+5. 当外界应用通过 POST 请求访问 触发地址 时，Rancher就会按照设置的步长新增微服务;
+6. 使用 postman 模拟：拷贝触发地址，发起POST请求，在应用列表上会反馈微服务的容器数量变化.
+</code></pre><h3 id="负载均衡器"><a href="#负载均衡器" class="headerlink" title="负载均衡器"></a>负载均衡器</h3><pre><code>1. 在扩容/缩容微服务时，并不知道每个微服务的端口号，也就无法访问，所以Rancher提供了负载均衡器;
+2. 下拉应用界面上的 添加服务 菜单 -&gt; 添加负载均衡 -&gt; 输入名称和描述 -&gt; 端口规则;
+3. 端口规则：(映射)端口、目标(选择扩容/缩容的微服务)、(微服务)端口
+4. 创建成功后，在应用列表上会生成负载均衡器的容器;
+5. 访问测试 http://宿主机IP:映射端口
+</code></pre><h2 id="influxDB"><a href="#influxDB" class="headerlink" title="influxDB"></a>influxDB</h2><pre><code>1. influxDB：一个分布式时间序列数据库;
+2. cAdvisor仅仅显示实时信息，但不存储监视数据，因此需要提供时序数据库存储cAdvisor组件的监控信息;
+3. influxDB的安装
+    1. 下载镜像：docker pull tutum/influxdb
+    2. 创建容器
+    docker run -di \
+        -p 8083:8083 -p 8086:8086 \
+        --expose 8090 --expose 8099 \
+        --name influxsrv \
+        tutum/influxdb
+    3. 其中，8083端口是web访问端口，8086端口是数据写入端口;
+4. 访问Web管理平台 http://宿主机IP:8083
+    1. 默认数据库Database: _internal
+    2. Query Templates：提供了一些方便数据库操作的菜单，可以快速输入数据库命令.
+</code></pre><h3 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a>常用操作</h3><pre><code>1. 创建数据库：CREATE DATABASE &quot;cadvisor&quot;  --&gt; 右上角Database下拉选择数据库
+2. 查看数据库：SHOW DATABASES
+3. 创建用户并授权：
+    1. 创建用户:CREATE USER &quot;username&quot; WITH PASSWORD &quot;password&quot; WITH ALL PRIVILEGES
+    2. 查看用户：SHOW USERS
+    3. 用户授权：数据库cadvisor，用户username
+        grant all privileges on cadvisor to username
+        grant WRITE on cadvisor to username
+        grant READ on cadvisor to username
+4. 查看采集的数据：SHOW MEASUREMENTS
+</code></pre><h2 id="cAdvisor"><a href="#cAdvisor" class="headerlink" title="cAdvisor"></a>cAdvisor</h2><pre><code>1. cAdvisor：Google开源的用于监控基础设施应用的工具，具有强大的监控功能;
+    1. cAdvisor无需任何配置就可以通过运行在Docker主机上的容器来监控docker容器;
+    2. 而且，还可以监控docker主机.
+2. 安装
+    1. 下载镜像：docker pull google cadvisor
+    2. 创建容器
+    docker run --volume=/:/rootfs:ro --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro
+        --volume=/var/lib/docker/:/var/lib/docker:ro --publish=8080:8080 --detach=true
+        --link influxsrv:influxsrv --name=cadvisor google/cadvisor -storage_driver=influxdb
+        -storage_driver_db=cadvisor -storage_driver_host=influxsrv:8086
+    3. --link 表示连接，连接influxDB的容器influxsrv，把采集的数据存储到其数据库cadvisor
+    4. --volume ==&gt; -v，--publish ==&gt; -p
+3. 访问Web管理平台 http://宿主机IP:8080/containers/
+4. 在influxDB Web管理平台上，切换到数据库cadvisor，执行命令，查看采集的数据;
+    1. 查看所有的数据：SHOW MEASUREMENTS
+    2. 查看某一张表的数据：SELECT * FROM xxx
+</code></pre><h2 id="Grafana"><a href="#Grafana" class="headerlink" title="Grafana"></a>Grafana</h2><pre><code>1. Grafana：一个可视化面板(Dashboard)，有非常漂亮的图标和布局，功能齐全的度量仪表盘和图像编辑器;
+    1. 支持Graphite、zabbix、influxDB、Prometheus和OpenTSDB作为数据源;
+    2. 主要特征：灵活丰富的图形化选项，可以混合多种风格，支持白天和夜间模式，多个数据源.
+2. cAdvisor主要负责把监控数据存储到influxDB中，Grafana则负责直观的展示influxDB中的数据;
+3. 安装
+    1. 下载镜像：docker pull grafana/grafana
+    2. 创建容器
+    docker run -d -p 3001:3000 -e INFLUXDB_HOST=influxsrv -e INFLUXDB_PORT=8086
+        -e INFLUXDB_NAME=cadvisor -e INFLUXDB_USER=username -e INFLUXDB_PASS=password
+        --link influxsrv:influxsrv --name grafana grafana/grafana
+    3. 连接influxDB时，指定数据库名称，及其用户名和密码;
+4. 访问Web管理平台 http://宿主机IP:3001/  ==&gt; 初始用户名和密码都是admin
+5. 添加数据源：Configuration -&gt; Data Source -&gt; Add data source
+    1. Name: influxdb，type: InfluxDB  --&gt; 添加InfluxDB作为数据源
+    2. URL: http://宿主机IP:8086  --&gt; InfluxDB的地址
+    3. InfuxDB Details：输入数据库名称，及其用户名和密码;
+6. 添加仪表盘：让数据以图表化的方式展示，Dashboards -&gt; Manage
+    1. +Dashboard -&gt; 选择Graph -&gt; Panel Title -&gt; Edit
+    2. General：输入Title
+    3. Metrics
+        1. Data Soruce -&gt; 选择添加的数据源influxdb
+        2. Min time inteval表示每隔一段时间采集一次数据，默认30s
+        3. A：类似SQL语句
+        4. A -&gt; FROM -&gt; default：选择查询的数据，如内存数据memory_usage
+        5. A -&gt; WHERE：筛选条件，比如按照容器名称container_name = xxx
+    4. Axes：配置图表的X轴和Y轴;
+    5. 点击保存图标 -&gt; 输入New name -&gt; Save
+7. 设置预警通知：Alerting -&gt; Alert Rules
+    1. 当达到设置的阈值时，以某种方式发出通知，如邮件、Webhook
+    2. Add channel -&gt; 输入Name，Type选择webhook，Url使用Rancher的触发地址，Http Method:POST
+    3. Save Test -&gt; 发送测试 -&gt; 查看Rancher的应用列表上，对应容器的数量是否发生了变化.
+8. 使用预警通知
+    Dashboards -&gt; Manage -&gt; 选择添加的仪表盘 -&gt; Panel Title -&gt; Edit -&gt; Alert
+    1. Create Alert -&gt; Alert Config -&gt; Conditions -&gt; IS ABOVE，设置阈值;
+    2. Notifications -&gt; Send to，添加设置的预警通知;
+    3. Message的内容只有在使用邮件通知时才需要设置;
+    4. 重新保存.
+</code></pre><hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/01/Docker/" rel="next" title="Docker">
+                <i class="fa fa-chevron-left"></i> Docker
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/linux命令入门/" rel="prev" title="linux命令入门">
+                linux命令入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大麦田怪圈</p>
+              <p class="site-description motion-element" itemprop="description">敢做就能赢！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jenkins"><span class="nav-number">1.</span> <span class="nav-text">Jenkins</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Jenkins"><span class="nav-number">1.1.</span> <span class="nav-text">安装Jenkins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全局工具配置"><span class="nav-number">1.2.</span> <span class="nav-text">全局工具配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gogs与Git"><span class="nav-number">1.3.</span> <span class="nav-text">Gogs与Git</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建任务"><span class="nav-number">1.4.</span> <span class="nav-text">创建任务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rancher"><span class="nav-number">2.</span> <span class="nav-text">Rancher</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化配置"><span class="nav-number">2.1.</span> <span class="nav-text">初始化配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务部署"><span class="nav-number">2.2.</span> <span class="nav-text">服务部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩容与缩容"><span class="nav-number">2.3.</span> <span class="nav-text">扩容与缩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#负载均衡器"><span class="nav-number">2.4.</span> <span class="nav-text">负载均衡器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#influxDB"><span class="nav-number">3.</span> <span class="nav-text">influxDB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常用操作"><span class="nav-number">3.1.</span> <span class="nav-text">常用操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cAdvisor"><span class="nav-number">4.</span> <span class="nav-text">cAdvisor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Grafana"><span class="nav-number">5.</span> <span class="nav-text">Grafana</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大麦田怪圈</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
