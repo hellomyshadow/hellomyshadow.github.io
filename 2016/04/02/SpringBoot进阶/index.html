@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-04T12:49:15.388Z">
+<meta property="og:updated_time" content="2019-06-23T04:06:41.115Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot进阶">
 <meta name="twitter:description" content="SpringMVC新增注解1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping     1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);     2. @PostMapping 是 @RequestMapping(">
@@ -354,7 +354,10 @@
 3. @AllArgsConstructor：添加一个构造函数，该构造函数含有所有已声明的属性参数;
 4. @NoArgsConstructor：添加一个无参构造函数;
 5. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
-6. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
+    1. 日志的输出，如log.info()，依赖于日志相关的包，诸如log4j、slf4j
+    2. 在SpringMVC的启动器中，已经包含日志启动器spring-boot-starter-logging
+    3. 所以在使用lombok的日志输出功能时，如果没有引入SpringMVC的启动器，则必须引入日志启动器.
+6. IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
 </code></pre><h2 id="Jackson"><a href="#Jackson" class="headerlink" title="Jackson"></a>Jackson</h2><pre><code>1. 常用的JSON框架序列化JSON的性能：Jackson &gt; fastJson &gt; Gson &gt; Json-lib，各有所长，时间换空间、空间换时间;
 2. web启动器默认集成了Jackson
     1. @JsonIgnore：指定忽略的字段，不返回给前端;
@@ -481,7 +484,7 @@
         long end = System.currentTimeMillis();
         System.out.println(&quot;耗时: &quot; + (end-begin)); //大约耗时：3000
     }
-</code></pre><h2 id="全局异常"><a href="#全局异常" class="headerlink" title="全局异常"></a>全局异常</h2><pre><code>1. @ControllerAdvice：注解在类上，声明为异常捕获类;
+</code></pre><h2 id="全局异常"><a href="#全局异常" class="headerlink" title="全局异常"></a>全局异常</h2><pre><code>1. @ControllerAdvice：SpringMVC的注解，作用在类上，声明为异常捕获类;
 2. @RestControllerAdvice：组合注解，@ControllerAdvice + @ResponseBody
 3. @ExceptionHandler(value=Exception.class)：注解在异常处理的方法上，value属性指定捕获的异常;
     @ControllerAdvice
@@ -777,7 +780,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

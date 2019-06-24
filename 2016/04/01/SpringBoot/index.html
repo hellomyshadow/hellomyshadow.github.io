@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
+<meta name="description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. 但是，虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0引入了基于Ja">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot">
 <meta property="og:url" content="http://hellomyshadow.github.io/2016/04/01/SpringBoot/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
+<meta property="og:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. 但是，虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0引入了基于Ja">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-19T01:50:57.205Z">
+<meta property="og:updated_time" content="2019-06-23T13:53:30.899Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringBoot">
-<meta name="twitter:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0">
+<meta name="twitter:description" content="SpringBoot与Spring1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能; 2. 但是，虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;     2. Spring3.0引入了基于Ja">
 
 
 
@@ -323,7 +323,7 @@
 
       
         <h2 id="SpringBoot与Spring"><a href="#SpringBoot与Spring" class="headerlink" title="SpringBoot与Spring"></a>SpringBoot与Spring</h2><pre><code>1. Spring的优点：Spring是JavaEE的轻量级框架，通过依赖注入和面向切面编程，用简单的POJO实现EJB的功能;
-2. Spring的缺点：虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;
+2. 但是，虽然Spring的组件代码是轻量级的，但是它的配置文件却是重量级的;
     1. Spring2.5引入基于注解的组件扫描，也是为了消除大量针对应用程序自身组件的XML配置;
     2. Spring3.0引入了基于Java的配置，这是一种类型安全的、可重构的配置方式，可以替代XML;
     3. 除了配置会消耗大量的开发时间，项目的依赖管理也是很麻烦的，版本选择困难，容易冲突.
@@ -334,13 +334,8 @@
 4. SpringBoot解决了Spring的缺点，基于约定优先于配置，开发者只需要关心逻辑业务的代码编写;
     1. 开箱即用，没有代码生成，也无需XML配置，通过修改默认值来满足特定的需求;
     2. 提供了一些大型项目中常见的非功能性的特性，如嵌入式服务器、安全、指标、健康检测、外部配置...
-    3. SpringBoot不是对Spring功能上的增强，而是提供一种基于Spring的快速开发方式.
-5. SpringBoot的核心功能
-    1. 起步依赖：本质上是一个Maven项目对象模型(POM)，定义了对其他库的传递依赖;
-    1. 简单来说，起步依赖就是将具备某种功能的坐标打包到一起，并提供一些默认功能.
-    2. 自动配置：SpringBoot的自动配置是一个运行时(应用程序启动时)的过程;
-    2. 考虑了众多因素，才决定Spring配置应该用哪个、不应该用哪个，此过程也是Spring自动完成的。
-6. 在SpringBoot中，默认采用Servlet3.0，它可以完全使用注解取代web.xml了，所以SpringBoot没有了web.xml;
+5. SpringBoot不是对Spring功能上的增强，而是提供一种基于Spring的快速开发方式.
+6. 在SpringBoot中，默认采用Servlet3.0，它可以完全使用注解取代web.xml了，所以SpringBoot没有了web.xml.
 </code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. SpringBoot2.x的依赖环境和版本
     1. JDK8+，因为SpringBoot2.x底层是Spring Framework5
     2. Maven3.2+，Gradle4+
@@ -382,17 +377,20 @@
     }    ---&gt;http://localhost:8080/test  ---&gt; Hello SpringBoot
 7. IDEA快速创建SpringBoot工程
     New Project -&gt; Spring Initializr -&gt; Next -&gt; 设置项目信息 -&gt; Next -&gt; 手动选择依赖 -&gt; Finish
-</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><pre><code>1. 起步依赖
-    1. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent，它会对依赖的版本进行管理;
-    2. SpringBoot项目引入的依赖往往都是starter，它是一个工具集合，里面包含了很多常用的依赖，便于版本管理;
-    3. 比如spring-boot-starter-web，包含了诸如spring-webmvc、spring-web、Tomcat、jackson ...
-    4. 第三方框架要对接SpringBoot项目，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
-2. 自动配置
-    1. @SpringBootApplication是组合注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
-    2. @SpringBootConfiguration 其实就是 @Configuration，所以引导类也就是一个配置类;
-    3. @EnableAutoConfiguration 是自动配置的核心注解，@Import({AutoConfigurationImportSelector.class})
-    4. AutoConfigurationImportSelector 中就是自动配置的核心源码;
-    5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解.
+</code></pre><h2 id="SpringBoot的原理"><a href="#SpringBoot的原理" class="headerlink" title="SpringBoot的原理"></a>SpringBoot的原理</h2><pre><code>1. SpringBoot的核心功能：起步依赖、自动配置
+</code></pre><h3 id="起步依赖"><a href="#起步依赖" class="headerlink" title="起步依赖"></a>起步依赖</h3><pre><code>1. 本质上是一个Maven项目对象模型(POM)，定义了对其他库的传递依赖;
+2. 简单来说，起步依赖就是将具备某种功能的坐标打包到一起，并提供一些默认功能;
+3. 所有的SpringBoot工程都必须继承 spring-boot-starter-parent，它会对依赖的版本进行管理;
+4. SpringBoot项目引入的依赖往往都是starter，它是一个工具集合，里面包含了很多常用的依赖，便于版本管理;
+5. 比如spring-boot-starter-web，包含了诸如spring-webmvc、spring-web、Tomcat、jackson ...
+6. 第三方框架要对接SpringBoot项目，必须提供起步依赖(启动器)，Spring的官方启动器通常以 spring- 开头;
+</code></pre><h3 id="自动配置"><a href="#自动配置" class="headerlink" title="自动配置"></a>自动配置</h3><pre><code>1. @SpringBootApplication是组合注解：@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan
+2. @SpringBootConfiguration 其实就是 @Configuration，所以引导类也就是一个配置类;
+3. @EnableAutoConfiguration 是自动配置的核心注解，@Import({AutoConfigurationImportSelector.class})
+4. AutoConfigurationImportSelector 中就是自动配置的核心源码;
+5. @ComponentScan：配置扫描的包，默认就会扫描引导类所在包下的所有注解;
+    1. 所以在使用注解时，注解的类所在包一定不能高于启动类所在包，只能是平级或者下一级包;
+    2. 否则会因为没有扫描而无法加载，导致无法使用.
 </code></pre><h2 id="SpringBoot的配置文件"><a href="#SpringBoot的配置文件" class="headerlink" title="SpringBoot的配置文件"></a>SpringBoot的配置文件</h2><pre><code>1. SpringBoot是基于约定的，所以很多配置都是默认值;
 2. 在需要自定义配置时，根据启动器提供的key名，在SpringBoot的配置文件中指定value值即可;
 3. spring-boot-starter-parent 会自动加载 resources 目录下的三类配置文件;
@@ -405,8 +403,7 @@
     1. YML文件格式是由YAML编写的，YAML是一种能够被电脑识别的数据序列化格式，且易读性强，以数据为核心，比XML更简洁;
     2. YML文件与脚本语言的交互性强，可以被支持YAML库的编程语言程序导入，如C/C++、Python、Java、C#、PHP、Ruby...
 </code></pre><h3 id="yml配置文件"><a href="#yml配置文件" class="headerlink" title="yml配置文件"></a>yml配置文件</h3><pre><code>1. 普通数据
-    1. key: value
-    2. key和value之间必须有一个空格：name: Jack
+    key: value  # key和value之间必须有一个空格
 2. 对象数据/Map数据
     1. 形式一：缩进形式
         key:
@@ -494,10 +491,8 @@
         public DataSource getDataSource(JdbcConf prop) {  //3.方法参数的方式注入
             //阿里的druid
             DruidDataSource ds = new DruidDataSource();
-            ds.setDriverClassName(prop.getDriverClassName());
-            ds.setUrl(prop.getUrl());
-            ds.setUsername(prop.getUsername());
-            ds.setPassword(prop.getPassword());
+            ds.setDriverClassName(prop.getDriverClassName());  ds.setUrl(prop.getUrl());
+            ds.setUsername(prop.getUsername());  ds.setPassword(prop.getPassword());
             return ds;
         }
     }
@@ -516,7 +511,7 @@
     classpath:/META-INF/resources/ --&gt;classpath:/resources/ --&gt;classpath:/static/ --&gt;classpath:/public/
 2. 注意：classpath 指的就是 src/main/resources 目录，这4个目录都在 src/main/resources 目录下;
 3. 这些静态资源目录不受Controller管控，可以直接被访问，用于放入图片、CSS、JS、HTML等静态资源;
-4. 创建 resources/static/index.html，访问：localhost:8080/index.html
+4. 创建 resources/static/index.html，访问 http://localhost:8080/index.html
 5. 在配置文件 application.yml 中，可以加入自定义的静态资源目录：
     spring:
         resources:
@@ -539,22 +534,33 @@
     spring.devtools.restart.exclude=static/**, application.properties
 5. 通过触发器，手动控制热部署
     1. 创建 resources/trigger.txt，添加内容 verion=1
-    2. 配置触发器
+    2. 在 application.properties 中，配置触发器
         spring.devtools.restart.trigger-file=trigger.txt
     3. 需要热部署时，修改触发器：version=2，保存文件即触发热加载部署;
-</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. SpringBoot项目中，使用 MultipartFile 对象接收上传的文件时，控制文件的大小;
-    1. 在启动类中注册 MultipartConfigElement，设置文件大小
-    @Bean
-    public MultipartConfigElement getMultipartConfigElement() {
-        MultipartConfigFactory factory = new MultipartConfigElement();
-        factory.setMaxFileSize(&quot;10240KB&quot;);  //单个文件最大10240KB
-        factory.setMaxRequestSize(&quot;102400KB&quot;);  //总上传数据最大102400KB
-        return factory.createMultipartConfig();
-    }
+</code></pre><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 使用 MultipartFile 对象接收上传的文件时，有两种方式控制文件的大小;
+    1. 在启动类中注册 MultipartConfigElement
+        @Bean
+        public MultipartConfigElement getMultipartConfigElement() {
+            MultipartConfigFactory factory = new MultipartConfigElement();
+            factory.setMaxFileSize(&quot;10240KB&quot;);  //单个文件最大10240KB
+            factory.setMaxRequestSize(&quot;102400KB&quot;);  //总上传数据最大102400KB
+            return factory.createMultipartConfig();
+        }
+    2. 在 application.yml 中配置上传文件的大小
+        spring:
+            servlet:
+                multipart:
+                    max-file-size: 5MB
+                    max-request-size: 10MB
 2. 文件服务器：fastdfs，阿里云oss，nginx搭建一个简单的文件服务器;
-3. 上传过程操作的是磁盘的绝对路径，打成了jar包之后，无法直接访问磁盘目录，需要把目录加入静态资源目录列表中;
-    images-path=D:\report\
-    spring.resources.static-locations=classpath:/META-INF/resources/, ... , file:${images-path}
+3. 上传过程操作的是磁盘的绝对路径，打成jar包之后，无法直接访问磁盘目录，需要把目录加入静态资源目录列表中;
+    images-path: D:\report\
+    spring:
+        resources:
+            static-locations:
+                - classpath:/META-INF/resources/
+                ······
+                - file:${images-path}
 </code></pre><h2 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h2><pre><code>1. 主流的JavaWeb模板引擎：JSP、Velocity、Freemarker、Thymeleaf
     1. JSP：动态网页技术，JavaWeb官方推荐，支持EL、JSTL表达式，本质上也是一个Servlet，占用JVM内存;
     2. Freemarker：文件一般保存为 xxx.ftl，严格依赖MVC模式，不依赖Servlet容器(不占用JVM内存)，内建函数;
@@ -595,19 +601,20 @@
     private String url;  //test.com
 </code></pre><h2 id="打包与容器"><a href="#打包与容器" class="headerlink" title="打包与容器"></a>打包与容器</h2><pre><code>1. SpringBoot项目打成jar包
     1. pom.xml 配置Maven插件
-    &lt;packaging&gt;jar&lt;/packaging&gt;
-    &lt;build&gt;
-        &lt;plugins&gt;
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-    &lt;/build&gt;
+        &lt;packaging&gt;jar&lt;/packaging&gt;
+        &lt;build&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/build&gt;
     2. 打开右侧Maven面板 --&gt; Lifecycle --&gt; 双击执行 install --&gt; 在target目录下生成xxx.jar
     3. 如果没有添加插件，执行 java -jar xxx.jar 命令运行jar包时，会报错：no main manifest attribute
 2. SpringBoot项目打成war包
-    1. 修改打包方式：&lt;packaging&gt;war&lt;/packaging&gt;
+    1. 修改打包方式
+        &lt;packaging&gt;war&lt;/packaging&gt;
     2. 配置打包的项目名称，也就是项目的虚拟目录名
         &lt;build&gt;
             &lt;finalName&gt;boottest&lt;/finalName&gt;
@@ -799,7 +806,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -854,7 +861,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot与Spring"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot与Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">1.1.</span> <span class="nav-text">环境搭建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的原理"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的配置文件"><span class="nav-number">3.</span> <span class="nav-text">SpringBoot的配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yml配置文件"><span class="nav-number">3.1.</span> <span class="nav-text">yml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#属性映射"><span class="nav-number">3.2.</span> <span class="nav-text">属性映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态资源"><span class="nav-number">3.3.</span> <span class="nav-text">静态资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热部署"><span class="nav-number">4.</span> <span class="nav-text">热部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">5.</span> <span class="nav-text">文件上传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板引擎"><span class="nav-number">6.</span> <span class="nav-text">模板引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多环境配置"><span class="nav-number">7.</span> <span class="nav-text">多环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包与容器"><span class="nav-number">8.</span> <span class="nav-text">打包与容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署到阿里云"><span class="nav-number">8.1.</span> <span class="nav-text">部署到阿里云</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot与Spring"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot与Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">1.1.</span> <span class="nav-text">环境搭建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的原理"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#起步依赖"><span class="nav-number">2.1.</span> <span class="nav-text">起步依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动配置"><span class="nav-number">2.2.</span> <span class="nav-text">自动配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot的配置文件"><span class="nav-number">3.</span> <span class="nav-text">SpringBoot的配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yml配置文件"><span class="nav-number">3.1.</span> <span class="nav-text">yml配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#属性映射"><span class="nav-number">3.2.</span> <span class="nav-text">属性映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态资源"><span class="nav-number">3.3.</span> <span class="nav-text">静态资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热部署"><span class="nav-number">4.</span> <span class="nav-text">热部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">5.</span> <span class="nav-text">文件上传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板引擎"><span class="nav-number">6.</span> <span class="nav-text">模板引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多环境配置"><span class="nav-number">7.</span> <span class="nav-text">多环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包与容器"><span class="nav-number">8.</span> <span class="nav-text">打包与容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署到阿里云"><span class="nav-number">8.1.</span> <span class="nav-text">部署到阿里云</span></a></li></ol></li></ol></div>
             
 
           </div>

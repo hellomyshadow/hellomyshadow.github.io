@@ -232,6 +232,470 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/11/SpringCloud项目2/" itemprop="url">SpringCloud项目2</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-11T00:00:00+08:00">
+                2016-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><pre><code>1. Maven聚合项目leyou
+    &lt;groupId&gt;com.leyou.parent&lt;/groupId&gt;
+    &lt;artifactId&gt;leyou&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+    &lt;name&gt;leyou&lt;/name&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.0.4.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;spring-cloud.version&gt;Finchley.SR1&lt;/spring-cloud.version&gt;
+        &lt;mapper.starter.version&gt;2.1.5&lt;/mapper.starter.version&gt;
+        &lt;mysql.version&gt;8.0.16&lt;/mysql.version&gt;
+        &lt;pageHelper.starter.version&gt;1.2.12&lt;/pageHelper.starter.version&gt;
+        &lt;leyou.latest.version&gt;1.0.0-SNAPSHOT&lt;/leyou.latest.version&gt;
+        &lt;fastDFS.client.version&gt;1.26.6&lt;/fastDFS.client.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+                &lt;artifactId&gt;mapper-spring-boot-starter&lt;/artifactId&gt;
+                &lt;version&gt;${mapper.starter.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.github.pagehelper&lt;/groupId&gt;
+                &lt;artifactId&gt;pagehelper-spring-boot-starter&lt;/artifactId&gt;
+                &lt;version&gt;${pageHelper.starter.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;mysql&lt;/groupId&gt;
+                &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+                &lt;version&gt;${mysql.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.github.tobato&lt;/groupId&gt;
+                &lt;artifactId&gt;fastdfs-client&lt;/artifactId&gt;
+                &lt;version&gt;${fastDFS.client.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+            &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;
+            &lt;version&gt;3.9&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;version&gt;1.16.22&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+2. 涉及的子工程：注册中心Eureka、网关Zull、公共工具、业务处理、上传服务、消息队列...
+</code></pre><h2 id="Eureka工程"><a href="#Eureka工程" class="headerlink" title="Eureka工程"></a>Eureka工程</h2><pre><code>1. ly-registry：pom.xml
+    &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-registry&lt;/artifactId&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 启动类：com.leyou.LyRegistry
+    @EnableEurekaServer
+    @SpringBootApplication
+    public class LyRegistry {
+        public static void main(String[] args) {
+            SpringApplication.run(LyRegistry.class, args);
+        }
+    }
+3. application.yml
+    server:
+        port: 10086
+    spring:
+        application:
+            name: ly-registry
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:10086/eureka
+</code></pre><h2 id="Zuul网关"><a href="#Zuul网关" class="headerlink" title="Zuul网关"></a>Zuul网关</h2><pre><code>1. ly-gateway：pom.xml
+    &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-gateway&lt;/artifactId&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 启动类：com.leyou.gateway.LyGateway
+    @EnableZuulProxy
+    @SpringCloudApplication
+    public class LyGateway {
+        public static void main(String[] args) {
+            SpringApplication.run(LyGateway.class, args);
+        }
+    }
+3. application.yml
+    server:
+        port: 10010
+    spring:
+        application:
+            name: ly-gateway
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:10086/eureka
+    zuul:
+        prefix: /api
+        routes:
+            xxxx: /xxx/**  #转发的服务与路由
+    hystrix:
+        command:
+            default:
+                execution:
+                    isolation:
+                        thread:
+                            timeoutInMilliseconds: 5000 #熔断超时时间
+    ribbon:
+        ConnectTimeout: 1000   #连接超时时间
+        ReadTimeout: 3500   #读取超时时间
+        MaxAutoRetries: 0   #当前服务实例的重试次数
+        MaxAutoRetriesNextServer: 0   #同一个服务、不同实例之间的切换次数
+</code></pre><h2 id="公共工具"><a href="#公共工具" class="headerlink" title="公共工具"></a>公共工具</h2><pre><code>1. ly-common：pom.xml
+    &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+            &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+            &lt;version&gt;2.9.8&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 工具类com.leyou.common.utils：CookieUtils、IdWorker、JsonUtils、NumberUtils
+3. Controller全局异常处理
+    1. 状态码和异常信息的枚举：com.leyou.common.enums
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public enum  ExceptionEnum {
+        PRICE_CANNOT_BE_NULL(400, &quot;价格不能为空！&quot;),
+        ... ,
+        ;
+        private int code;
+        private String msg;
+    }
+    2. 自定义的异常类：com.leyou.common.ext
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    public class LyException extends RuntimeException {
+        private ExceptionEnum exceptionEnum;
+    }
+    3. 响应的异常对象：com.leyou.common.vo
+    @Data
+    public class ExceptionResult {
+        private int status;
+        private String message;
+        private Long timestamp;
+        public ExceptionResult(ExceptionEnum em) {
+            this.status = em.getCode();
+            this.message = em.getMsg();
+            this.timestamp = System.currentTimeMillis();
+        }
+    }
+    4. 异常捕获通知：com.leyou.common.advice
+    @ControllerAdvice
+    public class CommonExtHandler {
+        @ExceptionHandler(LyException.class)
+        public ResponseEntity&lt;ExceptionResult&gt; handleLyExt(LyException ext) {
+            return ResponseEntity.status(ext.getExceptionEnum().getCode())
+                    .body(new ExceptionResult(ext.getExceptionEnum()));
+        }
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
+        }
+    }
+    5. 在Controller中抛出自定义异常
+    @PostMapping(&quot;/xxx&quot;)
+    public ResponseEntity&lt;User&gt; saveUser() {
+        if(...) {
+            throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
+        }
+        ......
+    }
+</code></pre><h2 id="业务处理"><a href="#业务处理" class="headerlink" title="业务处理"></a>业务处理</h2><pre><code>1. 业务处理子工程ly-item还可以继续作为一个聚合工程，抽离出Service和POJO;
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-item&lt;/artifactId&gt;
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+2. POJO工程：ly-item-interface
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+            &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
+            &lt;version&gt;1.1.5&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+</code></pre><h3 id="Service工程"><a href="#Service工程" class="headerlink" title="Service工程"></a>Service工程</h3><pre><code>1. ly-item-service：pom.xml
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-item-service&lt;/artifactId&gt;
+
+    &lt;dependencies&gt;
+        spring-boot-starter-web
+        spring-cloud-starter-netflix-eureka-client
+        mapper-spring-boot-starter
+        pagehelper-spring-boot-starter
+        mysql-connector-java
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. application.yml
+    server:
+        port: 8081
+    spring:
+        application:
+        name: item-service
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql:///springtest?serverTimezone=Asia/Shanghai
+        username: root
+        password: 123456
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:10086/eureka
+    mybatis:
+        configuration:
+            log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+3. 启动类
+    1. com.leyou.item.mapper、com.leyou.item.service、com.leyou.item.web
+    2. com.leyou.LyItemApplication
+    @SpringBootApplication
+    @EnableDiscoveryClient
+    @MapperScan(&quot;com.leyou.item.mapper&quot;)
+    public class LyItemApplication {
+        public static void main(String[] args) {
+            SpringApplication.run(LyItemApplication.class, args);
+        }
+    }
+4. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
+    1. 在工具工程ly-common中，创建响应的分页对象：com.leyou.common.vo.PageResult
+    @Data
+    public class PageResult&lt;T&gt; {
+        private Long total;   //总条数
+        private Integer pages;   //总页数
+        private List&lt;T&gt; items;   //当前页的数据
+        public PageResult() {}
+        public PageResult(Long total, List&lt;T&gt; items) {
+            this.total = total;
+            this.items = items;
+        }
+        public PageResult(Long total, Integer pages, List&lt;T&gt; items) {
+            this.total = total;
+            this.pages = pages;
+            this.items = items;
+        }
+    }
+    2. 在调用查询语句之前，使用PageHelper实现分页查询
+    public PageResult&lt;Brand&gt; findByPage(Integer, page, Integer rows) {
+        //分页：使用拦截器，在SQL语句后面拼接limit
+        PageHelper.startPage(page, rows);
+        //查询
+        List&lt;Brand&gt; list = mapper.selectAll();
+        //解析查询结果
+        PageInfo&lt;Brand&gt; info = new PageInfo&lt;&gt;(list);
+        return new PageResult&lt;&gt;(info.getTotal(), info.getPages(), list);
+    }
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -328,28 +792,16 @@
             <h2 id="项目架构"><a href="#项目架构" class="headerlink" title="项目架构"></a>项目架构</h2><p><img src="//hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg" alt="项目架构"></p>
 <pre><code>1. 微服务的拆分
     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;
-    2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
+    2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;
     4. 父工程打包方式为pom
-2. 工具类工程：一个SpringBoot工程，专门提供工具类方法，其他服务引用它的坐标即可;
-    1. 如果用到了Servlet相关的API时，如HttpServletRequest
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
-        &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    2. 日志相关的启动器
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    3. JSON相关的工具类--Jackson：实体类序列化为JSON字符串、反序列化、List、Map
-    &lt;dependency&gt;
-        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
-        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
-        &lt;version&gt;2.9.9&lt;/version&gt;
-    &lt;/dependency&gt;
-    4. 通用Mapper：mapper-core、mapper-base、mapper-extra
-3. REST风格的响应
+2. 双高
+    1. 高并发：分布式、静态化技术、CDN服务、缓存技术、异步并发、池化、队列
+    2. 高可用：集群、负载均衡、限流、降级、熔断
+3. 域名
+    1. 一级域名：www.leyou.com
+    2. 二级域名/子域名：manage.leyou.com，api.leyou.com
+4. REST风格的响应
     1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
     2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
     @PostMapping
@@ -359,66 +811,7 @@
         //设置状态码和响应体
         return ResponseEntity.status(HttpStatus.CREATED).body(u);
     }
-</code></pre><h3 id="通用异常处理"><a href="#通用异常处理" class="headerlink" title="通用异常处理"></a>通用异常处理</h3><pre><code>1. 在工具类中处理异常，引入SpringMVC的依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. @ControllerAdvice、@ExceptionHandler：针对不同的异常，做不同的处理;
-    @ControllerAdvice
-    public class CommonExtHandler {
-        @ExceptionHandler(RuntimeException.class)
-        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
-        }
-        ......
-    }
-3. 为了对异常统一管理，自定义异常，动态设置状态码、状态信息，并使用枚举类封装状态信息;
-    1. 枚举类
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public enum ExceptionEnum {
-            CATEGORY_NOT_FOUND(404, &quot;商品分类没查到！&quot;),
-            UPLOAD_FILE_ERROR(500, &quot;图片上传失败！&quot;),
-            ;
-            private int code;
-            private String msg;
-        }
-    2. 自定义异常
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public class CommonException extends RuntimeException {
-            private ExceptionEnum enum;
-        }
-    3. 异常结果的封装
-        @Data
-        public class ExceptionResult {
-            private int status;
-            private String message;
-            private long timestamp;
-            public ExceptionResult(ExceptionEnum em) {
-                this.status = em.getCode();
-                this.message = em.getMsg());
-                this.timestamp = System.currentTimeMillis();
-            }
-        }
-    4. 异常捕获
-        @ExceptionHandler(CommonException.class)
-        public ResponseEntity&lt;ExceptionResult&gt; handleCommonExt(CommonException ext) {
-            ExceptionEnum em = ext.getExceptionEnum();
-            return ResponseEntity.status(em.getCode()).body(new ExceptionResult(em));
-        }
-    5. 在Controller方法中抛出异常
-        @PostMapping
-        public ResponseEntity&lt;User&gt; saveUser() {
-            if(...) {
-                throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
-            }
-            ......
-        }
-</code></pre><h2 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h2><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
+</code></pre><h3 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h3><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
 2. 域名解析首先从本地域名开始，也就是系统盘中的 host 文件，在 host 文件中查找域名映射的IP地址;
     1. windows系统：C:\Windows\System32\drivers\etc\hosts
     2. Linux系统：/etc/hosts
@@ -426,10 +819,10 @@
     127.0.0.1   localhost
 4. 域名服务器：记录了所有注册备案的域名和IP的映射关系;
 5. 在不购买域名的情况下，在本地 host 文件中配置域名与回环地址的映射;
-    127.0.0.1   www.icloud.com
-    127.0.0.1   manage.icloud.com
-    127.0.0.1   api.icloud.com   ------&gt;子域名
-6. 测试：ping api.icloud.com
+    127.0.0.1   www.leyou.com
+    127.0.0.1   manage.leyou.com
+    127.0.0.1   api.leyou.com
+6. 测试：ping api.leyou.com
 </code></pre><h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><pre><code>1. Nginx是一个高性能的Web和反向代理服务器，基于 Epoll 和 Kqueue 模型;
     1. 作为Web服务器：比Apache占用更少的资源，效率更高，单机支持高达50000个并发连接的响应;
     2. 作为负载均衡服务器：既可以在内部直接支持Rails和PHP，也可以作为HTTP代理服务对外提供服务;
@@ -437,58 +830,56 @@
 2. Web服务器：Apache服务器、Nginx、IIS...
 3. Web应用服务器：Tomcat、Resin、Jetty...
     1. Web服务器不能解析JSP等页面，只能处理HTML、CSS、JS、图片等静态资源;
-    2. Web服务器的并发能力远高于Web应用服务器;
+    2. Web服务器的并发能力远高于Web应用服务器.
 4. Nginx作为Web服务器时，通常把它作为网关，因为它具备网关必备的功能：反向代理、负载均衡、动态路由、请求过滤
 </code></pre><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><pre><code>1. Nginx作为反向代理服务器，配置好反向代理的规则，不同的请求交给不同的真实服务器进行处理;
 2. 当请求到达Nginx时，它会根据定义好的规则进行请求转发，从而实现路由的功能;
-3. nginx.conf
+3. 配置 nginx.conf，通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
     http {
         ......
 
         server {
-            listen       80;  -----------------&gt; 配置监听的端口号
-            server_name  manage.icloud.com;  --&gt; 监听的域名/IP
+            listen       80;
+            server_name  manage.leyou.com;
 
             proxy_set_header  X-Forwarded-Host    $host;
             proxy_set_header  X-Forwarded-Server  $host;
             proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 
             location / {
-                proxy_pass  http://192.168.58.11:9000;  #反向代理，转发的真实服务器地址
+                proxy_pass  http://192.168.58.11:9000;  #反向代理
                 proxy_connect_timeout  600;
                 proxy_read_timeout  600;
             }
         }
         server {
             listen       80;
-            server_name  api.icloud.com;
+            server_name  api.leyou.com;
 
             proxy_set_header  X-Forwarded-Host    $host;
             proxy_set_header  X-Forwarded-Server  $host;
             proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 
             location / {
-                proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
+                proxy_pass  http://192.168.58.11:10010;  #反向代理给Zuul网关
                 proxy_connect_timeout  600;
                 proxy_read_timeout  600;
             }
         }
         ......
     }
-4. 通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
-5. 访问(http协议的默认端口号80)
-    http://manage.icloud.com/...
-    http://api.icloud.com/...
-</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
+4. 访问(http协议的默认端口号80)
+    1. http://manage.leyou.com/xxx 负责管理网站后台
+    2. http://api.leyou.com/xxx 负责API接口
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
 2. 主域名和子域名之间也是跨域，cookie也无法访问;
 3. 同源策略限制的行为：
     1. Cookie、LocalStorage 和 IndexDB 无法读取;
     2. DOM 和 JS对象无法获得;
     3. AJAX 请求不能发送.
-4. 注意：
-    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
-    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
-5. 解决跨域问题的方案有很多：
+4. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
+5. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+6. 解决跨域问题的方案有很多：
     1. jsonp：利用 &lt;script&gt; 标签可以跨域的原理实现，需要服务端支持，且只能发起GET请求;
     2. document.domain + iframe跨域
     3. location.hash + iframe
@@ -498,8 +889,8 @@
     7. Nginx反向代理
     8. nodejs中间件代理跨域
     9. WebSocket协议跨域
-6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
-7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+7. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+8. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
     1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
     2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
     3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
@@ -539,8 +930,8 @@
         Access-Control-Max-Age: 1728000  ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
     4. 浏览器收到响应的信息，则判定可以跨域;
 6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
-</code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
-2. 在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
+</code></pre><h3 id="CorsFilter"><a href="#CorsFilter" class="headerlink" title="CorsFilter"></a>CorsFilter</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
+2. 所有的请求都先经过网关，所以在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
     @Configuration
     public class GlobalCorsConfig {
         @Bean
@@ -548,7 +939,7 @@
             //CORS配置信息
             CorsConfiguration conf = new CorsConfiguration();
             //1. 添加允许的域，可以同时添加多个
-            conf.addAllowedOrigin(&quot;http://manage.icloud.com&quot;);
+            conf.addAllowedOrigin(&quot;http://manage.leyou.com&quot;);
             //2. 是否发送Cookie
             conf.setAllowCredentials(true);
             //3. 允许的请求方式
@@ -572,14 +963,15 @@
             return new CorsFilter(source);
         }
     }
-3. @CrossOrigin：SpringMVC4.2开始支持;
+3. addAllowedOrigin(&quot;*&quot;)：允许所有的域，但会导致Cookie无法使用.
+</code></pre><h3 id="CrossOrigin"><a href="#CrossOrigin" class="headerlink" title="@CrossOrigin"></a>@CrossOrigin</h3><pre><code>1. @CrossOrigin：SpringMVC4.2开始支持注解的方式解决跨域问题;
     1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
     2. 相关属性：value、origins，maxAge、allowedHeaders、exposedHeaders、methods、allowCredentials
     3. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
-4. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+2. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
     1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
     2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
-5. 关于SpringMVC的XML配置文件中，全局配置CORS
+3. 关于SpringMVC的XML配置文件中，全局配置CORS
     &lt;mvc:cors&gt;
         &lt;mvc:mapping path=&quot;/api/**&quot;
             allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
@@ -589,18 +981,6 @@
             max-age=&quot;3600&quot; /&gt;
         &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
     &lt;/mvc:cors&gt;
-</code></pre><h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><pre><code>1. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
-2. 引入PageHelper的启动器：pagehelper-spring-boot-starter
-3. 在调用查询语句之前，使用PageHelper实现分页查询
-    public List&lt;User&gt; findByPage(Integer, page, Integer rows) {
-        //分页：使用拦截器，在SQL语句后面拼接limit
-        PageHelper.startPage(page, rows);
-        //查询
-        List&lt;User&gt; users = mapper.selectAll();
-        //解析查询结果
-        PageInfo&lt;User&gt; info = new PageInfo&lt;&gt;(users);
-        return users;
-    }
 </code></pre><hr>
 
           
@@ -3908,483 +4288,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/02/SpringBoot进阶/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/04/02/SpringBoot进阶/" itemprop="url">SpringBoot进阶</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-02T00:00:00+08:00">
-                2016-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="SpringMVC新增注解"><a href="#SpringMVC新增注解" class="headerlink" title="SpringMVC新增注解"></a>SpringMVC新增注解</h2><pre><code>1. Spring4.3中引进了 @GetMapping、@PostMapping、@PutMapping、@DeleteMapping、@PatchMapping
-    1. @GetMapping 等效于 @RequestMapping(method=RequestMethod.GET);
-    2. @PostMapping 是 @RequestMapping(method=RequestMethod.POST) 的缩写;
-2. @RestController：相当于 @ResponseBody + @Controller 的组合;
-    @RestController
-    @RequestMapping(&quot;/user&quot;)
-    public class RestController {
-        @GetMapping(&quot;/getList&quot;)
-        public List&lt;User&gt; getList() {
-            List&lt;User&gt; us = dao.findAll();
-            return us;
-        }
-    }
-    1. @RestController 的方法都只能返回String、Object、Json等实体对象;
-    2. SpringBoot已经引入了jackson, 返回的对象会被jackson转为JSON字符串，写入响应体中;
-    3. 如果想要跳转页面，则用 ModelAndView 封装;
-    @GetMapping(&quot;/index&quot;)
-    public ModelAndView toIndex() {
-        ModelAndView mv = new ModelAndView(&quot;index&quot;);
-        return mv;
-    }
-</code></pre><h2 id="lombok"><a href="#lombok" class="headerlink" title="lombok"></a>lombok</h2><pre><code>    &lt;dependency&gt;
-        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
-        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
-        &lt;version&gt;1.18.6&lt;/version&gt;
-        &lt;scope&gt;provided&lt;/scope&gt;
-    &lt;/dependency&gt;
-1. @Data：注解在Java类上，在编译期自动生成getter、setter... 源码中没有变化，只存在于编译生成的class文件中;
-2. @Setter、@Getter：分别生成 setter、getter 方法;
-3. @AllArgsConstructor：添加一个构造函数，该构造函数含有所有已声明的属性参数;
-4. @NoArgsConstructor：添加一个无参构造函数;
-5. @Slf4j：等效于在Java类中创建Logger对象的属性 log=LoggerFactory.getLogger(类名.class);
-6. 但是IDEA并不能自动识别 @Slf4j 提供的变量log，需要安装插件 Settings -&gt; Plugins -&gt; 搜索Lombok
-</code></pre><h2 id="Jackson"><a href="#Jackson" class="headerlink" title="Jackson"></a>Jackson</h2><pre><code>1. 常用的JSON框架序列化JSON的性能：Jackson &gt; fastJson &gt; Gson &gt; Json-lib，各有所长，时间换空间、空间换时间;
-2. web启动器默认集成了Jackson
-    1. @JsonIgnore：指定忽略的字段，不返回给前端;
-    2. @JsonFormat(pattern=&quot;yyyy-MM-dd hh:mm:ss&quot;, locale=&quot;zh&quot;, timezone=&quot;GMT+8&quot;)：指定日期格式化;
-    3. @JsonInclude(Include.NON_NULL)：空字段不返回;
-    4. @JsonProperty：指定别名，隐藏真实的字段名;
-    @Data
-    public class User {
-        @JsonInclude(Include.NON_NULL)
-        private Integer id;
-
-        @JsonProperty(&quot;abcd&quot;)
-        private String name;
-
-        @JsonIgnore   ------&gt;完全忽略，客户端提交的age参数也会被忽略
-        private Integer age;
-
-        private String password;
-
-        @JsonFormat(pattern=&quot;yyyy-MM-dd hh:mm:ss&quot;, locale=&quot;zh&quot;, timezone=&quot;GMT+8&quot;)
-        private Date birthday;
-
-        @JsonIgnore  ---&gt; 重写了getter，传递给客户端时忽略
-        public String getPassword() {
-            return password;
-        }
-        @JsonProperty  ---&gt; 重写了setter，接收时仍赋值
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-3. Controller方法
-    @RestController
-    public class UserController {
-        @GetMapping(&quot;/test&quot;)
-        public Object test() {
-            User user = new User();
-            user.setName(&quot;Java&quot;);
-            user.setName(&quot;123456&quot;);
-            user.setBirthday(new Date())
-            return user;  //发送给前端的JSON：{ &quot;abcd&quot;: &quot;123456&quot;, &quot;birthday&quot;: &quot;2019-05-12 07:50:31&quot; }
-        }
-    }
-</code></pre><h2 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h2><pre><code>1. @EnableScheduling：注解在启动类上，自动扫描，开启定时任务;
-2. @Scheduled：注解在任务方法上;
-    @Slf4j
-    @Component  --&gt;定时任务类必须加入Spring IoC容器才能被扫描
-    public class TestTask {
-        @Scheduled(fixedRate=2000)  --&gt;每隔2s执行一次
-        public void test() {
-            log.info(&quot;当前时间：{}&quot;, new Date());
-        }
-    }
-    1. corn：定时任务表达式，比如 cron=&quot;*/1 * * * * *&quot; 表示每秒执行一次，可以使用在线工具生成corn表达式;
-    2. fixedRate：上次开始执行后，xx毫秒后再执行;
-        @Scheduled(fixedRate=2000)
-        public void test() {
-            Thread.sleep(4000);   ---&gt;任务执行时间大于fixedRate，那么每隔 4s 执行一次
-        }
-    3. fixedDelay：上次任务结束之后，延迟xx毫秒再执行；
-        @Scheduled(fixedDelay=2000)
-        public void test() {
-            Thread.sleep(4000);  --&gt; 任务执行时间4s + 延迟时间2s = 6s  --&gt;每隔6s执行一次
-        }
-    4. fixedRateString、fixedDelayString：字符串形式，可以把延迟时间配置在SpringBoot的配置文件中;
-</code></pre><h2 id="异步任务"><a href="#异步任务" class="headerlink" title="异步任务"></a>异步任务</h2><pre><code>1. @EnableAsync：注解在启动类上，扫描异步任务的注解;
-2. @Component：注解在任务类上，加入Spring IoC容器，不能把任务方法写在Controller类中;
-3. @Async：注解在任务类或任务方法上，注解在任务类上时，它所有的方法都是异步任务;
-    @Slf4j
-    @Component
-    public class AsyncTask {
-        @Async
-        public void task1() throws InterruptedException {
-            long begin = System.currentTimeMillis();
-            Thread.sleep(1000);
-            long end = System.currentTimeMillis();
-            log.info(&quot;任务-1: {}&quot;, (end-begin));
-        }
-    }
-4. 调用异步任务，不会阻塞主线程
-    @Autowired
-    private AsyncTask t;
-
-    @GetMapping(&quot;/task&quot;)
-    public String task() {
-        t.task1();
-        return &quot;hello Task!&quot;;  --&gt;响应给前端，不会等待异步任务执行完成
-    }
-5. 获取异步任务的返回值
-    @Async
-    public Future&lt;String&gt; task2() throws InterruptedException {
-        long begin = System.currentTimeMillis();
-        Thread.sleep(2000);
-        long end = System.currentTimeMillis();
-        log.info(&quot;任务-2: {}&quot;, (end-begin));
-        return new AsyncResult&lt;String&gt;(&quot;task2&quot;);
-    }
-    @Async
-    public Future&lt;String&gt; task3() throws InterruptedException {
-        long begin = System.currentTimeMillis();
-        Thread.sleep(3000);
-        long end = System.currentTimeMillis();
-        log.info(&quot;任务-3: {}&quot;, (end-begin));
-        return new AsyncResult&lt;String&gt;(&quot;task3&quot;);  //返回异步任务执行的结果
-    }
-
-    @GetMapping(&quot;/task1&quot;)
-    public String task1() {
-        Future&lt;String&gt; task2 = t.task2();//执行异步任务
-        Future&lt;String&gt; task3 = t.task3();
-        for(;;) {
-            if(task2.isDone() &amp;&amp; task3.isDone()) { //检查异步任务是否全部执行完成
-                break;
-            }
-        }  ---&gt; 大约耗时：3000，异步任务是同时执行的，所以耗时时间就是执行时间最长的一个异步任务
-    }
-    @GetMapping(&quot;/task2&quot;)
-    public String task2() {
-        long begin = System.currentTimeMillis();
-        Future&lt;String&gt; task2 = t.task2();
-        Future&lt;String&gt; task3 = t.task3();
-        String res4 = task4.get();
-        String res5 = task5.get();  //阻塞等待获取异步任务的结果
-        long end = System.currentTimeMillis();
-        System.out.println(&quot;耗时: &quot; + (end-begin)); //大约耗时：3000
-    }
-</code></pre><h2 id="全局异常"><a href="#全局异常" class="headerlink" title="全局异常"></a>全局异常</h2><pre><code>1. @ControllerAdvice：注解在类上，声明为异常捕获类;
-2. @RestControllerAdvice：组合注解，@ControllerAdvice + @ResponseBody
-3. @ExceptionHandler(value=Exception.class)：注解在异常处理的方法上，value属性指定捕获的异常;
-    @ControllerAdvice
-    public class CustomExtHandler {
-        @ExceptionHandler(value=Exception.class)  --&gt;Exception表示捕获所有异常
-        @ResponseBody
-        Object handleException(Exception e, HttpServletRequest request) {
-            Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
-            map.put(&quot;code&quot;, 100);
-            map.put(&quot;msg&quot;, e.getMessage());
-            map.put(&quot;url&quot;, request.getRequestURL());
-            return map;  //当应用程序中发生了异常时，响应给前台的数据
-        }
-    }
-    1. 在Controller中抛出异常
-        @GetMapping(&quot;/ply&quot;)
-        public String home() {
-            int i = 1/0;  -----&gt; 抛出异常
-            ......
-        }
-    2. http://localhost:8080/ply  --&gt; { &quot;code&quot;: 100, &quot;msg&quot;: &quot;...&quot;, &quot;url&quot;: &quot;...&quot; }
-4. 自定义异常，跳转到友好界面(引入依赖thymeleaf)
-    1. 自定义异常
-        public class PageException extends RuntimeException {
-            public PageException(String code, String msg) {
-                this.code = code;
-                this.msg = msg;
-            }
-            ......
-        }
-    2. 在 CustomExtHandler 中追加一个新的处理方法，精确捕获自定义异常
-        @ExceptionHandler(value = PageException.class)
-        @ResponseBody
-        Object handleException(PageException e) {
-            ModelAndView mav = new ModelAndView();
-            mav.setViewName(&quot;error.html&quot;);
-            mav.addObject(&quot;msg&quot;, e.getMsg());
-            return mav;
-        }
-    3. 在Controller中抛出自定义异常
-        @GetMapping(&quot;/ply&quot;)
-        public String home() {
-            throw new PageException(&quot;102&quot;, &quot;错误异常&quot;);
-        }
-</code></pre><h2 id="Servlet3-0"><a href="#Servlet3-0" class="headerlink" title="Servlet3.0"></a>Servlet3.0</h2><pre><code>1. 在SpringBoot项目中，可以使用Servlet3.0的注解开发Filter、Listener、甚至原生Servlet;
-2. @ServletComponentScan：注解在启动类上，进行扫描Servlet3.0的注解;
-    @ServletComponentScan
-    @SpringBootApplication
-    public class BootTestApplication {
-        ...
-    }
-3. 过滤器：@WebFilter
-    1. Filter在服务器启动时加载，服务器关闭时销毁，SpringBoot启动时默认加载4个Filter
-    characterEncodingFilter -&gt; hiddenHttpMethodFilter -&gt; httpPutFormContentFilter -&gt; requestContextFilter
-    2. 使用Servlet3.0的注解自定义Filter时，避免和默认的Filter优先级相同，否则会冲突;
-    3. 自定义的Filter 必须实现Filter接口，并注解 @WebFilter，用于配置过滤规则，并加入Spring容器;
-    @WebFilter(urlPatterns = &quot;/api/*&quot;, filterName = &quot;loginFilter&quot;)
-    public class LoginFilter implements Filter {
-        init()、destroy()
-        public void doFilter(ServletRequest servReq, ServletResponse servResp, FilterChain chain) {
-            HttpServletRequest req = (HttpServletRequest)servReq;
-            HttpServletResponse resp = (HttpServletResponse)servResp;
-            String username = req.getParameter(&quot;username&quot;);
-            if(&quot;admin&quot;.equals(username)) {
-                chain.doFilter(servletRequest, servletResponse);
-            } else {
-                resp.sendRedirect(&quot;/error.html&quot;);
-            }
-        }
-    }
-4. 自定义原生Servlet：@WebServlet
-    @WebServlet(name=&quot;userServlet&quot;, urlPatterns = &quot;/test/user&quot;)
-    public class UserServlet extends HttpServlet {
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-            resp.getWriter().print(&quot;user servlet&quot;);
-            resp.getWriter().flush();
-            resp.getWriter().close();
-        }
-    }
-5. 自定义原生Listener：@WebListener
-    1. 常用监听器：ServletContextListener、HttpSessionListener、ServletRequestListener
-    2. ServletContextListener：服务器启动时初始化，常用于一些资源的加载;
-    3. ServletRequestListener：一次请求，请求到达则初始化，响应结束则销毁;
-    @WebListener
-    public class RequestListener implements ServletRequestListener {
-        public void requestDestroyed(ServletRequestEvent servletRequestEvent) {
-            System.out.println(&quot;RequestListener requestDestroyed&quot;);
-        }
-        public void requestInitialized(ServletRequestEvent servletRequestEvent) {
-            System.out.println(&quot;RequestListener requestInitialized&quot;);
-        }
-    }
-</code></pre><h2 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h2><pre><code>    public class LoginIntercepter implements HandlerInterceptor {
-        preHandle()   --&gt;调用Controller方法之前
-        postHandle()  --&gt;Controller方法调用之后，视图渲染之前，如果Controller方法出现异常，则不会执行
-        afterCompletion()  --&gt;不管是否有异常，都会执行，常用于资源清理
-    }
-1. SpringBoot规定：
-    1. 如果要保留SpringBoot的一些默认MVC特征，同时又想自定义一些MVC配置，如拦截器、格式化器、视图控制器、
-    消息转发器... 就必须实现WebMvcConfigurer，并使用 @Configuration，但一定不能使用 @EnableWebMvc;
-    2. 如果想要完全自定义SpringMVC，不保留默认的一切MVC特征，则使用 @Configuration 和 @EnableWebMvc;
-2. SpringBoot2.0的拦截器与v2.0之前的配置方式是不同的
-    1. 旧版本：extends WebMvcConfigurerAdapter
-    @Configuration
-    public class OldCusWebMvcConfigurer extends WebMvcConfigurerAdapter {
-        public void addInterceptors(InterceptorRegistry registry) {
-            //配置拦截器和拦截规则，Ant风格的路径匹配
-            registry.addInterceptor(new LoginIntercepter()).addPathPatterns(&quot;/api2/*/**&quot;);
-        }
-    }
-    2. 新版本：implements WebMvcConfigurer
-    @Configuration
-    public class CusWebMvcConfigurer implements WebMvcConfigurer {
-        //配置拦截器和拦截规则
-        registry.addInterceptor(new LoginIntercepter())
-            .addPathPatterns(&quot;/api2/*/**&quot;)  ----&gt;拦截的资源访问
-            .excludePathPatterns(&quot;/api2/xxx/**&quot;);  --&gt;某些不需要拦截的资源访问
-
-        registry.addInterceptor(new LoginIntercepter()).addPathPatterns(&quot;/api2/*/**&quot;);
-    }
-    3. 配置多个拦截器时，拦截器的执行顺序与配置顺序相同;
-3. 拦截器与过滤器
-    1. 过滤器依赖于Servlet容器(Web应用)，基于函数回调；而拦截器则不依赖，基于Java的反射机制(AOP)；
-    2. 拦截器中可以注入Spring IoC容器的所有Bean对象，实现业务逻辑的调用，而过滤器则不行；
-    3. 执行顺序
-        Filter --&gt; 拦截器 --&gt; action执行 --&gt; 拦截器 --&gt; 过滤器
-</code></pre><h2 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h2><pre><code>1. DBCP是一款老牌的JDBC连接池，出自Apache;
-2. cp30与Druid都是连接池，一个JDBC组件，速度都差不多;
-    1. Hibernate默认使用c3p0;
-    2. Druid可以监控每一条SQL语句的执行性能，从而优化SQL语句.
-3. 速度最快的JDBC连接池是HikariCP(追光者)，Spring默认内置了HikariCP;
-4. Spring提供的JDBC启动器：spring-boot-starter-jdbc，SpringBoot默认集成，无需手动引入;
-5. 连接池只是一个JDBC组件，还需要配置数据库驱动，如MySQL的驱动依赖：mysql-connector-java
-6. 在 application.yml 中，配置Spring启动器中的默认连接池：连接数据库的4大参数;
-    spring:
-        datasource:
-            driver-class-name: com.mysql.cj.jdbc.Driver
-            url: jdbc:mysql://host:port/database?serverTimezone=Asia/Shanghai
-            username: root
-            password: 123456
-7. 默认使用的连接池是HikariCP，如果想使用其他连接池，如阿里的druid
-    1. 引入druid的依赖，配置spring.datasource.type=com.zaxxer.hikari.HikariDataSource
-    spring:
-        datasource:
-            type: com.alibaba.druid.pool.DruidDataSource
-            ...... # driver-class-name、url、username、password
-</code></pre><h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><pre><code>1. Junit的起步依赖：spring-boot-starter-test
-2. 在test目录下创建测试类
-    @RunWith(SpringRunner.class)
-    @SpringBootTest(classes=引导类.class)
-    public class TestClient {
-        @Autowired
-        private IUserMapper userMapper;  //注入Mapper对象
-
-        @Test
-        public void test() {
-            List&lt;User&gt; users = userMapper.findAll();
-        }
-    }
-3. MockMvc：模拟 SpringMVC 的客户端请求
-    @AutoConfigureMockMvc   ----&gt;MockMvc的注解
-    @RunWith(SpringRunner.class)
-    @SpringBootTest(classes={启动类.class})
-    public class TestClient {
-        @Autowired
-        private MockMvc mvc;
-
-        @Test
-        public void test() {
-            MvcResult res = mvc.perform(MockMvcRequestBuilders.get(&quot;/ply&quot;))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();  //发起get请求
-            String str = res.getResponse().getContentAsString();  //获取请求的内容
-        }
-    }
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4435,7 +4338,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -79,22 +79,18 @@
 
 
 
-<meta name="description" content="文件上传1. 搭建一个图片上传的微服务upload-service 2. 依赖：spring-cloud-starter-netflix-eureka-client、spring-boot-starter-web 3. application.yml     server:         port: 8082     spring:         application:">
+<meta name="description" content="项目结构1. Maven聚合项目leyou     &amp;lt;groupId&amp;gt;com.leyou.parent&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;leyou&amp;lt;/artifactId&amp;gt;     &amp;lt;version&amp;gt;1.0.0-SNAPSHOT&amp;lt;/version&amp;gt;      &amp;lt;packaging&amp;gt;pom&amp;lt;">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringCloud项目2">
 <meta property="og:url" content="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="文件上传1. 搭建一个图片上传的微服务upload-service 2. 依赖：spring-cloud-starter-netflix-eureka-client、spring-boot-starter-web 3. application.yml     server:         port: 8082     spring:         application:">
+<meta property="og:description" content="项目结构1. Maven聚合项目leyou     &amp;lt;groupId&amp;gt;com.leyou.parent&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;leyou&amp;lt;/artifactId&amp;gt;     &amp;lt;version&amp;gt;1.0.0-SNAPSHOT&amp;lt;/version&amp;gt;      &amp;lt;packaging&amp;gt;pom&amp;lt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/fastDFS.jpg">
-<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/上传.jpg">
-<meta property="og:image" content="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/下载.jpg">
-<meta property="og:updated_time" content="2019-05-26T09:54:30.316Z">
+<meta property="og:updated_time" content="2019-06-23T14:02:13.688Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目2">
-<meta name="twitter:description" content="文件上传1. 搭建一个图片上传的微服务upload-service 2. 依赖：spring-cloud-starter-netflix-eureka-client、spring-boot-starter-web 3. application.yml     server:         port: 8082     spring:         application:">
-<meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/fastDFS.jpg">
+<meta name="twitter:description" content="项目结构1. Maven聚合项目leyou     &amp;lt;groupId&amp;gt;com.leyou.parent&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;leyou&amp;lt;/artifactId&amp;gt;     &amp;lt;version&amp;gt;1.0.0-SNAPSHOT&amp;lt;/version&amp;gt;      &amp;lt;packaging&amp;gt;pom&amp;lt;">
 
 
 
@@ -326,210 +322,328 @@
       
 
       
-        <h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 搭建一个图片上传的微服务upload-service
-2. 依赖：spring-cloud-starter-netflix-eureka-client、spring-boot-starter-web
+        <h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><pre><code>1. Maven聚合项目leyou
+    &lt;groupId&gt;com.leyou.parent&lt;/groupId&gt;
+    &lt;artifactId&gt;leyou&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+    &lt;name&gt;leyou&lt;/name&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.0.4.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+        &lt;spring-cloud.version&gt;Finchley.SR1&lt;/spring-cloud.version&gt;
+        &lt;mapper.starter.version&gt;2.1.5&lt;/mapper.starter.version&gt;
+        &lt;mysql.version&gt;8.0.16&lt;/mysql.version&gt;
+        &lt;pageHelper.starter.version&gt;1.2.12&lt;/pageHelper.starter.version&gt;
+        &lt;leyou.latest.version&gt;1.0.0-SNAPSHOT&lt;/leyou.latest.version&gt;
+        &lt;fastDFS.client.version&gt;1.26.6&lt;/fastDFS.client.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+                &lt;artifactId&gt;mapper-spring-boot-starter&lt;/artifactId&gt;
+                &lt;version&gt;${mapper.starter.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.github.pagehelper&lt;/groupId&gt;
+                &lt;artifactId&gt;pagehelper-spring-boot-starter&lt;/artifactId&gt;
+                &lt;version&gt;${pageHelper.starter.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;mysql&lt;/groupId&gt;
+                &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+                &lt;version&gt;${mysql.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;com.github.tobato&lt;/groupId&gt;
+                &lt;artifactId&gt;fastdfs-client&lt;/artifactId&gt;
+                &lt;version&gt;${fastDFS.client.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+            &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;
+            &lt;version&gt;3.9&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;version&gt;1.16.22&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+2. 涉及的子工程：注册中心Eureka、网关Zull、公共工具、业务处理、上传服务、消息队列...
+</code></pre><h2 id="Eureka工程"><a href="#Eureka工程" class="headerlink" title="Eureka工程"></a>Eureka工程</h2><pre><code>1. ly-registry：pom.xml
+    &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-registry&lt;/artifactId&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 启动类：com.leyou.LyRegistry
+    @EnableEurekaServer
+    @SpringBootApplication
+    public class LyRegistry {
+        public static void main(String[] args) {
+            SpringApplication.run(LyRegistry.class, args);
+        }
+    }
 3. application.yml
     server:
-        port: 8082
+        port: 10086
     spring:
         application:
-            name: upload-service
-        servlet
-            multipart:
-                max-file-size: 5MB  #限制上传单个文件的大小
-                max-request-size: 10MB  #限制一次请求的大小，可能包含多个文件
+            name: ly-registry
     eureka:
         client:
             service-url:
-                defaultZone: http://127.0.0.1:10086/eureka  #Eureka注册中心
-4. Controller层
-    @RestController
-    @RequestMapping(&quot;upload&quot;)
-    public class UploadController {
-        //简单的文件类型
-        private final List&lt;String&gt; ALLOW_TYPES = Arrays.asList(&quot;image/jpeg&quot;, &quot;image/png&quot;, &quot;image/bmp&quot;);
+                defaultZone: http://127.0.0.1:10086/eureka
+</code></pre><h2 id="Zuul网关"><a href="#Zuul网关" class="headerlink" title="Zuul网关"></a>Zuul网关</h2><pre><code>1. ly-gateway：pom.xml
+    &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-gateway&lt;/artifactId&gt;
 
-        @PostMapping(&quot;image&quot;)
-        public ResponseEntity&lt;String&gt; uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
-            try {
-                //校验文件类型
-                String type = file.getContentType();
-                if(!ALLOW_TYPES.contains(type)) {
-                    throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
-                }
-                //校验文件内容
-                BufferedImage image = ImageIO.read(file.getInputStream());
-                if(null == image) {
-                    throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
-                }
-
-                //目标路径
-                File dest = new File(&quot;/upload/&quot;, file.getOriginalFilename());
-                //保存到本地
-                file.transferTo(dest);
-                ......
-                return &quot;图片路径&quot;
-            } catch(IOException e) {
-                throw new CommonException(ExceptionEnum.UPLOAD_FILE_ERROR);
-            }
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 启动类：com.leyou.gateway.LyGateway
+    @EnableZuulProxy
+    @SpringCloudApplication
+    public class LyGateway {
+        public static void main(String[] args) {
+            SpringApplication.run(LyGateway.class, args);
         }
     }
-5. Zuul网关中配置路由映射规则
+3. application.yml
+    server:
+        port: 10010
+    spring:
+        application:
+            name: ly-gateway
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:10086/eureka
     zuul:
         prefix: /api
         routes:
-            upload-service:
-                path: /upload/**
-                serviceId: upload-service
-                strip-prefix: false
-</code></pre><h3 id="绕过网关缓存"><a href="#绕过网关缓存" class="headerlink" title="绕过网关缓存"></a>绕过网关缓存</h3><pre><code>1. 默认情况下，所有请求经过Zuul网关的代理，都会通过SpringMVC预先对请求进行处理、缓存;
-    1. 这种情况对普通请求没有什么影响，但对文件上传会造成不必要的网络负担;
-    2. 在高并发时，可能造成网络阻塞，Zuul网关不可用，从而造成整个系统瘫痪;
-    3. 所以，文件上传的请求应该绕过请求缓存，直接通过路由到达目标微服务;
-2. Spring官方的解决方案：在请求地址中加上前缀 /zuul，就可以绕过Zuul网关的请求缓存;
-    http://api.icloud.com/api/upload/image --&gt; http://api.icloud.com/zuul/api/upload/image
-3. 通常情况下，请求路径是项目需求设计的，不允许手动更改，但请求最先到达nginx，再由nginx反向代理到Zuul网关;
-4. Nginx提供了 rewrite 指令，用于对地址进行重写;
-    1. 重写规则
-        rewrite &quot;匹配路径的正则表达式&quot; 重写后的路径 [指令];
-    2. nginx.conf
-    server {
-        listen       80;
-        server_name  api.icloud.com;
-        ......
-
-        location /api/upload {            # 精确匹配的路径
-            rewrite &quot;^/(.*)$&quot; /zuul/$1;   # api/upload/image --&gt; zuul/api/upload/image
-        }
-
-        location / {
-            proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
-            proxy_connect_timeout  600;
-            proxy_read_timeout  600;
-        }
+            xxxx: /xxx/**  #转发的服务与路由
+    hystrix:
+        command:
+            default:
+                execution:
+                    isolation:
+                        thread:
+                            timeoutInMilliseconds: 5000 #熔断超时时间
+    ribbon:
+        ConnectTimeout: 1000   #连接超时时间
+        ReadTimeout: 3500   #读取超时时间
+        MaxAutoRetries: 0   #当前服务实例的重试次数
+        MaxAutoRetriesNextServer: 0   #同一个服务、不同实例之间的切换次数
+</code></pre><h2 id="公共工具"><a href="#公共工具" class="headerlink" title="公共工具"></a>公共工具</h2><pre><code>1. ly-common：pom.xml
+    &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+            &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+            &lt;version&gt;2.9.8&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. 工具类com.leyou.common.utils：CookieUtils、IdWorker、JsonUtils、NumberUtils
+3. Controller全局异常处理
+    1. 状态码和异常信息的枚举：com.leyou.common.enums
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public enum  ExceptionEnum {
+        PRICE_CANNOT_BE_NULL(400, &quot;价格不能为空！&quot;),
+        ... ,
+        ;
+        private int code;
+        private String msg;
     }
-    2. http://api.icloud.com/api/upload/image 转发到服务端时，路径变成了 zuul/api/upload/image
-</code></pre><h3 id="分布式文件系统"><a href="#分布式文件系统" class="headerlink" title="分布式文件系统"></a>分布式文件系统</h3><pre><code>1. 把上传的文件保存到服务器上时，会存在一系列问题：
-    1. 单机存储的能力有限;
-    2. 无法进行水平扩展，因为多台机器的文件无法共享;
-    3. 数据没有备份，有单点故障的问题;
-    4. 并发能力差;
-2. 分布式文件系统：文件系统管理的物理存储资源不一定直接连接在本地节点上，而是通过计算机网络与节点相连;
-    1. 传统的文件系统管理的文件通常存储在本机上;
-    2. 分布式文件系统管理的文件则存储在很多机器上，这些机器之间通过网络连接，并统一管理;
-    3. 分布式文件系统有一个管理中心，无论是上传还是访问文件，都需要经过管理中心;
-3. 分布式文件系统：GFS(谷歌)、HDFS(Hadoop)、TFS(淘宝)、FastDFS...
-</code></pre><h3 id="FastDFS"><a href="#FastDFS" class="headerlink" title="FastDFS"></a>FastDFS</h3><pre><code>1. FastDFS：阿里巴巴淘宝，一个轻量级、高性能的开源分布式系统，纯C语言开发，功能丰富;
-2. 支持文件存储、文件同步、文件访问(上传、下载)、存储负载均衡、在线扩容;
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/fastDFS.jpg" alt="fastDFS"></p>
-<pre><code>3. Tracker Server：跟踪服务器
-    1. 主要负责调度storage节点与client通信，在访问上起负载均衡的作用;
-    2. 还会记录storage节点的运行状态，是连接client与storage节点的枢纽;
-4. Storage Server：存储服务器，保存文件和文件的元数据(Meta data)
-    1. 每个Storage Server会启动一个单独的线程，主动向Tracker Cluster中的每个Tracker Server报告其状态信息;
-    2. 包括磁盘使用情况，文件同步情况，文件上传/下载次数统计...
-5. Gruop：文件组，多台Storage Server的集群;
-    1. 上传一个文件到同组内的一台机器上，FastDFS会同步到同组内的其他所有机器上，起到备份作用;
-    2. 不同组的服务器，保存的数据不同，而且相互独立，不进行通信;
-6. Tracker Cluster：跟踪服务器的集群，由一组Tracker Server组成;
-7. Storage Cluster：存储集群，由多个Gruop组成;
-8. 上传
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/上传.jpg" alt="上传"></p>
-<pre><code>    1. Client通过Tracker Server查找可用的Storage Server;
-    2. Tracker Server向Client返回一台可用的Storage Server的IP和端口号;
-    3. Client直接通过IP和端口号与Storage Server建立连接，并进行文件上传;
-    4. 上传完成之后，Storage Server返回Client一个文件ID，表示文件上传结束;
-9. 下载
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/下载.jpg" alt="下载"></p>
-<pre><code>1. Client通过Tracker Server查找要下载文件所在的Storage Server;
-2. Tracker Server向Client返回包含指定文件的某个Storage Server的IP和端口号;
-3. Client直接通过IP和端口号与Storage Server建立连接，并指定要下载的文件;
-4. 下载文件成功;
-</code></pre><h4 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h4><pre><code>1. 安装FastDFS，配置参数，启动服务
-2. 安装FastDFS的nginx模块
-3. 安装nginx，加入FastDFS的nginx模块
-</code></pre><h4 id="使用FastDFS"><a href="#使用FastDFS" class="headerlink" title="使用FastDFS"></a>使用FastDFS</h4><pre><code>1. fastdfs-client：GitHub上开源的FastDFS客户端，支持SpringBoot2.x
-    &lt;dependency&gt;
-        &lt;groupId&gt;com.github.tobato&lt;/groupId&gt;
-        &lt;artifactId&gt;fastdfs-client&lt;/artifactId&gt;
-        &lt;version&gt;1.26.5&lt;/version&gt;
-    &lt;/dependency&gt;
-2. 加入配置类
-    @Configuration
-    @Import(FdfsClientConfig.class)
-    @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)  --&gt;解决jmx重复注册bean的问题
-    public class FastClientImporter { }
-3. application.yml
-    fdfs:
-        so_timeout: 2500      # 请求的超时时间
-        connect-timeout: 600  # 连接的超时时间
-        thumb-image:          # 缩略图
-            width: 60
-            height: 60
-        tracker-list:         # tracker的地址
-            - 192.168.58.16:22122
-4. 测试
-    @Autowired
-    private FastFileStorageClient client;
-    @Autowired
-    private ThumbImageConfig conf;
-    @Test
-    public void testUpload() {
-        //待上传的文件
-        File file = new File(&quot;D:\\test\\a.png&quot;);
-        //上传
-        StorePath store = client.uploadFile(new FileInputStream(file), file.length(), &quot;png&quot;, null);
-        //带分组的路径
-        String groupPath = store.getFullPath();
-        //不带分组的路径
-        String path = store.getPath();
+    2. 自定义的异常类：com.leyou.common.ext
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    public class LyException extends RuntimeException {
+        private ExceptionEnum exceptionEnum;
     }
-    1. FastDFS服务器地址 + groupPath = 就是访问图片的路径;
-    2. 上传图片并生成缩略图
-    StorePath store = 
-        client.uploadImageAndCrtThumbImage(new FileInputStream(file), file.length(), &quot;png&quot;, null);
-    3. 获取缩略图的路径
-    String path = conf.getThumbImagePath(store.getPath());  //store.getFullPath()
-5. 改造图片上传的Controller方法
-    @PostMapping(&quot;image&quot;)
-    public ResponseEntity&lt;String&gt; uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
-        try {
-            //校验文件类型
-            String type = file.getContentType();
-            if(!ALLOW_TYPES.contains(type)) {
-                throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
-            }
-            //校验文件内容
-            BufferedImage image = ImageIO.read(file.getInputStream());
-            if(null == image) {
-                throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
-            }
-            //上传到FastDFS
-            //1. 获取文件的后缀名，StringUtils是Apache commons-lang3工具类
-            String ext = StringUtils.substringAfterLast(file.getOriginalFilename(), &quot;.&quot;);
-            //2. 上传
-            StorePath store = client.uploadFile(new FileInputStream(file), file.length(), ext, null);
-            //3. 返回图片的访问地址
-            return &quot;http://image.icloud.com/&quot; + store.getFullPath();
-        } catch(IOException e) {
-            throw new CommonException(ExceptionEnum.UPLOAD_FILE_ERROR);
+    3. 响应的异常对象：com.leyou.common.vo
+    @Data
+    public class ExceptionResult {
+        private int status;
+        private String message;
+        private Long timestamp;
+        public ExceptionResult(ExceptionEnum em) {
+            this.status = em.getCode();
+            this.message = em.getMsg();
+            this.timestamp = System.currentTimeMillis();
         }
     }
-6. 把图片地址和类型定义到 application.yml 中，通过属性映射到Java类中
-    icloud:
-        upload: http://image.icloud.com/
-        allowTypes:
-            - image/jpeg
-            - image/png
-            - image/bmp
-7. Nginx本身也对文件大小做了限制，如果上传的文件过大，Nginx会报错;
-    1. 在 nginx.conf 中，可以通过 client_max_body_size 属性配置上传文件的大小;
-    http {
-        ······
-        client_max_body_size: 10m;
+    4. 异常捕获通知：com.leyou.common.advice
+    @ControllerAdvice
+    public class CommonExtHandler {
+        @ExceptionHandler(LyException.class)
+        public ResponseEntity&lt;ExceptionResult&gt; handleLyExt(LyException ext) {
+            return ResponseEntity.status(ext.getExceptionEnum().getCode())
+                    .body(new ExceptionResult(ext.getExceptionEnum()));
+        }
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
+        }
+    }
+    5. 在Controller中抛出自定义异常
+    @PostMapping(&quot;/xxx&quot;)
+    public ResponseEntity&lt;User&gt; saveUser() {
+        if(...) {
+            throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
+        }
         ......
     }
-    2. 配置在 http 节点下，所有 server 节点共享，还可以在 server 节点下独立配置上传的文件大小;
+</code></pre><h2 id="业务处理"><a href="#业务处理" class="headerlink" title="业务处理"></a>业务处理</h2><pre><code>1. 业务处理子工程ly-item还可以继续作为一个聚合工程，抽离出Service和POJO;
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-item&lt;/artifactId&gt;
+    &lt;packaging&gt;pom&lt;/packaging&gt;
+2. POJO工程：ly-item-interface
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+            &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
+            &lt;version&gt;1.1.5&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+</code></pre><h3 id="Service工程"><a href="#Service工程" class="headerlink" title="Service工程"></a>Service工程</h3><pre><code>1. ly-item-service：pom.xml
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-item-service&lt;/artifactId&gt;
+
+    &lt;dependencies&gt;
+        spring-boot-starter-web
+        spring-cloud-starter-netflix-eureka-client
+        mapper-spring-boot-starter
+        pagehelper-spring-boot-starter
+        mysql-connector-java
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. application.yml
+    server:
+        port: 8081
+    spring:
+        application:
+        name: item-service
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql:///springtest?serverTimezone=Asia/Shanghai
+        username: root
+        password: 123456
+    eureka:
+        client:
+            service-url:
+                defaultZone: http://127.0.0.1:10086/eureka
+    mybatis:
+        configuration:
+            log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+3. 启动类
+    1. com.leyou.item.mapper、com.leyou.item.service、com.leyou.item.web
+    2. com.leyou.LyItemApplication
+    @SpringBootApplication
+    @EnableDiscoveryClient
+    @MapperScan(&quot;com.leyou.item.mapper&quot;)
+    public class LyItemApplication {
+        public static void main(String[] args) {
+            SpringApplication.run(LyItemApplication.class, args);
+        }
+    }
+4. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
+    1. 在工具工程ly-common中，创建响应的分页对象：com.leyou.common.vo.PageResult
+    @Data
+    public class PageResult&lt;T&gt; {
+        private Long total;   //总条数
+        private Integer pages;   //总页数
+        private List&lt;T&gt; items;   //当前页的数据
+        public PageResult() {}
+        public PageResult(Long total, List&lt;T&gt; items) {
+            this.total = total;
+            this.items = items;
+        }
+        public PageResult(Long total, Integer pages, List&lt;T&gt; items) {
+            this.total = total;
+            this.pages = pages;
+            this.items = items;
+        }
+    }
+    2. 在调用查询语句之前，使用PageHelper实现分页查询
+    public PageResult&lt;Brand&gt; findByPage(Integer, page, Integer rows) {
+        //分页：使用拦截器，在SQL语句后面拼接limit
+        PageHelper.startPage(page, rows);
+        //查询
+        List&lt;Brand&gt; list = mapper.selectAll();
+        //解析查询结果
+        PageInfo&lt;Brand&gt; info = new PageInfo&lt;&gt;(list);
+        return new PageResult&lt;&gt;(info.getTotal(), info.getPages(), list);
+    }
 </code></pre><hr>
 
       
@@ -571,8 +685,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/06/01/Docker/" rel="prev" title="Docker">
-                Docker <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/12/SpringCloud项目3/" rel="prev" title="SpringCloud项目3">
+                SpringCloud项目3 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -650,7 +764,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -705,7 +819,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传"><span class="nav-number">1.</span> <span class="nav-text">文件上传</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#绕过网关缓存"><span class="nav-number">1.1.</span> <span class="nav-text">绕过网关缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式文件系统"><span class="nav-number">1.2.</span> <span class="nav-text">分布式文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FastDFS"><span class="nav-number">1.3.</span> <span class="nav-text">FastDFS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建环境"><span class="nav-number">1.3.1.</span> <span class="nav-text">搭建环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用FastDFS"><span class="nav-number">1.3.2.</span> <span class="nav-text">使用FastDFS</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构"><span class="nav-number">1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka工程"><span class="nav-number">2.</span> <span class="nav-text">Eureka工程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Zuul网关"><span class="nav-number">3.</span> <span class="nav-text">Zuul网关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#公共工具"><span class="nav-number">4.</span> <span class="nav-text">公共工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#业务处理"><span class="nav-number">5.</span> <span class="nav-text">业务处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Service工程"><span class="nav-number">5.1.</span> <span class="nav-text">Service工程</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
+<meta name="description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 双高     1.">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringCloud项目">
 <meta property="og:url" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
+<meta property="og:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 双高     1.">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg">
-<meta property="og:updated_time" content="2019-05-26T09:53:14.692Z">
+<meta property="og:updated_time" content="2019-06-23T07:16:05.177Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目">
-<meta name="twitter:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 工具类工程：">
+<meta name="twitter:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 双高     1.">
 <meta name="twitter:image" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg">
 
 
@@ -327,28 +327,16 @@
         <h2 id="项目架构"><a href="#项目架构" class="headerlink" title="项目架构"></a>项目架构</h2><p><img src="//hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg" alt="项目架构"></p>
 <pre><code>1. 微服务的拆分
     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;
-    2. 那么就可以把这样的微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
+    2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;
     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;
     4. 父工程打包方式为pom
-2. 工具类工程：一个SpringBoot工程，专门提供工具类方法，其他服务引用它的坐标即可;
-    1. 如果用到了Servlet相关的API时，如HttpServletRequest
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
-        &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    2. 日志相关的启动器
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-    3. JSON相关的工具类--Jackson：实体类序列化为JSON字符串、反序列化、List、Map
-    &lt;dependency&gt;
-        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
-        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
-        &lt;version&gt;2.9.9&lt;/version&gt;
-    &lt;/dependency&gt;
-    4. 通用Mapper：mapper-core、mapper-base、mapper-extra
-3. REST风格的响应
+2. 双高
+    1. 高并发：分布式、静态化技术、CDN服务、缓存技术、异步并发、池化、队列
+    2. 高可用：集群、负载均衡、限流、降级、熔断
+3. 域名
+    1. 一级域名：www.leyou.com
+    2. 二级域名/子域名：manage.leyou.com，api.leyou.com
+4. REST风格的响应
     1. @ResponseBody指的是响应体，ResponseEntity则表示响应实体;
     2. ResponseEntity中包含有状态码、响应体、响应头，也就是一个完整的HTTP响应;
     @PostMapping
@@ -358,66 +346,7 @@
         //设置状态码和响应体
         return ResponseEntity.status(HttpStatus.CREATED).body(u);
     }
-</code></pre><h3 id="通用异常处理"><a href="#通用异常处理" class="headerlink" title="通用异常处理"></a>通用异常处理</h3><pre><code>1. 在工具类中处理异常，引入SpringMVC的依赖
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
-    &lt;/dependency&gt;
-2. @ControllerAdvice、@ExceptionHandler：针对不同的异常，做不同的处理;
-    @ControllerAdvice
-    public class CommonExtHandler {
-        @ExceptionHandler(RuntimeException.class)
-        public ResponseEntity&lt;String&gt; handleRuntimeExt(RuntimeException ext) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
-        }
-        ......
-    }
-3. 为了对异常统一管理，自定义异常，动态设置状态码、状态信息，并使用枚举类封装状态信息;
-    1. 枚举类
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public enum ExceptionEnum {
-            CATEGORY_NOT_FOUND(404, &quot;商品分类没查到！&quot;),
-            UPLOAD_FILE_ERROR(500, &quot;图片上传失败！&quot;),
-            ;
-            private int code;
-            private String msg;
-        }
-    2. 自定义异常
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public class CommonException extends RuntimeException {
-            private ExceptionEnum enum;
-        }
-    3. 异常结果的封装
-        @Data
-        public class ExceptionResult {
-            private int status;
-            private String message;
-            private long timestamp;
-            public ExceptionResult(ExceptionEnum em) {
-                this.status = em.getCode();
-                this.message = em.getMsg());
-                this.timestamp = System.currentTimeMillis();
-            }
-        }
-    4. 异常捕获
-        @ExceptionHandler(CommonException.class)
-        public ResponseEntity&lt;ExceptionResult&gt; handleCommonExt(CommonException ext) {
-            ExceptionEnum em = ext.getExceptionEnum();
-            return ResponseEntity.status(em.getCode()).body(new ExceptionResult(em));
-        }
-    5. 在Controller方法中抛出异常
-        @PostMapping
-        public ResponseEntity&lt;User&gt; saveUser() {
-            if(...) {
-                throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
-            }
-            ......
-        }
-</code></pre><h2 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h2><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
+</code></pre><h3 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h3><pre><code>1. 浏览器通过域名解析，找到域名对应的IP地址，向对应的服务器发起请求;
 2. 域名解析首先从本地域名开始，也就是系统盘中的 host 文件，在 host 文件中查找域名映射的IP地址;
     1. windows系统：C:\Windows\System32\drivers\etc\hosts
     2. Linux系统：/etc/hosts
@@ -425,10 +354,10 @@
     127.0.0.1   localhost
 4. 域名服务器：记录了所有注册备案的域名和IP的映射关系;
 5. 在不购买域名的情况下，在本地 host 文件中配置域名与回环地址的映射;
-    127.0.0.1   www.icloud.com
-    127.0.0.1   manage.icloud.com
-    127.0.0.1   api.icloud.com   ------&gt;子域名
-6. 测试：ping api.icloud.com
+    127.0.0.1   www.leyou.com
+    127.0.0.1   manage.leyou.com
+    127.0.0.1   api.leyou.com
+6. 测试：ping api.leyou.com
 </code></pre><h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><pre><code>1. Nginx是一个高性能的Web和反向代理服务器，基于 Epoll 和 Kqueue 模型;
     1. 作为Web服务器：比Apache占用更少的资源，效率更高，单机支持高达50000个并发连接的响应;
     2. 作为负载均衡服务器：既可以在内部直接支持Rails和PHP，也可以作为HTTP代理服务对外提供服务;
@@ -436,58 +365,56 @@
 2. Web服务器：Apache服务器、Nginx、IIS...
 3. Web应用服务器：Tomcat、Resin、Jetty...
     1. Web服务器不能解析JSP等页面，只能处理HTML、CSS、JS、图片等静态资源;
-    2. Web服务器的并发能力远高于Web应用服务器;
+    2. Web服务器的并发能力远高于Web应用服务器.
 4. Nginx作为Web服务器时，通常把它作为网关，因为它具备网关必备的功能：反向代理、负载均衡、动态路由、请求过滤
 </code></pre><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><pre><code>1. Nginx作为反向代理服务器，配置好反向代理的规则，不同的请求交给不同的真实服务器进行处理;
 2. 当请求到达Nginx时，它会根据定义好的规则进行请求转发，从而实现路由的功能;
-3. nginx.conf
+3. 配置 nginx.conf，通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
     http {
         ......
 
         server {
-            listen       80;  -----------------&gt; 配置监听的端口号
-            server_name  manage.icloud.com;  --&gt; 监听的域名/IP
+            listen       80;
+            server_name  manage.leyou.com;
 
             proxy_set_header  X-Forwarded-Host    $host;
             proxy_set_header  X-Forwarded-Server  $host;
             proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 
             location / {
-                proxy_pass  http://192.168.58.11:9000;  #反向代理，转发的真实服务器地址
+                proxy_pass  http://192.168.58.11:9000;  #反向代理
                 proxy_connect_timeout  600;
                 proxy_read_timeout  600;
             }
         }
         server {
             listen       80;
-            server_name  api.icloud.com;
+            server_name  api.leyou.com;
 
             proxy_set_header  X-Forwarded-Host    $host;
             proxy_set_header  X-Forwarded-Server  $host;
             proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
 
             location / {
-                proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
+                proxy_pass  http://192.168.58.11:10010;  #反向代理给Zuul网关
                 proxy_connect_timeout  600;
                 proxy_read_timeout  600;
             }
         }
         ......
     }
-4. 通过子域名的方式，让Nginx监听同一个端口号80、不同的域名;
-5. 访问(http协议的默认端口号80)
-    http://manage.icloud.com/...
-    http://api.icloud.com/...
-</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：同源是指域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
+4. 访问(http协议的默认端口号80)
+    1. http://manage.leyou.com/xxx 负责管理网站后台
+    2. http://api.leyou.com/xxx 负责API接口
+</code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
 2. 主域名和子域名之间也是跨域，cookie也无法访问;
 3. 同源策略限制的行为：
     1. Cookie、LocalStorage 和 IndexDB 无法读取;
     2. DOM 和 JS对象无法获得;
     3. AJAX 请求不能发送.
-4. 注意：
-    1. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
-    2. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
-5. 解决跨域问题的方案有很多：
+4. 浏览器并没有限制跨站请求的发起，而是拦截了返回结果，比如CRSF跨站攻击原理，无论是否跨域，请求已经发给了服务器;
+5. 但是，有些浏览器不允许从HTTPS跨域访问HTTP，如Chrome和Firefox，它们会拦截请求的发出.
+6. 解决跨域问题的方案有很多：
     1. jsonp：利用 &lt;script&gt; 标签可以跨域的原理实现，需要服务端支持，且只能发起GET请求;
     2. document.domain + iframe跨域
     3. location.hash + iframe
@@ -497,8 +424,8 @@
     7. Nginx反向代理
     8. nodejs中间件代理跨域
     9. WebSocket协议跨域
-6. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
-7. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
+7. SpringMVC解决跨域问题：JSONP、CORS、WebSocket
+8. WebSocket是一种通信协议，使用ws://(非加密)和wss://(加密)作为协议前缀;
     1. 在2008年诞生，2011年成为国际标准，所有浏览器都已经支持了;
     2. WebSocket属于服务器推送技术的一种，可以保持长链接，服务器和客户端都可以主动向对方推送/发送信息;
     3. WebSocket协议不实行同源政策，只要服务器支持，就可以进行跨源通信;
@@ -538,8 +465,8 @@
         Access-Control-Max-Age: 1728000  ---&gt; 本次许可的有效时长，单位s，过期之间的AJAX请求无需再次预检
     4. 浏览器收到响应的信息，则判定可以跨域;
 6. 对于服务端，可以定义一张允许跨域的白名单，通过拦截器统一实现跨域处理;
-</code></pre><h3 id="SpringMVC的CORS"><a href="#SpringMVC的CORS" class="headerlink" title="SpringMVC的CORS"></a>SpringMVC的CORS</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
-2. 在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
+</code></pre><h3 id="CorsFilter"><a href="#CorsFilter" class="headerlink" title="CorsFilter"></a>CorsFilter</h3><pre><code>1. 实际上，SpringMVC已经实现了CORS的跨域过滤器：CorsFilter
+2. 所有的请求都先经过网关，所以在Zuul网关的工程中注册CorsFilter，拦截所有请求，配置CORS
     @Configuration
     public class GlobalCorsConfig {
         @Bean
@@ -547,7 +474,7 @@
             //CORS配置信息
             CorsConfiguration conf = new CorsConfiguration();
             //1. 添加允许的域，可以同时添加多个
-            conf.addAllowedOrigin(&quot;http://manage.icloud.com&quot;);
+            conf.addAllowedOrigin(&quot;http://manage.leyou.com&quot;);
             //2. 是否发送Cookie
             conf.setAllowCredentials(true);
             //3. 允许的请求方式
@@ -571,14 +498,15 @@
             return new CorsFilter(source);
         }
     }
-3. @CrossOrigin：SpringMVC4.2开始支持;
+3. addAllowedOrigin(&quot;*&quot;)：允许所有的域，但会导致Cookie无法使用.
+</code></pre><h3 id="CrossOrigin"><a href="#CrossOrigin" class="headerlink" title="@CrossOrigin"></a>@CrossOrigin</h3><pre><code>1. @CrossOrigin：SpringMVC4.2开始支持注解的方式解决跨域问题;
     1. @CrossOrigin 可以注解在控制器类/方法上，默认允许在@RequestMapping中指定的所有源和HTTP方法;
     2. 相关属性：value、origins，maxAge、allowedHeaders、exposedHeaders、methods、allowCredentials
     3. 如果控制器类和方法上都是用了@CrossOrigin，Spring会合并这两个注解中设置的属性.
-4. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
+2. 在控制器方法上使用 @CrossOrigin 时，可能出现一些附带问题;
     1. @RequestMapping 中需要声明 method 属性，否则 @CrossOrigin 失效;
     2. Session失效：AJAX中需要添加 xhrFields:{withCredentials:true}，以保证Session的一致性;
-5. 关于SpringMVC的XML配置文件中，全局配置CORS
+3. 关于SpringMVC的XML配置文件中，全局配置CORS
     &lt;mvc:cors&gt;
         &lt;mvc:mapping path=&quot;/api/**&quot;
             allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;
@@ -588,18 +516,6 @@
             max-age=&quot;3600&quot; /&gt;
         &lt;mvc:mapping path=&quot;/resources/**&quot; allowed-origins=&quot;http://domain1.com&quot; /&gt;
     &lt;/mvc:cors&gt;
-</code></pre><h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><pre><code>1. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
-2. 引入PageHelper的启动器：pagehelper-spring-boot-starter
-3. 在调用查询语句之前，使用PageHelper实现分页查询
-    public List&lt;User&gt; findByPage(Integer, page, Integer rows) {
-        //分页：使用拦截器，在SQL语句后面拼接limit
-        PageHelper.startPage(page, rows);
-        //查询
-        List&lt;User&gt; users = mapper.selectAll();
-        //解析查询结果
-        PageInfo&lt;User&gt; info = new PageInfo&lt;&gt;(users);
-        return users;
-    }
 </code></pre><hr>
 
       
@@ -720,7 +636,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -775,7 +691,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目架构"><span class="nav-number">1.</span> <span class="nav-text">项目架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通用异常处理"><span class="nav-number">1.1.</span> <span class="nav-text">通用异常处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#域名解析"><span class="nav-number">2.</span> <span class="nav-text">域名解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">3.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#反向代理"><span class="nav-number">3.1.</span> <span class="nav-text">反向代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">4.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">4.1.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS原理"><span class="nav-number">4.2.</span> <span class="nav-text">CORS原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC的CORS"><span class="nav-number">4.3.</span> <span class="nav-text">SpringMVC的CORS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页"><span class="nav-number">5.</span> <span class="nav-text">分页</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目架构"><span class="nav-number">1.</span> <span class="nav-text">项目架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#域名解析"><span class="nav-number">1.1.</span> <span class="nav-text">域名解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">2.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#反向代理"><span class="nav-number">2.1.</span> <span class="nav-text">反向代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域问题"><span class="nav-number">3.</span> <span class="nav-text">跨域问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">3.1.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS原理"><span class="nav-number">3.2.</span> <span class="nav-text">CORS原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CorsFilter"><span class="nav-number">3.3.</span> <span class="nav-text">CorsFilter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CrossOrigin"><span class="nav-number">3.4.</span> <span class="nav-text">@CrossOrigin</span></a></li></ol></li></ol></div>
             
 
           </div>

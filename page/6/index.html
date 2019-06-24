@@ -232,6 +232,489 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/06/Spring注解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/03/06/Spring注解/" itemprop="url">Spring注解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-06T00:00:00+08:00">
+                2016-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="IoC注解"><a href="#IoC注解" class="headerlink" title="IoC注解"></a>IoC注解</h2><pre><code>1. @Component：创建对象，&lt;bean&gt;标签的功能，把类对象存入Spring容器中
+    @Component(&quot;userService&quot;)  ---&gt;@Component(value=&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        ......
+    }
+    1. value属性就是Bean对象的id，如果直接使用 @Component，而不指定value，则默认id为
+    首字母小写的类名userServiceImpl;
+    2. 在配置文件 bean.xml 中导入context命名空间和约束，并告知Spring扫描哪个包下的注解
+    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+        &lt;!-- 告知Spring在创建容器时要扫描的包 --&gt;
+        &lt;context:component-scan base-package=&quot;项目的包名&quot;&gt;&lt;/context:component-scan&gt;
+    &lt;/beans&gt;
+    3. 通过注解创建对象
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IUserService us = (IUserService)ac.getBean(&quot;userService&quot;);
+2. Spring为了三层架构更加清晰, 还有三个与 Component 功能相同的衍生注解
+    1. Controller：一般用于表现层；
+    2. Service：一般用于表现层；
+    3. Repository：一般用在持久层。
+3. Scope：指定Bean对象的作用范围，同&lt;bean&gt;上的scope属性；
+    1. value属性：指定取值范围;
+    2. 常用取值：singleton、prototype.
+4. 生命周期相关
+    1. PreDestroy：指定销毁方法，&lt;bean&gt;上的destroy-method;
+    2. PostConstruct：指定初始化方法，&lt;bean&gt;上的init-method;
+        @Component(&quot;userService&quot;)
+        @Scope(&quot;prototype&quot;)  --------&gt;指定为多例
+        public class UserServiceImpl implements IUserService {
+            @PostConstruct
+            public void init() {
+                ......//Bean的初始化
+            }
+            @PreDestroy
+            public void destroy() {
+                ......//Bean的销毁
+            }
+        }
+</code></pre><h3 id="注入数据的注解"><a href="#注入数据的注解" class="headerlink" title="注入数据的注解"></a>注入数据的注解</h3><pre><code>1. @Autowired：自动按照类型注入；
+    1. 只要容器中有唯一的一个Bean对象与要注入的变量类型匹配，就可以注入成功；
+    2. 可以用在变量上，也可以用在方法上；
+    @Repository(&quot;userDao&quot;)
+    public class UserDaoImpl implements IUserDao {
+        public void saveUser() { ... }
+    }
+    @Service(&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        private IUserDao dao;
+        public void saveUser() {
+            dao.saveUser();
+        }
+    }
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    //指定getBean()的第二个参数，则不需要再强转类型
+    IUserService us = ac.getBean(&quot;userService&quot;, IUserService.class);
+    us.saveUser();  //内部可以调用Dao对象的方法，dao不再是null
+    3. 如果IoC有多个匹配的Bean对象，Spring会取出这些Bean对象的id，然后使用变量名与这些id
+    进行匹配，有则匹配，否则报错；
+        @Repository(&quot;userDao1&quot;)
+        public class UserDao1Impl implements IUserDao {
+            public void saveUser() { ... }
+        }
+        @Repository(&quot;userDao2&quot;)
+        public class UserDao2Impl implements IUserDao {
+            public void saveUser() { ... }
+        }
+        @Service(&quot;userService&quot;)
+        public class UserServiceImpl implements IUserService {
+            @Autowired
+            private IUserDao userDao2;  //与 UserDao2Impl 相匹配
+            ......
+        }
+    4. 不再需要setter
+2. @Qualifier：在按照类中注入的基础上，再按照名称注入；
+    1. 在给类成员注入时，不能单独使用; 但给方法参数注入时，可以单独使用;
+    2. 属性value：指定注入Bean对象的id;
+    @Service(&quot;userService&quot;)
+    public class UserServiceImpl implements IUserService {
+        @Autowired
+        @Qualifier(&quot;userDao2&quot;)  --&gt; 注入 UserDao2Impl 对象
+        private IUserDao dao;
+        ......
+    }
+3. @Resource：按照Bean的id注入，且可以单独使用，属性name用于指定注入Bean的id;
+    @Resource(name=&quot;userDao2&quot;)  --&gt;如果不指定name属性，默认把属性变量名作为Bean的id
+    private IUserDao dao;
+4. 这三种注解都只能注入IoC容器管理的Bean对象，不能注入基本数据类型，而集合类型只能使用XML实现注入;
+5. Value：用于注入基本数据类型，属性value用于指定数据的值；
+    1. 它可以使用Spring的SpEL(Spring的EL表达式);
+    2. SpEL的写法：${表达式}，虽然与JSP的EL表达式写法相同，但出现的位置并不相同；
+</code></pre><h2 id="Spring整合数据库操作"><a href="#Spring整合数据库操作" class="headerlink" title="Spring整合数据库操作"></a>Spring整合数据库操作</h2><pre><code>1. Dbutils：由Apache提供，主要封装了JDBC，简化Dao层的操作，又不会影响性能；
+    1. 三个核心类：DbUtils、QueryRunner、ResultSetHandle
+    2. DbUtils：连接数据库对象，控制连接，jdbc辅助方法的集合类，线程安全；
+    3. QueryRunner：SQL语句的操作对象，线程安全；
+        1. QueryRunner()：无参构造，创建一个与数据库无关的QueryRunner对象，需要提供一个
+        Connection对象，它可以手动控制事务;
+            Connection.setAutoCommit(false); //设置手动管理事务
+            Connection.commit(); //手动提交事务
+        2. QueryRunner(DataSource ds)：有参构造，创建一个与数据库关联的对象，不需要提供
+        Connection对象，自动管理事务;
+        3. DataSource：数据库连接池对象，由c3p0提供;
+        4. update()：用于执行DDL(create、alter、drop);
+        5. query()：用于执行DML(insert、update、delete);
+        6. batch()：执行批处理.
+    4. ResultSetHandle：封装数据的策略对象，将封装结果集中的数据转换到另一个对象。
+2. c3p0：连接池，为了提高应用程序与数据库之间的访问效率，简单易用、连接复用、连接管理;
+3. 引入依赖：spring-context、commons-dbutils、c3p0、mysql-connector-java
+4. 持久层、业务层
+    1. 实体类：com.test.domain.User
+        public class User {
+            //id、name、age
+        }
+    2. 持久层Dao：com.test.dao.IUserDao
+        public interface IUserDao {
+            //CRUD
+        }
+        public class UserDaoImpl implements IUserDao {
+            private QueryRunner runner;
+            //setter
+            public List&lt;User&gt; findAll() { //查询所有
+                return runner.query(&quot;select * from user&quot;, 
+                            new BeanListHandler&lt;User&gt;(User.class));
+            }
+            public List&lt;User&gt; findById(int id) { //查询一个
+                return runner.query(&quot;select * from user where id=?&quot;, 
+                                    new BeanHandler&lt;User&gt;(User.class), id);
+            }
+            public void save(User u) { //保存
+                runner.update(&quot;insert into user(name, age) values(?, ?)&quot;, 
+                                                    u.getName(), u.getAge());
+            }
+            public void update(User u) { //更新
+                runner.update(&quot;update user set name=?,age=? where id=?&quot;, 
+                                        u.getName(), u.getAge(), u.getId());
+            }
+            public void delete(int id) { //删除
+                runner.update(&quot;delete from user where id=?&quot;, id);
+            }
+        }
+3. 业务层Service：com.test.service.IUserService
+    public interface IUserService { ...... }
+    public class UserServiceImpl implements IUserService {
+        private IUserDao dao;
+        //setter
+        ......
+    }
+4. 配置Spring：resources/bean.xml
+    &lt;bean id=&quot;userService&quot; class=&quot;com.test.service.impl.UserServiceImpl&quot;&gt;
+        &lt;property name=&quot;dao&quot; ref=&quot;userDao&quot;&gt;&lt;property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;userDao&quot; class=&quot;com.test.dao.impl.UserDaoImpl&quot;&gt;
+        &lt;property name=&quot;runner&quot; ref=&quot;runner&quot;&gt;&lt;property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;runner&quot; class=&quot;org.apache.commons.dbutils.QueryRunner&quot; scope=&quot;prototype&quot;&gt;
+        &lt;constructor-arg name=&quot;ds&quot; ref=&quot;dataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+        &lt;!-- 链接数据库的信息 --&gt;
+        &lt;property name=&quot;driverClass&quot; value=&quot;com.mysql.cj.jdbc.Driver&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;jdbcUrl&quot; value=&quot;jdbc:mysql:......&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;user&quot; value=&quot;root&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;password&quot; value=&quot;123456&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+    1. QueryRunner设置为多例对象，避免多线程之间相互干扰;
+    2. 开始使用：
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
+    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
+    List&lt;User&gt; us = service.findAll(); //查询所有
+6. 修改为注解配置
+    1. 在 bean.xml 的约束中，增加context的命名空间；
+    2. 移除UserServiceImpl和UserDaoImpl的&lt;bean&gt;，告知Spring创建容器时要扫描的包；
+    &lt;context:component-scan base-package=&quot;com.test&quot;&gt;&lt;/context:component-scan&gt;
+    &lt;bean id=&quot;runner&quot; class=&quot;org.apache.commons.dbutils.QueryRunner&quot; scope=&quot;prototype&quot;&gt;
+        &lt;constructor-arg name=&quot;ds&quot; ref=&quot;dataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;&gt;
+        ...... &lt;!-- 链接数据库的信息 --&gt;
+    &lt;/bean&gt;
+    3. 为 UserServiceImpl和UserDaoImpl 添加注解，并移除其中的setter.
+        @Repository(&quot;userDao&quot;)
+        public class UserDaoImpl implements IUserDao {
+            @Autowired
+            private QueryRunner runner;
+            ......
+        }
+        @Service(&quot;userService&quot;)
+        public class UserServiceImpl implements IUserService {
+            @Autowired
+            private IUserDao dao;
+            ......
+        }
+</code></pre><h3 id="Spring新注解"><a href="#Spring新注解" class="headerlink" title="Spring新注解"></a>Spring新注解</h3><pre><code>1. Configuration：声明一个类为配置类，用于取代配置文件 bean.xml;
+2. ComponentScan：指定创建容器时要扫描的包;
+    1. value属性和basePackages属性的作用相同，都是指定包名;
+    2. 此注解的功能等同于 bean.xml 中的 &lt;context:component-scan&gt;
+3. Bean：把当前方法的返回值作为bean对象，存入Spring的IoC容器中;
+    1. name属性：指定bean的id，不显式声明id时，默认为当前方法名;
+    2. 此注解可以取代&lt;bean id=&quot;runner&quot; ···&gt; 和 &lt;bean id=&quot;dataSource&quot; ···&gt;
+    3. @Scope：指定bean对象的作用范围;
+        @Configuration
+        @ComponentScan(basePackages=&quot;com.test&quot;)
+        public class SpringConfiguration {
+            @Bean(name=&quot;runner&quot;)
+            @Scope(&quot;prototype&quot;)
+            public QueryRunner createQueryRunner(DataSource dataSource) {
+                return new QueryRunner(dataSource);
+            }
+            @Bean(name=&quot;dataSource&quot;)
+            public DataSource createDataSource() {
+                ComboPooledDataSource ds = new ComboPooledDataSource();
+                ds.setDriverClass(&quot;com.mysql.cj.jdbc.Driver&quot;);
+                ds.setJdbcUrl(&quot;jdbc:mysql:......&quot;);
+                ds.setUser(&quot;root&quot;);
+                ds.setPassword(&quot;123456&quot;);
+                return ds;
+            }
+        }
+    4. 在使用注解配置方法时，如果方法上有参数(也是bean对象)，Spring会去容器中查找有没有
+    与此参数对应的bean对象，查找方式与Autowired相同;
+        1. 如果有且只有一个匹配的bean对象，则匹配成功;
+        2. 如果有多个匹配的bean对象，则根据参数名与bean的id进行匹配.
+    5. 另外，方法的参数上可以单独使用 @Qualifier，明确指定要匹配的bean对象;
+    @Bean(name=&quot;runner&quot;)
+    @Scope(&quot;prototype&quot;)
+    public QueryRunner createQueryRunner(@Qualifier(&quot;ds2&quot;) DataSource dataSource) {
+        return new QueryRunner(dataSource);
+    }
+    @Bean(name=&quot;ds1&quot;)
+    public DataSource createDataSource() { ... }
+
+    @Bean(name=&quot;ds2&quot;)
+    public DataSource createDataSource() { ... }
+    6. @Qualifier(&quot;ds2&quot;) 指定去匹配 @Bean(name=&quot;ds2&quot;) 的方法.
+4. 使用 AnnotationConfigApplicationContext 加载配置类，获取bean对象
+    ApplicationContext ac = 
+        new AnnotationConfigApplicationContext(SpringConfiguration.class);
+    IUserService service = ac.getBean(&quot;userService&quot;, IUserService.class);
+</code></pre><h3 id="分解注解类"><a href="#分解注解类" class="headerlink" title="分解注解类"></a>分解注解类</h3><pre><code>1. 为了便于管理，一个主配置类可以分为多个子配置类，如把JDBC相关的配置放在 JdbcConf类 中;
+    @Configuration
+    public class JdbcConf {   //全类名为config.JdbcConf
+        @Bean(name=&quot;runner&quot;)
+        @Scope(&quot;prototype&quot;)
+        public QueryRunner createQueryRunner(DataSource ds) { ... }
+        @Bean(name=&quot;ds&quot;)
+        public DataSource createDataSource() { ... }
+    }
+2. 在主配置类中声明要扫描的包，包括子配置文件所在的包
+    @Configuration
+    @ComponentScan({&quot;com.test&quot;, &quot;config&quot;})
+    public class SpringConfiguration { }
+3. 在创建ApplicationContext对象时，如果直接把配置类作为参数，则可省略 @Configuration，
+   也不需要扫描配置类所在的包；
+    public class JdbcConf { ... }
+
+    @ComponentScan({&quot;com.test&quot;})
+    public class SpringConfiguration { }
+
+    ApplicationContext ac = new AnnotationConfigApplicationContext(
+                                    SpringConfiguration.class, JdbcConf.class);
+4. Import：导入其他的配置类
+    1. 被导入的配置类上可以使用 @Configuration，也可以不声明它所在的包;
+    public class JdbcConf { ... }
+
+    @ComponentScan({&quot;com.test&quot;})
+    @Import(JdbcConf.class)
+    public class SpringConfiguration { }
+
+    ApplicationContext ac = 
+            new AnnotationConfigApplicationContext(SpringConfiguration.class);
+    2. 此时，SpringConfiguration称为父配置类，JdbcConf称为子配置类
+5. PropertySource：加载properties文件;
+    1. value属性：指定文件的名称和路径;
+    2. classpath关键字：表示类路径下;
+        resources/spring/conf/jdbc.properties ---&gt; 
+                    @PropertySource(&quot;classpath:spring/conf/jdbc.properties&quot;)
+6. 抽取出数据库连接的信息
+    1. 在resources目录下创建 jdbcConf.properties
+        jdbc.driver = com.mysql.cj.jdbc.Driver
+        jdbc.url = jdbc:mysql:......
+        jdbc.user = root
+        jdbc.password = 123456
+    2. 在主配置类上注解 @PropertySource，引入properties文件，那么其子配置类都可以通过EL表达式获取键-值
+        @ComponentScan({&quot;com.test&quot;})
+        @Import(JdbcConf.class)
+        @PropertySource(&quot;classpath:jdbcConf.properties&quot;)
+        public class SpringConfiguration { }
+    3. 在子配置类JdbcConf 中使用Spring的EL表达式，获取properties中的key-value值
+        public class JdbcConf { --&gt;亦或者直接在JdbcConf类上注解 @PropertySource(...)
+            @Value(&quot;${jdbc.driver}&quot;)
+            private String driver;
+
+            @Value(&quot;${jdbc.url}&quot;)
+            private String url;
+
+            @Value(&quot;${jdbc.user}&quot;)
+            private String user;
+
+            @Value(&quot;${jdbc.password}&quot;)
+            private String password;
+
+            @Bean(name=&quot;dataSource&quot;)
+            public DataSource createDataSource() {
+                ComboPooledDataSource ds = new ComboPooledDataSource();
+                ds.setDriverClass(driver);
+                ds.setJdbcUrl(url);
+                ds.setUser(user);
+                ds.setPassword(password);
+                return ds;
+            }
+            ......
+        }
+</code></pre><h2 id="Spring整合Junit"><a href="#Spring整合Junit" class="headerlink" title="Spring整合Junit"></a>Spring整合Junit</h2><pre><code>1. Junit单元测试中没有直接提供main()，是因为它集成了一个main()
+    1. Junit会判断测试类中有哪些方法上使用了 @Test;
+    2. Junit main()只会执行有 @Test 的方法.
+2. Junit并不关心Spring框架;
+    1. 在执行测试方法时，Junit也不会关心Spring的配置文件/配置类，更不会创建IoC容器;
+    2. 没有IoC容器，在测试类中使用 @Autowired，也无法实现注入.
+3. spring-test：Spring整合junit测试框架; 加入依赖：spring-test、junit
+4. @RunWith：Junit提供的注解，把 main() 替换成Spring提供的;
+5. @ContextConfiguration：告知Spring的运行器，创建IoC容器使用的是XML还是注解，并指定其位置;
+    1. locations属性：指定XML文件的位置，使用classpath关键字，表示在类路径下;
+        @ContextConfiguration(locations=&quot;classpath:bean.xml&quot;)
+    2. classes属性：指定注解类所在的位置；
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(classes=SpringConfiguration.class)
+    public class UserTest {
+        @Autowired
+        private IUserService service;
+
+        @Test
+        public void testFindAll() {
+            List&lt;User&gt; us = service.findAll();
+        }
+    }
+6. 另外，Spring5.x版本时，junit的版本必须为4.12+
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/05/Spring/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3741,247 +4224,6 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/01/05/Java网络编程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/01/05/Java网络编程/" itemprop="url">Java网络编程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-05T00:00:00+08:00">
-                2016-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Ip相关的类：InetAddress"><a href="#Ip相关的类：InetAddress" class="headerlink" title="Ip相关的类：InetAddress"></a>Ip相关的类：InetAddress</h2><pre><code>1. 获取本机的Ip、hostname
-    InetAddress addr = InetAddress.getLocalHost();
-    String ip = addr.getHostAddress();
-    String hostName = addr.getHostName(); //计算机名
-2. 根据域名获取Ip、hostname
-    InetAddress addr = InetAddress.getByName(&quot;www.baidu.com&quot;); //内部是NDS解析
-    String ip = addr.getHostAddress(); //Ip
-    String hostName = addr.getHostName(); //域名www.baidu.com
-3. 如果getByName(&quot;Ip地址&quot;)，getHostName()获取的仍是Ip，而不是域名；
-4. 子类：Inet4Address、Inet6Address
-</code></pre><h2 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h2><pre><code>1. 端口号表示一个16位的二进制整数，2个字节，对应十进制0-65535
-    1. 公认端口0-1023，如80是http协议的默认端口
-    2. 注册端口1024-49151(分配给用户进程/应用程序)
-    3. 动态/私有端口49152-65535
-2. windows命令
-    1. netstat -ano  ---&gt; 查看所有的端口号
-    2. netstat -ano|findstr &quot;808&quot;  ---&gt; 查看指定端口号
-    3. tasklist|findstr &quot;808&quot;  ---&gt; 查看指定进程
-3. InetSocketAddress：包含端口号，用于socket通信
-    InetSocketAddress s = new InetSocketAddress(&quot;127.0.0.1/localhost&quot;, 8080);
-    s.getHostName();  s.getAddress();  s.getPort();
-</code></pre><h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><pre><code>1. URL和URN都是URI的子集
-    1. URI：统一资源标识符，表示一个资源，比如一个具体的人
-    2. URL：统一资源定位符，用地址定位一个资源，比如XX省XX市XX区...XX单元XX室的主人
-    3. URN：统一资源名称，用名称定位一个资源，但不明确资源的位置，比如身份证号+姓名去找人
-2. 网络三大基石：HTML、HTTP、URL
-3. URL由4部分组成：协议、资源所在的主机域名、端口号、资源文件名
-4. URL url = new URL(&quot;http://www.baidu.com:80/index.html#aa?xx=xxx&quot;);
-    1. url.getProtocol()：协议名
-    2. url.getDefaultPort()：获取与此URL关联的协议的默认端口号
-    3. url.getHost()：主机名/域名
-    4. url.getFile()：端口号后的所有内容
-    5. url.getPath()：端口号后、参数前的内容
-    6. url.getQuery()：参数部分
-    7. url.getRef()：锚点
-5. 相对路径构建URL
-    URL u1 = new URL(&quot;http://www.baidu.com/aa/&quot;);
-    URL u2 = new URL(u, &quot;b.html&quot;); --&gt; http://www.baidu.com/aa/b.html
-6. 发起请求
-    1. 抓取网络数据，非浏览器访问
-    InputStream is = url.openStream();
-    BufferedReader br = new BufferedReader(new InputStreamReader(is, &quot;UTF-8&quot;));
-    String msg = null;
-    while(null != (msg=br.readLine())) {
-        System.out.println(msg);
-    }
-    br.close();
-    2. 模拟浏览器访问
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestMethod(&quot;GET&quot;);  --&gt;设置请求方式
-    conn.setRequestProperty(&quot;User-Agent&quot;, &quot;value&quot;); --&gt;设置请求头
-    BufferedReader br = new BufferedReader(
-        new InputStreamReader(conn.getInputStream(), &quot;GBK&quot;));
-</code></pre><h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><pre><code>1. DatagramSocket：用于发送/接受数据包的套接字；
-2. DatagramPacket：数据包；
-3. 发送端
-    DatagramSocket client = new DatagramSocket(8888);
-    String data = &quot;Hello I&apos;m Client&quot;;
-    byte[] bys = data.getBytes();
-    //发送给&quot;127.0.0.1:9999&quot;
-    DatagramPacket packet = new DatagramPacket(bys, 0, bys.length, 
-        new InetSocketAddress(&quot;127.0.0.1&quot;, 9999));
-    client.send(packet);
-    client.close();
-4. 接收端
-    DatagramSocket server = new DatagramSocket(9999); --&gt; 监听端口9999
-    byte[] container = new byte[1024*60];
-    DatagramPacket packet = new DatagramPacket(container, 0, container.length);
-    server.receive(packet);
-    byte[] bys = packet.getData();
-    int len = packet.getLength();
-    String data = new String(bys, 0, len);
-    server.close();
-</code></pre><h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><pre><code>1. 服务端：ServerSocket
-    ServerSocket server = new ServerSocket(8889);
-    Socket client = server.accept(); --&gt;阻塞式，等待客户端连接
-    DataInputStream dis = new DataInputStream(client.getInputStream());
-    String data = dis.readUTF(); --&gt;客户端的数据
-    dis.close();
-    client.close();
-    server.close();
-    1. 通过每一次连接的client，向对应的客户端响应数据
-    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-    dos.writeUTF(&quot;hello I&apos;m Server&quot;); --&gt;向客户端响应数据
-    dos.flush();
-    dos.close();
-2. 客户端：Socket
-    //指定服务端的Ip和端口号，发起连接请求
-    Socket client = new Socket(&quot;127.0.0.1&quot;, 8889);
-    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-    dos.writeUTF(&quot;hello I&apos;m Client&quot;); --&gt;向服务端写入数据
-    dos.flush();
-    dos.close();
-    client.close();
-    1. client接收服务端的响应数据
-    DataInputStream dis = new DataInputStream(client.getInputStream());
-    String data = dis.readUTF(); --&gt;接收响应数据
-    dis.close();
-3. HTTP底层正是TCP，浏览器作为客户端，也可以直接访问TCP服务器端.
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4032,7 +4274,7 @@ IUserService service = (IUserService) BeanFactory.getBean(&quot;userService&quot
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

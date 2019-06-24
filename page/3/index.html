@@ -3124,7 +3124,7 @@ Esc：退出编辑模式或末行模式；
             &lt;plugin&gt;
                 &lt;groupId&gt;com.spotify&lt;/groupId&gt;
                 &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
-                &lt;version&gt;x.x.xx&lt;/version&gt;
+                &lt;version&gt;0.4.11&lt;/version&gt;
                 &lt;configuration&gt;
                     &lt;imageName&gt;宿主机IP:5000/${project.artifactId}:${project.version}&lt;/imageName&gt;
                     &lt;baseImage&gt;jdk1.8&lt;/baseImage&gt;
@@ -3147,18 +3147,15 @@ Esc：退出编辑模式或末行模式；
     3. &lt;entryPoint&gt;：入口点，等效于Dockerfile中的 ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/app.jar&quot;]
     4. &lt;resources&gt;：指定上传的源工程，等效于Dockerfile中的 ADD app.jar /
 4. docker-maven的作用就是代替Dockerfile，实现自动编译与上传;
-5. 命令行进入工程根目录，开始部署
-    mvn clean package  # 打包项目
-    mvn docker:build -DpushImage
-    1. -DpushImage 表示构建完成之后就上传;
-    2. 整合成一条命令：
-    mvn clean package docker:build -DpushImage
+5. 命令行进入工程根目录，打包项目，构建镜像，并上传到私服仓库
+    mvn clean package docker:build -DpushImage  # -DpushImage 表示构建完成之后就上传;
 6. 进入宿主机，查看镜像：docker images
     宿主机IP:5000/工程名(REPOSITORY)  版本号(TAG)
 7. 查看私服上的镜像
     http://宿主机IP:5000/v2/_catalog  ==&gt; {&quot;repositories&quot;:[&quot;jdk1.8&quot;,&quot;工程名&quot;]}
 8. 进入宿主机，使用上传的工程镜像创建容器
     docker run -di --name=mytest -p 9001:工程监听的端口号 宿主机IP:5000/工程名:版本号
+9. 访问工程的接口 http://宿主机IP:9000/xxxx
 </code></pre><hr>
 
           
@@ -3208,7 +3205,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/11/SpringCloud项目2/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -3227,7 +3224,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/05/11/SpringCloud项目2/" itemprop="url">SpringCloud项目2</a></h1>
+                <a class="post-title-link" href="/2016/05/12/SpringCloud项目3/" itemprop="url">SpringCloud项目3</a></h1>
         
 
         <div class="post-meta">
@@ -3239,8 +3236,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-11T00:00:00+08:00">
-                2016-05-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-12T00:00:00+08:00">
+                2016-05-12
               </time>
             
 
@@ -3301,9 +3298,25 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><pre><code>1. 搭建一个图片上传的微服务upload-service
-2. 依赖：spring-cloud-starter-netflix-eureka-client、spring-boot-starter-web
-3. application.yml
+            <h2 id="文件上传服务"><a href="#文件上传服务" class="headerlink" title="文件上传服务"></a>文件上传服务</h2><pre><code>1. 子工程ly-upload 负责文件上传
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-upload&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. application.yml
     server:
         port: 8082
     spring:
@@ -3317,46 +3330,64 @@ Esc：退出编辑模式或末行模式；
         client:
             service-url:
                 defaultZone: http://127.0.0.1:10086/eureka  #Eureka注册中心
-4. Controller层
+3. 启动类：com.leyou.LyUploadApplication
+    @EnableDiscoveryClient
+    @SpringBootApplication
+    public class LyUploadApplication {
+        public static void main(String[] args) {
+            SpringApplication.run(LyUploadApplication.class, args);
+        }
+    }
+4. Controller层：com.leyou.upload.web.UploadController
     @RestController
     @RequestMapping(&quot;upload&quot;)
     public class UploadController {
-        //简单的文件类型
+        //简单的文件类型判断
         private final List&lt;String&gt; ALLOW_TYPES = Arrays.asList(&quot;image/jpeg&quot;, &quot;image/png&quot;, &quot;image/bmp&quot;);
+
+        @Autowired
+        private UploadService service;
 
         @PostMapping(&quot;image&quot;)
         public ResponseEntity&lt;String&gt; uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
+            return ResponseEntity.ok(service.uploadImage(file));
+        }
+    }
+5. Service层：com.leyou.upload.service.UploadService
+    @Service
+    public class UploadService {
+        public String uploadImage(MultipartFile file) {
             try {
                 //校验文件类型
                 String type = file.getContentType();
                 if(!ALLOW_TYPES.contains(type)) {
-                    throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
+                    throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
                 }
                 //校验文件内容
                 BufferedImage image = ImageIO.read(file.getInputStream());
                 if(null == image) {
-                    throw new CommonException(ExceptionEnum.INVALID_FILE_TYPE);
+                    throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
                 }
-
+                String filename = file.getOriginalFilename();
                 //目标路径
-                File dest = new File(&quot;/upload/&quot;, file.getOriginalFilename());
+                File dest = new File(&quot;/upload/&quot;, filename);
                 //保存到本地
                 file.transferTo(dest);
-                ......
-                return &quot;图片路径&quot;
+                //返回图片的访问地址，为了防止图片重名，可以对图片名做处理
+                return &quot;http://image.leyou.com/&quot; + filename;
             } catch(IOException e) {
-                throw new CommonException(ExceptionEnum.UPLOAD_FILE_ERROR);
+                throw new LyException(ExceptionEnum.UPLOAD_FILE_ERROR);
             }
         }
     }
-5. Zuul网关中配置路由映射规则
+6. Zuul网关中配置路由映射规则
     zuul:
         prefix: /api
         routes:
             upload-service:
                 path: /upload/**
                 serviceId: upload-service
-                strip-prefix: false
+                strip-prefix: false  # 转发局部前缀/upload/
 </code></pre><h3 id="绕过网关缓存"><a href="#绕过网关缓存" class="headerlink" title="绕过网关缓存"></a>绕过网关缓存</h3><pre><code>1. 默认情况下，所有请求经过Zuul网关的代理，都会通过SpringMVC预先对请求进行处理、缓存;
     1. 这种情况对普通请求没有什么影响，但对文件上传会造成不必要的网络负担;
     2. 在高并发时，可能造成网络阻塞，Zuul网关不可用，从而造成整个系统瘫痪;
@@ -3396,7 +3427,7 @@ Esc：退出编辑模式或末行模式；
 3. 分布式文件系统：GFS(谷歌)、HDFS(Hadoop)、TFS(淘宝)、FastDFS...
 </code></pre><h3 id="FastDFS"><a href="#FastDFS" class="headerlink" title="FastDFS"></a>FastDFS</h3><pre><code>1. FastDFS：阿里巴巴淘宝，一个轻量级、高性能的开源分布式系统，纯C语言开发，功能丰富;
 2. 支持文件存储、文件同步、文件访问(上传、下载)、存储负载均衡、在线扩容;
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/fastDFS.jpg" alt="fastDFS"></p>
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/12/SpringCloud项目3/fastDFS.jpg" alt="fastDFS"></p>
 <pre><code>3. Tracker Server：跟踪服务器
     1. 主要负责调度storage节点与client通信，在访问上起负载均衡的作用;
     2. 还会记录storage节点的运行状态，是连接client与storage节点的枢纽;
@@ -3409,13 +3440,13 @@ Esc：退出编辑模式或末行模式；
 6. Tracker Cluster：跟踪服务器的集群，由一组Tracker Server组成;
 7. Storage Cluster：存储集群，由多个Gruop组成;
 8. 上传
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/上传.jpg" alt="上传"></p>
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/12/SpringCloud项目3/上传.jpg" alt="上传"></p>
 <pre><code>    1. Client通过Tracker Server查找可用的Storage Server;
     2. Tracker Server向Client返回一台可用的Storage Server的IP和端口号;
     3. Client直接通过IP和端口号与Storage Server建立连接，并进行文件上传;
     4. 上传完成之后，Storage Server返回Client一个文件ID，表示文件上传结束;
 9. 下载
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/11/SpringCloud项目2/下载.jpg" alt="下载"></p>
+</code></pre><p><img src="//hellomyshadow.github.io/2016/05/12/SpringCloud项目3/下载.jpg" alt="下载"></p>
 <pre><code>1. Client通过Tracker Server查找要下载文件所在的Storage Server;
 2. Tracker Server向Client返回包含指定文件的某个Storage Server的IP和端口号;
 3. Client直接通过IP和端口号与Storage Server建立连接，并指定要下载的文件;
@@ -3591,7 +3622,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

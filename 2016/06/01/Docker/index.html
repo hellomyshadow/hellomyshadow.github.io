@@ -88,7 +88,7 @@
 <meta property="og:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/06/01/Docker/比较.jpg">
-<meta property="og:updated_time" content="2019-06-16T03:57:17.370Z">
+<meta property="og:updated_time" content="2019-06-18T11:53:04.023Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker">
 <meta name="twitter:description" content="虚拟化1. 虚拟化：计算机中的一种资源管理技术;     1. 将计算机的各种实体资源，如服务器、网络、内存及存储等，予以抽象、转换后呈现出来;     2. 打破实体结构间的不可切割障碍，使用户可以比原本的组态更好地应用这些资源;     3. 而且，这些资源的新虚拟部分不受现有资源的架构方式、地域、物理组态所限制. 2. 一般所说的虚拟化资源包括计算能力和资料存储; 3. 在实际生产环境中，虚">
@@ -579,7 +579,7 @@
             &lt;plugin&gt;
                 &lt;groupId&gt;com.spotify&lt;/groupId&gt;
                 &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
-                &lt;version&gt;x.x.xx&lt;/version&gt;
+                &lt;version&gt;0.4.11&lt;/version&gt;
                 &lt;configuration&gt;
                     &lt;imageName&gt;宿主机IP:5000/${project.artifactId}:${project.version}&lt;/imageName&gt;
                     &lt;baseImage&gt;jdk1.8&lt;/baseImage&gt;
@@ -602,18 +602,15 @@
     3. &lt;entryPoint&gt;：入口点，等效于Dockerfile中的 ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/app.jar&quot;]
     4. &lt;resources&gt;：指定上传的源工程，等效于Dockerfile中的 ADD app.jar /
 4. docker-maven的作用就是代替Dockerfile，实现自动编译与上传;
-5. 命令行进入工程根目录，开始部署
-    mvn clean package  # 打包项目
-    mvn docker:build -DpushImage
-    1. -DpushImage 表示构建完成之后就上传;
-    2. 整合成一条命令：
-    mvn clean package docker:build -DpushImage
+5. 命令行进入工程根目录，打包项目，构建镜像，并上传到私服仓库
+    mvn clean package docker:build -DpushImage  # -DpushImage 表示构建完成之后就上传;
 6. 进入宿主机，查看镜像：docker images
     宿主机IP:5000/工程名(REPOSITORY)  版本号(TAG)
 7. 查看私服上的镜像
     http://宿主机IP:5000/v2/_catalog  ==&gt; {&quot;repositories&quot;:[&quot;jdk1.8&quot;,&quot;工程名&quot;]}
 8. 进入宿主机，使用上传的工程镜像创建容器
     docker run -di --name=mytest -p 9001:工程监听的端口号 宿主机IP:5000/工程名:版本号
+9. 访问工程的接口 http://宿主机IP:9000/xxxx
 </code></pre><hr>
 
       
@@ -645,8 +642,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/11/SpringCloud项目2/" rel="next" title="SpringCloud项目2">
-                <i class="fa fa-chevron-left"></i> SpringCloud项目2
+              <a href="/2016/05/12/SpringCloud项目3/" rel="next" title="SpringCloud项目3">
+                <i class="fa fa-chevron-left"></i> SpringCloud项目3
               </a>
             
           </div>
@@ -734,7 +731,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
