@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/fastDFS.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/上传.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/下载.jpg">
-<meta property="og:updated_time" content="2019-06-26T14:08:21.601Z">
+<meta property="og:updated_time" content="2019-06-27T13:37:22.335Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目3">
 <meta name="twitter:description" content="文件上传服务1. 子工程ly-upload 负责文件上传     &amp;lt;groupId&amp;gt;com.leyou.service&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;ly-upload&amp;lt;/artifactId&amp;gt;     &amp;lt;dependencies&amp;gt;         &amp;lt;dependency&amp;gt;             &amp;lt">
@@ -493,11 +493,11 @@
         listen       80;
         server_name  image.leyou.com;
 
-        location ~/group([0-9])/ {   # 监听带有 group 的请求，交给FastDFS模块处理
+        location ~/group([0-9])/ {   # 访问上传的图片，交给FastDFS模块处理
             ngx_fastdfs_module;
         }
         location / {
-            root   html;
+            root   /leyou/static/;   # 访问其他图片时，则走nginx的本地目录
             index  index.html index.htm;
         }
         error_page  500 502 503 504  /50x.html
@@ -573,7 +573,7 @@
                 if(null == image) {  //校验文件内容
                     throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
                 }
-                //1. 获取文件的后缀名，StringUtils是Apache commons-lang3工具类，加入到公共工具中
+                //1. 获取文件的后缀名，StringUtils是Apache commons-lang3工具类，加入到工具工程中
                 String ext = StringUtils.substringAfterLast(file.getOriginalFilename(), &quot;.&quot;);
                 //2. 上传到FastDFS
                 StorePath store = client.uploadFile(file.getInputStream(), file.getSize(), ext, null);
@@ -633,8 +633,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/06/01/Docker/" rel="prev" title="Docker">
-                Docker <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/13/SpringCloud项目4/" rel="prev" title="SpringCloud项目4">
+                SpringCloud项目4 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -712,7 +712,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

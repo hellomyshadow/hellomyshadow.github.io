@@ -3205,7 +3205,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/13/SpringCloud项目4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -3224,7 +3224,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/05/12/SpringCloud项目3/" itemprop="url">SpringCloud项目3</a></h1>
+                <a class="post-title-link" href="/2016/05/13/SpringCloud项目4/" itemprop="url">SpringCloud项目4</a></h1>
         
 
         <div class="post-meta">
@@ -3236,8 +3236,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-12T00:00:00+08:00">
-                2016-05-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-13T00:00:00+08:00">
+                2016-05-13
               </time>
             
 
@@ -3298,272 +3298,40 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="文件上传服务"><a href="#文件上传服务" class="headerlink" title="文件上传服务"></a>文件上传服务</h2><pre><code>1. 子工程ly-upload 负责文件上传
-    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
-    &lt;artifactId&gt;ly-upload&lt;/artifactId&gt;
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;com.github.tobato&lt;/groupId&gt;
-            &lt;artifactId&gt;fastdfs-client&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
-            &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
-            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-2. application.yml
-    server:
-        port: 8082
-    spring:
-        application:
-            name: upload-service
-        servlet
-            multipart:
-                max-file-size: 5MB  #限制上传单个文件的大小
-                max-request-size: 10MB  #限制一次请求的大小，可能包含多个文件
-    eureka:
-        client:
-            service-url:
-                defaultZone: http://127.0.0.1:10086/eureka  #Eureka注册中心
-3. 启动类：com.leyou.LyUploadApplication
-    @EnableDiscoveryClient
-    @SpringBootApplication
-    public class LyUploadApplication {
-        public static void main(String[] args) {
-            SpringApplication.run(LyUploadApplication.class, args);
-        }
-    }
-4. Controller层：com.leyou.upload.web
-    @RestController
-    @RequestMapping(&quot;upload&quot;)
-    public class UploadController {
-        @Autowired
-        private UploadService service;
+            <h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 在使用通用Mapper时，只继承 Mapper&lt;T&gt; 是不能实现批量插入等高级功能的;
+2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-base&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-extra&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+3. 自定义一个具备批量新增的BaseMapper：com.leyou.common.mapper
+    @RegisterMapper
+    public interface BaseMapper&lt;T&gt; extends Mapper&lt;T&gt;,IdListMapper&lt;T, Long&gt;,InsertListMapper&lt;T&gt; {
 
-        @PostMapping(&quot;image&quot;)
-        public ResponseEntity&lt;String&gt; uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
-            return ResponseEntity.ok(service.uploadImage(file));
-        }
     }
-5. Service层：com.leyou.upload.service
-    @Service
-    public class UploadService {
+    1. IdListMapper&lt;T, Long&gt;：第二个泛型指定ID的类型;
+    2. @RegisterMapper：注册自己的Mapper
+    3. InsertListMapper 必须是 mapper-extra 包中的，因为 mapper-base 包中的 InsertListMapper 有限制.
+4. 在业务处理的Service工程ly-item-service 中使用
+    1. com.leyou.item.mapper.StockMapper 继承自定义的 BaseMapper
+        public interface StockMapper extends BaseMapper&lt;Stock&gt; {
 
-        //简单的文件类型判断
-        private final List&lt;String&gt; ALLOW_TYPES = Arrays.asList(&quot;image/jpeg&quot;, &quot;image/png&quot;, &quot;image/bmp&quot;);
-
-        public String uploadImage(MultipartFile file) {
-            try {
-                //校验文件类型
-                String type = file.getContentType();
-                if(!ALLOW_TYPES.contains(type)) {
-                    throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
-                }
-                //校验文件内容
-                BufferedImage image = ImageIO.read(file.getInputStream());
-                if(null == image) {
-                    throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
-                }
-                String filename = file.getOriginalFilename();
-                //目标路径
-                File dest = new File(&quot;/upload/&quot;, filename);
-                //保存到本地
-                file.transferTo(dest);
-                //返回图片的访问地址，为了防止图片重名，应该对图片名做处理
-                return &quot;http://image.leyou.com/&quot; + filename;
-            } catch(IOException e) {
-                throw new LyException(ExceptionEnum.UPLOAD_FILE_ERROR);
-            }
         }
-    }
-6. Zuul网关中配置路由映射规则
-    zuul:
-        prefix: /api
-        routes:
-            upload-service:
-                path: /upload/**
-                serviceId: upload-service
-                strip-prefix: false  # 转发局部前缀/upload/
-7. 图片的上传地址：http://api.leyou.com/api/upload/image
-</code></pre><h3 id="绕过网关缓存"><a href="#绕过网关缓存" class="headerlink" title="绕过网关缓存"></a>绕过网关缓存</h3><pre><code>1. 默认情况下，所有请求经过Zuul网关的代理，都会通过SpringMVC预先对请求进行处理、缓存;
-    1. 这种情况对普通请求没有什么影响，但对文件上传会造成不必要的网络负担;
-    2. 在高并发时，可能造成网络阻塞，Zuul网关不可用，从而造成整个系统瘫痪;
-    3. 所以，文件上传的请求应该绕过请求缓存，直接通过路由到达目标微服务;
-2. Spring官方的解决方案：在请求地址中加上前缀 /zuul，就可以绕过Zuul网关的请求缓存;
-    http://api.leyou.com/api/upload/image --&gt; http://api.leyou.com/zuul/api/upload/image
-3. 通常情况下，请求路径是项目需求设计的，不允许手动更改，但请求最先到达nginx，再由nginx反向代理到Zuul网关;
-4. Nginx提供了 rewrite 指令，用于对地址进行重写;
-    1. 重写规则
-        rewrite &quot;匹配路径的正则表达式&quot; 重写后的路径 [指令];
-    2. nginx.conf
-    server {
-        listen       80;
-        server_name  api.leyou.com;
-        ......
-
-        location /api/upload {            # 精确匹配的路径
-            rewrite &quot;^/(.*)$&quot; /zuul/$1;   # /api/upload/image --&gt; /zuul/api/upload/image
-        }
-
-        location / {
-            proxy_pass  http://192.168.58.11:10010;  #反向代理到Zuul网关
-            proxy_connect_timeout  600;
-            proxy_read_timeout  600;
-        }
-    }
-    2. http://api.leyou.com/api/upload/image 由nginx转发到服务端后，路径变成了 /zuul/api/upload/image
-</code></pre><h2 id="分布式文件系统"><a href="#分布式文件系统" class="headerlink" title="分布式文件系统"></a>分布式文件系统</h2><pre><code>1. 把上传的文件保存到服务器上时，会存在一系列问题：
-    1. 单机存储的能力有限;
-    2. 无法进行水平扩展，因为多台机器的文件无法共享;
-    3. 数据没有备份，有单点故障的问题;
-    4. 并发能力差;
-2. 分布式文件系统：文件系统管理的物理存储资源不一定直接连接在本地节点上，而是通过计算机网络与节点相连;
-    1. 传统的文件系统管理的文件通常存储在本机上;
-    2. 分布式文件系统管理的文件则存储在很多机器上，这些机器之间通过网络连接，并统一管理;
-    3. 分布式文件系统有一个管理中心，无论是上传还是访问文件，都需要经过管理中心;
-3. 分布式文件系统：GFS(谷歌)、HDFS(Hadoop)、TFS(淘宝)、FastDFS...
-</code></pre><h3 id="FastDFS"><a href="#FastDFS" class="headerlink" title="FastDFS"></a>FastDFS</h3><pre><code>1. FastDFS：阿里巴巴淘宝，一个轻量级、高性能的开源分布式系统，纯C语言开发，功能丰富;
-2. 支持文件存储、文件同步、文件访问(上传、下载)、存储负载均衡、在线扩容;
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/12/SpringCloud项目3/fastDFS.jpg" alt="fastDFS"></p>
-<pre><code>3. Tracker Server：跟踪服务器
-    1. 主要负责调度storage节点与client通信，在访问上起负载均衡的作用;
-    2. 还会记录storage节点的运行状态，是连接client与storage节点的枢纽;
-4. Storage Server：存储服务器，保存文件和文件的元数据(Meta data)
-    1. 每个Storage Server会启动一个单独的线程，主动向Tracker Cluster中的每个Tracker Server报告其状态信息;
-    2. 包括磁盘使用情况，文件同步情况，文件上传/下载次数统计...
-5. Gruop：文件组，多台Storage Server的集群;
-    1. 上传一个文件到同组内的一台机器上，FastDFS会同步到同组内的其他所有机器上，起到备份作用;
-    2. 不同组的服务器，保存的数据不同，而且相互独立，不进行通信;
-6. Tracker Cluster：跟踪服务器的集群，由一组Tracker Server组成;
-7. Storage Cluster：存储集群，由多个Gruop组成;
-8. 上传
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/12/SpringCloud项目3/上传.jpg" alt="上传"></p>
-<pre><code>    1. Client通过Tracker Server查找可用的Storage Server;
-    2. Tracker Server向Client返回一台可用的Storage Server的IP和端口号;
-    3. Client直接通过IP和端口号与Storage Server建立连接，并进行文件上传;
-    4. 上传完成之后，Storage Server返回Client一个文件ID，表示文件上传结束;
-9. 下载
-</code></pre><p><img src="//hellomyshadow.github.io/2016/05/12/SpringCloud项目3/下载.jpg" alt="下载"></p>
-<pre><code>1. Client通过Tracker Server查找要下载文件所在的Storage Server;
-2. Tracker Server向Client返回包含指定文件的某个Storage Server的IP和端口号;
-3. Client直接通过IP和端口号与Storage Server建立连接，并指定要下载的文件;
-4. 下载文件成功;
-</code></pre><h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><pre><code>1. 安装FastDFS，配置参数，启动服务
-2. 安装FastDFS为nginx提供的插件：fastdfs-nginx-module
-3. 安装nginx，并加入fastdfs-nginx-module
-4. 提供一个访问图片专用的子域名：image.leyou.com，并在 nginx.conf 中配置server节点
-    server {
-        listen       80;
-        server_name  image.leyou.com;
-
-        location ~/group([0-9])/ {   # 监听带有 group 的请求，交给FastDFS模块处理
-            ngx_fastdfs_module;
-        }
-        location / {
-            root   html;
-            index  index.html index.htm;
-        }
-        error_page  500 502 503 504  /50x.html
-        location = /50x.html {
-            root  html;
-        }
-    }
-</code></pre><h3 id="使用FastDFS"><a href="#使用FastDFS" class="headerlink" title="使用FastDFS"></a>使用FastDFS</h3><pre><code>1. fastdfs-client：GitHub上开源的FastDFS客户端，支持SpringBoot2.x
-2. 在 ly-upload 中加入配置类：com.leyou.upload.config
-    @Configuration
-    @Import(FdfsClientConfig.class)
-    @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)  --&gt;解决jmx重复注册bean的问题
-    public class FastClientImporter { }
-3. application.yml
-    fdfs:
-        so_timeout: 2500      # 请求的超时时间
-        connect-timeout: 600  # 连接的超时时间
-        thumb-image:          # 缩略图
-            width: 60
-            height: 60
-        tracker-list:         # tracker的地址
-            - 192.168.58.16:22122
-4. 测试
-    @Autowired
-    private FastFileStorageClient client;
-    @Autowired
-    private ThumbImageConfig conf;
-    @Test
-    public void testUpload() {
-        File f = new File(&quot;D:\\test\\a.png&quot;);  //待上传的文件
-        //上传
-        StorePath store = client.uploadFile(new FileInputStream(f), f.length(), &quot;png&quot;, null);
-    }
-    1. 带分组的路径：store.getFullPath();
-    2. 不带分组的路径：store.getPath();
-    3. 图片的访问路径： http://image.leyou.com/ + store.getFullPath()
-5. 上传图片并生成缩略图
-    StorePath store = 
-        client.uploadImageAndCrtThumbImage(new FileInputStream(f), f.length(), &quot;png&quot;, null);
-6. 获取缩略图的路径
-    String thumb = conf.getThumbImagePath(store.getPath());
-</code></pre><h3 id="改造上传服务"><a href="#改造上传服务" class="headerlink" title="改造上传服务"></a>改造上传服务</h3><pre><code>1. 把图片域名和图片类型定义到 application.yml 中，通过属性映射注入到Java类中
-    ly:
-        upload:
-            baseUrl: http://image.leyou.com/
-            allowTypes:
-                - image/jpeg
-                - image/png
-                - image/bmp
-2. 属性映射的Java类：com.leyou.upload.config
-    @Data
-    @ConfigurationProperties(prefix = &quot;ly.upload&quot;)
-    public class UploadProperties {
-        private String baseUrl;
-        private List&lt;String&gt; allowTypes;
-    }
-3. com.leyou.upload.service.UploadService
-    @Service
-    @EnableConfigurationProperties(UploadProperties.class)
-    public class UploadService {
-        @Autowired
-        private FastFileStorageClient client;
-        @Autowired
-        private UploadProperties prop;
-
-        public String uploadImage(MultipartFile file) {
-            try {
-                String type = file.getContentType();
-                if(!prop.getAllowTypes().contains(type)) {   //校验文件类型
-                    throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
-                }
-                BufferedImage image = ImageIO.read(file.getInputStream());
-                if(null == image) {  //校验文件内容
-                    throw new LyException(ExceptionEnum.INVALID_FILE_TYPE);
-                }
-                //1. 获取文件的后缀名，StringUtils是Apache commons-lang3工具类，加入到公共工具中
-                String ext = StringUtils.substringAfterLast(file.getOriginalFilename(), &quot;.&quot;);
-                //2. 上传到FastDFS
-                StorePath store = client.uploadFile(file.getInputStream(), file.getSize(), ext, null);
-                //3. 返回图片的访问地址
-                return prop.getBaseUrl() + store.getFullPath();
-            } catch(IOException e) {
-                throw new LyException(ExceptionEnum.UPLOAD_FILE_ERROR);
-            }
-        }
-    }
-4. Nginx本身也对文件大小做了限制，如果上传的文件过大，Nginx会报错：413 Request Entity Too Large
-    1. 在 nginx.conf 中，可以通过 client_max_body_size 属性配置上传文件的大小;
-        http {
-            ······
-            client_max_body_size  10m;
-            ......
-        }
-    2. 配置在 http 节点下，所有 server 节点共享，还可以在 server 节点下独立配置上传的文件大小.
+    2. 批量新增
+        List&lt;Stock&gt; stockList = new ArrayList&lt;&gt;();
+        ...... //stockList.add(stock);
+        stockMapper.insertList(stockList);
 </code></pre><hr>
 
           
@@ -3650,7 +3418,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

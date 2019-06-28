@@ -88,7 +88,7 @@
 <meta property="og:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 双高     1.">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/10/SpringCloud项目/项目架构.jpg">
-<meta property="og:updated_time" content="2019-06-23T07:16:05.177Z">
+<meta property="og:updated_time" content="2019-06-28T15:03:23.506Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目">
 <meta name="twitter:description" content="项目架构 1. 微服务的拆分     1. 对于一个微服务，将来肯定会有其他服务调用它提供的接口，因此就会用到接口中关联的实体类;     2. 那么就可以把微服务拆成两个子工程：一个负责业务逻辑和接口，一个负责相关的实体类，前者引用后者的坐标;     3. 同时，其他服务也只需要引用实体类工程的坐标即可，不需要再重新编写实体类了;     4. 父工程打包方式为pom 2. 双高     1.">
@@ -374,6 +374,21 @@
         ......
 
         server {
+            listen        80;
+            server_name   www.leyou.com;
+
+            proxy_set_header  X-Forwarded-Host    $host;
+            proxy_set_header  X-Forwarded-Server  $host;
+            proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+            location / {
+                proxy_pass  http://192.168.58.11:9002;  # 转发到前端网站所在的服务
+                proxy_connect_timeout  600;
+                proxy_read_timeout  600;
+            }
+        }
+
+        server {
             listen       80;
             server_name  manage.leyou.com;
 
@@ -404,8 +419,9 @@
         ......
     }
 4. 访问(http协议的默认端口号80)
-    1. http://manage.leyou.com/xxx 负责管理网站后台
-    2. http://api.leyou.com/xxx 负责API接口
+    1. http://www.leyou.com/xxx  用户真正看到的前端页面
+    2. http://manage.leyou.com/xxx  负责管理网站后台
+    3. http://api.leyou.com/xxx   负责API接口的处理
 </code></pre><h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><pre><code>1. 浏览器的同源策略：域名/IP、协议、端口都相同，不同源的客户端脚本在没有被明确授权的情况下，不能读写对方的资源;
 2. 主域名和子域名之间也是跨域，cookie也无法访问;
 3. 同源策略限制的行为：
@@ -636,7 +652,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

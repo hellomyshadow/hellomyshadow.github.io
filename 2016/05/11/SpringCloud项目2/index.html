@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="大麦田程序猿">
 <meta property="og:description" content="项目结构1. Maven聚合项目leyou     &amp;lt;groupId&amp;gt;com.leyou.parent&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;leyou&amp;lt;/artifactId&amp;gt;     &amp;lt;version&amp;gt;1.0.0-SNAPSHOT&amp;lt;/version&amp;gt;      &amp;lt;packaging&amp;gt;pom&amp;lt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-23T14:02:13.688Z">
+<meta property="og:updated_time" content="2019-06-28T15:04:24.305Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目2">
 <meta name="twitter:description" content="项目结构1. Maven聚合项目leyou     &amp;lt;groupId&amp;gt;com.leyou.parent&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;leyou&amp;lt;/artifactId&amp;gt;     &amp;lt;version&amp;gt;1.0.0-SNAPSHOT&amp;lt;/version&amp;gt;      &amp;lt;packaging&amp;gt;pom&amp;lt;">
@@ -477,7 +477,7 @@
         ReadTimeout: 3500   #读取超时时间
         MaxAutoRetries: 0   #当前服务实例的重试次数
         MaxAutoRetriesNextServer: 0   #同一个服务、不同实例之间的切换次数
-</code></pre><h2 id="公共工具"><a href="#公共工具" class="headerlink" title="公共工具"></a>公共工具</h2><pre><code>1. ly-common：pom.xml
+</code></pre><h2 id="工具工程"><a href="#工具工程" class="headerlink" title="工具工程"></a>工具工程</h2><pre><code>1. ly-common：pom.xml
     &lt;groupId&gt;com.leyou.common&lt;/groupId&gt;
     &lt;artifactId&gt;ly-common&lt;/artifactId&gt;
     &lt;dependencies&gt;
@@ -544,19 +544,14 @@
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ext.getMessage());
         }
     }
-    5. 在Controller中抛出自定义异常
-    @PostMapping(&quot;/xxx&quot;)
-    public ResponseEntity&lt;User&gt; saveUser() {
-        if(...) {
-            throw new CommonException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
-        }
-        ......
-    }
-</code></pre><h2 id="业务处理"><a href="#业务处理" class="headerlink" title="业务处理"></a>业务处理</h2><pre><code>1. 业务处理子工程ly-item还可以继续作为一个聚合工程，抽离出Service和POJO;
+    5. 在Controller方法/Service方法中抛出自定义异常
+    throw new LyException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
+</code></pre><h2 id="业务处理"><a href="#业务处理" class="headerlink" title="业务处理"></a>业务处理</h2><pre><code>1. 业务处理的子工程ly-item：负责与数据库交互，处理客户端对接口的请求;
     &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
     &lt;artifactId&gt;ly-item&lt;/artifactId&gt;
     &lt;packaging&gt;pom&lt;/packaging&gt;
-2. POJO工程：ly-item-interface
+2. 考虑到数据库对应的实体类(POJO)通常是公共的，则对ly-item工程再次聚合，创建Service和POJO两个子工程;
+</code></pre><h3 id="POJO工程"><a href="#POJO工程" class="headerlink" title="POJO工程"></a>POJO工程</h3><pre><code>1. ly-item-interface：负责创建与数据库表对应的实体类，其他工程只需引用其坐标即可，无需重复创建;
     &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
     &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
     &lt;dependencies&gt;
@@ -565,11 +560,21 @@
             &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
             &lt;version&gt;1.1.5&lt;/version&gt;
         &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+            &lt;version&gt;2.9.8&lt;/version&gt;
+        &lt;/dependency&gt;
     &lt;/dependencies&gt;
-</code></pre><h3 id="Service工程"><a href="#Service工程" class="headerlink" title="Service工程"></a>Service工程</h3><pre><code>1. ly-item-service：pom.xml
+2. com.leyou.item.pojo
+    @Data
+    @Table(name = &quot;xxx&quot;)
+    public class Xxx {
+        ......
+    }
+</code></pre><h3 id="Service工程"><a href="#Service工程" class="headerlink" title="Service工程"></a>Service工程</h3><pre><code>1. ly-item-service：负责接口请求的处理
     &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
     &lt;artifactId&gt;ly-item-service&lt;/artifactId&gt;
-
     &lt;dependencies&gt;
         spring-boot-starter-web
         spring-cloud-starter-netflix-eureka-client
@@ -605,9 +610,8 @@
     mybatis:
         configuration:
             log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-3. 启动类
-    1. com.leyou.item.mapper、com.leyou.item.service、com.leyou.item.web
-    2. com.leyou.LyItemApplication
+3. 基本的分包：com.leyou.item.mapper、com.leyou.item.service、com.leyou.item.web
+4. 启动类：com.leyou.LyItemApplication
     @SpringBootApplication
     @EnableDiscoveryClient
     @MapperScan(&quot;com.leyou.item.mapper&quot;)
@@ -616,7 +620,7 @@
             SpringApplication.run(LyItemApplication.class, args);
         }
     }
-4. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
+5. 分页助手PageHelper和通用Mapper是同一个作者，但PageHelper不依赖于通用Mapper，可以单独使用;
     1. 在工具工程ly-common中，创建响应的分页对象：com.leyou.common.vo.PageResult
     @Data
     public class PageResult&lt;T&gt; {
@@ -764,7 +768,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -819,7 +823,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构"><span class="nav-number">1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka工程"><span class="nav-number">2.</span> <span class="nav-text">Eureka工程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Zuul网关"><span class="nav-number">3.</span> <span class="nav-text">Zuul网关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#公共工具"><span class="nav-number">4.</span> <span class="nav-text">公共工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#业务处理"><span class="nav-number">5.</span> <span class="nav-text">业务处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Service工程"><span class="nav-number">5.1.</span> <span class="nav-text">Service工程</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目结构"><span class="nav-number">1.</span> <span class="nav-text">项目结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka工程"><span class="nav-number">2.</span> <span class="nav-text">Eureka工程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Zuul网关"><span class="nav-number">3.</span> <span class="nav-text">Zuul网关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具工程"><span class="nav-number">4.</span> <span class="nav-text">工具工程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#业务处理"><span class="nav-number">5.</span> <span class="nav-text">业务处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#POJO工程"><span class="nav-number">5.1.</span> <span class="nav-text">POJO工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Service工程"><span class="nav-number">5.2.</span> <span class="nav-text">Service工程</span></a></li></ol></li></ol></div>
             
 
           </div>
