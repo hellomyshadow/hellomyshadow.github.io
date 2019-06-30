@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/fastDFS.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/上传.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/下载.jpg">
-<meta property="og:updated_time" content="2019-06-27T13:37:22.335Z">
+<meta property="og:updated_time" content="2019-06-29T04:47:46.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目3">
 <meta name="twitter:description" content="文件上传服务1. 子工程ly-upload 负责文件上传     &amp;lt;groupId&amp;gt;com.leyou.service&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;ly-upload&amp;lt;/artifactId&amp;gt;     &amp;lt;dependencies&amp;gt;         &amp;lt;dependency&amp;gt;             &amp;lt">
@@ -485,7 +485,7 @@
 2. Tracker Server向Client返回包含指定文件的某个Storage Server的IP和端口号;
 3. Client直接通过IP和端口号与Storage Server建立连接，并指定要下载的文件;
 4. 下载文件成功;
-</code></pre><h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><pre><code>1. 安装FastDFS，配置参数，启动服务
+</code></pre><h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><pre><code>1. 在Ubuntu/CentOS系统上安装FastDFS，配置参数，启动服务;
 2. 安装FastDFS为nginx提供的插件：fastdfs-nginx-module
 3. 安装nginx，并加入fastdfs-nginx-module
 4. 提供一个访问图片专用的子域名：image.leyou.com，并在 nginx.conf 中配置server节点

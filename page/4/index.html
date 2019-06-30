@@ -484,7 +484,7 @@
 2. Tracker Server向Client返回包含指定文件的某个Storage Server的IP和端口号;
 3. Client直接通过IP和端口号与Storage Server建立连接，并指定要下载的文件;
 4. 下载文件成功;
-</code></pre><h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><pre><code>1. 安装FastDFS，配置参数，启动服务
+</code></pre><h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><pre><code>1. 在Ubuntu/CentOS系统上安装FastDFS，配置参数，启动服务;
 2. 安装FastDFS为nginx提供的插件：fastdfs-nginx-module
 3. 安装nginx，并加入fastdfs-nginx-module
 4. 提供一个访问图片专用的子域名：image.leyou.com，并在 nginx.conf 中配置server节点
@@ -957,7 +957,7 @@
     }
     5. 在Controller方法/Service方法中抛出自定义异常
     throw new LyException(ExceptionEnum.PRICE_CANNOT_BE_NULL);
-</code></pre><h2 id="业务处理"><a href="#业务处理" class="headerlink" title="业务处理"></a>业务处理</h2><pre><code>1. 业务处理的子工程ly-item：负责与数据库交互，处理客户端对接口的请求;
+</code></pre><h2 id="业务处理"><a href="#业务处理" class="headerlink" title="业务处理"></a>业务处理</h2><pre><code>1. 业务处理的子工程ly-item：负责与数据库交互，处理客户端的接口请求;
     &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
     &lt;artifactId&gt;ly-item&lt;/artifactId&gt;
     &lt;packaging&gt;pom&lt;/packaging&gt;
