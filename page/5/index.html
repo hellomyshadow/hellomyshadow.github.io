@@ -232,6 +232,330 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/04/05/SpringBoot响应式/" itemprop="url">SpringBoot响应式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-05T00:00:00+08:00">
+                2016-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h2><pre><code>1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor
+2. 响应式依赖于事件驱动，异步非阻塞，观察者模式;
+3. 响应式编程与传统编程的技术对比
+</code></pre><p><img src="//hellomyshadow.github.io/2016/04/05/SpringBoot响应式/响应式.png" alt="响应式"></p>
+<pre><code>4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器;
+</code></pre><h2 id="Spring-WebFlux"><a href="#Spring-WebFlux" class="headerlink" title="Spring WebFlux"></a>Spring WebFlux</h2><pre><code>1. Spring WebFlux 是Spring5.0引进的一个响应式Web框架，通过Reactor项目实现 Reactive Streams 规范;
+2. 与SpringMVC不同，Spring WebFlux不需要Servlet API，完全异步非阻塞，事件驱动，流;
+3. Flux、Mono
+    1. Mono：包含 0 或 1 个元素的异步序列，单一对象，比如根据ID去Redis中查询唯一的用户，Mono&lt;User&gt;
+    2. Flux：包含 - 到 N 个元素的异步序列，数据列表对象，比如在Redis中查询一组用户，Flux&lt;User&gt;
+    3. Mono 和 Flux 之间可以进行转换;
+4. Spring WebFlux有两种风格：基于功能、基于注解
+    1. 基于注解的方式非常接近于SpringMVC模型
+    @RestController 
+    @RequestMapping(&quot;/users&quot;)
+    public class UserController {
+        @GetMapping(&quot;/{user}&quot;)
+        public Mono&lt;User&gt; getUser(@PathVariable Long user) {
+            ...
+        }
+        @GetMapping(&quot;/{user}/customers&quot;)
+        public Flux &lt;Customer&gt; getUserCustomers(@PathVariable Long user) {
+            ...
+        }
+        @DeleteMapping(&quot;/{user}&quot;)
+        public Mono &lt;User&gt; deleteUser(@PathVariable Long user) {
+            ...
+        }
+    }
+    2. 基于功能：路由配置与请求的实际处理逻辑是分开的
+    @Configuration
+    public class RoutingConfiguration {
+        @Bean
+        public RouterFunction &lt;ServerResponse&gt; monoRouterFunction（UserHandler userHandler）{
+            return route(GET(&quot;/{user}&quot;).and(accept(APPLICATION_JSON))，userHandler :: getUser)
+                .andRoute(GET(&quot;/{user}/customers&quot;)
+                .and(accept(APPLICATION_JSON))，userHandler :: getUserCustomers)
+                .andRoute(DELETE(&quot;/{user}&quot;).and(accept(APPLICATION_JSON))，userHandler :: deleteUser);
+        }
+    }
+    @Component
+    public class UserHandler {
+        public Mono &lt;ServerResponse&gt; getUser(ServerRequest request) {
+            ...
+        }
+        public Mono &lt;ServerResponse&gt; getUserCustomers(ServerRequest request) {
+            ...
+        }
+        public Mono &lt;ServerResponse&gt; deleteUser(ServerRequest request) {
+            ...
+        }
+    }
+5. Spring WebFlux应用不严格依赖于Servlet API，因此不能作为 war 文件部署，也不能使用 src/main/webapp 目录;
+6. 除了REST Web服务，Spring WebFlux还提供了动态HTML，支持各种模板引擎：Thymeleaf、FreeMarker...
+</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. 创建SpringBoot项目
+    1. WebFlux的启动器：spring-boot-starter-webflux
+    2. 如果同时存在spring-boot-starter-web，则会优先使用SpringMVC模式，而不是Spring WebFlux
+2. WebFlux中，请求和响应对象也不再是ServletRequest和ServletResponse，而是ServerRequest和ServerResponse
+3. 创建基于注解的Controller
+    @RestController 
+    @RequestMapping(&quot;/api&quot;)
+    public class TestController {
+        @GetMapping(&quot;/test&quot;)
+        public Mono&lt;String&gt; test() {
+            return Mono.just(&quot;Hello WebFlux&quot;);
+        }
+    }
+4. 启动：默认容器Netty 8080端口，Netty started on port(s): 8080
+    http://localhost:8080/api/test  ==&gt; Hello WebFlux
+5. 创建User
+    public class User {
+        private String id;
+        private String name;
+        ......
+    }
+6. 创建Service，模拟CURD
+    @Service
+    public class UserService {
+        private static final Map&lt;String, User&gt; dataMap = new HashMap&lt;&gt;();
+        static {
+            dataMap.put(&quot;1&quot;, new User(&quot;1&quot;, &quot;Java&quot;));
+            dataMap.put(&quot;2&quot;, new User(&quot;2&quot;, &quot;Python&quot;));
+            dataMap.put(&quot;3&quot;, new User(&quot;3&quot;, &quot;Node&quot;));
+            dataMap.put(&quot;4&quot;, new User(&quot;4&quot;, &quot;Node&quot;));
+        }
+        public Flux&lt;User&gt; getList() {
+            Collection&lt;User&gt; list = dataMap.values();
+            //把 Collection 转为一个异步序列
+            return Flux.fromIterable(list);
+        }
+        public Mono&lt;User&gt; getById(String id) {
+            return Mono.justOrEmpty(dataMap.get(id));
+        }
+        public Mono&lt;User&gt; delById(String id) {
+            return Mono.justOrEmpty(dataMap.remove(id));
+        }
+    }
+7. Controller方法
+    @Autowired
+    private UserService service;
+
+    @GetMapping(&quot;/find&quot;)
+    public Mono&lt;User&gt; findById(String id) {
+        return service.getById(id);
+    }
+
+    @GetMapping(&quot;/list&quot;)
+    public Flux&lt;User&gt; getList() {
+        return service.getList();
+    }
+
+    http://localhost:8080/api/find?id=2  ==&gt; {&quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Python&quot;}
+8. 模拟耗时的查询一组用户时，每查询到一个就响应一个，而不是等待全部查询结束之后再响应
+    @GetMapping(value = &quot;/list&quot;, produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Flux&lt;String&gt; getList() {
+        //每条数据延迟2s再响应
+        return service.getList().delayElements(Duration.ofSeconds(2));
+    }
+    http://localhost:8080/api/list  ==&gt; 不考虑网络延迟，每隔2s收到一条数据
+    1. produces=MediaType.APPLICATION_STREAM_JSON_VALUE 必须声明响应类型是流;
+    2. 如果不声明为流数据，则会等查询到所有数据之后，转为JSON字符串，然后再响应给前端;
+</code></pre><h3 id="响应式客户端"><a href="#响应式客户端" class="headerlink" title="响应式客户端"></a>响应式客户端</h3><pre><code>1. WebFlux的客户端WebClient，响应式客户端;
+2. 在测试类中使用
+    @Test
+    public void testBase() {
+        Mono&lt;String&gt; body = WebClient.create().get()
+            .uri(&quot;http://localhost:8080/api/find?id=2&quot;)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve().bodyToMono(String.class);
+        System.out.println(body.block());
+    }
+    @Test
+    public void testPlace() {
+        Mono&lt;String&gt; body = WebClient.create().get()
+            .uri(&quot;http://localhost:8080/api/find?id={id}&quot;, 2)  //支持占位符
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve().bodyToMono(String.class);
+    }
+</code></pre><h2 id="服务端推送技术"><a href="#服务端推送技术" class="headerlink" title="服务端推送技术"></a>服务端推送技术</h2><pre><code>1. 客户端轮询：AJAX定时拉取数据;
+2. WebSocket：全双工通信，基于TCP协议，Socket.IO是基于WebSocket的框架，屏蔽了底层细节，使用更方便;
+3. SSE：Server Send Event，HTML5新标准，用于从服务端实时推送数据到浏览器，本质上是一个HTTP长连接;
+</code></pre><h3 id="SSE"><a href="#SSE" class="headerlink" title="SSE"></a>SSE</h3><pre><code>1. 服务端
+    1. 引入依赖：spring-boot-starter-webflux
+    @RestController 
+    @RequestMapping(&quot;/sse&quot;)
+    public class TestController {
+        //数据类型必须设置为event-stream
+        @RequestMapping(value = &quot;/test&quot;, produces = &quot;text/event-stream;charset=UTF-8&quot;)
+        public String test() {
+            Thread.sleep(2000); //模拟业务处理
+            return &quot;Hello SSE : &quot; + Math.random();
+        }
+    }
+    2. 在静态资源目录下创建index.html
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        var source = new EventSource(&quot;sse/test&quot;);
+        source.onmessage = function(evt) {
+            console.log(evt.data);
+        }
+    &lt;/script&gt;
+2. 客户端：必须支持SSE
+    http://localhost:8080/index.html  //大约每2s收到一条消息，本质上是HTTP长连接，所以仍是发起请求
+</code></pre><h2 id="Actuator"><a href="#Actuator" class="headerlink" title="Actuator"></a>Actuator</h2><pre><code>1. Actuator：用于监控和管理生产环境的组件，启动器为spring-boot-starter-actuator
+2. 启动SpringBoot项目，出于安全考虑，默认只开启了三个端点
+    1. http://localhost:8080/actuator  --&gt; 查看可用的端点
+    2. http://localhost:8080/actuator/health  --&gt; {&quot;status&quot;: &quot;UP&quot;}  UP 表示应用启动且状态正常
+    3. http://localhost:8080/actuator/info  --&gt; 查看详细信息，{} 表示无信息
+    4. 对于SpringBoot2.0之前的版本，端点路径上不带 /actuator
+3. 在配置文件中，设置开启的监控端点
+    1. 开启所有端点
+        management.endpoints.web.exposure.include=*
+    2. 启动项目时，控制台上会列出可访问的端点，比如/actuator/env，/actuator/metrics ...
+    3. 有些端点会暴露敏感信息，比如 /actuator/env 就会暴露应用端口号、数据库连接信息、系统信息...
+        management.endpoints.web.exposure.include=metrics  #开启某一个
+        management.endpoints.web.exposure.exclude=metrics  #关闭某一个
+4. 常用的端点
+    /actuator/health  --&gt; 应用健康指标
+    /actuator/metrics  --&gt; 应用的基本指标列表
+    /actuator/metrics/{name}  --&gt; 某个具体的指标
+    /actuator/env  --&gt; 显示来自Spring的ConfigurableEnvironment的属性
+5. SpringBoot Admin：可视化的监控管理;
+6. 还可以自己开发脚本进行监控;
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/03/SpringBoot整合/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4184,371 +4508,6 @@ Integer count = jt.queryForObject(&quot;select count(id) from account where mone
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/03/08/Spring与AOP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/08/Spring与AOP/" itemprop="url">Spring与AOP</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-08T00:00:00+08:00">
-                2016-03-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h2><pre><code>1. AOP：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护；
-    1. 简单来说：在运行期，利用动态代理技术，在不修改源码的情况下，对已有方法进行增强；
-    2. AOP是OOP的延续，是函数式编程的一种衍生范型；
-    3. 利用AOP可以分离业务逻辑的各个部分，从而降低耦合，提高程序的可重用性和开发效率。
-2. Joinpoint：连接点，指那些被拦截的点，在Spring中就是被拦截的方法，因为Spring只支持方法类型的连接点；
-3. Pointcut：切入点，在被拦截的方法中，只有被增强的方法才称为切入点；
-4. Advice：通知/增强，拦截到Joinpoint之后要做的事情；
-    1. 分类：前置通知、后置通知、异常通知、最终通知、环绕通知；
-    public IAccountService getAccountService() {
-        return (IAccountService) Proxy.newProxyInstance(
-        service.getClass().getClassLoader(), service.getClass().getInterfaces(), 
-        new InvocationHandler(){
-            public Object invoke(Object proxy, Method method, Object[] args)  {
-                object rtValue = null;
-                try {
-                    manager.beginTransaction();
-                    rtValue = method.invoke(service, args);
-                    manager.commit();
-                    return rtValue;
-                } catch(Exception e) {  ---&gt;异常通知
-                    manager.rollback();
-                    throw new RuntimeException(e);
-                } finally {  ---&gt;最终通知
-                    manager.release();
-                }
-            }
-        });
-    }
-    2. 整个 invoke() 部分称为环绕通知，其中有明确的切入点方法调用：method.invoke(service, args);
-    3. method.invoke(service, args); 之前的代码称为前置通知，后面的代码称为后置通知.
-5. Introduction：引介，一种特殊的通知，在不修改类代码的情况下，可以在运行期动态地为类添加属性/方法；
-6. Target：代理的目标对象；
-7. Weaving：织入，把增强应用到目标对象，来创建新代理对象的过程；
-    1. Spring采用动态代理织入，而AspectJ采用编译期织入和类装载期织入.
-8. Proxy：一个类被AOP织入增强后，就产生一个代理类；
-9. Aspect：切面，是切入点和通知/引介的结合。
-</code></pre><h3 id="Spring的AOP"><a href="#Spring的AOP" class="headerlink" title="Spring的AOP"></a>Spring的AOP</h3><pre><code>1. 添加依赖：spring-context、aspectjweaver(解析切入点表达式)
-2. 业务层Service
-    public class AccountServiceImpl implements IAccountService {
-        public void save() {  //无参无返回值
-            System.out.println(&quot;save&quot;);
-        }
-        public void update(int i) { //有参无返回值
-            System.out.println(&quot;update&quot;);
-        }
-        public int delete() {  //无参有返回值
-            System.out.println(&quot;delete&quot;);
-        }
-    }
-3. 提供一个记录日志的工具类，存放公共代码
-    public class Logger {
-        public void print() {
-            //在切入点方法执行之前，执行此通知方法
-            System.out.println(&quot;print&quot;);
-        }
-    }
-4. Spring的配置文件 resources/bean.xml，添加AOP约束
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
-        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop
-        https://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
-        &lt;bean id=&quot;accountService&quot; class=&quot;cn.test.service.impl.AccountServiceImpl&quot;&gt;&lt;/bean&gt;
-        &lt;bean id=&quot;logger&quot; class=&quot;cn.test.utils.Logger&quot;&gt;&lt;/bean&gt;
-        &lt;!-- 配置AOP --&gt;
-        &lt;aop:config&gt;
-            &lt;!-- 配置切面 --&gt;
-            &lt;aop:aspect id=&quot;logAdvice&quot; ref=&quot;logger&quot;&gt;
-                &lt;!-- 配置通知类型，并建立通知方法与切入点方法的关联 --&gt;
-                &lt;aop:before method=&quot;print&quot; pointcut=&quot;切入点表达式&quot;&gt;&lt;/aop:before&gt;
-            &lt;/aop:aspect&gt;
-        &lt;/aop:config&gt;
-    &lt;/beans&gt;
-    1. &lt;aop:config&gt;：开始AOP的配置;
-    2. &lt;aop:aspect&gt;：配置切面;
-        1. id属性：切面的唯一标识;
-        2. ref属性：指定通知类bean的id，此时的通知类就是Logger
-    3. &lt;aop:before&gt;：配置前置通知，也就是执行Logger.print()
-        1. method属性：指定执行的通知方法;
-        2. pointcut属性：指定切入点表达式，表示对业务层中的哪些方法增强;
-        3. pointcut-ref属性：引用外部的切入点表达式标签&lt;aop:pointcut&gt;
-        4. 只增强 AccountServiceImpl.save();
-    pointcut=&quot;execution(public void cn.test.service.impl.AccountServiceImpl.save())&quot;
-5. 开始执行
-    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;bean.xml&quot;);
-    IAccountService service = ac.getBean(&quot;accountService&quot;, IAccountService.class);
-    service.save();  //print --&gt; save
-    service.delete();  //delete，没有增强
-6. 切入点表达式：execution(表达式)
-    1. 表达式的标准格式：访问修饰符 返回值 包名.类名.方法名(参数列表)
-    2. 访问修饰符可省略；
-    3. 返回值使用通配符*，表示任意返回值；
-    4. 包名使用通配符*，表示任意通配符，但有几级包，就需要写几个*.
-        * *.*.*.*.AccountServiceImpl.save()
-    5. 包名可以使用 .. , 表示当前包及其子包
-        * *..AccountServiceImpl.save()
-    6. 类名和方法名都可以使用 * 来实现通配：* *..*.*()
-    7. 参数列表
-        1. 基本类型直接用类型名，如int
-        2. 引用类型则需要指明全类名，如java.lang.String
-        3. 使用通配符*，匹配方法上的任意类型，但方法上必须有参数才可匹配;
-        4. 使用 .. , 表示匹配方法上的任意多个、任意类型的参数，也可以没有参数.
-    8. 由此可知，全通配的写法：* *..*.*(..)，匹配所有类的所有方法；
-    9. 当然，一般也只会匹配业务层的所有方法：* cn.test.service.impl.*.*(..)
-</code></pre><h2 id="通知类型"><a href="#通知类型" class="headerlink" title="通知类型"></a>通知类型</h2><pre><code>1. 通知方法
-    public class Logger {
-        public void beforePrint() { //前置通知
-            System.out.println(&quot;before print&quot;);
-        }
-        public void afterPrint() { //后置通知
-            System.out.println(&quot;after print&quot;);
-        }
-        public void catchPrint() { //异常通知
-            System.out.println(&quot;catch print&quot;);
-        }
-        public void finalPrint() { //最终通知
-            System.out.println(&quot;final print&quot;);
-        }
-        public void aroundPrint() { //环绕通知
-            System.out.println(&quot;around print&quot;);
-        }
-    }
-2. 配置四种常用通知
-    1. 前置通知：切入点方法执行之前执行;
-    &lt;aop:before method=&quot;beforePrint&quot; 
-        pointcut=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:before&gt;
-    2. 后置通知：切入点方法正常执行之后执行;
-    &lt;aop:after-returning method=&quot;afterPrint&quot; 
-        pointcut=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:after-returning&gt;
-    3. 异常通知：切入点方法执行产生异常之后执行;
-    &lt;aop:after-throwing method=&quot;catchPrint&quot; 
-        pointcut=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:after-throwing&gt;
-    4. 最终通知：不管切入点方法是否正常执行，都会在最后执行;
-    &lt;aop:after method=&quot;finalPrint&quot; 
-        pointcut=&quot;execution(* cn.test.service.impl.*.*(..))&quot;&gt;&lt;/aop:after&gt;
-    5. 后置通知与异常通知始终只会执行一个.
-3. &lt;aop:pointcut&gt;：单独配置切入点表达式
-    1. id属性：此表达式的唯一id;
-    2. expression属性：定义切入点表达式;
-    &lt;aop:pointcut id=&quot;pt1&quot; 
-        expression=&quot;execution(* it.aop.service.impl.*.*(..))&quot;&gt;&lt;/aop:pointcut&gt;
-    &lt;aop:before method=&quot;beforePrint&quot; pointcut-ref=&quot;pt1&quot;&gt;&lt;/aop:before&gt;
-    3. &lt;aop:pointcut&gt; 配置为 &lt;aop:aspect&gt; 的子标签时，只对当前切面有效;
-    4. 配置为 &lt;aop:aspect&gt; 的兄弟标签时，必须配置在 &lt;aop:aspect&gt; 之前，对所有切面都有效.
-</code></pre><h3 id="环绕通知"><a href="#环绕通知" class="headerlink" title="环绕通知"></a>环绕通知</h3><pre><code>&lt;aop:config&gt;
-    &lt;aop:pointcut id=&quot;pt1&quot; expression=&quot;execution(* it.aop.service.impl.*.*(..))&quot;&gt;&lt;/aop:pointcut&gt;
-    &lt;aop:aspect id=&quot;logAdvice&quot; ref=&quot;logger&quot;&gt;
-        &lt;aop:around method=&quot;aroundPrint&quot; pointcut-ref=&quot;pt1&quot;&gt;&lt;/aop:before&gt;
-    &lt;/aop:aspect&gt;
-&lt;/aop:config&gt;
-1. invoke() 也称为环绕通知，所以一旦配置了&lt;aop:around&gt;，切入点方法不再执行，只执行了通知方法；
-2. ProceedingJoinPoint：Spring提供的接口，它的 proceed() 用于明确调用切入点方法；
-3. ProceedingJoinPoint可以作为环绕通知方法的参数，Spring会在运行期为此接口提供实现类；
-    public Object aroundPrint(ProceedingJoinPoint pjp) {
-        Object rtValue = null;
-        try {
-            //1.获取切入点方法执行所需的参数
-            Object[] args = pjp.getArgs();
-            //2.明确调用切入点方法
-            rtValue = pjp.proceed(args);
-            return rtValue;
-        } catch(Throwable t) { //Exception拦不住此异常
-            throw new RuntimeException(t);
-        } finally {
-
-        }
-    }
-    1. pjp.proceed(args); 之前的代码称为前置通知，之后的代码称为后置通知;
-    2. catch部分称为异常通知，finally部分称为最终通知.
-4. Spring的环绕通知，其实就是为了提供一种可以在代码中手动控制增强方法何时执行的方式；
-5. 因为环绕通知与其他四种通知有关联性，如果同时配置这5种通知，会出现调用顺序的错乱；
-6. 所以如果配置了环绕通知，就不要再配置其他四种通知，而是在环绕通知方法中手动调用其他四种通知方法。
-</code></pre><h2 id="Spring的注解AOP"><a href="#Spring的注解AOP" class="headerlink" title="Spring的注解AOP"></a>Spring的注解AOP</h2><pre><code>1. 在配置文件 bean.xml 中添加aop和context的约束、创建容器时扫描的包、开启AOP注解支持
-    &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-        xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
-        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop
-        https://www.springframework.org/schema/aop/spring-aop.xsd
-        http://www.springframework.org/schema/context
-        https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
-        &lt;!-- Spring创建IoC容器时要扫描的包 --&gt;
-        &lt;context:component-scan base-package=&quot;cn.test&quot;&gt;&lt;/context:component-scan&gt;
-        &lt;!-- 开启Spring的注解AOP支持 --&gt;
-        &lt;aop:aspectj-autoproxy&gt;&lt;/aop:aspectj-autoproxy&gt;
-    &lt;/beans&gt;
-2. 业务层Service
-    @Service(&quot;accountService&quot;)
-    public class AccountServiceImpl implements IAccountService {
-        ......
-    }
-3. @Aspect：声明当前类是一个切面类
-    1. @Pointcut：用在方法上，定义切入点表达式；
-    2. @Before、@AfterReturning、@AfterThrowing、@After：分别声明4种通知；
-        @Component(&quot;logger&quot;)
-        @Aspect
-        public class Logger {
-            @Pointcut(&quot;execution(* it.aop.service.impl.*.*(..))&quot;)
-            private void pt1() {}
-
-            @Before(&quot;pt1()&quot;)
-            public void beforePrint() { ... }
-
-            @AfterReturning(&quot;pt1()&quot;)
-            public void afterPrint() { ... }
-
-            @AfterThrowing(&quot;pt1()&quot;)
-            public void catchPrint() { ... }
-
-            @After(&quot;pt1()&quot;)
-            public void finalPrint() { ... }
-        }
-    3. @Around：声明环绕通知，不要与其他四种通知的注解一起使用，调用顺序会错乱；
-    4. 通知注解的value属性用于指定切入点表达式，必须是调用方法的形式：pt1()
-4. 使用注解类取代配置文件：@EnableAspectJAutoProxy 声明支持AOP注解
-    @Configuration
-    @ComponentScan(basePackages=&quot;cn.test&quot;)
-    @EnableAspectJAutoProxy
-    public class SpringConfiguration { }
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4599,7 +4558,7 @@ Integer count = jt.queryForObject(&quot;select count(id) from account where mone
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

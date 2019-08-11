@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/fastDFS.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/上传.jpg">
 <meta property="og:image" content="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/下载.jpg">
-<meta property="og:updated_time" content="2019-06-29T04:47:46.989Z">
+<meta property="og:updated_time" content="2019-07-28T04:14:08.198Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目3">
 <meta name="twitter:description" content="文件上传服务1. 子工程ly-upload 负责文件上传     &amp;lt;groupId&amp;gt;com.leyou.service&amp;lt;/groupId&amp;gt;     &amp;lt;artifactId&amp;gt;ly-upload&amp;lt;/artifactId&amp;gt;     &amp;lt;dependencies&amp;gt;         &amp;lt;dependency&amp;gt;             &amp;lt">
@@ -592,6 +592,37 @@
             ......
         }
     2. 配置在 http 节点下，所有 server 节点共享，还可以在 server 节点下独立配置上传的文件大小.
+</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 在使用通用Mapper时，只继承 Mapper&lt;T&gt; 是不能实现批量插入等高级功能的;
+2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-base&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-extra&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+3. 自定义一个具备批量新增的BaseMapper：com.leyou.common.mapper
+    @RegisterMapper
+    public interface BaseMapper&lt;T&gt; extends Mapper&lt;T&gt;,IdListMapper&lt;T, Long&gt;,InsertListMapper&lt;T&gt; {
+    }
+    1. IdListMapper&lt;T, Long&gt;：第二个泛型指定ID的类型;
+    2. @RegisterMapper：注册自己的Mapper
+    3. InsertListMapper 必须是 mapper-extra 包中的，因为 mapper-base 包中的 InsertListMapper 有限制.
+4. 在业务处理的Service工程ly-item-service 中使用
+    1. com.leyou.item.mapper.StockMapper 继承自定义的 BaseMapper
+        public interface StockMapper extends BaseMapper&lt;Stock&gt; { }
+    2. 批量新增
+        List&lt;Stock&gt; stockList = new ArrayList&lt;&gt;();
+        ...... //stockList.add(stock);
+        stockMapper.insertList(stockList);
 </code></pre><hr>
 
       
@@ -712,7 +743,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -767,7 +798,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传服务"><span class="nav-number">1.</span> <span class="nav-text">文件上传服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#绕过网关缓存"><span class="nav-number">1.1.</span> <span class="nav-text">绕过网关缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式文件系统"><span class="nav-number">2.</span> <span class="nav-text">分布式文件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FastDFS"><span class="nav-number">2.1.</span> <span class="nav-text">FastDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建环境"><span class="nav-number">2.2.</span> <span class="nav-text">搭建环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用FastDFS"><span class="nav-number">2.3.</span> <span class="nav-text">使用FastDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改造上传服务"><span class="nav-number">2.4.</span> <span class="nav-text">改造上传服务</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传服务"><span class="nav-number">1.</span> <span class="nav-text">文件上传服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#绕过网关缓存"><span class="nav-number">1.1.</span> <span class="nav-text">绕过网关缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式文件系统"><span class="nav-number">2.</span> <span class="nav-text">分布式文件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FastDFS"><span class="nav-number">2.1.</span> <span class="nav-text">FastDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建环境"><span class="nav-number">2.2.</span> <span class="nav-text">搭建环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用FastDFS"><span class="nav-number">2.3.</span> <span class="nav-text">使用FastDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改造上传服务"><span class="nav-number">2.4.</span> <span class="nav-text">改造上传服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用Mapper"><span class="nav-number">3.</span> <span class="nav-text">通用Mapper</span></a></li></ol></div>
             
 
           </div>

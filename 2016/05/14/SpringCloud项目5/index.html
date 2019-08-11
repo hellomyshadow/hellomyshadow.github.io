@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="JavaEE,">
+  <meta name="keywords" content="Spring,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="过滤器1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;     1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...     2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。 2. 使用Filter     1. 实现Filter接口，覆写 init()、doFilter()、d">
-<meta name="keywords" content="JavaEE">
+<meta name="description" content="Spring与ES1. ES提供的Java客户端不太好用，需要手动拼接字符串、手动对象序列化与反序列化... 2. SpringData提供了操作ES的启动器：spring-boot-starter-data-elasticsearch 3. spring-data-elasticsearch 属于Spring Data项目的一个子模块，由Spring社区提供的；     1. 因为不是官方提供的">
+<meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JavaEE之过滤监听">
-<meta property="og:url" content="http://hellomyshadow.github.io/2016/02/05/JavaEE之过滤监听/index.html">
+<meta property="og:title" content="SpringCloud项目5">
+<meta property="og:url" content="http://hellomyshadow.github.io/2016/05/14/SpringCloud项目5/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="过滤器1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;     1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...     2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。 2. 使用Filter     1. 实现Filter接口，覆写 init()、doFilter()、d">
+<meta property="og:description" content="Spring与ES1. ES提供的Java客户端不太好用，需要手动拼接字符串、手动对象序列化与反序列化... 2. SpringData提供了操作ES的启动器：spring-boot-starter-data-elasticsearch 3. spring-data-elasticsearch 属于Spring Data项目的一个子模块，由Spring社区提供的；     1. 因为不是官方提供的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-29T12:54:55.957Z">
+<meta property="og:updated_time" content="2019-08-11T13:58:10.995Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JavaEE之过滤监听">
-<meta name="twitter:description" content="过滤器1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;     1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...     2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。 2. 使用Filter     1. 实现Filter接口，覆写 init()、doFilter()、d">
+<meta name="twitter:title" content="SpringCloud项目5">
+<meta name="twitter:description" content="Spring与ES1. ES提供的Java客户端不太好用，需要手动拼接字符串、手动对象序列化与反序列化... 2. SpringData提供了操作ES的启动器：spring-boot-starter-data-elasticsearch 3. spring-data-elasticsearch 属于Spring Data项目的一个子模块，由Spring社区提供的；     1. 因为不是官方提供的">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://hellomyshadow.github.io/2016/02/05/JavaEE之过滤监听/">
+  <link rel="canonical" href="http://hellomyshadow.github.io/2016/05/14/SpringCloud项目5/">
 
 
 
 
 
-  <title>JavaEE之过滤监听 | 大麦田程序猿</title>
+  <title>SpringCloud项目5 | 大麦田程序猿</title>
   
 
 
@@ -233,7 +233,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/02/05/JavaEE之过滤监听/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/14/SpringCloud项目5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -250,7 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JavaEE之过滤监听</h1>
+          <h1 class="post-title" itemprop="name headline">SpringCloud项目5</h1>
         
 
         <div class="post-meta">
@@ -262,8 +262,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-05T00:00:00+08:00">
-                2016-02-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-14T00:00:00+08:00">
+                2016-05-14
               </time>
             
 
@@ -322,88 +322,176 @@
       
 
       
-        <h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2><pre><code>1. 过滤器(拦截器)：对服务器接收的请求资源和响应给浏览器的资源进行统一管理，保护Servlet;
-    1. 比如在请求到达Servlet之前，请求编码格式的统一设置，session管理...
-    2. 过滤器会执行两次：请求达到Servlet之前，Servlet响应数据之后。
-2. 使用Filter
-    1. 实现Filter接口，覆写 init()、doFilter()、destroy()
-    2. 在 web.xml 中配置过滤器
-    &lt;filter&gt;
-        &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;it.test.cn.TestFilter&lt;/filter-name&gt;
-    &lt;/filter&gt;
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;TestFilter&lt;/filter-name&gt;
-        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
-    3. 注解的方式配置
-    @WebFilter(&quot;/*&quot;)
-    public class TestFilter implements Filter { ... }
-    4. /*：拦截访问此项目的所有请求;
-    5. *.do：拦截以 .do 结尾的请求，一般用于模块拦截处理;
-    6. /to.do：拦截 /to.do 的请求，针对某个具体的Servlet请求进行拦截，保护Servlet;
-    7. 如果同时配置了三个过滤器，那么在执行Filter的过程，匹配范围越大，优先级越高.
-    /* --&gt; *.do --&gt; /to.do
-3. 过滤器会拦截请求，不会到达Servlet，需要手动给予放行，才能达到Servlet
-    public void doFilter(ServletRequest request, ServletResponse response, 
-        FilterChain chain) {
-        chain.doFilter(request, response);  ---&gt; 放行
+        <h3 id="Spring与ES"><a href="#Spring与ES" class="headerlink" title="Spring与ES"></a>Spring与ES</h3><pre><code>1. ES提供的Java客户端不太好用，需要手动拼接字符串、手动对象序列化与反序列化...
+2. SpringData提供了操作ES的启动器：spring-boot-starter-data-elasticsearch
+3. spring-data-elasticsearch 属于Spring Data项目的一个子模块，由Spring社区提供的；
+    1. 因为不是官方提供的，只能保证大部分功能是正常的，而且在使用时必须与ES的版本相匹配;
+    2. 1.3.x -- 1.5.2，2.0.x -- 2.2.0，2.1.x -- 2.4.0，3.0.x -- 5.5.0，3.1.x -- 6.2.2
+4. application.yml
+    spring:
+        data:
+            elasticsearch:
+                cluster-name: elasticsearch
+                cluster-nodes: 192.168.58.101.9300
+5. POJO/实体类
+    @Data
+    @Document(indexName = &quot;heima&quot;, type = &quot;item&quot;, shards = 1)
+    public class Item {
+        @Id
+        @Field(type = FieldType.Long)
+        private Long id;
+
+        @Field(type = FieldType.Text, analyzer = &quot;ik_smart&quot;)
+        private String title;
+
+        @Field(type = FieldType.Keyword)
+        private String category;
+
+        @Field(type = FieldType.Double)
+        private Double price;
+
+        @Field(type = FieldType.Keyword, index = false)
+        private String images;
     }
-    1. chain.doFilter() 表示放行当前的请求，交给Servlet进行处理；
-    2. Servlet发送响应数据之后，会先达到Filter，执行 chain.doFilter() 之后的代码逻辑，
-    然后才会响应给浏览器.
-4. 生命周期：从服务器启动(Filter init())，到服务器关闭(Filter destroy())
-</code></pre><h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><pre><code>1. 统一编码格式设置
-    public void doFilter(request, response, chain) {
-        request.setCharacterEncoding(&quot;utf-8&quot;);
-        response.setContentType(&quot;text/html;charset=utf-8&quot;);
-        chain.doFilter(request, response);
+    1. @Document：ES的注解，设置索引(indexName)、类型(type)、分片(shards)等属性;
+    2. @Id：Spring Data的注解;
+    3. @Field：ES的注解，指定字段的类型;
+    4. title是需要分词的字段，则指定为字符串的Text类型，并指定分词器;
+    5. category字段不需要分词，则设置为字符串的Keyword类型;
+    6. images字段不需要被索引(搜素过滤)，则设置index=false.
+6. 测试
+    @Autowired
+    private ElasticsearchTemplate template;
+    // 1. 创建索引库
+    template.createIndex(Item.class);
+    // 2. 建立映射关系
+    template.putMapping(Item.class);
+</code></pre><h3 id="复杂CRUD"><a href="#复杂CRUD" class="headerlink" title="复杂CRUD"></a>复杂CRUD</h3><pre><code>1. ElasticsearchTemplate 通常用于复杂的CRUD，而简单的CRUD则使用 ElasticsearchRepository 接口;
+2. ElasticsearchRepository 的使用方式类似于通用Mapper，继承此接口，指定两个泛型：实体类、Id类型;
+    public interface ItemRepository extends ElasticsearchRepository&lt;Item, Long&gt; { }
+3. 使用方式
+    @Autowired
+    private ItemRepository repository;
+    1. 查询
+        repository.findXXX()
+    2. 增加或更新：Id已存在则更新
+        repository.save()
+        repository.saveAll() //批量新增，List&lt;Item&gt;
+    3. 删除
+        repository.deleteXXX()
+4. 自定义查询：根据价格范围查询
+    public interface ItemRepository extends ElasticsearchRepository&lt;Item, Long&gt; {
+        List&lt;Item&gt; findByPriceBetween(Double begin, Double end);
     }
-2. session管理
-    public void doFilter(request, response, chain) {
-        HttpSession hs = ((HttpServletRequest)request).getSession();
-        //判断Session是否过期
-        if(hs.getAttribute(&quot;user&quot;) == null) {
-            //过期则重定向到登录页
-            ((HttpServletResponse)response).sendRedirect(&quot;/login.jsp&quot;);
-        } else {
-            chain.doFilter(request, response);
-        }
+    1. 只需要遵循Spring Data Elasticsearch官方命名规则、声明方法名即可，SpringData会自动实现方法体！
+    2. 直接使用自定义方法
+        List&lt;Item&gt; itemList = repository.findByPriceBetween(2000d, 4000d);
+</code></pre><h3 id="原生查询"><a href="#原生查询" class="headerlink" title="原生查询"></a>原生查询</h3><pre><code>1. 对于复杂查询和聚合，仍需要使用ES的原生查询;
+    1. repository.search()
+    2. template.query()，queryForXXX()
+2. 查询并分页
+    //1. 创建查询构建器
+    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+    //2. 结果过滤
+    queryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{&quot;id&quot;, &quot;title&quot;, &quot;price&quot;}, null));
+    //3. 添加查询条件：title=小米手机
+    queryBuilder.withQuery(QueryBuilders.matchQuery(&quot;title&quot;, &quot;小米手机&quot;));
+    //4. 排序：price降序
+    queryBuilder.withSort(SortBuilders.fieldSort(&quot;price&quot;).order(SortOrder.DESC));
+    //5. 分页：页码从 0 开始
+    queryBuilder.withPageable(PageRequest.of(0, 2));
+    //6. 执行原生搜索
+    Page&lt;Item&gt; result = repository.search(queryBuilder.build());
+    //数据总量
+    long total = result.getTotalElements();
+    //总页数
+    int pageSize = result.getTotalPages();
+    //数据
+    List&lt;Item&gt; list = result.getContent();
+3. 聚合
+    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+    //聚合：聚合名称(popular_brand)、聚合类型(term)、聚合字段(brand)
+    String aggName = &quot;popular_brand&quot;;
+    queryBuilder.addAggregation(AggregationBuilders.terms(aggName).field(&quot;brand&quot;));
+    //查询并返回带有聚合结果
+    AggregatedPage&lt;Item&gt; result = template.queryForPage(queryBuilder.build(), Item.class);
+    Aggregations aggs = result.getAggregations();  //解析聚合结果
+    StringTerms terms = aggs.get(aggName);  //获取指定名称的聚合
+    //获取桶
+    List&lt;StringTerms.Bucket&gt; buckets = terms.getBuckets();
+    for (StringTerms.Bucket bucket: buckets) {
+        String key = bucket.getKeyAsString();
+        long count = bucket.getDocCount();
     }
-3. 权限管理，资源管理(统一水印、和谐词汇...) ...
-</code></pre><h2 id="监听器"><a href="#监听器" class="headerlink" title="监听器"></a>监听器</h2><pre><code>1. Servlet监听器：监听数据流转的过程，比如作用域对象的创建与销毁，数据的存取、变化、删除；
-2. 监听的作用域对象包括request、session、application
-3. 比如session销毁时，在线人数-1
-4. 在 web.xml 中配置监听器
-    &lt;listener&gt;
-        &lt;listener-class&gt;it.test.cn.TestListener&lt;/listener-class&gt;
-    &lt;/listener&gt;
-</code></pre><h3 id="request-Listener"><a href="#request-Listener" class="headerlink" title="request Listener"></a>request Listener</h3><pre><code>1. ServletRequestListener：实现此接口，监听request的创建销毁;
-    1. 接收到一个请求，则创建request对象；响应结束，销毁request对象;
-    2. 创建时触发requestInitialized(sre)，销毁时触发requestDestroyed(sre);
-    3. 获取当前正在监听的的Servlet Request对象：sre.getServletRequest();
-2. ServletRequestAttributeListener：实现此接口，监听request对象中的Attribute数据;
-    1. req.setAttribute(&quot;key&quot;, value); 第一次添加数据时，触发 attributeAdded(srea);
-    2. req.setAttribute(&quot;key&quot;, value); 重复添加同键的数据，则触发attributeReplaced(srea);
-    3. req.removeAttribute(&quot;key&quot;); 移除数据，则触发：attributeRemoved(srea);
-    4. 获取当前正在变化的Attribute数据：srea.getName(); srea.getValue();
-</code></pre><h3 id="session-Listener"><a href="#session-Listener" class="headerlink" title="session Listener"></a>session Listener</h3><pre><code>1. HttpSessionListener：实现此接口，监听session的创建与销毁;
-    1. req.getSession(); 第一次获取Session表示创建，则触发sessionCreated(se);
-    2. Session被销毁时，触发sessionDestroyed(se);
-    3. 获取当前正在监听的Session对象：se.getSession();
-2. HttpSessionAttributeListener：实现此接口，监听session中的attribute数据;
-    1. session.setAttribute(&quot;key&quot;, value);  获取/重置Session Attribute数据;
-    2. session.removeAttribute(&quot;key&quot;);  移除Session Attribute数据;
-    3. 覆写方法：attributeAdded(hsbe)、attributeReplaced(hsbe)、attributeRemoved(hsbe);
-    4. hsbe.getName();  hsbe.getValue();  分别获取正在变化的Attribute数据的键、值.
-</code></pre><h3 id="application-Listener"><a href="#application-Listener" class="headerlink" title="application Listener"></a>application Listener</h3><pre><code>1. ServletContextListener：实现此接口，监听ServletContext的创建与销毁;
-    1. 服务器启动/关闭时，分别触发 contextInitialized(sce); contextDestroyed(sce);
-    2. 获取当前正在监听的ServletContext对象：sce.getServletContext();
-2. ServletContextAttributeListener：监听application中的attribute数据;
-    1. attributeAdded(scae)、attributeReplaced(scae)、attributeRemoved(scae);
-    2. scae.getName();  scae.getValue();
-</code></pre><h3 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h3><pre><code>1. 统计当前在线人数
-2. 统计网页浏览次数
+</code></pre><h2 id="搜索服务"><a href="#搜索服务" class="headerlink" title="搜索服务"></a>搜索服务</h2><pre><code>1. 子工程ly-search：负责全文检索的微服务;
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-search&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-elasticsearch&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. application.yml
+    server:
+        port: 8083
+    spring:
+        application:
+            name: search-service
+        data:
+            elasticsearch:
+                cluster-name: elasticsearch
+                cluster-nodes: 192.168.58.101.9300
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:10086/eureka
+                registry-fetch-interval-seconds: 5
+3. 启动类：com.leyou
+    @SpringBootApplication
+    @EnableDiscoveryClient
+    @EnableFeignClients
+    public class LySearchApplication {
+        ...
+    }
+4. 实体类POJO
+    @Data
+    @Document(indexName = &quot;goods&quot;, type = &quot;docs&quot;, shards = 1, replicas = 0)
+    public class Goods {
+        @Id
+        private Long id;
+        @Field(type = FieldType.Text, analyzer = &quot;ik_max_word&quot;)
+        private String all;
+        @Field(type = FieldType.Keyword, index = false)
+        private String subTitle;
+
+        private Long brandId;
+        private Date createTime;
+        private Set&lt;Long&gt; price;
+
+        @Field(type = FieldType.Keyword, index = false)
+        private String skus;
+
+        private Map&lt;String, Object&gt; specs;
+    }
+    1. 除了必要的 @Field 注解说明，Spring会对没有注解的字段进行自动推断；
 </code></pre><hr>
 
       
@@ -422,7 +510,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/JavaEE/" rel="tag"># JavaEE</a>
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
           
         </div>
       
@@ -435,8 +523,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/02/03/JavaEE之JSP/" rel="next" title="JavaEE之JSP">
-                <i class="fa fa-chevron-left"></i> JavaEE之JSP
+              <a href="/2016/05/13/SpringCloud项目4/" rel="next" title="SpringCloud项目4">
+                <i class="fa fa-chevron-left"></i> SpringCloud项目4
               </a>
             
           </div>
@@ -445,8 +533,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/03/01/Mybatis/" rel="prev" title="Mybatis">
-                Mybatis <i class="fa fa-chevron-right"></i>
+              <a href="/2016/06/01/Docker/" rel="prev" title="Docker">
+                Docker <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -579,7 +667,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤器"><span class="nav-number">1.</span> <span class="nav-text">过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用"><span class="nav-number">1.1.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#监听器"><span class="nav-number">2.</span> <span class="nav-text">监听器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#request-Listener"><span class="nav-number">2.1.</span> <span class="nav-text">request Listener</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session-Listener"><span class="nav-number">2.2.</span> <span class="nav-text">session Listener</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#application-Listener"><span class="nav-number">2.3.</span> <span class="nav-text">application Listener</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用-1"><span class="nav-number">2.4.</span> <span class="nav-text">应用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring与ES"><span class="nav-number">1.</span> <span class="nav-text">Spring与ES</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复杂CRUD"><span class="nav-number">2.</span> <span class="nav-text">复杂CRUD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原生查询"><span class="nav-number">3.</span> <span class="nav-text">原生查询</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#搜索服务"><span class="nav-number"></span> <span class="nav-text">搜索服务</span></a></li></div>
             
 
           </div>

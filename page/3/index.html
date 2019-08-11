@@ -3205,7 +3205,7 @@ Esc：退出编辑模式或末行模式；
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/13/SpringCloud项目4/">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/14/SpringCloud项目5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大麦田怪圈">
@@ -3224,7 +3224,7 @@ Esc：退出编辑模式或末行模式；
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/05/13/SpringCloud项目4/" itemprop="url">SpringCloud项目4</a></h1>
+                <a class="post-title-link" href="/2016/05/14/SpringCloud项目5/" itemprop="url">SpringCloud项目5</a></h1>
         
 
         <div class="post-meta">
@@ -3236,8 +3236,8 @@ Esc：退出编辑模式或末行模式；
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-13T00:00:00+08:00">
-                2016-05-13
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-14T00:00:00+08:00">
+                2016-05-14
               </time>
             
 
@@ -3298,240 +3298,176 @@ Esc：退出编辑模式或末行模式；
       
         
           
-            <h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 在使用通用Mapper时，只继承 Mapper&lt;T&gt; 是不能实现批量插入等高级功能的;
-2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包
-    &lt;dependency&gt;
-        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
-        &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
-        &lt;version&gt;1.1.5&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
-        &lt;artifactId&gt;mapper-base&lt;/artifactId&gt;
-        &lt;version&gt;1.1.5&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
-        &lt;artifactId&gt;mapper-extra&lt;/artifactId&gt;
-        &lt;version&gt;1.1.5&lt;/version&gt;
-    &lt;/dependency&gt;
-3. 自定义一个具备批量新增的BaseMapper：com.leyou.common.mapper
-    @RegisterMapper
-    public interface BaseMapper&lt;T&gt; extends Mapper&lt;T&gt;,IdListMapper&lt;T, Long&gt;,InsertListMapper&lt;T&gt; {
-
-    }
-    1. IdListMapper&lt;T, Long&gt;：第二个泛型指定ID的类型;
-    2. @RegisterMapper：注册自己的Mapper
-    3. InsertListMapper 必须是 mapper-extra 包中的，因为 mapper-base 包中的 InsertListMapper 有限制.
-4. 在业务处理的Service工程ly-item-service 中使用
-    1. com.leyou.item.mapper.StockMapper 继承自定义的 BaseMapper
-        public interface StockMapper extends BaseMapper&lt;Stock&gt; {
-
-        }
-    2. 批量新增
-        List&lt;Stock&gt; stockList = new ArrayList&lt;&gt;();
-        ...... //stockList.add(stock);
-        stockMapper.insertList(stockList);
-</code></pre><h2 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h2><pre><code>1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中；
-2. Elasticsearch：ES，一个分布式的RESTful风格的搜索和数据分析引擎，速度很快，近实时搜索；
-3. ES无需人工搭建集群，而Solr则需要认为配置，使用Zookeeper作为注册中心。
-</code></pre><h3 id="安装并配置"><a href="#安装并配置" class="headerlink" title="安装并配置"></a>安装并配置</h3><pre><code>1. ES基于 Apache Lucene，Lucene又基于Java，所以必须先安装Java，并配置JAVA_HOME等环境变量;
-2. Linux系统上安装Elasticsearch
-    1. ES占用内存比较大，如果本地还有MySQL，应当关闭
-        service mysql stop   #关闭服务
-        chkconfig mysql off  #开机关闭
-    2. 新建用户、设置密码，出于安全考虑，ES默认不允许以root账户运行;
-        useradd leyou
-        passwd leyou
-        su - leyou  #切换用户到leyou用户
-    3. 上传/下载 elasticsearch-6.2.4.tar.gz 到 /home/leyou 目录，解压并删除压缩包;
-        tar xvf elasticsearch-6.2.4.tar.gz
-        mv elasticsearch-6.2.4/ elasticsearch
-    4. 把权限修改为当前的用户
-        chown leyou:leyou elasticsearch/ -R  #-R表示递归修改
-3. 配置ES
-    cd elasticsearch/config
-    1. 虚拟机的内存：vim jvm.options
-        -Xms256m    #最小内存，默认1g
-        -Xmx256m    #最大内存，默认1g
-    2. 运行时配置文件elasticsearch.yml
-        #cluster.name: my-application  #ES集群名称，默认elasticsearch
-        #node.name: node-1  #集群中的节点名称
-        path.data: /home/leyou/elasticsearch/data  #数据目录
-        path.logs: /home/leyou/elasticsearch/logs  #日志目录
-        network.host: 0.0.0.0     #默认只允许本机访问，修改为0.0.0.0之后就都可以访问了
-        #discovery.zen.ping.unicast.hosts: [&quot;host1&quot;, &quot;host2&quot;]  #ES集群中的其他节点主机地址
-    3. 在elasticsearch目录下，要保证data目录和logs目录是存在的.
-4. 启动ES
-    1. 进入bin目录，执行 ./elasticsearch(Linux) 或 ./elasticsearch.bat(Windows)，启动ES服务;
-    2. 端口号9300 是集群节点间的通讯接口，接收TCP协议;
-    3. 端口号9200 是客户端的访问接口，接收HTTP协议.
-5. 访问 http://localhost:9200/
-    {
-        &quot;name&quot; : &quot;Z8oeyoP&quot;,
-        &quot;cluster_name&quot; : &quot;elasticsearch&quot;,
-        &quot;cluster_uuid&quot; : &quot;GOlSBmfDTBSgG3p_DnIflA&quot;,
-        &quot;version&quot; : {
-            &quot;number&quot; : &quot;6.2.4&quot;,
-            ......
-            &quot;lucene_version&quot; : &quot;7.2.1&quot;,
-            ......
-        },
-        &quot;tagline&quot; : &quot;You Know, for Search&quot;
-    }
-</code></pre><h3 id="启动报错"><a href="#启动报错" class="headerlink" title="启动报错"></a>启动报错</h3><pre><code>1. SystemCallFilter错误：install syscall filter
-    1. 此过滤器要求Linux内核版本必须是3.5+
-        uname -r  #查看Ubuntu/CentOS上的Linux内核版本，CentOS的内核版本通常都比较低
-    2. 修改elasticsearch.yml，禁用SystemCallFilter
-        bootstrap.system_call_filter: false
-2. max file descriptors[4096] for elasticsearch process likely too low, increase to at least [65535]
-    1. leyou用户的文件权限不足；
-    2. 用root用户登录，修改 /etc/security/limits.conf，增加配置
-        * soft nofile 65535
-        * hard nofile 131072
-        * soft nproc 4096
-        * hard nproc 4096
-    3. * 表示任意用户
-3. max number of threads [1024] for user [leyou] is too low, increase to at least [4096]
-    1. leyou用户的线程数量不够
-    2. 使用root用户修改 /etc/security/limits.d/90-nproc.conf
-        * soft nproc 4096  #默认值1024
-4. max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]
-    1. 虚拟内存不足
-    2. 修改 /etc/sysctl.conf，增加一段配置
-        vm.max_map_count=655360
-    3. 执行命令：sysctl -p，让配置生效。
-</code></pre><h3 id="IK分词器"><a href="#IK分词器" class="headerlink" title="IK分词器"></a>IK分词器</h3><pre><code>1. IK分词器：ES的中文检索插件
-2. 下载elasticsearch-analysis-ik-x.x.x.zip，版本号与Elasticsearch保持一致；
-3. 在 elasticsearch/plugins 目录下解压，删除压缩包，并把解压后的目录名修改为ik-analyzer
-4. 还可以在 ik-analyzer/config 中配置自己词典
-    1. 配置文件：IKAnalyzer.cfg.xml
-    &lt;entry key=&quot;ext_dict&quot;&gt;&lt;/entry&gt;   # 用户可以在这里配置自己的扩展字典
-    &lt;entry key=&quot;ext_stopwords&quot;&gt;&lt;/entry&gt;   # 用户可以在这里配置自己的扩展停止词字典
-    2. 停止词典：stopword.dic
-    3. 扩展词典：extra_xxx.dic
-</code></pre><h3 id="Kibana"><a href="#Kibana" class="headerlink" title="Kibana"></a>Kibana</h3><pre><code>1. Kibana：一个基于Node的Elasticsearch索引库数据统计工具！
-2. Kibana的版本与Elasticsearch应该保持一致：kibana-6.2.4-linux-x86_64.tar.gz
-    1. 修改Kibana的配置文件 kibana/config/kibana.yml
-        elasticsearch.url: &quot;http://192.168.58.101:9200&quot;   #配置ES服务器的地址
-    2. 进入kibana/bin目录，执行 kibana(Linux) 或 kibana.bat(Windows)，只要没有[error]，表示启动成功！
-3. 访问 http://localhost:5601  # Kibana默认监听的端口号：5601
-4. 测试IK分词器：DevTools -&gt; Console，发起请求
-    1. IK分词器内置两种分词类型：ik_max_word、ik_smart
-    2. ik_max_word 分的颗粒度很小
-        POST _analyze
-        {
-            &quot;analyzer&quot;: &quot;ik_max_word&quot;,
-            &quot;text&quot;: &quot;我是中国人&quot;
-        }
-    3. 分词结果：我、是、中国人、中国、国人
-    4. ik_smart 会分析语境
-        POST _analyze
-        {
-            &quot;analyzer&quot;: &quot;ik_smart&quot;,
-            &quot;text&quot;: &quot;我是中国人&quot;
-        }
-    5. 分词结果：我、是、中国人
-5. 其实，只要能发起RESTful风格的请求，都可以访问ES，如PostMan
-    1. 请求地址 http://192.168.58.101:9200/_analyze
-    2. JSON格式的请求体
-    {
-        &quot;analyzer&quot;: &quot;ik_smart&quot;,
-        &quot;text&quot;: &quot;我是中国人&quot;
-    }
-</code></pre><h3 id="操作索引"><a href="#操作索引" class="headerlink" title="操作索引"></a>操作索引</h3><pre><code>1. ES与MySQL的概念比较
-    1. 索引库 --&gt; Databases数据库
-    2. 类型 --&gt; Table数据表
-    3. 文档 --&gt; 行
-    4. 字段 --&gt; 列
-    5. 映射配置：字段的数据类型、属性、是否索引、是否存储等特性;
-2. 集群相关
-    1. 索引集：逻辑上的完整索引;
-    2. 分片：数据拆分后的各个部分;
-    3. 副本：每个分片的复制;
-    4. ES本身就是分布式的，即便只有一个节点，ES默认也会对数据进行分片和副本;
-    5. 向集群中加入新节点时，分片数据会自动平衡到新的节点中.
-3. 创建索引
-    1. 请求方式：PUT
-    2. 请求路径：/索引库名
-        http://192.168.58.101:9200/testly
-    3. 请求参数：JSON格式
-        {
-            &quot;settings&quot;: {  ---&gt; 索引库的设置
-                &quot;number_of_shards&quot;: 3,  ---&gt; 分片数量
-                &quot;number_of_replicas&quot;: 2   ---&gt; 副本数量
-            }
-        }
-    4. POST请求则表示修改.
-4. 查看/删除索引库
-    1. 请求方式：GET/DELETE
-    2. 请求路径：/索引库名
-        http://192.168.58.101:9200/testly
-</code></pre><h3 id="映射字段"><a href="#映射字段" class="headerlink" title="映射字段"></a>映射字段</h3><pre><code>1. 创建映射字段
-    PUT /索引库名/_mapping/类型名称
-    {
-        &quot;properties&quot;: {
-            &quot;字段名&quot;: {
-                &quot;type&quot;: &quot;类型&quot;,
-                &quot;index&quot;: true,    # 是否索引，默认值true
-                &quot;store&quot;: true,    # 是否存储：默认值false
-                &quot;analyzer&quot;: &quot;分词器&quot;
-            }
-        }
-    }
-    1. 类型名称：类似于MySQL数据库中的表;
-    2. 字段的type类型：text、long、short、date、integer、object...
-    3. analyzer：分词器，如ik_max_word，即使用ik分词器
-        PUT /testly/_mapping/goods
-        {
-            &quot;properties&quot;: {
-                &quot;title&quot;: {
-                    &quot;type&quot;: &quot;text&quot;,
-                    &quot;analyzer&quot;: &quot;ik_max_word&quot;
-                },
-                &quot;images&quot;: {
-                    &quot;type&quot;: &quot;keyword&quot;,
-                    &quot;index&quot;: false
-                },
-                &quot;price&quot;: {
-                    &quot;type&quot;: &quot;float&quot;
-                }
-            }
-        }
-2. 查看映射字段
-    GET /testly/_mapping/类型名称   # 如果不指定类型名称，则表示查看所有的映射字段
-3. 字段类型
-    1. text和keyword都属于String类型，text可以分词，images不可以分词;
-    2. Number(数值类型)分两类：
-        1. 基本数据类型：long、integer、short、byte、double、float、half_float
-        2. 浮点数的高精度类型：scaled_float
-        3. scaled_float需要指定一个精度因子，如10、100，ES会把真实值乘以因子后存储，获取时自动还原.
-    3. Date(日期类型)：ES可以对日期格式化为字符串存储，但建议存储为毫秒值(long)，节省空间;
-    4. 复杂类型：Array、Object、Nested
-    5. 如果存的是对象，比如{stu:{name:&quot;Jack&quot;,age:20}}，ES会处理成两个字段：stu.name、stu.age
-4. index
-    1. true：默认值，字段会被索引，可以用来搜索;
-    2. false：字段不会被索引，不能用来搜索;
-    3. 有些字段不希望被索引，如商品的图片信息，则手动设置为false.
-5. store：是否将数据进行额外存储;
-    1. 在Lucene和Solr中，如果把store设置为false，就不会存储在文档列表中，用户的搜索结果中不会显示;
-    2. 在ES中，即使设置为false，也可以搜索到结果，也就是说store并不是用来控制字段是否能够被搜索的;
-    3. 因为创建文档索引时，ES会将文档中的原始数据备份到一个叫做 _source 属性中，而且可以通过过滤 _source 来选择
-    哪些字段需要显示，那些不需要显示;
-    4. 如果设置为true，ES会额外存储一份数据，显得很多余，因为有了 _source 属性;
-6. boost：激励因子，与在Lucene中的作用相同;
-</code></pre><h3 id="Spring与ES"><a href="#Spring与ES" class="headerlink" title="Spring与ES"></a>Spring与ES</h3><pre><code>1. ES提供了Java客户端，但使用方式很不方便：手动拼接字符串，手动对象序列化与反序列化...
-2. Spring提供了Spring Data Elasticsearch，属于Spring Data项目的一个子模块；
-3. SpringBoot的启动器：spring-boot-starter-data-elasticsearch
+            <h3 id="Spring与ES"><a href="#Spring与ES" class="headerlink" title="Spring与ES"></a>Spring与ES</h3><pre><code>1. ES提供的Java客户端不太好用，需要手动拼接字符串、手动对象序列化与反序列化...
+2. SpringData提供了操作ES的启动器：spring-boot-starter-data-elasticsearch
+3. spring-data-elasticsearch 属于Spring Data项目的一个子模块，由Spring社区提供的；
+    1. 因为不是官方提供的，只能保证大部分功能是正常的，而且在使用时必须与ES的版本相匹配;
+    2. 1.3.x -- 1.5.2，2.0.x -- 2.2.0，2.1.x -- 2.4.0，3.0.x -- 5.5.0，3.1.x -- 6.2.2
 4. application.yml
     spring:
         data:
             elasticsearch:
                 cluster-name: elasticsearch
-                cluster-nodes: 192.168.58.101:9300
-5. 
+                cluster-nodes: 192.168.58.101.9300
+5. POJO/实体类
+    @Data
+    @Document(indexName = &quot;heima&quot;, type = &quot;item&quot;, shards = 1)
+    public class Item {
+        @Id
+        @Field(type = FieldType.Long)
+        private Long id;
+
+        @Field(type = FieldType.Text, analyzer = &quot;ik_smart&quot;)
+        private String title;
+
+        @Field(type = FieldType.Keyword)
+        private String category;
+
+        @Field(type = FieldType.Double)
+        private Double price;
+
+        @Field(type = FieldType.Keyword, index = false)
+        private String images;
+    }
+    1. @Document：ES的注解，设置索引(indexName)、类型(type)、分片(shards)等属性;
+    2. @Id：Spring Data的注解;
+    3. @Field：ES的注解，指定字段的类型;
+    4. title是需要分词的字段，则指定为字符串的Text类型，并指定分词器;
+    5. category字段不需要分词，则设置为字符串的Keyword类型;
+    6. images字段不需要被索引(搜素过滤)，则设置index=false.
+6. 测试
+    @Autowired
+    private ElasticsearchTemplate template;
+    // 1. 创建索引库
+    template.createIndex(Item.class);
+    // 2. 建立映射关系
+    template.putMapping(Item.class);
+</code></pre><h3 id="复杂CRUD"><a href="#复杂CRUD" class="headerlink" title="复杂CRUD"></a>复杂CRUD</h3><pre><code>1. ElasticsearchTemplate 通常用于复杂的CRUD，而简单的CRUD则使用 ElasticsearchRepository 接口;
+2. ElasticsearchRepository 的使用方式类似于通用Mapper，继承此接口，指定两个泛型：实体类、Id类型;
+    public interface ItemRepository extends ElasticsearchRepository&lt;Item, Long&gt; { }
+3. 使用方式
+    @Autowired
+    private ItemRepository repository;
+    1. 查询
+        repository.findXXX()
+    2. 增加或更新：Id已存在则更新
+        repository.save()
+        repository.saveAll() //批量新增，List&lt;Item&gt;
+    3. 删除
+        repository.deleteXXX()
+4. 自定义查询：根据价格范围查询
+    public interface ItemRepository extends ElasticsearchRepository&lt;Item, Long&gt; {
+        List&lt;Item&gt; findByPriceBetween(Double begin, Double end);
+    }
+    1. 只需要遵循Spring Data Elasticsearch官方命名规则、声明方法名即可，SpringData会自动实现方法体！
+    2. 直接使用自定义方法
+        List&lt;Item&gt; itemList = repository.findByPriceBetween(2000d, 4000d);
+</code></pre><h3 id="原生查询"><a href="#原生查询" class="headerlink" title="原生查询"></a>原生查询</h3><pre><code>1. 对于复杂查询和聚合，仍需要使用ES的原生查询;
+    1. repository.search()
+    2. template.query()，queryForXXX()
+2. 查询并分页
+    //1. 创建查询构建器
+    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+    //2. 结果过滤
+    queryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{&quot;id&quot;, &quot;title&quot;, &quot;price&quot;}, null));
+    //3. 添加查询条件：title=小米手机
+    queryBuilder.withQuery(QueryBuilders.matchQuery(&quot;title&quot;, &quot;小米手机&quot;));
+    //4. 排序：price降序
+    queryBuilder.withSort(SortBuilders.fieldSort(&quot;price&quot;).order(SortOrder.DESC));
+    //5. 分页：页码从 0 开始
+    queryBuilder.withPageable(PageRequest.of(0, 2));
+    //6. 执行原生搜索
+    Page&lt;Item&gt; result = repository.search(queryBuilder.build());
+    //数据总量
+    long total = result.getTotalElements();
+    //总页数
+    int pageSize = result.getTotalPages();
+    //数据
+    List&lt;Item&gt; list = result.getContent();
+3. 聚合
+    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+    //聚合：聚合名称(popular_brand)、聚合类型(term)、聚合字段(brand)
+    String aggName = &quot;popular_brand&quot;;
+    queryBuilder.addAggregation(AggregationBuilders.terms(aggName).field(&quot;brand&quot;));
+    //查询并返回带有聚合结果
+    AggregatedPage&lt;Item&gt; result = template.queryForPage(queryBuilder.build(), Item.class);
+    Aggregations aggs = result.getAggregations();  //解析聚合结果
+    StringTerms terms = aggs.get(aggName);  //获取指定名称的聚合
+    //获取桶
+    List&lt;StringTerms.Bucket&gt; buckets = terms.getBuckets();
+    for (StringTerms.Bucket bucket: buckets) {
+        String key = bucket.getKeyAsString();
+        long count = bucket.getDocCount();
+    }
 </code></pre><h2 id="搜索服务"><a href="#搜索服务" class="headerlink" title="搜索服务"></a>搜索服务</h2><pre><code>1. 子工程ly-search：负责全文检索的微服务;
-2. 
+    &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+    &lt;artifactId&gt;ly-search&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-elasticsearch&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.leyou.service&lt;/groupId&gt;
+            &lt;artifactId&gt;ly-item-interface&lt;/artifactId&gt;
+            &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+2. application.yml
+    server:
+        port: 8083
+    spring:
+        application:
+            name: search-service
+        data:
+            elasticsearch:
+                cluster-name: elasticsearch
+                cluster-nodes: 192.168.58.101.9300
+        eureka:
+            client:
+                service-url:
+                    defaultZone: http://127.0.0.1:10086/eureka
+                registry-fetch-interval-seconds: 5
+3. 启动类：com.leyou
+    @SpringBootApplication
+    @EnableDiscoveryClient
+    @EnableFeignClients
+    public class LySearchApplication {
+        ...
+    }
+4. 实体类POJO
+    @Data
+    @Document(indexName = &quot;goods&quot;, type = &quot;docs&quot;, shards = 1, replicas = 0)
+    public class Goods {
+        @Id
+        private Long id;
+        @Field(type = FieldType.Text, analyzer = &quot;ik_max_word&quot;)
+        private String all;
+        @Field(type = FieldType.Keyword, index = false)
+        private String subTitle;
+
+        private Long brandId;
+        private Date createTime;
+        private Set&lt;Long&gt; price;
+
+        @Field(type = FieldType.Keyword, index = false)
+        private String skus;
+
+        private Map&lt;String, Object&gt; specs;
+    }
+    1. 除了必要的 @Field 注解说明，Spring会对没有注解的字段进行自动推断；
 </code></pre><hr>
 
           
@@ -3618,7 +3554,7 @@ Esc：退出编辑模式或末行模式；
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -232,6 +232,544 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/13/SpringCloud项目4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大麦田怪圈">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大麦田程序猿">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/13/SpringCloud项目4/" itemprop="url">SpringCloud项目4</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-13T00:00:00+08:00">
+                2016-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaEE</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h2><pre><code>1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中；
+2. Elasticsearch：ES，一个分布式的RESTful风格的搜索和数据分析引擎，速度很快，近实时搜索；
+3. 与MongoDB、Redis、Memcache一样，ES属于非关系型数据库，是一个接近实时的搜索平台；
+3. ES无需人工搭建集群，而Solr则需要认为配置，使用Zookeeper作为注册中心。
+4. Elasticsearch+ Logstash + Kibana
+    1. ES：存储和收集数据，作为检索工具;
+    2. logstash：收集Server产生的Log日志;
+    3. kibana：强大的Web管理平台;
+</code></pre><h3 id="安装并配置"><a href="#安装并配置" class="headerlink" title="安装并配置"></a>安装并配置</h3><pre><code>1. ES基于 Apache Lucene，Lucene又基于Java，所以必须先安装Java，并配置JAVA_HOME等环境变量;
+2. Linux系统上安装Elasticsearch
+    1. ES占用内存比较大，如果本地还有MySQL，应当关闭
+        service mysql stop   #关闭服务
+        chkconfig mysql off  #开机关闭
+    2. 新建用户、设置密码，出于安全考虑，ES默认不允许以root账户运行;
+        useradd leyou
+        passwd leyou
+        su - leyou  #切换用户到leyou用户
+    3. 上传/下载 elasticsearch-6.2.4.tar.gz 到 /home/leyou 目录，解压并删除压缩包;
+        tar xvf elasticsearch-6.2.4.tar.gz
+        mv elasticsearch-6.2.4/ elasticsearch
+    4. 把权限修改为当前的用户
+        chown leyou:leyou elasticsearch/ -R  #-R表示递归修改
+3. 配置ES
+    cd elasticsearch/config
+    1. 虚拟机的内存：vim jvm.options
+        -Xms256m    #最小内存，默认1g
+        -Xmx256m    #最大内存，默认1g
+    2. 运行时配置文件elasticsearch.yml
+        #cluster.name: my-application  #ES集群名称，默认elasticsearch
+        #node.name: node-1  #集群中的节点名称
+        path.data: /home/leyou/elasticsearch/data  #数据目录
+        path.logs: /home/leyou/elasticsearch/logs  #日志目录
+        network.host: 0.0.0.0     #默认只允许本机访问，修改为0.0.0.0之后就都可以访问了
+        #discovery.zen.ping.unicast.hosts: [&quot;host1&quot;, &quot;host2&quot;]  #ES集群中的其他节点主机地址
+    3. 在elasticsearch目录下，要保证data目录和logs目录是存在的.
+4. 启动ES
+    1. 进入bin目录，执行 ./elasticsearch(Linux) 或 ./elasticsearch.bat(Windows)，启动ES服务;
+    2. 端口号9300 是集群节点间的通讯接口，接收TCP协议;
+    3. 端口号9200 是客户端的访问接口，接收HTTP协议.
+5. 访问 http://localhost:9200/
+    {
+        &quot;name&quot; : &quot;Z8oeyoP&quot;,
+        &quot;cluster_name&quot; : &quot;elasticsearch&quot;,
+        &quot;cluster_uuid&quot; : &quot;GOlSBmfDTBSgG3p_DnIflA&quot;,
+        &quot;version&quot; : {
+            &quot;number&quot; : &quot;6.2.4&quot;,
+            ......
+            &quot;lucene_version&quot; : &quot;7.2.1&quot;,
+            ......
+        },
+        &quot;tagline&quot; : &quot;You Know, for Search&quot;
+    }
+</code></pre><h3 id="启动报错"><a href="#启动报错" class="headerlink" title="启动报错"></a>启动报错</h3><pre><code>1. SystemCallFilter错误：install syscall filter
+    1. 此过滤器要求Linux内核版本必须是3.5+
+        uname -r  #查看Ubuntu/CentOS上的Linux内核版本，CentOS的内核版本通常都比较低
+    2. 修改elasticsearch.yml，禁用SystemCallFilter
+        bootstrap.system_call_filter: false
+2. max file descriptors[4096] for elasticsearch process likely too low, increase to at least [65535]
+    1. leyou用户的文件权限不足；
+    2. 用root用户登录，修改 /etc/security/limits.conf，增加配置
+        * soft nofile 65535
+        * hard nofile 131072
+        * soft nproc 4096
+        * hard nproc 4096
+    3. * 表示任意用户
+3. max number of threads [1024] for user [leyou] is too low, increase to at least [4096]
+    1. leyou用户的线程数量不够
+    2. 使用root用户修改 /etc/security/limits.d/90-nproc.conf
+        * soft nproc 4096  #默认值1024
+4. max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]
+    1. 虚拟内存不足
+    2. 修改 /etc/sysctl.conf，增加一段配置
+        vm.max_map_count=655360
+    3. 执行命令：sysctl -p，让配置生效。
+</code></pre><h3 id="IK分词器"><a href="#IK分词器" class="headerlink" title="IK分词器"></a>IK分词器</h3><pre><code>1. IK分词器：ES的中文检索插件
+2. 下载elasticsearch-analysis-ik-x.x.x.zip，版本号与Elasticsearch保持一致；
+3. 在 elasticsearch/plugins 目录下解压，删除压缩包，并把解压后的目录名修改为ik-analyzer
+4. 还可以在 ik-analyzer/config 中配置自己词典
+    1. 配置文件：IKAnalyzer.cfg.xml
+    &lt;entry key=&quot;ext_dict&quot;&gt;&lt;/entry&gt;   # 用户可以在这里配置自己的扩展字典
+    &lt;entry key=&quot;ext_stopwords&quot;&gt;&lt;/entry&gt;   # 用户可以在这里配置自己的扩展停止词字典
+    2. 停止词典：stopword.dic
+    3. 扩展词典：extra_xxx.dic
+</code></pre><h3 id="Kibana"><a href="#Kibana" class="headerlink" title="Kibana"></a>Kibana</h3><pre><code>1. Kibana：一个基于Node的Elasticsearch索引库数据统计工具！
+2. Kibana的版本与Elasticsearch应该保持一致：kibana-6.2.4-linux-x86_64.tar.gz
+    1. 修改Kibana的配置文件 kibana/config/kibana.yml
+        elasticsearch.url: &quot;http://192.168.58.101:9200&quot;   #配置ES服务器的地址
+    2. 进入kibana/bin目录，执行 kibana(Linux) 或 kibana.bat(Windows)，只要没有[error]，表示启动成功！
+3. 访问 http://localhost:5601  # Kibana默认监听的端口号：5601
+4. 测试IK分词器：DevTools -&gt; Console，发起请求
+    1. IK分词器内置两种分词类型：ik_max_word、ik_smart
+    2. ik_max_word 分的颗粒度很小
+        POST _analyze
+        {
+            &quot;analyzer&quot;: &quot;ik_max_word&quot;,
+            &quot;text&quot;: &quot;我是中国人&quot;
+        }
+    3. 分词结果：我、是、中国人、中国、国人
+    4. ik_smart 会分析语境
+        POST _analyze
+        {
+            &quot;analyzer&quot;: &quot;ik_smart&quot;,
+            &quot;text&quot;: &quot;我是中国人&quot;
+        }
+    5. 分词结果：我、是、中国人
+5. 其实，只要能发起RESTful风格的请求，都可以访问ES，如PostMan
+    1. 请求地址 http://192.168.58.101:9200/_analyze
+    2. JSON格式的请求体
+    {
+        &quot;analyzer&quot;: &quot;ik_smart&quot;,
+        &quot;text&quot;: &quot;我是中国人&quot;
+    }
+</code></pre><h2 id="操作索引"><a href="#操作索引" class="headerlink" title="操作索引"></a>操作索引</h2><pre><code>1. ES与MySQL的概念比较
+    1. index索引库 --&gt; Databases数据库
+    2. type类型 --&gt; Table数据表
+    3. document文档 --&gt; 行row
+    4. field字段 --&gt; 列column
+    5. 映射配置：字段的数据类型、属性、是否索引、是否存储等特性;
+    6. 数据存储的最小单位是文档，本质上是一个JSON文本.
+2. 集群相关
+    1. 索引集：逻辑上的完整索引;
+    2. 分片：数据拆分后的各个部分;
+    3. 副本：每个分片的复制;
+    4. ES本身就是分布式的，即便只有一个节点，ES默认也会对数据进行分片和副本;
+    5. 向集群中加入新节点时，分片数据会自动平衡到新的节点中.
+3. 创建索引
+    1. 请求方式：PUT
+    2. 请求路径：/索引库名
+        http://192.168.58.101:9200/testly  #索引库名为testly
+    3. 请求参数：JSON格式
+        {
+            &quot;settings&quot;: {  ---&gt; 索引库的设置
+                &quot;number_of_shards&quot;: 3,  ---&gt; 分片数量
+                &quot;number_of_replicas&quot;: 2   ---&gt; 副本数量
+            }
+        }
+    4. POST请求则表示修改.
+4. 查看/删除索引库
+    1. 请求方式：GET/DELETE
+    2. 请求路径：/索引库名
+        http://192.168.58.101:9200/testly
+</code></pre><h3 id="映射字段"><a href="#映射字段" class="headerlink" title="映射字段"></a>映射字段</h3><pre><code>1. 创建映射字段
+    PUT /索引库名/_mapping/类型名称
+    {
+        &quot;properties&quot;: {
+            &quot;字段名&quot;: {
+                &quot;type&quot;: &quot;类型&quot;,
+                &quot;index&quot;: true,    # 是否索引，默认值true
+                &quot;store&quot;: true,    # 是否存储：默认值false
+                &quot;analyzer&quot;: &quot;分词器&quot;
+            }
+        }
+    }
+    1. 类型名称：类似于MySQL数据库中的表;
+    2. 字段的type类型：text、long、short、date、integer、object...
+    3. analyzer：分词器，如ik_max_word，即使用ik分词器
+2. 在索引库testly 中新增类型goods，并设置映射字段title、images、price
+    PUT /testly/_mapping/goods
+    {
+        &quot;properties&quot;: {
+            &quot;title&quot;: {
+                &quot;type&quot;: &quot;text&quot;,
+                &quot;analyzer&quot;: &quot;ik_max_word&quot;
+            },
+            &quot;images&quot;: {
+                &quot;type&quot;: &quot;keyword&quot;,
+                &quot;index&quot;: false
+            },
+            &quot;price&quot;: {
+                &quot;type&quot;: &quot;float&quot;
+            }
+        }
+    }
+3. 查看映射字段
+    GET /testly/_mapping/类型名称   # 如果不指定类型名称，则表示查看所有的映射字段
+    http://192.168.58.101:9200/testly/_mapping/goods
+4. 字段类型
+    1. text和keyword都属于String类型，text可以分词，keyword不可以分词;
+    2. Number(数值类型)分两类：
+        1. 基本数据类型：long、integer、short、byte、double、float、half_float
+        2. 浮点数的高精度类型：scaled_float
+        3. scaled_float需要指定一个精度因子，如10、100，ES会把真实值乘以因子后存储，获取时自动还原.
+    3. Date(日期类型)：ES可以对日期格式化为字符串存储，但建议存储为毫秒值(long)，节省空间;
+    4. 复杂类型：Array、Object、Nested
+    5. 如果存的是对象，比如{stu:{name:&quot;Jack&quot;,age:20}}，ES会处理成两个字段：stu.name、stu.age
+5. index
+    1. true：默认值，字段会被索引，可以用来搜索;
+    2. false：字段不会被索引，不能用来搜索;
+    3. 有些字段不希望被索引，如商品的图片信息，则手动设置为false.
+6. store：是否将数据进行额外存储;
+    1. 在Lucene和Solr中，如果把store设置为false，就不会存储在文档列表中，用户的搜索结果中不会显示;
+    2. 在ES中，即使设置为false，也可以搜索到结果，也就是说store并不是用来控制字段是否能够被搜索的;
+    3. 因为创建文档索引时，ES会将文档中的原始数据备份到一个叫做 _source 属性中，而且可以通过过滤 _source
+    来选择哪些字段需要显示，那些不需要显示;
+    4. 如果设置为true，ES会额外存储一份数据，显得很多余，因为有了 _source 属性;
+7. boost：激励因子，与在Lucene中的作用相同.
+</code></pre><h3 id="数据的CURD"><a href="#数据的CURD" class="headerlink" title="数据的CURD"></a>数据的CURD</h3><pre><code>1. 新增数据
+    POST /索引库名/类型名称
+    {
+        &quot;key&quot;: &quot;value&quot;
+    }
+    1. 每条数据都必须有ID字段，如果不指定字段，则随机生成;
+        POST /testly/goods
+        {
+            &quot;title&quot;: &quot;手机&quot;,
+            &quot;images&quot;: &quot;http://image.leyou.com/xxx.png&quot;,
+            &quot;price&quot;: 3000
+        }
+    2. 指定ID
+        POST /索引库名/类型名称/ID
+        {
+            &quot;key&quot;: &quot;value&quot;
+        }
+2. 智能推断：在新增数据时，如果没有对应的映射字段，ES会自动推断数据类型，并存储;
+    POST /testly/goods/3
+    {
+        &quot;title&quot;: &quot;手机&quot;,
+        &quot;images&quot;: &quot;http://image.leyou.com/xxx.png&quot;,
+        &quot;price&quot;: 3000,
+        &quot;stock&quot;: 200,
+        &quot;saleable&quot;: true
+        &quot;subTitle&quot;: &quot;智能手机&quot;
+    }
+    1. stock、saleable、subTitle 是三种不同类型的新字段，stock和saleable都会成功映射;
+    2. 但是，ES无法智能推断 subTitle 属于哪一类字符串(text、keyword)，所以它会存入两个字段;
+        subTitle: text
+        subTitle.keyword: keyword
+3. 根据ID查询数据
+        GET /索引库名/类型名称/ID
+4. 查询所有
+    GET /索引库名/_search
+    {
+        &quot;query&quot;: { &quot;match_all&quot;: {} }
+    }
+5. 修改数据：如果ID存在，则修改，否则就新增;
+    PUT /索引库名/类型名称/ID
+    {
+        &quot;key&quot;: &quot;value&quot;
+    }
+6. 删除数据
+    DELETE /索引库名/类型名称/ID
+</code></pre><h3 id="全文检索"><a href="#全文检索" class="headerlink" title="全文检索"></a>全文检索</h3><pre><code>1. 基本查询
+    GET /索引库名/_search
+    {
+        &quot;query&quot;: {
+            &quot;查询类型&quot;: {
+                &quot;查询条件&quot;: &quot;查询条件值&quot;
+            }
+        }
+    }
+    1. query代表一个查询对象，包含不同的查询属性;
+    2. 查询类型：match_all(查询所有)、match(匹配查询)、term、range...
+    3. 
+2. 匹配查询：先把查询条件进行分词，然后进行查询，多个词条之间默认是 or 的关系;
+    &quot;match&quot;: {
+        &quot;title&quot;: &quot;小米手机&quot;
+    }
+    1. 默认会拆分&quot;小米手机&quot;，查询出所有包含 小米、手机 的结果;
+    2. 把 小米手机 当作一个整体去查询，指定为 and 的关系;
+    &quot;match&quot;: {
+        &quot;title&quot;: { &quot;query&quot;:&quot;小米手机&quot;, &quot;operator&quot;:&quot;and&quot; }
+    }
+3. 多字段匹配：multi_match，可以在多个字段中查询;
+    &quot;multi_match&quot;: {
+        &quot;title&quot;: &quot;小米&quot;,
+        &quot;fields&quot;: [&quot;title&quot;, &quot;subTitle&quot;]   #在 title和subTitle 字段中查询&quot;小米&quot;!
+    }
+4. 词条匹配：term，用于精确值的匹配，可以是数字、时间、布尔值、字符串(不会对字符串分词，当作一个整体);
+    GET /heima/_search
+    {
+        &quot;query&quot;: {
+            &quot;term&quot;: {
+                &quot;price&quot;: {
+                    &quot;value&quot;: 3688  #精确匹配 price=3688 的值
+                }
+            }
+        }
+    }
+5. terms：多词条匹配
+</code></pre><h3 id="结果过滤"><a href="#结果过滤" class="headerlink" title="结果过滤"></a>结果过滤</h3><pre><code>1. 默认情况下，ES在搜索的结果中，会把文档中保存在 _source 的搜索字段都返回；
+2. 如果只想获取其中的部分字段，可以对 _source 过滤；
+3. 指定字段
+    GET /heima/_search
+    {
+        &quot;_source&quot;: &quot;title&quot;,  #只返回一个 title 字段
+        &quot;query&quot;: {
+            ...  # 搜索条件
+        }
+    }
+3. 指定多个字段：[&quot;title&quot;, &quot;price&quot;]
+4. 包含哪些字段
+    &quot;_source&quot;: {
+        &quot;includes&quot;: [&quot;title&quot;, &quot;price&quot;]  #只返回 title、price 两个字段
+    }
+5. 排除某些字段
+    &quot;_source&quot;: {
+        &quot;excludes&quot;: &quot;images&quot;  #除了 images 字段，其他都返回
+    }
+</code></pre><h3 id="高级查询"><a href="#高级查询" class="headerlink" title="高级查询"></a>高级查询</h3><pre><code>1. 模糊查询：fuzzy
+    GET /heima/_search
+    {
+        &quot;query&quot;: {
+            &quot;fuzzy&quot;: {
+                &quot;title&quot;: &quot;apply&quot;
+            }
+        }
+    }
+2. fuzzy查询是term查询的模糊等价，它允许搜索词条与实际词条的拼写出现偏差，但偏差的编辑距离不得超过2
+3. 范围查询：range
+    &quot;query&quot;: {
+        &quot;range&quot;: {
+            &quot;price&quot;: {
+                &quot;gte&quot;: 1000,  #gte 大于等于
+                &quot;lte&quot;: 2000   #lte 小于等于
+            }
+        }
+    }
+</code></pre><h3 id="布尔组合查询"><a href="#布尔组合查询" class="headerlink" title="布尔组合查询"></a>布尔组合查询</h3><pre><code>1. 布尔组合查询：把其他查询方式组合起来;
+2. must：与，必须全部满足;
+    &quot;query&quot;: {
+        &quot;bool&quot;: {
+            &quot;must&quot;: [
+                {  &quot;match&quot;: {  &quot;title&quot;: &quot;大米&quot;  }  }, 
+                {  &quot;range&quot;: {  &quot;price&quot;: {  &quot;gte&quot;: 1000  }  }  }
+            ]
+        }
+    }  -----&gt; title字段中包含&quot;大米&quot;，且 price &gt;= 1000
+3. should 或，满足一个即可;
+4. must_not 非，对must取反;
+5. filter：过滤
+    1. 当在 must 中同时使用 match{title} 和 range{price} 时，搜索效率的得分(_score)远低于只使用match{title}
+    2. 其实，match{title}是一个真正的搜索条件，而range{price}更像是一个过滤条件，不应该被当成一个搜索条件、
+    而影响搜素效率的得分
+    3. 这就是 filter 的作用
+    &quot;query&quot;: {
+        &quot;bool&quot;: {
+            &quot;must&quot;: [
+                {  &quot;match&quot;: {  &quot;title&quot;: &quot;大米&quot;  }  }, 
+            ],
+            &quot;filter&quot;: {
+                &quot;range&quot;: {  &quot;price&quot;: {  &quot;gte&quot;: 1000  }  }
+            }
+        }
+    }
+</code></pre><h3 id="排序与分页"><a href="#排序与分页" class="headerlink" title="排序与分页"></a>排序与分页</h3><pre><code>&quot;query&quot;: {
+    ...
+},
+&quot;sort&quot;: [
+    {   &quot;price&quot;: {  &quot;order&quot;: &quot;desc&quot;  }   },
+    {   &quot;_score&quot;: {  &quot;order&quot;: &quot;desc&quot;  }   }
+],
+&quot;from&quot;: 0,  #页码
+&quot;size&quot;: 10  #每页的条数
+</code></pre><h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><pre><code>1. 聚合：数据的统计与分析
+2. ES中的聚合包含多种类型，最常用的两种：桶、度量
+    1. 桶，bucket，按照某种方式对数据进行分组，每一组数据被ES称为一个桶;
+    2. 度量：metrics，分组完成后，通常会对组中的数据做聚合运算，被ES称为度量，如求和、求平均值、最大、最小;
+3. 桶的划分方式有很多种，比如：
+    1. Date Histogram Aggregation：根据日期阶梯分组，如给定阶梯为周，将会自动划分每周为一组；
+    2. Histogram Aggregation：根据数值阶梯分组，与日期类似；
+    3. Terms Aggregation：根据词条内容分组，词条内容完全匹配的分为一组；
+    4. Range Aggregation：数值和日期的范围分组，指定开始和结束，然后按段分组
+4. 桶只负责对数据进行分组，并不涉及计算，所以通常会嵌套另一种聚合：度量
+    1. Avg Aggregation：求平均值
+    2. Max/Min Aggregation：求最大/小值
+    3. Percentiles Aggregation：求百分比
+    4. Sum Aggregation：求和
+    5. Value Count Aggregation：求总数
+    6. Top hits Aggregation：求前几
+    7. Stats Aggregation：同时返回avg、max、min、sum、count...
+5. Terms Aggregation
+    GET /heima/_search
+    {
+        &quot;size&quot;: 0,  # 默认情况下，在聚合时还会查询，设置 size=0 表示只分组，不查询
+        &quot;aggs&quot;: {
+            &quot;brand&quot;: {   # 自定义组名
+                &quot;terms&quot;: {
+                    &quot;field&quot;: &quot;品牌&quot;   # 按照字段词条 品牌 进行分组，统计每组有多少条数据
+                }
+            }
+        }
+    }
+6. 分组之后，计算平均值
+    &quot;aggs&quot;: {
+        &quot;popular_brand&quot;: {
+            &quot;terms&quot;: {  &quot;field&quot;: &quot;品牌名&quot;  }
+        },
+        &quot;aggs&quot;: {
+            &quot;price_avg&quot;: {  # 自定义度量名
+                &quot;avg&quot;: {   # 平均值
+                    &quot;field&quot;: &quot;price&quot;  # 字段price
+                }
+            }
+        }
+    }
+7. 通过 kibana 还可以制作报表，生成各种图表...
+</code></pre><hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/05/12/SpringCloud项目3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -591,6 +1129,37 @@
             ......
         }
     2. 配置在 http 节点下，所有 server 节点共享，还可以在 server 节点下独立配置上传的文件大小.
+</code></pre><h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 在使用通用Mapper时，只继承 Mapper&lt;T&gt; 是不能实现批量插入等高级功能的;
+2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-base&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
+        &lt;artifactId&gt;mapper-extra&lt;/artifactId&gt;
+        &lt;version&gt;1.1.5&lt;/version&gt;
+    &lt;/dependency&gt;
+3. 自定义一个具备批量新增的BaseMapper：com.leyou.common.mapper
+    @RegisterMapper
+    public interface BaseMapper&lt;T&gt; extends Mapper&lt;T&gt;,IdListMapper&lt;T, Long&gt;,InsertListMapper&lt;T&gt; {
+    }
+    1. IdListMapper&lt;T, Long&gt;：第二个泛型指定ID的类型;
+    2. @RegisterMapper：注册自己的Mapper
+    3. InsertListMapper 必须是 mapper-extra 包中的，因为 mapper-base 包中的 InsertListMapper 有限制.
+4. 在业务处理的Service工程ly-item-service 中使用
+    1. com.leyou.item.mapper.StockMapper 继承自定义的 BaseMapper
+        public interface StockMapper extends BaseMapper&lt;Stock&gt; { }
+    2. 批量新增
+        List&lt;Stock&gt; stockList = new ArrayList&lt;&gt;();
+        ...... //stockList.add(stock);
+        stockMapper.insertList(stockList);
 </code></pre><hr>
 
           
@@ -3914,330 +4483,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hellomyshadow.github.io/2016/04/05/SpringBoot响应式/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大麦田怪圈">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大麦田程序猿">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/04/05/SpringBoot响应式/" itemprop="url">SpringBoot响应式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-05T00:00:00+08:00">
-                2016-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaEE/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaEE</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h2><pre><code>1. SpringBoot2.x底层使用Spring5，开始支持响应式编程，Spring又依赖于Reactor
-2. 响应式依赖于事件驱动，异步非阻塞，观察者模式;
-3. 响应式编程与传统编程的技术对比
-</code></pre><p><img src="//hellomyshadow.github.io/2016/04/05/SpringBoot响应式/响应式.png" alt="响应式"></p>
-<pre><code>4. 响应式编程的整个链路都不能阻塞，包括数据库访问，比如Redis已经提供了响应式编程的启动器;
-</code></pre><h2 id="Spring-WebFlux"><a href="#Spring-WebFlux" class="headerlink" title="Spring WebFlux"></a>Spring WebFlux</h2><pre><code>1. Spring WebFlux 是Spring5.0引进的一个响应式Web框架，通过Reactor项目实现 Reactive Streams 规范;
-2. 与SpringMVC不同，Spring WebFlux不需要Servlet API，完全异步非阻塞，事件驱动，流;
-3. Flux、Mono
-    1. Mono：包含 0 或 1 个元素的异步序列，单一对象，比如根据ID去Redis中查询唯一的用户，Mono&lt;User&gt;
-    2. Flux：包含 - 到 N 个元素的异步序列，数据列表对象，比如在Redis中查询一组用户，Flux&lt;User&gt;
-    3. Mono 和 Flux 之间可以进行转换;
-4. Spring WebFlux有两种风格：基于功能、基于注解
-    1. 基于注解的方式非常接近于SpringMVC模型
-    @RestController 
-    @RequestMapping(&quot;/users&quot;)
-    public class UserController {
-        @GetMapping(&quot;/{user}&quot;)
-        public Mono&lt;User&gt; getUser(@PathVariable Long user) {
-            ...
-        }
-        @GetMapping(&quot;/{user}/customers&quot;)
-        public Flux &lt;Customer&gt; getUserCustomers(@PathVariable Long user) {
-            ...
-        }
-        @DeleteMapping(&quot;/{user}&quot;)
-        public Mono &lt;User&gt; deleteUser(@PathVariable Long user) {
-            ...
-        }
-    }
-    2. 基于功能：路由配置与请求的实际处理逻辑是分开的
-    @Configuration
-    public class RoutingConfiguration {
-        @Bean
-        public RouterFunction &lt;ServerResponse&gt; monoRouterFunction（UserHandler userHandler）{
-            return route(GET(&quot;/{user}&quot;).and(accept(APPLICATION_JSON))，userHandler :: getUser)
-                .andRoute(GET(&quot;/{user}/customers&quot;)
-                .and(accept(APPLICATION_JSON))，userHandler :: getUserCustomers)
-                .andRoute(DELETE(&quot;/{user}&quot;).and(accept(APPLICATION_JSON))，userHandler :: deleteUser);
-        }
-    }
-    @Component
-    public class UserHandler {
-        public Mono &lt;ServerResponse&gt; getUser(ServerRequest request) {
-            ...
-        }
-        public Mono &lt;ServerResponse&gt; getUserCustomers(ServerRequest request) {
-            ...
-        }
-        public Mono &lt;ServerResponse&gt; deleteUser(ServerRequest request) {
-            ...
-        }
-    }
-5. Spring WebFlux应用不严格依赖于Servlet API，因此不能作为 war 文件部署，也不能使用 src/main/webapp 目录;
-6. 除了REST Web服务，Spring WebFlux还提供了动态HTML，支持各种模板引擎：Thymeleaf、FreeMarker...
-</code></pre><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>1. 创建SpringBoot项目
-    1. WebFlux的启动器：spring-boot-starter-webflux
-    2. 如果同时存在spring-boot-starter-web，则会优先使用SpringMVC模式，而不是Spring WebFlux
-2. WebFlux中，请求和响应对象也不再是ServletRequest和ServletResponse，而是ServerRequest和ServerResponse
-3. 创建基于注解的Controller
-    @RestController 
-    @RequestMapping(&quot;/api&quot;)
-    public class TestController {
-        @GetMapping(&quot;/test&quot;)
-        public Mono&lt;String&gt; test() {
-            return Mono.just(&quot;Hello WebFlux&quot;);
-        }
-    }
-4. 启动：默认容器Netty 8080端口，Netty started on port(s): 8080
-    http://localhost:8080/api/test  ==&gt; Hello WebFlux
-5. 创建User
-    public class User {
-        private String id;
-        private String name;
-        ......
-    }
-6. 创建Service，模拟CURD
-    @Service
-    public class UserService {
-        private static final Map&lt;String, User&gt; dataMap = new HashMap&lt;&gt;();
-        static {
-            dataMap.put(&quot;1&quot;, new User(&quot;1&quot;, &quot;Java&quot;));
-            dataMap.put(&quot;2&quot;, new User(&quot;2&quot;, &quot;Python&quot;));
-            dataMap.put(&quot;3&quot;, new User(&quot;3&quot;, &quot;Node&quot;));
-            dataMap.put(&quot;4&quot;, new User(&quot;4&quot;, &quot;Node&quot;));
-        }
-        public Flux&lt;User&gt; getList() {
-            Collection&lt;User&gt; list = dataMap.values();
-            //把 Collection 转为一个异步序列
-            return Flux.fromIterable(list);
-        }
-        public Mono&lt;User&gt; getById(String id) {
-            return Mono.justOrEmpty(dataMap.get(id));
-        }
-        public Mono&lt;User&gt; delById(String id) {
-            return Mono.justOrEmpty(dataMap.remove(id));
-        }
-    }
-7. Controller方法
-    @Autowired
-    private UserService service;
-
-    @GetMapping(&quot;/find&quot;)
-    public Mono&lt;User&gt; findById(String id) {
-        return service.getById(id);
-    }
-
-    @GetMapping(&quot;/list&quot;)
-    public Flux&lt;User&gt; getList() {
-        return service.getList();
-    }
-
-    http://localhost:8080/api/find?id=2  ==&gt; {&quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Python&quot;}
-8. 模拟耗时的查询一组用户时，每查询到一个就响应一个，而不是等待全部查询结束之后再响应
-    @GetMapping(value = &quot;/list&quot;, produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    public Flux&lt;String&gt; getList() {
-        //每条数据延迟2s再响应
-        return service.getList().delayElements(Duration.ofSeconds(2));
-    }
-    http://localhost:8080/api/list  ==&gt; 不考虑网络延迟，每隔2s收到一条数据
-    1. produces=MediaType.APPLICATION_STREAM_JSON_VALUE 必须声明响应类型是流;
-    2. 如果不声明为流数据，则会等查询到所有数据之后，转为JSON字符串，然后再响应给前端;
-</code></pre><h3 id="响应式客户端"><a href="#响应式客户端" class="headerlink" title="响应式客户端"></a>响应式客户端</h3><pre><code>1. WebFlux的客户端WebClient，响应式客户端;
-2. 在测试类中使用
-    @Test
-    public void testBase() {
-        Mono&lt;String&gt; body = WebClient.create().get()
-            .uri(&quot;http://localhost:8080/api/find?id=2&quot;)
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve().bodyToMono(String.class);
-        System.out.println(body.block());
-    }
-    @Test
-    public void testPlace() {
-        Mono&lt;String&gt; body = WebClient.create().get()
-            .uri(&quot;http://localhost:8080/api/find?id={id}&quot;, 2)  //支持占位符
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve().bodyToMono(String.class);
-    }
-</code></pre><h2 id="服务端推送技术"><a href="#服务端推送技术" class="headerlink" title="服务端推送技术"></a>服务端推送技术</h2><pre><code>1. 客户端轮询：AJAX定时拉取数据;
-2. WebSocket：全双工通信，基于TCP协议，Socket.IO是基于WebSocket的框架，屏蔽了底层细节，使用更方便;
-3. SSE：Server Send Event，HTML5新标准，用于从服务端实时推送数据到浏览器，本质上是一个HTTP长连接;
-</code></pre><h3 id="SSE"><a href="#SSE" class="headerlink" title="SSE"></a>SSE</h3><pre><code>1. 服务端
-    1. 引入依赖：spring-boot-starter-webflux
-    @RestController 
-    @RequestMapping(&quot;/sse&quot;)
-    public class TestController {
-        //数据类型必须设置为event-stream
-        @RequestMapping(value = &quot;/test&quot;, produces = &quot;text/event-stream;charset=UTF-8&quot;)
-        public String test() {
-            Thread.sleep(2000); //模拟业务处理
-            return &quot;Hello SSE : &quot; + Math.random();
-        }
-    }
-    2. 在静态资源目录下创建index.html
-    &lt;script type=&quot;text/javascript&quot;&gt;
-        var source = new EventSource(&quot;sse/test&quot;);
-        source.onmessage = function(evt) {
-            console.log(evt.data);
-        }
-    &lt;/script&gt;
-2. 客户端：必须支持SSE
-    http://localhost:8080/index.html  //大约每2s收到一条消息，本质上是HTTP长连接，所以仍是发起请求
-</code></pre><h2 id="Actuator"><a href="#Actuator" class="headerlink" title="Actuator"></a>Actuator</h2><pre><code>1. Actuator：用于监控和管理生产环境的组件，启动器为spring-boot-starter-actuator
-2. 启动SpringBoot项目，出于安全考虑，默认只开启了三个端点
-    1. http://localhost:8080/actuator  --&gt; 查看可用的端点
-    2. http://localhost:8080/actuator/health  --&gt; {&quot;status&quot;: &quot;UP&quot;}  UP 表示应用启动且状态正常
-    3. http://localhost:8080/actuator/info  --&gt; 查看详细信息，{} 表示无信息
-    4. 对于SpringBoot2.0之前的版本，端点路径上不带 /actuator
-3. 在配置文件中，设置开启的监控端点
-    1. 开启所有端点
-        management.endpoints.web.exposure.include=*
-    2. 启动项目时，控制台上会列出可访问的端点，比如/actuator/env，/actuator/metrics ...
-    3. 有些端点会暴露敏感信息，比如 /actuator/env 就会暴露应用端口号、数据库连接信息、系统信息...
-        management.endpoints.web.exposure.include=metrics  #开启某一个
-        management.endpoints.web.exposure.exclude=metrics  #关闭某一个
-4. 常用的端点
-    /actuator/health  --&gt; 应用健康指标
-    /actuator/metrics  --&gt; 应用的基本指标列表
-    /actuator/metrics/{name}  --&gt; 某个具体的指标
-    /actuator/env  --&gt; 显示来自Spring的ConfigurableEnvironment的属性
-5. SpringBoot Admin：可视化的监控管理;
-6. 还可以自己开发脚本进行监控;
-</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4288,7 +4533,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

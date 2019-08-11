@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="通用Mapper1. 在使用通用Mapper时，只继承 Mapper&amp;lt;T&amp;gt; 是不能实现批量插入等高级功能的; 2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;tk.mybatis&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;">
+<meta name="description" content="Elasticsearch1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中； 2. Elasticsearch：ES，一个分布式的RESTful风格的搜索和数据分析引擎，速度很快，近实时搜索； 3. 与MongoDB、Redis、Memcache一样，ES属于非关系型数据库，是一个接近实时的搜索平台； 3. ES无需人工搭建集群，而Solr则需要认为配置，">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringCloud项目4">
 <meta property="og:url" content="http://hellomyshadow.github.io/2016/05/13/SpringCloud项目4/index.html">
 <meta property="og:site_name" content="大麦田程序猿">
-<meta property="og:description" content="通用Mapper1. 在使用通用Mapper时，只继承 Mapper&amp;lt;T&amp;gt; 是不能实现批量插入等高级功能的; 2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;tk.mybatis&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;">
+<meta property="og:description" content="Elasticsearch1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中； 2. Elasticsearch：ES，一个分布式的RESTful风格的搜索和数据分析引擎，速度很快，近实时搜索； 3. 与MongoDB、Redis、Memcache一样，ES属于非关系型数据库，是一个接近实时的搜索平台； 3. ES无需人工搭建集群，而Solr则需要认为配置，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-30T14:51:02.935Z">
+<meta property="og:updated_time" content="2019-08-11T13:35:21.168Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud项目4">
-<meta name="twitter:description" content="通用Mapper1. 在使用通用Mapper时，只继承 Mapper&amp;lt;T&amp;gt; 是不能实现批量插入等高级功能的; 2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包     &amp;lt;dependency&amp;gt;         &amp;lt;groupId&amp;gt;tk.mybatis&amp;lt;/groupId&amp;gt;         &amp;lt;artifactId&amp;">
+<meta name="twitter:description" content="Elasticsearch1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中； 2. Elasticsearch：ES，一个分布式的RESTful风格的搜索和数据分析引擎，速度很快，近实时搜索； 3. 与MongoDB、Redis、Memcache一样，ES属于非关系型数据库，是一个接近实时的搜索平台； 3. ES无需人工搭建集群，而Solr则需要认为配置，">
 
 
 
@@ -322,43 +322,14 @@
       
 
       
-        <h2 id="通用Mapper"><a href="#通用Mapper" class="headerlink" title="通用Mapper"></a>通用Mapper</h2><pre><code>1. 在使用通用Mapper时，只继承 Mapper&lt;T&gt; 是不能实现批量插入等高级功能的;
-2. 在工具工程ly-common 中，新增通用Mapper的核心包、基本包、扩展包
-    &lt;dependency&gt;
-        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
-        &lt;artifactId&gt;mapper-core&lt;/artifactId&gt;
-        &lt;version&gt;1.1.5&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
-        &lt;artifactId&gt;mapper-base&lt;/artifactId&gt;
-        &lt;version&gt;1.1.5&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;tk.mybatis&lt;/groupId&gt;
-        &lt;artifactId&gt;mapper-extra&lt;/artifactId&gt;
-        &lt;version&gt;1.1.5&lt;/version&gt;
-    &lt;/dependency&gt;
-3. 自定义一个具备批量新增的BaseMapper：com.leyou.common.mapper
-    @RegisterMapper
-    public interface BaseMapper&lt;T&gt; extends Mapper&lt;T&gt;,IdListMapper&lt;T, Long&gt;,InsertListMapper&lt;T&gt; {
-
-    }
-    1. IdListMapper&lt;T, Long&gt;：第二个泛型指定ID的类型;
-    2. @RegisterMapper：注册自己的Mapper
-    3. InsertListMapper 必须是 mapper-extra 包中的，因为 mapper-base 包中的 InsertListMapper 有限制.
-4. 在业务处理的Service工程ly-item-service 中使用
-    1. com.leyou.item.mapper.StockMapper 继承自定义的 BaseMapper
-        public interface StockMapper extends BaseMapper&lt;Stock&gt; {
-
-        }
-    2. 批量新增
-        List&lt;Stock&gt; stockList = new ArrayList&lt;&gt;();
-        ...... //stockList.add(stock);
-        stockMapper.insertList(stockList);
-</code></pre><h2 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h2><pre><code>1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中；
+        <h2 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h2><pre><code>1. 全文检索技术：Solr、Elasticsearch，应用于数据库特别巨大的搜索业务中；
 2. Elasticsearch：ES，一个分布式的RESTful风格的搜索和数据分析引擎，速度很快，近实时搜索；
+3. 与MongoDB、Redis、Memcache一样，ES属于非关系型数据库，是一个接近实时的搜索平台；
 3. ES无需人工搭建集群，而Solr则需要认为配置，使用Zookeeper作为注册中心。
+4. Elasticsearch+ Logstash + Kibana
+    1. ES：存储和收集数据，作为检索工具;
+    2. logstash：收集Server产生的Log日志;
+    3. kibana：强大的Web管理平台;
 </code></pre><h3 id="安装并配置"><a href="#安装并配置" class="headerlink" title="安装并配置"></a>安装并配置</h3><pre><code>1. ES基于 Apache Lucene，Lucene又基于Java，所以必须先安装Java，并配置JAVA_HOME等环境变量;
 2. Linux系统上安装Elasticsearch
     1. ES占用内存比较大，如果本地还有MySQL，应当关闭
@@ -463,12 +434,13 @@
         &quot;analyzer&quot;: &quot;ik_smart&quot;,
         &quot;text&quot;: &quot;我是中国人&quot;
     }
-</code></pre><h3 id="操作索引"><a href="#操作索引" class="headerlink" title="操作索引"></a>操作索引</h3><pre><code>1. ES与MySQL的概念比较
-    1. 索引库 --&gt; Databases数据库
-    2. 类型 --&gt; Table数据表
-    3. 文档 --&gt; 行
-    4. 字段 --&gt; 列
+</code></pre><h2 id="操作索引"><a href="#操作索引" class="headerlink" title="操作索引"></a>操作索引</h2><pre><code>1. ES与MySQL的概念比较
+    1. index索引库 --&gt; Databases数据库
+    2. type类型 --&gt; Table数据表
+    3. document文档 --&gt; 行row
+    4. field字段 --&gt; 列column
     5. 映射配置：字段的数据类型、属性、是否索引、是否存储等特性;
+    6. 数据存储的最小单位是文档，本质上是一个JSON文本.
 2. 集群相关
     1. 索引集：逻辑上的完整索引;
     2. 分片：数据拆分后的各个部分;
@@ -478,7 +450,7 @@
 3. 创建索引
     1. 请求方式：PUT
     2. 请求路径：/索引库名
-        http://192.168.58.101:9200/testly
+        http://192.168.58.101:9200/testly  #索引库名为testly
     3. 请求参数：JSON格式
         {
             &quot;settings&quot;: {  ---&gt; 索引库的设置
@@ -506,26 +478,28 @@
     1. 类型名称：类似于MySQL数据库中的表;
     2. 字段的type类型：text、long、short、date、integer、object...
     3. analyzer：分词器，如ik_max_word，即使用ik分词器
-        PUT /testly/_mapping/goods
-        {
-            &quot;properties&quot;: {
-                &quot;title&quot;: {
-                    &quot;type&quot;: &quot;text&quot;,
-                    &quot;analyzer&quot;: &quot;ik_max_word&quot;
-                },
-                &quot;images&quot;: {
-                    &quot;type&quot;: &quot;keyword&quot;,
-                    &quot;index&quot;: false
-                },
-                &quot;price&quot;: {
-                    &quot;type&quot;: &quot;float&quot;
-                }
+2. 在索引库testly 中新增类型goods，并设置映射字段title、images、price
+    PUT /testly/_mapping/goods
+    {
+        &quot;properties&quot;: {
+            &quot;title&quot;: {
+                &quot;type&quot;: &quot;text&quot;,
+                &quot;analyzer&quot;: &quot;ik_max_word&quot;
+            },
+            &quot;images&quot;: {
+                &quot;type&quot;: &quot;keyword&quot;,
+                &quot;index&quot;: false
+            },
+            &quot;price&quot;: {
+                &quot;type&quot;: &quot;float&quot;
             }
         }
-2. 查看映射字段
+    }
+3. 查看映射字段
     GET /testly/_mapping/类型名称   # 如果不指定类型名称，则表示查看所有的映射字段
-3. 字段类型
-    1. text和keyword都属于String类型，text可以分词，images不可以分词;
+    http://192.168.58.101:9200/testly/_mapping/goods
+4. 字段类型
+    1. text和keyword都属于String类型，text可以分词，keyword不可以分词;
     2. Number(数值类型)分两类：
         1. 基本数据类型：long、integer、short、byte、double、float、half_float
         2. 浮点数的高精度类型：scaled_float
@@ -533,29 +507,217 @@
     3. Date(日期类型)：ES可以对日期格式化为字符串存储，但建议存储为毫秒值(long)，节省空间;
     4. 复杂类型：Array、Object、Nested
     5. 如果存的是对象，比如{stu:{name:&quot;Jack&quot;,age:20}}，ES会处理成两个字段：stu.name、stu.age
-4. index
+5. index
     1. true：默认值，字段会被索引，可以用来搜索;
     2. false：字段不会被索引，不能用来搜索;
     3. 有些字段不希望被索引，如商品的图片信息，则手动设置为false.
-5. store：是否将数据进行额外存储;
+6. store：是否将数据进行额外存储;
     1. 在Lucene和Solr中，如果把store设置为false，就不会存储在文档列表中，用户的搜索结果中不会显示;
     2. 在ES中，即使设置为false，也可以搜索到结果，也就是说store并不是用来控制字段是否能够被搜索的;
-    3. 因为创建文档索引时，ES会将文档中的原始数据备份到一个叫做 _source 属性中，而且可以通过过滤 _source 来选择
-    哪些字段需要显示，那些不需要显示;
+    3. 因为创建文档索引时，ES会将文档中的原始数据备份到一个叫做 _source 属性中，而且可以通过过滤 _source
+    来选择哪些字段需要显示，那些不需要显示;
     4. 如果设置为true，ES会额外存储一份数据，显得很多余，因为有了 _source 属性;
-6. boost：激励因子，与在Lucene中的作用相同;
-</code></pre><h3 id="Spring与ES"><a href="#Spring与ES" class="headerlink" title="Spring与ES"></a>Spring与ES</h3><pre><code>1. ES提供了Java客户端，但使用方式很不方便：手动拼接字符串，手动对象序列化与反序列化...
-2. Spring提供了Spring Data Elasticsearch，属于Spring Data项目的一个子模块；
-3. SpringBoot的启动器：spring-boot-starter-data-elasticsearch
-4. application.yml
-    spring:
-        data:
-            elasticsearch:
-                cluster-name: elasticsearch
-                cluster-nodes: 192.168.58.101:9300
-5. 
-</code></pre><h2 id="搜索服务"><a href="#搜索服务" class="headerlink" title="搜索服务"></a>搜索服务</h2><pre><code>1. 子工程ly-search：负责全文检索的微服务;
-2. 
+7. boost：激励因子，与在Lucene中的作用相同.
+</code></pre><h3 id="数据的CURD"><a href="#数据的CURD" class="headerlink" title="数据的CURD"></a>数据的CURD</h3><pre><code>1. 新增数据
+    POST /索引库名/类型名称
+    {
+        &quot;key&quot;: &quot;value&quot;
+    }
+    1. 每条数据都必须有ID字段，如果不指定字段，则随机生成;
+        POST /testly/goods
+        {
+            &quot;title&quot;: &quot;手机&quot;,
+            &quot;images&quot;: &quot;http://image.leyou.com/xxx.png&quot;,
+            &quot;price&quot;: 3000
+        }
+    2. 指定ID
+        POST /索引库名/类型名称/ID
+        {
+            &quot;key&quot;: &quot;value&quot;
+        }
+2. 智能推断：在新增数据时，如果没有对应的映射字段，ES会自动推断数据类型，并存储;
+    POST /testly/goods/3
+    {
+        &quot;title&quot;: &quot;手机&quot;,
+        &quot;images&quot;: &quot;http://image.leyou.com/xxx.png&quot;,
+        &quot;price&quot;: 3000,
+        &quot;stock&quot;: 200,
+        &quot;saleable&quot;: true
+        &quot;subTitle&quot;: &quot;智能手机&quot;
+    }
+    1. stock、saleable、subTitle 是三种不同类型的新字段，stock和saleable都会成功映射;
+    2. 但是，ES无法智能推断 subTitle 属于哪一类字符串(text、keyword)，所以它会存入两个字段;
+        subTitle: text
+        subTitle.keyword: keyword
+3. 根据ID查询数据
+        GET /索引库名/类型名称/ID
+4. 查询所有
+    GET /索引库名/_search
+    {
+        &quot;query&quot;: { &quot;match_all&quot;: {} }
+    }
+5. 修改数据：如果ID存在，则修改，否则就新增;
+    PUT /索引库名/类型名称/ID
+    {
+        &quot;key&quot;: &quot;value&quot;
+    }
+6. 删除数据
+    DELETE /索引库名/类型名称/ID
+</code></pre><h3 id="全文检索"><a href="#全文检索" class="headerlink" title="全文检索"></a>全文检索</h3><pre><code>1. 基本查询
+    GET /索引库名/_search
+    {
+        &quot;query&quot;: {
+            &quot;查询类型&quot;: {
+                &quot;查询条件&quot;: &quot;查询条件值&quot;
+            }
+        }
+    }
+    1. query代表一个查询对象，包含不同的查询属性;
+    2. 查询类型：match_all(查询所有)、match(匹配查询)、term、range...
+    3. 
+2. 匹配查询：先把查询条件进行分词，然后进行查询，多个词条之间默认是 or 的关系;
+    &quot;match&quot;: {
+        &quot;title&quot;: &quot;小米手机&quot;
+    }
+    1. 默认会拆分&quot;小米手机&quot;，查询出所有包含 小米、手机 的结果;
+    2. 把 小米手机 当作一个整体去查询，指定为 and 的关系;
+    &quot;match&quot;: {
+        &quot;title&quot;: { &quot;query&quot;:&quot;小米手机&quot;, &quot;operator&quot;:&quot;and&quot; }
+    }
+3. 多字段匹配：multi_match，可以在多个字段中查询;
+    &quot;multi_match&quot;: {
+        &quot;title&quot;: &quot;小米&quot;,
+        &quot;fields&quot;: [&quot;title&quot;, &quot;subTitle&quot;]   #在 title和subTitle 字段中查询&quot;小米&quot;!
+    }
+4. 词条匹配：term，用于精确值的匹配，可以是数字、时间、布尔值、字符串(不会对字符串分词，当作一个整体);
+    GET /heima/_search
+    {
+        &quot;query&quot;: {
+            &quot;term&quot;: {
+                &quot;price&quot;: {
+                    &quot;value&quot;: 3688  #精确匹配 price=3688 的值
+                }
+            }
+        }
+    }
+5. terms：多词条匹配
+</code></pre><h3 id="结果过滤"><a href="#结果过滤" class="headerlink" title="结果过滤"></a>结果过滤</h3><pre><code>1. 默认情况下，ES在搜索的结果中，会把文档中保存在 _source 的搜索字段都返回；
+2. 如果只想获取其中的部分字段，可以对 _source 过滤；
+3. 指定字段
+    GET /heima/_search
+    {
+        &quot;_source&quot;: &quot;title&quot;,  #只返回一个 title 字段
+        &quot;query&quot;: {
+            ...  # 搜索条件
+        }
+    }
+3. 指定多个字段：[&quot;title&quot;, &quot;price&quot;]
+4. 包含哪些字段
+    &quot;_source&quot;: {
+        &quot;includes&quot;: [&quot;title&quot;, &quot;price&quot;]  #只返回 title、price 两个字段
+    }
+5. 排除某些字段
+    &quot;_source&quot;: {
+        &quot;excludes&quot;: &quot;images&quot;  #除了 images 字段，其他都返回
+    }
+</code></pre><h3 id="高级查询"><a href="#高级查询" class="headerlink" title="高级查询"></a>高级查询</h3><pre><code>1. 模糊查询：fuzzy
+    GET /heima/_search
+    {
+        &quot;query&quot;: {
+            &quot;fuzzy&quot;: {
+                &quot;title&quot;: &quot;apply&quot;
+            }
+        }
+    }
+2. fuzzy查询是term查询的模糊等价，它允许搜索词条与实际词条的拼写出现偏差，但偏差的编辑距离不得超过2
+3. 范围查询：range
+    &quot;query&quot;: {
+        &quot;range&quot;: {
+            &quot;price&quot;: {
+                &quot;gte&quot;: 1000,  #gte 大于等于
+                &quot;lte&quot;: 2000   #lte 小于等于
+            }
+        }
+    }
+</code></pre><h3 id="布尔组合查询"><a href="#布尔组合查询" class="headerlink" title="布尔组合查询"></a>布尔组合查询</h3><pre><code>1. 布尔组合查询：把其他查询方式组合起来;
+2. must：与，必须全部满足;
+    &quot;query&quot;: {
+        &quot;bool&quot;: {
+            &quot;must&quot;: [
+                {  &quot;match&quot;: {  &quot;title&quot;: &quot;大米&quot;  }  }, 
+                {  &quot;range&quot;: {  &quot;price&quot;: {  &quot;gte&quot;: 1000  }  }  }
+            ]
+        }
+    }  -----&gt; title字段中包含&quot;大米&quot;，且 price &gt;= 1000
+3. should 或，满足一个即可;
+4. must_not 非，对must取反;
+5. filter：过滤
+    1. 当在 must 中同时使用 match{title} 和 range{price} 时，搜索效率的得分(_score)远低于只使用match{title}
+    2. 其实，match{title}是一个真正的搜索条件，而range{price}更像是一个过滤条件，不应该被当成一个搜索条件、
+    而影响搜素效率的得分
+    3. 这就是 filter 的作用
+    &quot;query&quot;: {
+        &quot;bool&quot;: {
+            &quot;must&quot;: [
+                {  &quot;match&quot;: {  &quot;title&quot;: &quot;大米&quot;  }  }, 
+            ],
+            &quot;filter&quot;: {
+                &quot;range&quot;: {  &quot;price&quot;: {  &quot;gte&quot;: 1000  }  }
+            }
+        }
+    }
+</code></pre><h3 id="排序与分页"><a href="#排序与分页" class="headerlink" title="排序与分页"></a>排序与分页</h3><pre><code>&quot;query&quot;: {
+    ...
+},
+&quot;sort&quot;: [
+    {   &quot;price&quot;: {  &quot;order&quot;: &quot;desc&quot;  }   },
+    {   &quot;_score&quot;: {  &quot;order&quot;: &quot;desc&quot;  }   }
+],
+&quot;from&quot;: 0,  #页码
+&quot;size&quot;: 10  #每页的条数
+</code></pre><h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><pre><code>1. 聚合：数据的统计与分析
+2. ES中的聚合包含多种类型，最常用的两种：桶、度量
+    1. 桶，bucket，按照某种方式对数据进行分组，每一组数据被ES称为一个桶;
+    2. 度量：metrics，分组完成后，通常会对组中的数据做聚合运算，被ES称为度量，如求和、求平均值、最大、最小;
+3. 桶的划分方式有很多种，比如：
+    1. Date Histogram Aggregation：根据日期阶梯分组，如给定阶梯为周，将会自动划分每周为一组；
+    2. Histogram Aggregation：根据数值阶梯分组，与日期类似；
+    3. Terms Aggregation：根据词条内容分组，词条内容完全匹配的分为一组；
+    4. Range Aggregation：数值和日期的范围分组，指定开始和结束，然后按段分组
+4. 桶只负责对数据进行分组，并不涉及计算，所以通常会嵌套另一种聚合：度量
+    1. Avg Aggregation：求平均值
+    2. Max/Min Aggregation：求最大/小值
+    3. Percentiles Aggregation：求百分比
+    4. Sum Aggregation：求和
+    5. Value Count Aggregation：求总数
+    6. Top hits Aggregation：求前几
+    7. Stats Aggregation：同时返回avg、max、min、sum、count...
+5. Terms Aggregation
+    GET /heima/_search
+    {
+        &quot;size&quot;: 0,  # 默认情况下，在聚合时还会查询，设置 size=0 表示只分组，不查询
+        &quot;aggs&quot;: {
+            &quot;brand&quot;: {   # 自定义组名
+                &quot;terms&quot;: {
+                    &quot;field&quot;: &quot;品牌&quot;   # 按照字段词条 品牌 进行分组，统计每组有多少条数据
+                }
+            }
+        }
+    }
+6. 分组之后，计算平均值
+    &quot;aggs&quot;: {
+        &quot;popular_brand&quot;: {
+            &quot;terms&quot;: {  &quot;field&quot;: &quot;品牌名&quot;  }
+        },
+        &quot;aggs&quot;: {
+            &quot;price_avg&quot;: {  # 自定义度量名
+                &quot;avg&quot;: {   # 平均值
+                    &quot;field&quot;: &quot;price&quot;  # 字段price
+                }
+            }
+        }
+    }
+7. 通过 kibana 还可以制作报表，生成各种图表...
 </code></pre><hr>
 
       
@@ -597,8 +759,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/06/01/Docker/" rel="prev" title="Docker">
-                Docker <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/14/SpringCloud项目5/" rel="prev" title="SpringCloud项目5">
+                SpringCloud项目5 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -676,7 +838,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -731,7 +893,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#通用Mapper"><span class="nav-number">1.</span> <span class="nav-text">通用Mapper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch"><span class="nav-number">2.</span> <span class="nav-text">Elasticsearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装并配置"><span class="nav-number">2.1.</span> <span class="nav-text">安装并配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动报错"><span class="nav-number">2.2.</span> <span class="nav-text">启动报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IK分词器"><span class="nav-number">2.3.</span> <span class="nav-text">IK分词器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kibana"><span class="nav-number">2.4.</span> <span class="nav-text">Kibana</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作索引"><span class="nav-number">2.5.</span> <span class="nav-text">操作索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#映射字段"><span class="nav-number">2.6.</span> <span class="nav-text">映射字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring与ES"><span class="nav-number">2.7.</span> <span class="nav-text">Spring与ES</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搜索服务"><span class="nav-number">3.</span> <span class="nav-text">搜索服务</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装并配置"><span class="nav-number">1.1.</span> <span class="nav-text">安装并配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动报错"><span class="nav-number">1.2.</span> <span class="nav-text">启动报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IK分词器"><span class="nav-number">1.3.</span> <span class="nav-text">IK分词器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kibana"><span class="nav-number">1.4.</span> <span class="nav-text">Kibana</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作索引"><span class="nav-number">2.</span> <span class="nav-text">操作索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#映射字段"><span class="nav-number">2.1.</span> <span class="nav-text">映射字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据的CURD"><span class="nav-number">2.2.</span> <span class="nav-text">数据的CURD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全文检索"><span class="nav-number">2.3.</span> <span class="nav-text">全文检索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结果过滤"><span class="nav-number">2.4.</span> <span class="nav-text">结果过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高级查询"><span class="nav-number">2.5.</span> <span class="nav-text">高级查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布尔组合查询"><span class="nav-number">2.6.</span> <span class="nav-text">布尔组合查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排序与分页"><span class="nav-number">2.7.</span> <span class="nav-text">排序与分页</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合"><span class="nav-number">3.</span> <span class="nav-text">聚合</span></a></li></ol></div>
             
 
           </div>
